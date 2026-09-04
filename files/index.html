@@ -1,3 +1,6 @@
+
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -42,10 +45,10 @@
   -webkit-font-smoothing: antialiased;
 }
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-
+ 
 /* ── Layout ───────────────────────────────────────────────────────────────── */
 body { display: flex; min-height: 100dvh; }
-
+ 
 .sidebar {
   width: var(--sidebar-w);
   min-height: 100dvh;
@@ -65,7 +68,7 @@ body { display: flex; min-height: 100dvh; }
 .sidebar-logo svg { flex-shrink: 0; }
 .sidebar-logo-text { font-size: 13px; font-weight: 600; color: #E2E8F0; letter-spacing: .04em; }
 .sidebar-logo-sub  { font-size: 10px; color: #64748B; margin-top: 1px; }
-
+ 
 .nav { padding: 12px 0; flex: 1; overflow-y: auto; }
 .nav-section {
   font-size: 10px; font-weight: 500; color: #475569;
@@ -84,7 +87,7 @@ body { display: flex; min-height: 100dvh; }
 .nav-item.active { color: #F1F5F9; background: var(--navy-mid); border-left-color: var(--blue-soft); }
 .nav-item svg { flex-shrink: 0; opacity: .7; }
 .nav-item.active svg { opacity: 1; }
-
+ 
 .main {
   margin-left: var(--sidebar-w);
   flex: 1;
@@ -103,9 +106,9 @@ body { display: flex; min-height: 100dvh; }
 }
 .topbar-title { font-size: 15px; font-weight: 600; flex: 1; }
 .topbar-right  { display: flex; align-items: center; gap: 8px; }
-
+ 
 .content { padding: 24px; display: flex; flex-direction: column; gap: 20px; max-width: 1100px; }
-
+ 
 /* ── Cards & surfaces ─────────────────────────────────────────────────────── */
 .card {
   background: #fff;
@@ -120,7 +123,7 @@ body { display: flex; min-height: 100dvh; }
 }
 .card-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
 .card-total { font-size: 14px; font-weight: 600; color: var(--text-1); }
-
+ 
 /* ── Net Worth hero ───────────────────────────────────────────────────────── */
 .networth-card {
   background: var(--navy);
@@ -150,7 +153,7 @@ body { display: flex; min-height: 100dvh; }
 .networth-item-label { font-size: 11px; color: #64748B; margin-bottom: 5px; }
 .networth-item-value { font-size: 16px; font-weight: 500; color: #E2E8F0; }
 .networth-item-sub   { font-size: 11px; color: #475569; margin-top: 2px; }
-
+ 
 /* ── FX / data freshness ──────────────────────────────────────────────────── */
 .freshness-bar {
   display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
@@ -164,7 +167,7 @@ body { display: flex; min-height: 100dvh; }
 .fresh   { background: #10B981; }
 .stale   { background: var(--amber); }
 .missing { background: var(--red); }
-
+ 
 /* ── Expandable rows ──────────────────────────────────────────────────────── */
 .section-row {
   display: flex; align-items: center;
@@ -182,13 +185,13 @@ body { display: flex; min-height: 100dvh; }
 .row-sub   { font-size: 11px; color: var(--text-3); margin-top: 1px; }
 .row-amount { font-size: 13px; font-weight: 600; }
 .row-missing { font-size: 11px; color: var(--amber); }
-
+ 
 .chevron {
   width: 16px; height: 16px; color: var(--text-3);
   transition: transform .2s ease; flex-shrink: 0;
 }
 .expanded .chevron { transform: rotate(90deg); }
-
+ 
 /* ── Sub-rows (collapsed by default) ─────────────────────────────────────── */
 .sub-rows { display: none; background: var(--surface); }
 .sub-rows.open { display: block; }
@@ -202,7 +205,7 @@ body { display: flex; min-height: 100dvh; }
 .sub-row-right { display: flex; align-items: center; gap: 8px; text-align: right; }
 .sub-row-amount { font-weight: 500; color: var(--text-1); }
 .sub-row-original { font-size: 10px; color: var(--text-3); }
-
+ 
 /* ── Currency badge ───────────────────────────────────────────────────────── */
 .curr-badge {
   font-size: 10px; font-weight: 600; padding: 2px 6px;
@@ -211,10 +214,10 @@ body { display: flex; min-height: 100dvh; }
 .curr-TWD { background: #DCFCE7; color: #166534; }
 .curr-USD { background: #DBEAFE; color: #1E40AF; }
 .curr-JPY { background: #FEF9C3; color: #854D0E; }
-
+ 
 /* ── Bank color dot ───────────────────────────────────────────────────────── */
 .bank-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
+ 
 /* ── Icon circle ──────────────────────────────────────────────────────────── */
 .icon-circle {
   width: 32px; height: 32px; border-radius: 8px;
@@ -225,7 +228,7 @@ body { display: flex; min-height: 100dvh; }
 .ic-green  { background: var(--green-bg); color: var(--green); }
 .ic-amber  { background: var(--amber-bg); color: var(--amber); }
 .ic-navy   { background: var(--navy-light); color: #93C5FD; }
-
+ 
 /* ── Receivables notice ───────────────────────────────────────────────────── */
 .recv-card {
   border: 1px solid #FDE68A;
@@ -237,7 +240,7 @@ body { display: flex; min-height: 100dvh; }
 .recv-card-body { flex: 1; }
 .recv-card-title { font-size: 13px; font-weight: 600; color: #92400E; margin-bottom: 4px; }
 .recv-card-desc  { font-size: 12px; color: #B45309; }
-
+ 
 /* ── Stale / missing price badge ─────────────────────────────────────────── */
 .stale-badge {
   font-size: 10px; padding: 2px 6px; border-radius: 4px;
@@ -249,7 +252,7 @@ body { display: flex; min-height: 100dvh; }
   cursor: pointer; color: var(--text-2);
 }
 .enter-price-btn:hover { background: var(--surface-2); }
-
+ 
 /* ── Buttons ──────────────────────────────────────────────────────────────── */
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
@@ -261,13 +264,13 @@ body { display: flex; min-height: 100dvh; }
 .btn-ghost   { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
 .btn-ghost:hover { background: var(--surface-2); }
 .btn-icon    { padding: 7px; }
-
+ 
 /* ── Data grid ────────────────────────────────────────────────────────────── */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
+ 
 /* ── Update time ──────────────────────────────────────────────────────────── */
 .updated-at { font-size: 11px; color: var(--text-3); }
-
+ 
 /* ── Modal overlay (price entry) ──────────────────────────────────────────── */
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200;
@@ -287,7 +290,7 @@ body { display: flex; min-height: 100dvh; }
 }
 .modal input:focus { border-color: var(--blue); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
-
+ 
 /* ── Loading / skeleton ───────────────────────────────────────────────────── */
 .skeleton {
   background: linear-gradient(90deg, #E5E7EB 25%, #F3F4F6 50%, #E5E7EB 75%);
@@ -297,7 +300,7 @@ body { display: flex; min-height: 100dvh; }
   display: inline-block;
 }
 @keyframes shimmer { 0% { background-position: 200% 0 } 100% { background-position: -200% 0 } }
-
+ 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
@@ -313,14 +316,14 @@ body { display: flex; min-height: 100dvh; }
   .grid-2 { grid-template-columns: 1fr; }
   .networth-amount { font-size: 30px; }
 }
-
+ 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 </style>
 </head>
 <body>
-
+ 
 <!-- ── Sidebar ─────────────────────────────────────────────────────────────── -->
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-logo">
@@ -334,20 +337,20 @@ body { display: flex; min-height: 100dvh; }
       <div class="sidebar-logo-sub">個人財務控制台</div>
     </div>
   </div>
-
+ 
   <div class="nav">
     <div class="nav-section">總覽</div>
     <a class="nav-item active" href="#" data-view="assets">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
       資產總覽
     </a>
-
+ 
     <div class="nav-section">記帳</div>
     <a class="nav-item disabled" href="#" onclick="return false" style="opacity:.35;cursor:default">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
       新增記帳
     </a>
-
+ 
     <div class="nav-section">管理</div>
     <a class="nav-item disabled" href="#" onclick="return false" style="opacity:.35;cursor:default">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
@@ -359,7 +362,7 @@ body { display: flex; min-height: 100dvh; }
     </a>
   </div>
 </nav>
-
+ 
 <!-- ── Main ────────────────────────────────────────────────────────────────── -->
 <div class="main">
   <header class="topbar">
@@ -380,7 +383,7 @@ body { display: flex; min-height: 100dvh; }
       </button>
     </div>
   </header>
-
+ 
   <div class="content" id="content">
     <!-- rendered by JS -->
     <div style="color:var(--text-3);padding:40px 0;text-align:center">
@@ -389,7 +392,7 @@ body { display: flex; min-height: 100dvh; }
     </div>
   </div>
 </div>
-
+ 
 <!-- ── Balance edit modal ──────────────────────────────────────────────────── -->
 <div class="modal-overlay" id="balanceModal">
   <div class="modal">
@@ -405,7 +408,7 @@ body { display: flex; min-height: 100dvh; }
     </div>
   </div>
 </div>
-
+ 
 <!-- ── Import backup modal ─────────────────────────────────────────────────── -->
 <div class="modal-overlay" id="importModal">
   <div class="modal">
@@ -424,7 +427,7 @@ body { display: flex; min-height: 100dvh; }
     </div>
   </div>
 </div>
-
+ 
 <!-- ── Price entry modal ───────────────────────────────────────────────────── -->
 <div class="modal-overlay" id="priceModal">
   <div class="modal">
@@ -437,7 +440,7 @@ body { display: flex; min-height: 100dvh; }
     </div>
   </div>
 </div>
-
+ 
 <script type="module">
 import { openDB, seedIfNeeded, getAll, getOne, putOne, getSetting } from './db.js';
 import { refreshPrices, refreshFxRates, getFxRates, setManualPrice } from './market.js';
@@ -446,17 +449,19 @@ import {
   calcReceivables, calcNetWorth,
   fmt, fmtCurrency, fmtDate, fmtDateTime, daysUntil, toTWD,
 } from './calc.js';
-
+ 
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 let db, state = {};
-
+ 
 async function init() {
   db = await openDB();
   await seedIfNeeded(db);
   await loadAndRender();
-  await refreshMarketData();
+  refreshMarketData().catch(err =>
+    console.warn('[init] market refresh failed:', err)
+  );
 }
-
+ 
 async function loadAndRender() {
   const [banks, accounts, deposits, brokerages, holdings, goldHoldings,
          receivables, prices] = await Promise.all([
@@ -469,9 +474,9 @@ async function loadAndRender() {
     getAll(db, 'receivables'),
     getAll(db, 'market_prices'),
   ]);
-
+ 
   const fxRates = await getFxRates(db);
-
+ 
   const cash       = calcCashAssets(accounts, banks, fxRates);
   const depositRes = calcDepositAssets(deposits, banks, fxRates);
   const inv        = calcInvestmentAssets(holdings, brokerages, prices, fxRates);
@@ -481,61 +486,59 @@ async function loadAndRender() {
     depositTWD: depositRes.totalTWD,
     investmentTWD: inv.totalTWD,
   });
-
+ 
   state = { banks, accounts, deposits, brokerages, holdings, prices,
             goldHoldings, receivables, fxRates, cash, depositRes, inv, recv, netWorth };
-
+ 
   renderDashboard(state);
   updateLastUpdated(fxRates);
 }
-
+ 
 async function refreshMarketData() {
-  const { holdings } = state;
+  const holdings = state?.holdings ?? [];
   const btn = document.getElementById('refreshBtn');
-  btn.style.opacity = '.4';
-  btn.style.pointerEvents = 'none';
-
+  if (btn) { btn.style.opacity = '.4'; btn.style.pointerEvents = 'none'; }
+ 
   await Promise.allSettled([
-    refreshFxRates(db),
-    refreshPrices(db, holdings),
+    refreshFxRates(db).catch(e => console.warn('[FX]', e)),
+    refreshPrices(db, holdings).catch(e => console.warn('[prices]', e)),
   ]);
-
-  btn.style.opacity = '';
-  btn.style.pointerEvents = '';
+ 
+  if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
   await loadAndRender();
 }
-
+ 
 // ─── Render ───────────────────────────────────────────────────────────────────
-
+ 
 function renderDashboard({ netWorth, cash, depositRes, inv, recv, fxRates }) {
   const content = document.getElementById('content');
   content.innerHTML = '';
-
+ 
   // Net Worth hero
   content.appendChild(renderNetWorth(netWorth, cash, depositRes, inv, fxRates));
-
+ 
   // Receivables notice (if any pending)
   if (recv.pending.length > 0) {
     content.appendChild(renderReceivables(recv));
   }
-
+ 
   // Cash assets
   content.appendChild(renderCashSection(cash, fxRates));
-
+ 
   // Time Deposits
   if (depositRes.items.length > 0) {
     content.appendChild(renderDepositsSection(depositRes));
   }
-
+ 
   // Investments
   content.appendChild(renderInvestmentSection(inv));
 }
-
+ 
 // ── Net Worth card ─────────────────────────────────────────────────────────
-
+ 
 function renderNetWorth(netWorth, cash, depositRes, inv, fxRates) {
   const wrap = el('div');
-
+ 
   const card = el('div', 'networth-card');
   card.innerHTML = `
     <div class="networth-label">總資產（折合台幣）</div>
@@ -564,7 +567,7 @@ function renderNetWorth(netWorth, cash, depositRes, inv, fxRates) {
     </div>
   `;
   wrap.appendChild(card);
-
+ 
   // Freshness bar
   const bar = el('div', 'freshness-bar');
   const usdAge = fxRates.usd_fetched_at ? relativeTime(fxRates.usd_fetched_at) : '未取得';
@@ -579,12 +582,12 @@ function renderNetWorth(netWorth, cash, depositRes, inv, fxRates) {
     ${isStale ? '<span class="stale-badge" style="margin-left:4px">匯率可能過時</span>' : ''}
   `;
   wrap.appendChild(bar);
-
+ 
   return wrap;
 }
-
+ 
 // ── Receivables ────────────────────────────────────────────────────────────
-
+ 
 function renderReceivables({ pending, totalTWD }) {
   const card = el('div', 'recv-card');
   card.innerHTML = `
@@ -600,12 +603,12 @@ function renderReceivables({ pending, totalTWD }) {
   `;
   return card;
 }
-
+ 
 // ── Cash section ───────────────────────────────────────────────────────────
-
+ 
 function renderCashSection(cash, fxRates) {
   const card = el('div', 'card');
-
+ 
   const header = el('div', 'card-header');
   header.innerHTML = `
     <div class="card-title">
@@ -617,12 +620,12 @@ function renderCashSection(cash, fxRates) {
     <div class="card-total">NT$ ${fmt(cash.totalTWD)}</div>
   `;
   card.appendChild(header);
-
+ 
   // Group by bank, sorted by sort_order
   const bankGroups = Object.values(cash.byBank).sort(
     (a, b) => (a.bank.sort_order ?? 99) - (b.bank.sort_order ?? 99)
   );
-
+ 
   // Currency summary row first
   const currRows = Object.entries(cash.byCurrency).filter(([,v]) => v > 0);
   if (currRows.length > 1) {
@@ -636,11 +639,11 @@ function renderCashSection(cash, fxRates) {
     `).join('');
     card.appendChild(summaryRow);
   }
-
+ 
   bankGroups.forEach(({ bank, accounts, totalTWD }) => {
     const groupId = 'bank_' + bank.id;
     const hasForeign = accounts.some(a => a.currency !== 'TWD');
-
+ 
     // Parent row
     const row = el('div', 'section-row');
     row.setAttribute('role', 'button');
@@ -665,7 +668,7 @@ function renderCashSection(cash, fxRates) {
       </div>
     `;
     card.appendChild(row);
-
+ 
     // Sub-rows
     const sub = el('div', 'sub-rows');
     sub.id = groupId;
@@ -698,15 +701,15 @@ function renderCashSection(cash, fxRates) {
       sub.appendChild(subRow);
     });
     card.appendChild(sub);
-
+ 
     row.addEventListener('click', () => toggleSection(row, sub));
   });
-
+ 
   return card;
 }
-
+ 
 // ── Deposits section ───────────────────────────────────────────────────────
-
+ 
 function renderDepositsSection({ items, totalTWD }) {
   const card = el('div', 'card');
   const header = el('div', 'card-header');
@@ -720,7 +723,7 @@ function renderDepositsSection({ items, totalTWD }) {
     <div class="card-total">NT$ ${fmt(totalTWD)}</div>
   `;
   card.appendChild(header);
-
+ 
   items.forEach(dep => {
     const days = daysUntil(dep.maturity_date);
     const urgency = days != null && days <= 30 ? 'color:var(--amber)' : 'color:var(--text-3)';
@@ -744,12 +747,12 @@ function renderDepositsSection({ items, totalTWD }) {
     `;
     card.appendChild(row);
   });
-
+ 
   return card;
 }
-
+ 
 // ── Investment section ─────────────────────────────────────────────────────
-
+ 
 function renderInvestmentSection({ byMarket, byBrokerage, totalTWD, hasMissingPrices, enriched }) {
   const card = el('div', 'card');
   const header = el('div', 'card-header');
@@ -764,15 +767,15 @@ function renderInvestmentSection({ byMarket, byBrokerage, totalTWD, hasMissingPr
     <div class="card-total">NT$ ${fmt(totalTWD)}</div>
   `;
   card.appendChild(header);
-
+ 
   // Market groups: TW then US
   ['TW','US'].forEach(market => {
     const group = byMarket[market];
     if (!group) return;
-
+ 
     const groupId = 'inv_' + market;
     const label = market === 'TW' ? '台股' : '美股';
-
+ 
     const row = el('div', 'section-row');
     row.dataset.target = groupId;
     row.innerHTML = `
@@ -786,10 +789,10 @@ function renderInvestmentSection({ byMarket, byBrokerage, totalTWD, hasMissingPr
       </div>
     `;
     card.appendChild(row);
-
+ 
     const sub = el('div', 'sub-rows');
     sub.id = groupId;
-
+ 
     // Group by brokerage within this market
     const brokGroups = {};
     group.holdings.forEach(h => {
@@ -797,19 +800,19 @@ function renderInvestmentSection({ byMarket, byBrokerage, totalTWD, hasMissingPr
       if (!brokGroups[bid]) brokGroups[bid] = { brokerage: h.brokerage, holdings: [] };
       brokGroups[bid].holdings.push(h);
     });
-
+ 
     Object.values(brokGroups).forEach(({ brokerage, holdings: bh }) => {
       // Brokerage sub-header
       const brokHeader = el('div', 'sub-row');
       brokHeader.style.cssText = 'background:var(--surface-2);font-size:11px;color:var(--text-3);font-weight:600;padding-left:18px;border-top:1px solid var(--border)';
       brokHeader.innerHTML = `<span>${brokerage?.name ?? '—'}</span>`;
       sub.appendChild(brokHeader);
-
+ 
       // Individual holdings
       bh.forEach(h => {
         const subRow = el('div', 'sub-row');
         const needsPrice = h.needsPriceUpdate || h.price == null;
-
+ 
         subRow.innerHTML = `
           <div style="flex:1">
             <div style="display:flex;align-items:center;gap:6px">
@@ -831,11 +834,11 @@ function renderInvestmentSection({ byMarket, byBrokerage, totalTWD, hasMissingPr
         sub.appendChild(subRow);
       });
     });
-
+ 
     card.appendChild(sub);
     row.addEventListener('click', () => toggleSection(row, sub));
   });
-
+ 
   // Wire up price entry buttons
   card.querySelectorAll('.enter-price-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -843,25 +846,25 @@ function renderInvestmentSection({ byMarket, byBrokerage, totalTWD, hasMissingPr
       openPriceModal(btn.dataset.ticker, btn.dataset.market, btn.dataset.name);
     });
   });
-
+ 
   return card;
 }
-
+ 
 // ─── UI helpers ───────────────────────────────────────────────────────────────
-
+ 
 function el(tag, cls) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
   return e;
 }
-
+ 
 function toggleSection(row, sub) {
   const isOpen = sub.classList.contains('open');
   sub.classList.toggle('open', !isOpen);
   row.classList.toggle('expanded', !isOpen);
   row.setAttribute('aria-expanded', !isOpen);
 }
-
+ 
 function updateLastUpdated(fxRates) {
   const el = document.getElementById('lastUpdated');
   if (fxRates.usd_fetched_at) {
@@ -870,7 +873,7 @@ function updateLastUpdated(fxRates) {
     el.textContent = '匯率未取得';
   }
 }
-
+ 
 function relativeTime(iso) {
   const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
   if (mins < 1)  return '剛剛';
@@ -879,11 +882,11 @@ function relativeTime(iso) {
   if (hrs < 24)  return `${hrs} 小時前`;
   return fmtDate(iso);
 }
-
+ 
 // ─── Balance edit modal ───────────────────────────────────────────────────────
-
+ 
 let _editAccId = null;
-
+ 
 function openBalanceModal(accId, accName, currency, currentBalance) {
   _editAccId = accId;
   document.getElementById('balanceModalTitle').textContent = `更新餘額：${accName}`;
@@ -894,11 +897,11 @@ function openBalanceModal(accId, accName, currency, currentBalance) {
   document.getElementById('balanceModalInput').focus();
   document.getElementById('balanceModalInput').select();
 }
-
+ 
 document.getElementById('balanceModalCancel').addEventListener('click', () => {
   document.getElementById('balanceModal').classList.remove('open');
 });
-
+ 
 document.getElementById('balanceModalSave').addEventListener('click', async () => {
   const raw = parseFloat(document.getElementById('balanceModalInput').value);
   if (isNaN(raw) || raw < 0) {
@@ -906,7 +909,7 @@ document.getElementById('balanceModalSave').addEventListener('click', async () =
     return;
   }
   document.getElementById('balanceModal').classList.remove('open');
-
+ 
   // Load existing record, update balance + timestamp
   const acc = await getOne(db, 'accounts', _editAccId);
   if (acc) {
@@ -914,15 +917,15 @@ document.getElementById('balanceModalSave').addEventListener('click', async () =
     await loadAndRender();
   }
 });
-
+ 
 document.getElementById('balanceModal').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
 });
-
+ 
 // ─── Price modal ──────────────────────────────────────────────────────────────
-
+ 
 let _modalTicker = null, _modalMarket = null;
-
+ 
 function openPriceModal(ticker, market, name) {
   _modalTicker = ticker;
   _modalMarket = market;
@@ -932,11 +935,11 @@ function openPriceModal(ticker, market, name) {
   document.getElementById('priceModal').classList.add('open');
   document.getElementById('priceModalInput').focus();
 }
-
+ 
 document.getElementById('priceModalCancel').addEventListener('click', () => {
   document.getElementById('priceModal').classList.remove('open');
 });
-
+ 
 document.getElementById('priceModalSave').addEventListener('click', async () => {
   const price = parseFloat(document.getElementById('priceModalInput').value);
   if (isNaN(price) || price <= 0) {
@@ -947,20 +950,20 @@ document.getElementById('priceModalSave').addEventListener('click', async () => 
   await setManualPrice(db, _modalTicker, _modalMarket, price);
   await loadAndRender();
 });
-
+ 
 // Close modal on overlay click
 document.getElementById('priceModal').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
 });
-
+ 
 // ─── Import / Export ──────────────────────────────────────────────────────────
-
+ 
 const BACKUP_STORES = ['banks','accounts','time_deposits','brokerages',
                        'holdings','market_prices','gold_holdings','receivables',
                        'fx_rates','settings'];
-
+ 
 document.getElementById('refreshBtn').addEventListener('click', refreshMarketData);
-
+ 
 document.getElementById('exportBtn').addEventListener('click', async () => {
   const backup = { version: 1, exported_at: new Date().toISOString(), data: {} };
   for (const s of BACKUP_STORES) backup.data[s] = await getAll(db, s);
@@ -972,26 +975,26 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
   a.click();
   URL.revokeObjectURL(url);
 });
-
+ 
 // ── Import ────────────────────────────────────────────────────────────────────
-
+ 
 document.getElementById('importBtn').addEventListener('click', () => {
   document.getElementById('importFile').value = '';
   document.getElementById('importStatus').textContent = '';
   document.getElementById('importModalConfirm').disabled = true;
   document.getElementById('importModal').classList.add('open');
 });
-
+ 
 document.getElementById('importModalCancel').addEventListener('click', () => {
   document.getElementById('importModal').classList.remove('open');
 });
-
+ 
 document.getElementById('importModal').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
 });
-
+ 
 let _importData = null;
-
+ 
 document.getElementById('importFile').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -1015,40 +1018,40 @@ document.getElementById('importFile').addEventListener('change', async (e) => {
     confirmBtn.disabled = true;
   }
 });
-
+ 
 document.getElementById('importModalConfirm').addEventListener('click', async () => {
   if (!_importData) return;
   document.getElementById('importModal').classList.remove('open');
-
+ 
   // Write each store's records, replacing existing data
   for (const s of BACKUP_STORES) {
     const records = _importData.data[s] ?? [];
     if (records.length > 0) await putMany(db, s, records);
   }
-
+ 
   _importData = null;
   await loadAndRender();
 });
-
+ 
 // ─── Mobile menu ─────────────────────────────────────────────────────────────
-
+ 
 const menuBtn = document.getElementById('menuBtn');
 const sidebar = document.getElementById('sidebar');
-
+ 
 function checkMobile() {
   const isMobile = window.innerWidth <= 768;
   menuBtn.style.display = isMobile ? 'flex' : 'none';
 }
 checkMobile();
 window.addEventListener('resize', checkMobile);
-
+ 
 menuBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
 document.addEventListener('click', (e) => {
   if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
     sidebar.classList.remove('open');
   }
 });
-
+ 
 // ─── Start ────────────────────────────────────────────────────────────────────
 init().catch(err => {
   document.getElementById('content').innerHTML =
@@ -1061,3 +1064,14 @@ init().catch(err => {
 </script>
 </body>
 </html>
+ 
+
+
+
+
+
+
+
+
+
+
