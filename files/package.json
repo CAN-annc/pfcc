@@ -1,0 +1,10 @@
+{
+  "name": "pfcc",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal Finance Command Center — Local-First PWA",
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "deploy": "vercel --prod"
+  }
+}
