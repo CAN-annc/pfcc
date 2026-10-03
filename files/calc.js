@@ -1204,7 +1204,8 @@ export function runDataHealthChecks(data = {}) {
       type: 'stale_price', severity: 'warn',
       title: `${uniq.length} 檔持股的報價超過 7 天沒有更新`,
       description: `${uniq.slice(0, 6).join('、')}${uniq.length > 6 ? ' 等' : ''}——總資產裡的投資市值可能跟現在差很多。可以按右上角重新整理，抓不到的話到投資持倉頁手動輸入目前價格。`,
-      link: { view: 'holdings' },
+      // v2.3.0：帶上第一檔過期的代號，「前往」直接打開它的手動輸入價格視窗。
+      link: { view: 'holdings', action: 'price', ticker: uniq[0] },
     });
   }
 
@@ -1215,7 +1216,7 @@ export function runDataHealthChecks(data = {}) {
         type: 'excluded_nonzero', severity: 'info',
         title: `「${a.name}」設定為不計入總資產，但餘額不是 0`,
         description: `目前餘額 ${num(a.balance)} ${a.currency || 'TWD'}。如果這個帳戶其實還在用，可能要改回計入總資產；如果已經不用了，可能忘了把餘額歸零。`,
-        link: { view: 'settings' },
+        link: { view: 'settings', action: 'account', id: a.id },
       });
     }
   }
@@ -1230,7 +1231,7 @@ export function runDataHealthChecks(data = {}) {
         type: 'hidden_active', severity: 'info',
         title: `「${a.name}」在首頁是隱藏的，但最近 30 天還有收支紀錄`,
         description: '如果這個帳戶還在日常使用，可能是忘了取消「首頁隱藏」——隱藏的帳戶不會出現在資產總覽的帳戶清單裡。',
-        link: { view: 'settings' },
+        link: { view: 'settings', action: 'account', id: a.id },
       });
     }
   }
@@ -1254,7 +1255,8 @@ export function runDataHealthChecks(data = {}) {
         type: 'overdue_unconfirmed', severity: 'warn',
         title: `${g.kind}「${item.name || '未命名'}」已經逾期 ${late} 天還沒確認`,
         description: `最近一期排定在 ${occ}，到現在還沒按「確認本期」，帳戶餘額可能跟實際對不起來。如果這一期其實沒有發生，可以忽略這則提醒。`,
-        link: { view: 'txnmanage', tab: g.tab },
+        // v2.3.0：「前往」直接打開逾期那一期的「確認本期」視窗。
+        link: { view: 'txnmanage', tab: g.tab, action: 'confirm', id: item.id, occ },
       });
     }
   }
@@ -1274,7 +1276,7 @@ export function runDataHealthChecks(data = {}) {
       type: 'stale_receivable', severity: 'info',
       title: `應收款「${r.name}」已經 ${idle} 天沒有任何收款`,
       description: `還有 ${num(r.total_amount) - num(r.received_amount)} 元沒收到。可以聯絡對方確認，或者如果確定收不回來，可以標記「不再追討」。`,
-      link: { view: 'settings' },
+      link: { view: 'settings', action: 'receivable', id: r.id },
     });
   }
 
@@ -1291,7 +1293,7 @@ export function runDataHealthChecks(data = {}) {
       type: 'stale_cc_balance', severity: 'info',
       title: `信用卡「${c.name}」的待繳金額已經 ${idle} 天沒有變動`,
       description: `目前記錄的待繳金額是 ${num(c.current_balance)} 元。如果這期帳單已經繳過、或金額已經變了，記得回來更新。`,
-      link: { view: 'txnmanage', tab: 'creditcard' },
+      link: { view: 'txnmanage', tab: 'creditcard', action: 'creditcard', id: c.id },
     });
   }
 
@@ -1302,7 +1304,7 @@ export function runDataHealthChecks(data = {}) {
         type: 'negative_no_note', severity: 'warn',
         title: `「${a.name}」的餘額是負數`,
         description: `目前餘額 ${num(a.balance)} ${a.currency || 'TWD'}，一般帳戶不太會是負數，可能是某筆紀錄記錯。如果是正常情況（例如透支、預借），可以在帳戶的「備註」寫一下原因，這則提醒就不會再出現。`,
-        link: { view: 'settings' },
+        link: { view: 'settings', action: 'account', id: a.id },
       });
     }
   }

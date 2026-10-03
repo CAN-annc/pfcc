@@ -389,6 +389,128 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
   .recv-row-actions .btn{white-space:nowrap}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* ── v2.3.0 收支紀錄月曆：圓潤可愛版（取自 9/20 核准的配色示意稿）──
+   沒有格線；每天一顆 34px 圓形日期，底色＝當天淨收支熱度，金額印在圓形下方；
+   格子高度只剩約 52px（原本近似正方形的 62px＋框線）。 */
+.cal-card{padding:14px 12px 12px;border-radius:18px}
+.cal-head{display:flex;align-items:center;gap:4px;padding:0 4px 10px}
+.cal-title{border:none;background:none;font:inherit;font-size:16px;font-weight:700;color:var(--text-1);padding:4px 6px;border-radius:8px;cursor:pointer;font-variant-numeric:tabular-nums}
+.cal-nav{border:none;background:var(--surface);width:30px;height:30px;border-radius:50%;font-size:18px;line-height:1;color:var(--text-2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,transform .1s}
+.cal-nav:hover{background:var(--accent-tint)}
+.cal-nav:active,.cal-cell:active .cal-day{transform:scale(.92)}
+.cal-report-btn{margin-left:auto;border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:5px 12px;font:inherit;font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;transition:border-color .15s,color .15s}
+.cal-report-btn:hover{border-color:var(--blue);color:var(--blue)}
+.cal-week{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:10px;font-weight:600;color:var(--text-3);padding-bottom:4px}
+.cal-week span:first-child,.cal-week span:last-child{color:color-mix(in srgb,var(--red) 55%,var(--text-3))}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);row-gap:2px}
+.cal-cell{border:none;background:none;padding:2px 0 3px;min-width:0;min-height:52px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font:inherit;-webkit-tap-highlight-color:transparent}
+.cal-blank{cursor:default}
+.cal-day{position:relative;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--text-1);font-variant-numeric:tabular-nums;transition:transform .12s ease,box-shadow .15s ease,background .15s ease}
+.cal-cell:hover .cal-day{box-shadow:0 0 0 2px var(--accent-tint-strong)}
+.cal-cell.is-today .cal-day{box-shadow:0 0 0 2px var(--blue);font-weight:800}
+.cal-cell.is-selected .cal-day{background:var(--navy)!important;color:#fff!important;box-shadow:0 2px 8px color-mix(in srgb,var(--navy) 35%,transparent)}
+.cal-pending{position:absolute;top:1px;right:1px;width:8px;height:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 2px #fff}
+.cal-amt{font-size:9.5px;font-weight:700;line-height:1;height:10px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.chip-btn{border:none;background:var(--accent-tint);color:var(--blue);border-radius:999px;padding:3px 10px;font:inherit;font-size:11px;font-weight:600;cursor:pointer}
+.chip-btn:hover{background:var(--accent-tint-strong)}
+@media(max-width:380px){.cal-day{width:30px;height:30px;font-size:12px}.cal-cell{min-height:48px}}
+/* ── v2.3.0 帳務報表 ── */
+.rpt-top{display:flex;align-items:center;justify-content:center;position:relative}
+.rpt-back{position:absolute;left:0;border:none;background:none;font-size:26px;line-height:1;color:var(--text-2);cursor:pointer;width:36px;height:36px;border-radius:50%}
+.rpt-back:hover{background:var(--surface-2)}
+.rpt-seg{display:inline-flex;background:var(--surface-2);border-radius:12px;padding:3px;gap:2px}
+.rpt-seg button{border:none;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--text-2);padding:7px 18px;border-radius:9px;cursor:pointer;transition:background .15s,color .15s,box-shadow .15s}
+.rpt-seg button.on{background:#fff;color:var(--text-1);box-shadow:0 1px 3px rgba(17,24,39,.14)}
+.rpt-tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1.5px solid var(--border);margin-top:-6px}
+.rpt-tabs button{border:none;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--text-3);padding:9px 0;cursor:pointer;position:relative}
+.rpt-tabs button.on{color:var(--blue)}
+.rpt-tabs button.on::after{content:'';position:absolute;left:22%;right:22%;bottom:-1.5px;height:3px;border-radius:3px;background:var(--blue)}
+.rpt-navrow{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:-6px}
+.rpt-nav{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.rpt-nav button{border:none;background:none;font-size:12px;color:var(--text-2);cursor:pointer;width:28px;height:28px;border-radius:50%}
+.rpt-nav button:hover{background:var(--surface-2)}
+.rpt-custom{display:flex;align-items:center;gap:6px}
+.rpt-custom input{font-size:13px;padding:5px 6px;border:1px solid var(--border);border-radius:8px;max-width:142px}
+.rpt-curr{font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:#fff;font-weight:600;color:var(--text-2)}
+.rpt-card{padding:16px;border-radius:16px;position:relative;overflow:visible}
+.rpt-empty{padding:28px 8px;text-align:center;color:var(--text-3);font-size:13px}
+.rpt-chart-toggle{position:absolute;top:10px;right:10px;border:none;background:var(--surface);color:var(--text-2);width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
+.rpt-chart-toggle:hover{background:var(--accent-tint);color:var(--blue)}
+.rpt-donut{position:relative;width:180px;height:180px;margin:6px auto 4px}
+.rpt-donut circle{transition:stroke-width .15s}
+.rpt-donut circle:hover{stroke-width:30}
+.rpt-donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;pointer-events:none}
+.rpt-big{font-size:22px;font-weight:800;color:var(--text-1);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.rpt-delta{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rpt-bars-wrap{display:flex;gap:6px;height:230px;padding:30px 4px 0 0}
+.rpt-yaxis{position:relative;font-size:10px;color:var(--text-3);min-width:32px;font-variant-numeric:tabular-nums}
+.rpt-yaxis span{position:absolute;right:2px;transform:translateY(50%);line-height:1}
+.rpt-bars{flex:1;position:relative;display:flex;align-items:flex-end;gap:6px;padding-bottom:24px;border-left:1px solid var(--border)}
+.rpt-grid{position:absolute;left:0;right:0;height:1px;background:var(--border);pointer-events:none}
+.rpt-bar{flex:1;max-width:56px;height:100%;border:none;background:none;padding:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;position:relative;cursor:pointer;font:inherit;transition:opacity .15s}
+.rpt-bar.dim{opacity:.4}
+.rpt-bar-fill{display:block;border-radius:7px 7px 2px 2px;min-height:3px;transition:height .3s ease}
+.rpt-bar-lbl{position:absolute;bottom:-21px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--text-2);white-space:nowrap;max-width:64px;overflow:hidden;text-overflow:ellipsis}
+.rpt-tip{position:absolute;transform:translateX(-50%);background:var(--text-1);color:#fff;font-size:11px;line-height:1.5;padding:7px 10px;border-radius:10px;white-space:nowrap;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.18);font-variant-numeric:tabular-nums;z-index:3}
+.rpt-legend{display:grid;grid-template-columns:1fr 1fr;gap:9px 18px}
+.rpt-leg{display:flex;align-items:center;gap:8px;font-size:13px;min-width:0}
+.rpt-leg i{width:12px;height:12px;border-radius:4px;flex-shrink:0}
+.rpt-leg span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-2)}
+.rpt-leg b{font-variant-numeric:tabular-nums}
+.rpt-detail-head{display:flex;align-items:center;padding:13px 16px;font-size:14px;font-weight:700;border-bottom:1px solid var(--border)}
+.rpt-sort{margin-left:auto;border:1px solid var(--border);background:#fff;border-radius:999px;font:inherit;font-size:11px;font-weight:600;color:var(--text-2);padding:4px 10px;cursor:pointer}
+.rpt-row{border-top:1px solid var(--border)}
+.rpt-row:first-of-type{border-top:none}
+.rpt-row-main{width:100%;display:flex;align-items:center;gap:12px;padding:12px 16px;border:none;background:none;font:inherit;text-align:left;cursor:pointer}
+.rpt-row-main:disabled{cursor:default;opacity:.6}
+.rpt-row-main:not(:disabled):hover{background:var(--surface)}
+.rpt-ico{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.rpt-row-name{flex:1;font-size:14px;font-weight:600;min-width:0}
+.rpt-row-name em{font-style:normal;font-size:10px;color:var(--text-3);margin-left:6px;font-weight:500}
+.rpt-row-amt{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.rpt-row-amt b{font-size:15px;font-variant-numeric:tabular-nums}
+.rpt-txns{background:var(--surface);padding:4px 0}
+.rpt-txn{display:flex;align-items:center;gap:8px;padding:7px 16px 7px 66px;font-size:12px}
+.rpt-txn-date{color:var(--text-3);font-variant-numeric:tabular-nums;flex-shrink:0}
+.rpt-txn-desc{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rpt-txn-amt{font-weight:600;font-variant-numeric:tabular-nums;text-align:right;display:flex;flex-direction:column}
+.rpt-txn-amt small{font-size:10px;color:var(--text-3);font-weight:500}
+.rpt-txn .btn{font-size:11px;padding:3px 7px}
+.rpt-sub-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin-bottom:12px}
+.rpt-key{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-3);font-weight:500}
+.rpt-key i{width:9px;height:9px;border-radius:3px;margin-left:6px}
+.rpt-pairs{display:flex;align-items:stretch;gap:6px;height:150px}
+.rpt-pairs.dense{gap:1px}
+.rpt-pair{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
+.rpt-pair-bars{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:2px;border-bottom:1px solid var(--border)}
+.rpt-pair-bars span{width:42%;max-width:16px;border-radius:4px 4px 1px 1px;min-height:0}
+.rpt-pairs.dense .rpt-pair-bars span{width:45%;border-radius:2px 2px 0 0}
+.rpt-pair-lbl{font-size:10px;color:var(--text-3);height:16px;line-height:16px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rpt-bal-split{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);padding-top:12px;text-align:center}
+.rpt-bal-split div{display:flex;flex-direction:column;gap:3px}
+.rpt-bal-split span{font-size:11px;color:var(--text-3)}
+.rpt-bal-split b{font-size:15px;font-variant-numeric:tabular-nums}
+@media(max-width:420px){.rpt-seg button{padding:7px 14px}.rpt-txn{padding-left:16px}.rpt-custom input{max-width:128px}}
+/* ── v2.3.0 記帳管理方格：3 欄、分三組，一屏看完 11 個區塊 ── */
+.tm-wrap{display:flex;flex-direction:column;gap:14px}
+.tm-sec-title{font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.06em;margin:0 0 7px 2px}
+.tm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tm-tile{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 6px 10px;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font:inherit;text-align:center;transition:transform .12s ease,box-shadow .15s ease,border-color .15s ease;-webkit-tap-highlight-color:transparent}
+.tm-tile:hover{border-color:var(--accent-tint-strong);box-shadow:0 3px 10px rgba(17,24,39,.07)}
+.tm-tile:active{transform:scale(.96)}
+.tm-ico{font-size:24px;line-height:1.1}
+.tm-label{font-size:12.5px;font-weight:600;color:var(--text-1);line-height:1.25}
+.tm-sum{font-size:10.5px;color:var(--blue);font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+.tm-sum.muted{color:var(--text-3);font-weight:500}
+@media(min-width:769px){.tm-grid{grid-template-columns:repeat(4,1fr)}}
+@keyframes flashTarget{0%,100%{box-shadow:0 0 0 0 transparent;background:transparent}20%,60%{box-shadow:0 0 0 3px var(--accent-tint-strong);background:var(--accent-tint)}}
+.flash-target{animation:flashTarget 2s ease;border-radius:8px}
+.bottom-sheet .nav-item.active{background:var(--accent-tint);color:var(--blue)}
+.bottom-sheet .nav-item.active svg{opacity:1}
+.txn-acts{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.icon-act{width:30px;height:28px;border:none;background:none;border-radius:8px;color:var(--text-3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,color .15s}
+.icon-act:hover{background:var(--surface-2);color:var(--text-1)}
+.icon-act.danger:hover{background:var(--red-bg,#FEF2F2);color:var(--red)}
 </style>
 </head>
 <body>
@@ -418,6 +540,10 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
     <a class="nav-item" href="#" data-view="calendar">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
       收支紀錄
+    </a>
+    <a class="nav-item" href="#" data-view="report">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/></svg>
+      帳務報表
     </a>
     <a class="nav-item" href="#" data-view="trend">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
@@ -537,6 +663,11 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 <div class="bottom-sheet-backdrop" id="moreSheetBackdrop"></div>
 <div class="bottom-sheet" id="moreSheet">
   <div class="bottom-sheet-handle"></div>
+  <div class="nav-section">帳務</div>
+  <a class="nav-item" href="#" data-view="report">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/></svg>
+    帳務報表
+  </a>
   <div class="nav-section">管理</div>
   <a class="nav-item" href="#" data-view="settings">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
@@ -2227,10 +2358,14 @@ async function loadCurrencyPrefs(codes) {
   }
   return prefs;
 }
-// 「自動」時一律顯示——會出現在帳戶選單裡的幣別，本來就是有帳戶在用的幣別。
-function isCurrencyInPicker(prefs, c) {
+// 「自動」的意思依彈窗而不同（v2.3.0）：收入、應收款收款（context='income'）
+// 只顯示台幣，外幣帳戶要臨時勾選才出現——這是 v2.2.0 之前收入彈窗原本的預設，
+// 使用者要求改回來；支出（context='expense'）維持全部顯示。手動選「一律顯示」
+// 「隱藏」時，兩種彈窗一視同仁。
+function isCurrencyInPicker(prefs, c, context = 'expense') {
   const v = prefs?.[c]?.picker;
-  return v == null ? true : v === true;
+  if (v == null) return context === 'income' ? c === 'TWD' : true;
+  return v === true;
 }
 // TWD 是基準幣，首頁匯率列不顯示「台幣對台幣」。
 function isCurrencyOnHomeFx(prefs, c) {
@@ -2242,11 +2377,11 @@ function isCurrencyOnHomeFx(prefs, c) {
 // 依「幣別管理」的設定過濾掉被隱藏的幣別；目前已選中的帳戶永遠保留（編輯
 // 舊紀錄時不能讓它憑空消失）；showHidden 為 true 時（彈窗裡臨時勾選「顯示
 // 已隱藏幣別的帳戶」）全部列出。回傳 { visible, hiddenCount }。
-function filterAccountsByCurrencyPrefs(accounts, prefs, selectedId, showHidden = false) {
+function filterAccountsByCurrencyPrefs(accounts, prefs, selectedId, showHidden = false, context = 'expense') {
   const visible = [];
   let hiddenCount = 0;
   for (const a of accounts) {
-    if (showHidden || a.id === selectedId || isCurrencyInPicker(prefs, a.currency || 'TWD')) visible.push(a);
+    if (showHidden || a.id === selectedId || isCurrencyInPicker(prefs, a.currency || 'TWD', context)) visible.push(a);
     else hiddenCount++;
   }
   return { visible, hiddenCount };
@@ -2433,42 +2568,23 @@ const THEME_CSS_VAR_NAMES = { navy:'--navy', navyMid:'--navy-mid', navyLight:'--
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.2.0';
-const CHANGELOG_LAST_UPDATED = '2026-10-03';
+const APP_VERSION = 'v2.3.0';
+const CHANGELOG_LAST_UPDATED = '2026-10-04';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
+// v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
+// 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '「是否影響帳戶餘額」統一成單一開關：日期在未來的收支，會自動等到那天才動帳戶',
-  '「確認本期」統一：定期支出／定期定額／定期轉帳／分期付款共用同一個確認視窗，刪掉確認產生的紀錄後該期可以重新確認',
-  '新增「幣別管理」：每個幣別各自設定顏色、是否出現在記帳的帳戶選單、是否顯示在首頁匯率列；新增歐元、人民幣',
-  '設定頁分成「外觀與個人化／安全／資料與紀錄／關於」四組，並新增「🩺 資料健檢」主動提醒 7 種可能需要確認的資料',
-  '收支紀錄月曆改成依每日淨收支上色（熱力圖），提醒事項改成右上角小藍點',
-  '定期轉帳／換匯改成雙向試算：填轉出或轉入任一邊，另一邊自動換算',
-  '「資金池」改名為「存錢計畫」；定期定額的截止日改成勾選後才出現',
-  '轉帳頁移除應收款入帳入口（統一由應收款清單、收入記帳、首頁結清處理）',
-  '資產總覽帳戶列改用幣別「合併儲存格」＋整列底色，幣別顏色可在設定頁自訂',
-  '設定頁新增「開啟時預設頁面」與「投資持倉」頁面關閉開關',
-  '收支紀錄回溯登打可自由選擇是否影響帳戶餘額（依日期新舊給預設值）',
-  '應收款新增獨立「＋ 收款」入口，支援回溯登打與連動帳戶',
-  '「設定」頁新增「歷史紀錄」查詢畫面（帳戶餘額調整紀錄）',
-  '定期支出新增「現金」付款方式',
-  '金額輸入欄位全面支援手機數字鍵盤',
-  '側邊欄「設定」整併：類別設定併入設定頁，並可收合',
-  '「近期到期／即將繳款」提醒卡片補上收合功能＋緊急程度摘要',
-  '資產深化：其他資產（保單／不動產）、股票成本與未實現損益、持股佔比、歷年股利、今天還能花',
-  '實體黃金：即時金價＋完整新增／編輯／刪除',
-  '應收款流水帳＋「不再追討／呆帳」沖銷',
-  '5 種配色主題深化',
-  '收支紀錄整合頁＋消費分析甜甜圈圖（分類佔比清單）',
-];
-const CHANGELOG_PLANNED = [
-  '記帳管理頁面改用方格選單、快速設定精靈步驟改用進度列（解決手機版面超出畫面）',
-  '整體導覽架構改為底部導覽列＋下滑式選單',
-  '投資持倉甜甜圈圖新增市場別篩選＋產業別／投資屬性分類',
-  '定期定額排程依券商類型（台股／複委託）篩選對應交割戶',
-  '「定期轉帳／換匯」帳戶選單允許選擇外幣帳戶',
-  '新增持倉時自動判斷資產類型（ETF／個股）',
-  '「歷史紀錄」視使用者需要擴充收納更多事件類型',
+  '新增「帳務報表」：支出／收入／結餘三種檢視，可看月、近 6 個月、年或自訂期間，甜甜圈圖與長條圖切換，每個分類都會標出跟上一期相比多了或少了多少；點分類可以展開看每一筆',
+  '收支紀錄月曆改成圓潤的圓形日期樣式，格子變扁；金額與排程小藍點更好辨識',
+  '收支紀錄只列出目前月曆所在月份的紀錄；點某一天就只看那一天，再點一次回到整個月',
+  '記帳管理改成 3 欄、分「支出／收入與轉帳／規劃」三組，11 個項目一頁看完',
+  '收入與應收款收款的帳戶選單，預設只列出台幣帳戶（外幣帳戶可臨時勾選顯示）',
+  '類別除了停用，也可以直接刪除；已有紀錄的類別會先請你選擇要改歸到哪個類別',
+  '「開啟時預設頁面」的第二個選項改成「收支紀錄」',
+  '資料健檢按「前往」會直接開到有問題的那一筆',
+  '刪除或編輯收入時，應收款的已收金額、定期定額的持股股數會一起正確還原',
+  '手動轉帳的移轉記錄也可以刪除，兩邊帳戶餘額會自動還原',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -2706,8 +2822,10 @@ async function init() {
   } else {
     // 開啟時預設頁面（§卅五，使用者要求）：「資產總覽」或「記帳」（記帳管理，
     // data-view='txnmanage'），設定鍵 home_view，預設 'assets' 維持原本行為。
+    // v2.3.0（使用者要求）：第二個選項從「記帳管理」改成「收支紀錄」
+    // （calendar）。舊版存過 'txnmanage' 的使用者一律視為新的「收支紀錄」。
     const homeView = await getSetting(db, 'home_view', 'assets').catch(() => 'assets');
-    await navigate(homeView === 'txnmanage' ? 'txnmanage' : 'assets');
+    await navigate((homeView === 'calendar' || homeView === 'txnmanage') ? 'calendar' : 'assets');
   }
   // 2026-09-24：頁面（重新）載入時視為使用者主動開啟，強制抓最新匯率，
   // 滿足「使用者想要更新的時候…重新整理頁面就可以更新」的需求。
@@ -2805,11 +2923,12 @@ async function navigate(view) {
   // 是 topbar 顯示文字，側邊欄／底部導覽列上的連結文字（資產總覽、收支紀錄）
   // 完全不受影響（navigate() 這裡只處理 topbarTitle 這一個 span，跟 nav-item
   // 的連結文字是兩份獨立的字串，見側邊欄與底部導覽列的 HTML）。
-  const titles = { assets:'虎の子', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'記帳管理', creditcard:'信用卡', recurring:'定期支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢計畫', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
+  const titles = { assets:'虎の子', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'記帳管理', report:'帳務報表', creditcard:'信用卡', recurring:'定期支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢計畫', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
   document.getElementById('topbarTitle').textContent = titles[view] ?? view;
   document.getElementById('refreshBtn').style.display = view === 'assets' ? '' : 'none';
   if (view === 'assets')            await renderAssets();
   else if (view === 'calendar')     await renderCalendar();
+  else if (view === 'report')       await renderReport();
   else if (view === 'trend')        await renderTrend();
   else if (view === 'settings')     await renderSettings();
   else if (view === 'appsettings')  await renderSystemSettings();
@@ -3812,7 +3931,7 @@ async function renderSystemSettings() {
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
               <div>
                 <div style="font-size:11px;color:var(--text-3);margin-bottom:3px">收支記帳的帳戶選單</div>
-                ${triSelect('curr-picker', c, prefs[c].picker, '自動（顯示）', '一律顯示', '隱藏')}
+                ${triSelect('curr-picker', c, prefs[c].picker, c==='TWD' ? '自動（顯示）' : '自動（支出顯示、收入隱藏）', '一律顯示', '隱藏')}
               </div>
               <div>
                 <div style="font-size:11px;color:var(--text-3);margin-bottom:3px">首頁匯率列</div>
@@ -3858,8 +3977,9 @@ async function renderSystemSettings() {
 
   // ── §卅五：開啟時預設頁面 ───────────────────────────────────────────────
   {
-    const homeView = await getSetting(db, 'home_view', 'assets').catch(() => 'assets');
-    const homeOptions = [{ v:'assets', label:'資產總覽' }, { v:'txnmanage', label:'記帳' }];
+    const rawHomeView = await getSetting(db, 'home_view', 'assets').catch(() => 'assets');
+    const homeView = rawHomeView === 'txnmanage' ? 'calendar' : rawHomeView;
+    const homeOptions = [{ v:'assets', label:'資產總覽' }, { v:'calendar', label:'收支紀錄' }];
     const body = addCollapsible({ key:'homeView', icon:'🏠', title:'開啟時預設頁面',
       subtitle: homeOptions.find(o => o.v === homeView)?.label ?? '資產總覽' });
     body.innerHTML = `
@@ -3906,7 +4026,7 @@ async function renderSystemSettings() {
   // 卡片畫進傳入的子容器，不清空整頁）。展開狀態沿用 'catSection' 這個 key。
   {
     const body = addCollapsible({ key:'catSection', icon:'🏷️', title:'類別設定',
-      subtitle:'新增／停用／恢復收入與支出類別', bodyPadding:'4px 0 0' });
+      subtitle:'新增／編輯／停用／刪除收入與支出類別', bodyPadding:'4px 0 0' });
     await renderCategories(body);
   }
 
@@ -3968,11 +4088,7 @@ async function renderSystemSettings() {
           <button class="btn btn-ghost btn-sm" style="font-size:11px;flex-shrink:0" data-health-go="${i}">前往</button>
         </div>`).join('')}</div>
         <div style="font-size:11px;color:var(--text-3);margin-top:10px">這些只是提醒，不會自動修改任何資料；處理完回到這裡就會更新。</div>`;
-      body.querySelectorAll('[data-health-go]').forEach(btn => btn.addEventListener('click', async () => {
-        const f = findings[+btn.dataset.healthGo];
-        if (f.link?.tab) { _txnManageActiveTab = f.link.tab; await navigate('txnmanage'); }
-        else await navigate(f.link?.view || 'settings');
-      }));
+      body.querySelectorAll('[data-health-go]').forEach(btn => btn.addEventListener('click', () => goToHealthFinding(findings[+btn.dataset.healthGo])));
     }
   }
 
@@ -4007,21 +4123,13 @@ async function renderSystemSettings() {
     const badges = `
       <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--blue);color:#fff">${APP_VERSION}</span>
       <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--accent-tint-strong);color:var(--blue)">${CHANGELOG_LAST_UPDATED}</span>`;
-    const body = addCollapsible({ key:'changelogSection', icon:'🗺️', title:'更新日誌／開發藍圖', badgeHtml: badges,
+    const body = addCollapsible({ key:'changelogSection', icon:'🗺️', title:'更新日誌', badgeHtml: badges,
       subtitle: APP_NAME_SUBTITLE });
-    body.innerHTML = `<div style="display:flex;flex-direction:column;gap:16px">
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:8px">近期已推出（${APP_VERSION}）</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          ${CHANGELOG_DONE.map(t=>`<div style="display:flex;gap:8px;font-size:12px;color:var(--text-2)"><span style="color:var(--green);flex-shrink:0">✓</span><span>${t}</span></div>`).join('')}
-        </div>
-      </div>
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--text-3);margin-bottom:8px">接下來</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          ${CHANGELOG_PLANNED.map(t=>`<div style="display:flex;gap:8px;font-size:12px;color:var(--text-3)"><span style="flex-shrink:0">○</span><span>${t}</span></div>`).join('')}
-        </div>
-      </div></div>`;
+    body.innerHTML = `
+      <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:8px">${APP_VERSION} 更新內容</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        ${CHANGELOG_DONE.map(t=>`<div style="display:flex;gap:8px;font-size:12px;line-height:1.55;color:var(--text-2)"><span style="color:var(--green);flex-shrink:0">✓</span><span>${t}</span></div>`).join('')}
+      </div>`;
   }
 }
 
@@ -4041,6 +4149,46 @@ async function renderSystemSettings() {
 // 裡「每一項各自獨立展開」的狀態用 `${前綴}:${項目id}` 當 id（例如
 // `bank:${bank.id}`），同一個登記表、同一組函式就能同時處理兩種情境。
 const _expandedRegistry = new Set();
+// v2.3.0（使用者回報「前往」跳得不夠準）：原本只會切到大概的頁面，要自己再找
+// 是哪一筆。現在依 runDataHealthChecks 帶回來的 link.action／id 直接打開那一筆：
+//   account    → 帳戶管理頁＋直接打開該帳戶的編輯視窗（備註／首頁隱藏／計入總資產都在這裡）
+//   receivable → 帳戶管理頁，展開應收款區塊並捲到那一筆、閃一下標示
+//   confirm    → 記帳管理對應子頁＋直接打開逾期那一期的「確認本期」
+//   creditcard → 記帳管理信用卡頁＋直接打開那張卡的編輯視窗
+//   price      → 投資持倉頁＋直接打開那檔股票的手動輸入價格視窗
+async function goToHealthFinding(f) {
+  const link = f?.link || {};
+  if (link.tab) _txnManageActiveTab = link.tab;
+  if (link.action === 'receivable') toggleExpanded('recvSection', true);
+  await navigate(link.view || 'settings');
+  try {
+    if (link.action === 'account') {
+      const acc = (state.accounts || []).find(a => a.id === link.id);
+      if (acc) await openAccountModal(acc, state.banks || []);
+    } else if (link.action === 'receivable') {
+      const row = document.querySelector(`[data-recv-id="${link.id}"]`);
+      if (row) { row.scrollIntoView({ behavior: 'smooth', block: 'center' }); flashTarget(row); }
+    } else if (link.action === 'confirm') {
+      const store = { recurring: 'recurring_expenses', dcaschedule: 'dca_schedules', rectransfer: 'recurring_transfers' }[link.tab];
+      const item = store ? await getOne(db, store, link.id) : null;
+      if (item && link.tab === 'recurring') await openRecurringExpenseConfirm(item, link.occ);
+      else if (item && link.tab === 'dcaschedule') await openDcaConfirm(item, link.occ);
+      else if (item && link.tab === 'rectransfer') await openRecTransferConfirmModal(item, link.occ);
+    } else if (link.action === 'creditcard') {
+      const card = await getOne(db, 'credit_cards', link.id);
+      if (card) await openCcModal(card);
+    } else if (link.action === 'price') {
+      const h = (state.holdings || []).find(x => x.ticker === link.ticker);
+      const brk = h ? (state.brokerages || []).find(b => b.id === h.brokerage_id) : null;
+      if (h) openPriceModal(h.ticker, h.market || brk?.market || 'TW', h.name || h.ticker);
+    }
+  } catch (e) { console.warn('[health go]', e); }
+}
+function flashTarget(node) {
+  node.classList.remove('flash-target'); void node.offsetWidth; node.classList.add('flash-target');
+  setTimeout(() => node.classList.remove('flash-target'), 2200);
+}
+
 function isExpanded(id) { return _expandedRegistry.has(id); }
 // force 省略時單純切換；傳 true/false 可以直接指定要展開還是收合。回傳
 // 「切換之後」的新狀態，方便呼叫端同一行拿來更新 classList。
@@ -4325,6 +4473,7 @@ async function renderSettings() {
       const pending = r.total_amount - r.received_amount;
       const payments = paymentsByRecv[r.id] ?? [];
       const wrap = el('div');
+      wrap.dataset.recvId = r.id; // v2.3.0：資料健檢「前往」用來定位這一列
 
       // 已結清／不再追討 是兩種不同的收尾——前者真的收到錢，後者是主動放棄
       // 追討（見 §十五之六）。徽章分開顯示，別讓使用者以為錢真的進來了。
@@ -5581,6 +5730,10 @@ async function renderTransfer() {
       hist.innerHTML=`<h3 style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text-2)">移轉記錄（最近 20 筆）</h3>`;
       logs.sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,20).forEach(log => {
         const r=el('div');
+        // v2.3.0：手動轉帳產生的移轉記錄也可以刪除（兩邊帳戶都在、不是定期轉帳
+        // 產生的）。定存新增／到期那種只有一邊是真實帳戶的記錄維持不能刪——那是
+        // 定存本身的稽核軌跡，要撤銷應該從定存那邊處理。
+        const isManualLog = !log.rec_transfer_id && !!log.from_account_id && !!log.to_account_id;
         r.style.cssText='padding:10px 0;border-bottom:1px solid var(--border);font-size:12px';
         r.innerHTML=`
           <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -5598,19 +5751,22 @@ async function renderTransfer() {
             <span>${fmtDateTime(log.created_at)}</span>
             ${log.fx_rate?`<span>匯率 ${log.fx_rate}</span>`:''}
             ${log.fee?`<span>手續費 ${log.fee}</span>`:''}
-            ${log.rec_transfer_id?`<button class="btn btn-ghost btn-sm" style="font-size:11px;padding:2px 8px;margin-left:auto;color:var(--red)" data-del-rt-log>刪除</button>`:''}
+            ${(log.rec_transfer_id || isManualLog)?`<button class="btn btn-ghost btn-sm" style="font-size:11px;padding:2px 8px;margin-left:auto;color:var(--red)" data-del-rt-log>刪除</button>`:''}
           </div>`;
         // §四十三之三（2026-10-03）：「定期轉帳／換匯」確認本期產生的移轉記錄
         // 可以刪除——刪除時把兩邊帳戶餘額還原（轉出帳戶加回、轉入帳戶扣回），
         // 並把那個排程「這一期已確認」的標記還原，讓那一期可以重新確認。手動
         // 轉帳產生的記錄維持原本不提供刪除（不在這次範圍內）。
         r.querySelector('[data-del-rt-log]')?.addEventListener('click', () => {
-          openDeleteModal(`確定要刪除這筆「${log.note||'定期轉帳'}」移轉記錄嗎？兩邊帳戶的餘額會還原，這一期會恢復成可以再確認。`, async () => {
+          const msg = log.rec_transfer_id
+            ? `確定要刪除這筆「${log.note||'定期轉帳'}」移轉記錄嗎？兩邊帳戶的餘額會還原，這一期會恢復成可以再確認。`
+            : `確定要刪除這筆「${log.from_account_name} → ${log.to_account_name}」移轉記錄嗎？兩邊帳戶的餘額會還原${log.fee?'（含手續費）':''}。`;
+          openDeleteModal(msg, async () => {
             const fromAcc = await getOne(db,'accounts',log.from_account_id);
             const toAcc   = await getOne(db,'accounts',log.to_account_id);
-            if (fromAcc) await putOne(db,'accounts',{...fromAcc, balance:+(fromAcc.balance + (log.from_amount||0)).toFixed(6), updated_at:new Date().toISOString()});
+            if (fromAcc) await putOne(db,'accounts',{...fromAcc, balance:+(fromAcc.balance + (log.from_amount||0) + (log.fee||0)).toFixed(6), updated_at:new Date().toISOString()});
             if (toAcc)   await putOne(db,'accounts',{...toAcc,   balance:+(toAcc.balance   - (log.to_amount||0)).toFixed(6),   updated_at:new Date().toISOString()});
-            const sched = await getOne(db,'recurring_transfers',log.rec_transfer_id);
+            const sched = log.rec_transfer_id ? await getOne(db,'recurring_transfers',log.rec_transfer_id) : null;
             if (sched && sched.last_confirmed_date === log.rec_occ_date) {
               await putOne(db,'recurring_transfers',{...sched, last_confirmed_date: log.rec_prev_confirmed_date ?? null});
             }
@@ -6395,6 +6551,66 @@ async function refreshCategoriesView() {
   else await renderCategories();
 }
 
+// v2.3.0（使用者要求）：類別除了「停用」也要能真的「刪除」。
+// - 沒有任何紀錄用到這個類別：確認後直接刪除（連同它的預算設定）。
+// - 已經有紀錄用到：刪除前讓使用者選「這些紀錄改歸到哪個類別」（同類型、目前
+//   啟用中的類別），或「不分類」——紀錄本身一筆都不會刪，只是改掉它們的類別，
+//   所以帳戶餘額、報表總額都不受影響。不想動到舊紀錄的話，「停用」仍然在。
+// - 應收款入帳／定期定額成交／呆帳沖銷是 App 流程本身會用到的系統類別（收入
+//   彈窗靠這兩個類別判斷要不要顯示應收款／定期定額欄位），只能停用、不能刪除。
+const SYSTEM_CATEGORY_IDS = ['cat_receivable', 'cat_dca', 'cat_bad_debt_writeoff'];
+async function openCategoryHardDelete(cat, allCats) {
+  const [inc, exp, budgets] = await Promise.all([
+    getAll(db,'income_txns').catch(()=>[]), getAll(db,'expense_txns').catch(()=>[]), getAll(db,'budgets').catch(()=>[]),
+  ]);
+  const used = [...inc, ...exp].filter(t => t.category === cat.id);
+  const catBudgets = budgets.filter(b => b.category_id === cat.id);
+  const doDelete = async (reassignTo) => {
+    for (const t of used) {
+      const store = inc.includes(t) ? 'income_txns' : 'expense_txns';
+      await putOne(db, store, { ...t, category: reassignTo });
+    }
+    const stores = ['txn_categories', ...(catBudgets.length ? ['budgets'] : [])];
+    const tr = db.transaction(stores, 'readwrite');
+    tr.objectStore('txn_categories').delete(cat.id);
+    catBudgets.forEach(b => tr.objectStore('budgets').delete(b.id));
+    await new Promise((res, rej) => { tr.oncomplete = res; tr.onerror = () => rej(tr.error); });
+    showToast(used.length ? `已刪除「${cat.label}」，${used.length} 筆紀錄已改歸類` : `已刪除「${cat.label}」`);
+    await refreshCategoriesView();
+  };
+  if (!used.length) {
+    openDeleteModal(`確定要刪除類別「${cat.label}」嗎？目前沒有任何紀錄用到它${catBudgets.length ? '，它的預算設定會一併刪除' : ''}。刪除後無法復原。`, () => doDelete(null));
+    return;
+  }
+  const targets = allCats.filter(c => c.type === cat.type && c.id !== cat.id && c.active !== false && !SYSTEM_CATEGORY_IDS.includes(c.id));
+  const ov = el('div','modal-overlay open');
+  ov.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="catDelTitle">
+      <h2 id="catDelTitle">刪除類別「${cat.label}」</h2>
+      <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:12px">有 <b>${used.length}</b> 筆紀錄用到這個類別。刪除前請選擇它們要改歸到哪裡——紀錄本身不會被刪除，金額與帳戶餘額都不受影響。</p>
+      <label style="font-size:12px;color:var(--text-3);display:block;margin-bottom:4px">這 ${used.length} 筆紀錄改歸到</label>
+      <select data-cat-target style="width:100%;margin-bottom:6px;padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff">
+        ${targets.map(c => `<option value="${c.id}">${c.icon ?? ''} ${c.label}</option>`).join('')}
+        <option value="">不分類</option>
+      </select>
+      ${catBudgets.length ? '<p style="font-size:11px;color:var(--text-3);margin:4px 0 0">這個類別的預算設定會一併刪除。</p>' : ''}
+      <p style="font-size:11px;color:var(--text-3);margin:4px 0 0">不想改動舊紀錄的話，可以按「取消」改用「停用」。</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" data-cancel>取消</button>
+        <button class="btn btn-danger" data-ok>改歸類並刪除</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.addEventListener('click', e => { if (e.target === ov) close(); });
+  ov.querySelector('[data-cancel]').addEventListener('click', close);
+  ov.querySelector('[data-ok]').addEventListener('click', async () => {
+    const to = ov.querySelector('[data-cat-target]').value || null;
+    close();
+    await doDelete(to);
+  });
+}
+
 async function renderCategories(targetContainer = null) {
   const cats = await getAll(db,'txn_categories').catch(()=>[]);
   const content = targetContainer || document.getElementById('content');
@@ -6432,8 +6648,11 @@ async function renderCategories(targetContainer = null) {
           <div class="settings-row-actions">
             ${isActive ? `
               <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-cat="${cat.id}">編輯</button>
-              <button class="btn btn-ghost btn-sm" style="font-size:11px;color:var(--red)" data-del-cat="${cat.id}">停用</button>
+              <button class="btn btn-ghost btn-sm" style="font-size:11px;color:var(--amber,#B45309)" data-del-cat="${cat.id}">停用</button>
             ` : `<button class="btn btn-ghost btn-sm" style="font-size:11px" data-restore-cat="${cat.id}">恢復</button>`}
+            ${SYSTEM_CATEGORY_IDS.includes(cat.id)
+              ? `<span style="font-size:10px;color:var(--text-3);padding:0 4px" title="App 的應收款結清／定期定額／呆帳沖銷流程會用到這個類別，所以只能停用、不能刪除">系統類別</span>`
+              : `<button class="btn btn-ghost btn-sm" style="font-size:11px;color:var(--red)" data-hard-del-cat="${cat.id}">刪除</button>`}
           </div>`;
         row.querySelector('[data-edit-cat]')?.addEventListener('click', () => openCategoryModal(cat));
         row.querySelector('[data-del-cat]')?.addEventListener('click', () => {
@@ -6442,6 +6661,7 @@ async function renderCategories(targetContainer = null) {
             showToast('類別已停用'); await refreshCategoriesView();
           });
         });
+        row.querySelector('[data-hard-del-cat]')?.addEventListener('click', () => openCategoryHardDelete(cat, cats));
         row.querySelector('[data-restore-cat]')?.addEventListener('click', async () => {
           await putOne(db,'txn_categories',{...cat, active:true});
           showToast('類別已恢復'); await refreshCategoriesView();
@@ -6804,12 +7024,15 @@ async function renderBudgetPlan() {
 // 帳戶餘額（呼叫端各自負責自己那份帳戶異動邏輯，這裡只負責流水帳本身）。
 // 沒有影響任何帳戶的既有三個路徑之一（recvModalSave 手動補登）維持傳
 // null／不傳，deleteReceivablePayment() 之後才知道要不要對稱地把帳戶調回來。
-async function addReceivablePayment(receivableId, date, amount, note = '', accountId = null) {
+async function addReceivablePayment(receivableId, date, amount, note = '', accountId = null, incomeTxnId = null) {
   if (!receivableId || !amount) return;
   await putOne(db, 'receivable_payments', {
     id: crypto.randomUUID(),
     receivable_id: receivableId,
     date, amount, note, account_id: accountId,
+    // v2.3.0：由收入紀錄結清產生的流水帳，記下是哪一筆收入——之後刪除或編輯那
+    // 筆收入時，才能精準找回這一筆流水帳一起撤銷（見 reverseIncomeSideEffects）。
+    income_txn_id: incomeTxnId,
     created_at: new Date().toISOString(),
   });
 }
@@ -7171,7 +7394,7 @@ async function openRecvPaymentModal(r, payment = null) {
   const recvCurrPrefs = await loadCurrencyPrefs(ALL_CURRENCY_CODES);
   function populateRecvPaymentAccountOptions() {
     const menuBase = (state.accounts??[]).filter(a => a.show_in_menu!==false || a.id===selectedAccId);
-    const { visible: menuAccs, hiddenCount } = filterAccountsByCurrencyPrefs(menuBase, recvCurrPrefs, selectedAccId, foreignToggle.checked);
+    const { visible: menuAccs, hiddenCount } = filterAccountsByCurrencyPrefs(menuBase, recvCurrPrefs, selectedAccId, foreignToggle.checked, 'income');
     document.getElementById('recvPaymentAccShowForeignWrap').style.display = (hiddenCount > 0 || foreignToggle.checked) ? 'inline-flex' : 'none';
     accSel.innerHTML = menuAccs.map(a => {
       const b = bankMap[a.bank_id]; return `<option value="${a.id}">${b?b.name+' · ':(a.account_type==='cash'?'💵 ':'')}${a.name} (${a.currency})</option>`;
@@ -7205,7 +7428,7 @@ async function openRecvPaymentModal(r, payment = null) {
     quickAddForm.style.display = 'none';
     showToast('現金帳戶已新增');
     // 台幣剛好在「幣別管理」被設成不出現在選單時，臨時展開全部，確保剛新增的帳戶看得到。
-    if (!isCurrencyInPicker(recvCurrPrefs, 'TWD')) foreignToggle.checked = true;
+    if (!isCurrencyInPicker(recvCurrPrefs, 'TWD', 'income')) foreignToggle.checked = true;
     populateRecvPaymentAccountOptions();
     accSel.value = newAcc.id;
   };
@@ -9036,6 +9259,61 @@ function wireFxPair(fromEl, toEl, rateEl, onSideEdited) {
   };
 }
 
+// v2.3.0（v2.2.0 交付紀錄「已知限制」第一項）：刪除或編輯一筆收入紀錄時，
+// 除了帳戶餘額（reverseTxnBalanceEffect 負責），這筆收入當初順帶造成的兩個
+// 效果也要一起撤銷，否則資料會默默算錯：
+//   ① 結清應收款 → 已收金額要退回、對應的那筆收款流水帳要刪掉（帳戶餘額不在
+//      這裡動，已經由 reverseTxnBalanceEffect 處理，避免重複扣回）。
+//   ② 定期定額 → 當初加進持股的股數要扣回去。
+// 編輯時 saveIncomeRecord 會先呼叫這裡把舊效果撤銷，再用新值重新套用一次——
+// 跟 §卅九 帳戶餘額「先沖銷再套用」是同一套做法，所以改金額、改股數都不會再
+// 重複累加。
+async function reverseIncomeSideEffects(t) {
+  if (!t) return;
+  if (t.receivable_id) {
+    const payments = (await getAll(db, 'receivable_payments').catch(() => [])).filter(p => p.receivable_id === t.receivable_id);
+    // 新資料：用 income_txn_id 精準對應；v2.3.0 之前的舊資料沒有這個欄位，
+    // 退而求其次找「同一天、同金額」的那一筆。
+    let pay = payments.find(p => p.income_txn_id === t.id)
+      ?? payments.find(p => !p.income_txn_id && p.date === t.date && Math.abs((p.amount || 0) - (t.amount || 0)) < 1e-6);
+    const delta = pay ? pay.amount : (t.amount || 0);
+    if (pay) {
+      const tr = db.transaction(['receivable_payments'], 'readwrite');
+      tr.objectStore('receivable_payments').delete(pay.id);
+      await new Promise((res, rej) => { tr.oncomplete = res; tr.onerror = () => rej(tr.error); });
+    }
+    const recv = await getOne(db, 'receivables', t.receivable_id);
+    if (recv && delta) {
+      const newReceived = Math.max(0, +((recv.received_amount || 0) - delta).toFixed(6));
+      await putOne(db, 'receivables', {
+        ...recv, received_amount: newReceived,
+        is_settled: !!recv.write_off || (newReceived >= recv.total_amount && recv.total_amount > 0),
+      });
+    }
+  }
+  if (t.dca_holding_id && t.dca_shares) {
+    const h = await getOne(db, 'holdings', t.dca_holding_id);
+    if (h) await putOne(db, 'holdings', { ...h, shares: Math.max(0, +((h.shares || 0) - t.dca_shares).toFixed(6)) });
+  }
+}
+
+// v2.3.0：刪除一筆收入／支出紀錄的唯一入口——收支紀錄頁的清單、帳務報表的
+// 明細都走這裡，確保四件事一次做完：帳戶／信用卡餘額、確認本期標記、應收款與
+// 定期定額股數（收入才有）、資金池自動提撥同步。
+async function deleteTxnRecord(t, isIncome) {
+  await reverseTxnBalanceEffect(t, isIncome);
+  await reversePeriodConfirmIfNeeded(t, isIncome);
+  if (isIncome) await reverseIncomeSideEffects(t);
+  const store = isIncome ? 'income_txns' : 'expense_txns';
+  const tr = db.transaction([store], 'readwrite');
+  tr.objectStore(store).delete(t.id);
+  await new Promise((res, rej) => { tr.oncomplete = res; tr.onerror = () => rej(tr.error); });
+  if (isIncome) {
+    await syncAutoBucketContributions().catch(e => console.warn('[sync auto buckets]', e));
+    await syncEmergencyFundShortfall().catch(e => console.warn('[sync emergency fund]', e));
+  }
+}
+
 // §四十三之三（2026-10-03）：刪除一筆「確認本期」產生的收支紀錄時，把對應排程
 // 「這一期已確認」的標記還原——原本只有分期付款有這個機制
 // （reverseInstallmentConfirmIfNeeded，§四十之一），現在定期支出、定期定額
@@ -10431,25 +10709,31 @@ function computeNextChargeDate(item) {
   return null;
 }
 
-async function renderCalendar() {
-  await loadData();
-  const content = document.getElementById('content');
-  content.innerHTML = '';
+// v2.3.0：收支紀錄、帳務報表都先畫在一個暫存容器裡，全部畫完才一次換上去——
+// 連點或同時觸發兩次重畫時，只有最後一次會生效，不會出現兩份重複的內容。
+let _pageRenderToken = 0;
+function beginPageRender() {
+  const token = ++_pageRenderToken;
+  const content = el('div');
+  return { content, commit: () => { if (token === _pageRenderToken) document.getElementById('content').replaceChildren(...content.childNodes); } };
+}
 
-  // ── 今天還能花（2026-09-24 新增）── 取材自使用者參考的記帳機器人截圖：
-  // 本月預算 - 本月至今已花費，除以本月剩餘天數（見 calc.js
-  // calcTodayAllowance）。兩種檢視模式（月曆／圖表）都看得到，因為這是「準
-  // 備要記一筆帳之前先看一眼」的即時參考，不屬於任何單一檢視模式。沒有設定
-  // 本月預算時 state.todayAllowance 是 null，整塊不顯示——跟本月預算卡片
-  // 「沒設定就不出現」是同一個既有原則。
+async function renderCalendar() {
+  const page = beginPageRender();
+  const content = page.content;
+  await loadData();
+
+  // ── 今天還能花（2026-09-24 新增）── 本月預算 - 本月至今已花費，除以本月剩
+  // 餘天數（見 calc.js calcTodayAllowance）。沒有設定本月預算時
+  // state.todayAllowance 是 null，整塊不顯示。
   if (state.todayAllowance) {
     const ta = state.todayAllowance;
     const allowCard = el('div','card');
-    allowCard.style.cssText = 'padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap';
+    allowCard.style.cssText = 'padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap';
     allowCard.innerHTML = `
       <div>
         <div style="font-size:11px;color:var(--text-3)">今天還能花</div>
-        <div style="font-size:24px;font-weight:700;color:${ta.perDay>=0?'var(--green)':'var(--red)'};font-variant-numeric:tabular-nums">NT$ ${fmt(ta.perDay)}</div>
+        <div style="font-size:22px;font-weight:700;color:${ta.perDay>=0?'var(--green)':'var(--red)'};font-variant-numeric:tabular-nums">NT$ ${fmt(ta.perDay)}</div>
       </div>
       <div style="text-align:right;font-size:11px;color:var(--text-3);line-height:1.7">
         本月預算 NT$ ${fmt(ta.totalBudget)}　已花 NT$ ${fmt(ta.spent)}<br>
@@ -10458,31 +10742,14 @@ async function renderCalendar() {
     content.appendChild(allowCard);
   }
 
-  // ── 檢視模式切換：月曆／圖表 ──
-  // 2026-09-22（使用者回饋）：原本「清單檢視」是整頁取代掉月曆（甜甜圈圖＋
-  // 完整收支清單一起被切換掉）。使用者要求改成「下方的收支明細清單固定顯
-  // 示，只有上方可以切換月曆／甜甜圈圖」——所以這裡的按鈕改名「🍩 圖表檢視」
-  // （只切換上方，不再切走清單），清單本身拆成獨立的 renderTxnMergedList()，
-  // 不管上方選哪個都會在最後被呼叫一次，見下方。
-  const modeBar = el('div');
-  modeBar.style.cssText = 'display:flex;gap:6px;margin-bottom:14px';
-  const calModeBtn = el('button', `btn btn-sm ${_txnViewMode==='calendar'?'btn-primary':'btn-ghost'}`);
-  calModeBtn.textContent = '📅 月曆檢視';
-  const listModeBtn = el('button', `btn btn-sm ${_txnViewMode==='list'?'btn-primary':'btn-ghost'}`);
-  listModeBtn.textContent = '🍩 圖表檢視';
-  calModeBtn.addEventListener('click', () => { if (_txnViewMode!=='calendar') { _txnViewMode='calendar'; renderCalendar(); } });
-  listModeBtn.addEventListener('click', () => { if (_txnViewMode!=='list') { _txnViewMode='list'; renderCalendar(); } });
-  modeBar.appendChild(calModeBtn); modeBar.appendChild(listModeBtn);
-  content.appendChild(modeBar);
-
-  if (_txnViewMode === 'list') {
-    await renderTxnDonutCard(content);
-  } else {
-
+  // v2.3.0：原本的「📅 月曆檢視／🍩 圖表檢視」切換已移除——圖表搬到獨立的
+  // 「帳務報表」頁（renderReport），這一頁只做「看哪天記了什麼、記一筆」。
   const now = new Date();
   if (_calendarYear == null) { _calendarYear = now.getFullYear(); _calendarMonth = now.getMonth()+1; }
-  const todayStr = now.toISOString().slice(0,10);
+  const todayStr = isoDate(now);
   const monthStr = `${_calendarYear}-${String(_calendarMonth).padStart(2,'0')}`;
+  // 選取的日期如果不在目前這個月（例如切月之後殘留），一律清掉。
+  if (_calendarSelectedDate && !_calendarSelectedDate.startsWith(monthStr)) _calendarSelectedDate = null;
 
   const cards = await getAll(db,'credit_cards').catch(()=>[]);
   const recurringTransfers = await getAll(db,'recurring_transfers').catch(()=>[]);
@@ -10493,184 +10760,102 @@ async function renderCalendar() {
     { depositItems: depositRes.items, creditCards: cards, recurringExpenses, installments, recurringIncome, recurringTransfers, dcaSchedules },
     _calendarYear, _calendarMonth
   );
-  const itemsByDate = {};
-  items.forEach(it => { (itemsByDate[it.date] ??= []).push(it); });
+  const schedByDate = {};
+  items.forEach(it => { (schedByDate[it.date] ??= []).push(it); });
 
-  // 疊加本月「實際發生」的收入／支出紀錄（見 §十五之五）——跟上面
-  // calcMonthCalendarItems 算出來的「排程／提醒」項目是兩種不同概念：排程項目是
-  // 「這天要繳／該入帳」，實際收支是「這天真的記了一筆帳」。直接複用 loadData()
-  // 已經抓好的 state.incomeTxns／state.expenseTxns，不用再多打一次資料庫。
-  const allCatsForCal = await getAll(db,'txn_categories').catch(()=>[]);
-  const calCatMap = Object.fromEntries(allCatsForCal.map(c=>[c.id,c]));
-  let actualCount = 0;
-  (state.incomeTxns||[]).filter(t=>t.date.startsWith(monthStr)).forEach(t => {
-    const cat = calCatMap[t.category];
-    (itemsByDate[t.date] ??= []).push({
-      date: t.date, type:'actual_income', id:t.id, refId:t.id,
-      label: t.description || cat?.label || '收入',
-      amountLabel: `+${t.currency&&t.currency!=='TWD'?fmtCurrency(t.amount,t.currency):'NT$ '+fmt(t.amount)}`,
-      _txn: t,
-    });
-    actualCount++;
-  });
-  (state.expenseTxns||[]).filter(t=>t.date.startsWith(monthStr)).forEach(t => {
-    const cat = calCatMap[t.category];
-    (itemsByDate[t.date] ??= []).push({
-      date: t.date, type:'actual_expense', id:t.id, refId:t.id,
-      label: t.description || cat?.label || '支出',
-      amountLabel: `-${t.currency&&t.currency!=='TWD'?fmtCurrency(t.amount,t.currency):'NT$ '+fmt(t.amount)}`,
-      _txn: t,
-    });
-    actualCount++;
-  });
-
-  const typeIcon = { deposit:'🏦', creditcard:'💳', recurring:'🔁', installment:'🧾', recurringincome:'💵', transfer:'💱', dca:'📈', actual_income:'💰', actual_expense:'💸' };
-
-  // ── Header: month nav ──
-  const header = el('div');
-  header.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px';
-  const title = el('div'); title.style.cssText='font-size:16px;font-weight:600';
-  title.textContent = `${_calendarYear} 年 ${_calendarMonth} 月`;
-  const navGroup = el('div'); navGroup.style.cssText='display:flex;gap:6px;align-items:center';
-  const prevBtn = el('button','btn btn-ghost btn-sm'); prevBtn.textContent='‹ 上月';
-  const todayBtn = el('button','btn btn-ghost btn-sm'); todayBtn.textContent='回今天';
-  const nextBtn = el('button','btn btn-ghost btn-sm'); nextBtn.textContent='下月 ›';
-  prevBtn.addEventListener('click', () => { _calendarMonth--; if(_calendarMonth<1){_calendarMonth=12;_calendarYear--;} _calendarSelectedDate=null; renderCalendar(); });
-  nextBtn.addEventListener('click', () => { _calendarMonth++; if(_calendarMonth>12){_calendarMonth=1;_calendarYear++;} _calendarSelectedDate=null; renderCalendar(); });
-  todayBtn.addEventListener('click', () => { _calendarYear=now.getFullYear(); _calendarMonth=now.getMonth()+1; _calendarSelectedDate=null; renderCalendar(); });
-  navGroup.appendChild(prevBtn); navGroup.appendChild(todayBtn); navGroup.appendChild(nextBtn);
-  header.appendChild(title); header.appendChild(navGroup);
-  content.appendChild(header);
-
-  const summary = el('div'); summary.style.cssText='font-size:12px;color:var(--text-3);margin-bottom:10px';
-  const summaryParts = [];
-  if (items.length) summaryParts.push(`${items.length} 筆排程`);
-  if (actualCount) summaryParts.push(`${actualCount} 筆實際紀錄`);
-  summary.textContent = summaryParts.length ? `本月共 ${summaryParts.join('・')}` : '本月沒有排程或紀錄';
-  content.appendChild(summary);
-
-  // §五十：熱力圖圖例。
-  const legend = el('div');
-  legend.style.cssText = 'display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--text-3);margin:-4px 0 10px';
-  legend.innerHTML = `
-    <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:color-mix(in srgb, var(--green) 45%, transparent)"></span>淨收入</span>
-    <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:color-mix(in srgb, var(--red) 45%, transparent)"></span>淨支出</span>
-    <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:var(--blue)"></span>待處理提醒</span>
-    <span style="margin-left:auto">顏色越深＝金額越大</span>`;
-  content.appendChild(legend);
-
-  // ── Grid ──
-  const grid = el('div','card');
-  grid.style.cssText='padding:0;overflow:hidden;margin-bottom:16px';
-  const weekHead = el('div');
-  weekHead.style.cssText='display:grid;grid-template-columns:repeat(7,1fr);background:var(--surface-2);font-size:11px;color:var(--text-3);text-align:center';
-  ['日','一','二','三','四','五','六'].forEach(w=>{
-    const c = el('div'); c.style.cssText='padding:8px 0'; c.textContent=w; weekHead.appendChild(c);
-  });
-  grid.appendChild(weekHead);
-
-  const firstWeekday = new Date(_calendarYear, _calendarMonth-1, 1).getDay();
-  const numDays = new Date(_calendarYear, _calendarMonth, 0).getDate();
-  const cellsGrid = el('div');
-  cellsGrid.style.cssText='display:grid;grid-template-columns:repeat(7,1fr)';
-
-  function pad2(n) { return String(n).padStart(2,'0'); }
-
-  for (let i=0;i<firstWeekday;i++) {
-    const c = el('div'); c.style.cssText='min-height:62px;border-top:1px solid var(--border);border-right:1px solid var(--border);background:var(--surface-2)';
-    cellsGrid.appendChild(c);
-  }
-  // ── §五十（2026-10-03）：月曆改成依每日「淨收支」上色（熱力圖風格）────────
-  // 使用者提供 AssetMetra「每日投資損益」截圖當參考、並核准 Artifact 草稿
-  // （CalendarHeatmap.dc.html）。每一格：
-  //   - 底色＝當天淨收支（實際收入 − 實際支出，一律換算台幣；外幣用每筆自己存
-  //     的匯率快照，見 resolveIncomeAmountTwd／resolveExpenseAmountTwd）——綠＝
-  //     淨收入、紅＝淨支出（沿用既有收入綠／支出紅慣例，§十五之五(c)），深淺依
-  //     「這一天金額 ÷ 本月單日最大金額」縮放（取平方根，避免發薪日一天就把
-  //     其他天全部壓成看不見的淡色）。顏色用 color-mix 從主題的 --green／--red
-  //     調出來，換配色主題也會跟著變。
-  //   - 金額直接印在格子裡（10 萬以上改用「萬」為單位，避免手機版塞不下）。
-  //   - 排定但還沒處理的提醒（定存到期、信用卡繳款、確認本期等）改成右上角一個
-  //     小藍點，不再佔用格子裡的文字空間。
-  //   - 「今天」改成外框標示（格子底色本身現在已經有意義，不能再用實心色塊）。
-  //   - 點格子後，下方詳情區塊、所有操作按鈕（確認本期／編輯／刪除）完全不變。
+  // 每天的淨收支（實際收入 − 實際支出，一律換算台幣；外幣用每筆自己存的匯率
+  // 快照，見 resolveIncomeAmountTwd／resolveExpenseAmountTwd）。
   const heatAccounts = state.accounts || [];
   const heatFx = state.fxRates || {};
   const netByDate = {};
-  for (const [dt, list] of Object.entries(itemsByDate)) {
-    let net = 0, hasActual = false;
-    for (const it of list) {
-      if (it.type === 'actual_income')  { net += resolveIncomeAmountTwd(it._txn); hasActual = true; }
-      if (it.type === 'actual_expense') { net -= resolveExpenseAmountTwd(it._txn, heatAccounts, heatFx); hasActual = true; }
-    }
-    if (hasActual) netByDate[dt] = net;
-  }
+  (state.incomeTxns||[]).filter(t=>t.date?.startsWith(monthStr)).forEach(t => {
+    netByDate[t.date] = (netByDate[t.date] ?? 0) + resolveIncomeAmountTwd(t);
+  });
+  (state.expenseTxns||[]).filter(t=>t.date?.startsWith(monthStr)).forEach(t => {
+    netByDate[t.date] = (netByDate[t.date] ?? 0) - resolveExpenseAmountTwd(t, heatAccounts, heatFx);
+  });
   const maxAbsNet = Math.max(0, ...Object.values(netByDate).map(v => Math.abs(v)));
   function heatLabel(net) {
     const abs = Math.abs(net);
     const sign = net > 0 ? '+' : (net < 0 ? '-' : '');
     if (abs >= 100000) return `${sign}${(abs/10000).toFixed(abs >= 1000000 ? 0 : 1)}萬`;
+    if (abs >= 10000)  return `${sign}${(abs/1000).toFixed(abs >= 100000 ? 0 : 1)}k`;
     return `${sign}${fmt(Math.round(abs))}`;
   }
 
+  const typeIcon = { deposit:'🏦', creditcard:'💳', recurring:'🔁', installment:'🧾', recurringincome:'💵', transfer:'💱', dca:'📈' };
+
+  // ── 月曆卡片 ─────────────────────────────────────────────────────────────
+  // v2.3.0（使用者要求）：改回 9/20 核准的示意稿那種圓潤可愛的樣式——沒有格
+  // 線，每一天是一顆圓形日期，底色依當天淨收支（綠＝淨收入、紅＝淨支出，深淺
+  // 依金額，跟 §五十 熱力圖同一套算法），金額印在圓形下面；格子不再是近似正方
+  // 形的方塊，整體高度扁很多。今天＝藍色外圈；選取＝深色實心；有待處理排程＝
+  // 圓形右上角的小藍點。原本「本月共 N 筆排程・N 筆實際紀錄」「顏色越深＝
+  // 金額越大」兩行說明文字依使用者要求移除。
+  const calCard = el('div','card cal-card');
+  const head = el('div','cal-head');
+  head.innerHTML = `
+    <button type="button" class="cal-nav" data-cal-nav="-1" aria-label="上個月">‹</button>
+    <button type="button" class="cal-title" data-cal-today title="回到本月">${_calendarYear} 年 ${_calendarMonth} 月</button>
+    <button type="button" class="cal-nav" data-cal-nav="1" aria-label="下個月">›</button>
+    <button type="button" class="cal-report-btn" data-cal-report>📊 帳務報表</button>`;
+  calCard.appendChild(head);
+  head.querySelectorAll('[data-cal-nav]').forEach(btn => btn.addEventListener('click', () => {
+    _calendarMonth += Number(btn.dataset.calNav);
+    if (_calendarMonth < 1) { _calendarMonth = 12; _calendarYear--; }
+    if (_calendarMonth > 12) { _calendarMonth = 1; _calendarYear++; }
+    _calendarSelectedDate = null; renderCalendar();
+  }));
+  head.querySelector('[data-cal-today]').addEventListener('click', () => {
+    _calendarYear = now.getFullYear(); _calendarMonth = now.getMonth()+1; _calendarSelectedDate = null; renderCalendar();
+  });
+  head.querySelector('[data-cal-report]').addEventListener('click', () => {
+    _reportState.year = _calendarYear; _reportState.month = _calendarMonth;
+    navigate('report');
+  });
+
+  const weekHead = el('div','cal-week');
+  ['日','一','二','三','四','五','六'].forEach(w => { const c = el('span'); c.textContent = w; weekHead.appendChild(c); });
+  calCard.appendChild(weekHead);
+
+  const cellsGrid = el('div','cal-grid');
+  const firstWeekday = new Date(_calendarYear, _calendarMonth-1, 1).getDay();
+  const numDays = new Date(_calendarYear, _calendarMonth, 0).getDate();
+  for (let i=0;i<firstWeekday;i++) cellsGrid.appendChild(el('div','cal-cell cal-blank'));
   for (let d=1; d<=numDays; d++) {
-    const dateStr = `${_calendarYear}-${pad2(_calendarMonth)}-${pad2(d)}`;
-    const dayItems = itemsByDate[dateStr] || [];
-    const isToday = dateStr === todayStr;
+    const dateStr = `${monthStr}-${String(d).padStart(2,'0')}`;
     const net = netByDate[dateStr];
     const hasNet = net !== undefined;
     const ratio = (hasNet && maxAbsNet > 0) ? Math.sqrt(Math.abs(net) / maxAbsNet) : 0;
-    const pct = hasNet && net !== 0 ? Math.round(14 + 46 * ratio) : 0; // 14%～60%
+    const pct = hasNet && net !== 0 ? Math.round(18 + 52 * ratio) : 0; // 18%～70%
     const baseVar = net > 0 ? 'var(--green)' : 'var(--red)';
-    const hasPending = dayItems.some(it => it.type !== 'actual_income' && it.type !== 'actual_expense');
-    const cell = el('div');
+    const pending = (schedByDate[dateStr] || []);
+    const cell = el('button','cal-cell');
+    cell.type = 'button';
     cell.dataset.date = dateStr;
-    // min-width:0：CSS Grid 預設 min-width 是 auto，不設的話最長那一天的內容會
-    // 把欄寬撐開（2026-09-22 使用者回報過的問題）。
-    cell.style.cssText = 'position:relative;min-height:62px;min-width:0;border-top:1px solid var(--border);border-right:1px solid var(--border);padding:5px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:2px;overflow:hidden;box-sizing:border-box;' +
-      (pct > 0 ? `background:color-mix(in srgb, ${baseVar} ${pct}%, transparent);` : '') +
-      (isToday ? 'box-shadow:inset 0 0 0 2px var(--blue);' : '');
-    cell.dataset.heatBg = cell.style.background || '';
-    const dayNum = el('div');
-    dayNum.style.cssText = `font-size:11px;font-weight:${isToday?800:500};color:${isToday?'var(--blue)':(pct>=40?'#fff':'var(--text-2)')};align-self:flex-start`;
-    dayNum.textContent = d;
-    cell.appendChild(dayNum);
-    if (hasNet) {
-      const amt = el('div');
-      amt.style.cssText = `font-size:10px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;color:${net===0?'var(--text-3)':(pct>=40?'#fff':baseVar)}`;
-      amt.textContent = net === 0 ? '±0' : heatLabel(net);
-      amt.title = `當天淨${net>=0?'收入':'支出'} NT$ ${fmt(Math.abs(Math.round(net)))}`;
-      cell.appendChild(amt);
-    } else {
-      cell.appendChild(el('div'));
-    }
-    if (hasPending) {
-      const dot = el('span');
-      dot.style.cssText = 'position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 1.5px #fff';
-      dot.title = dayItems.filter(it => it.type !== 'actual_income' && it.type !== 'actual_expense').map(it => `${typeIcon[it.type]??''}${it.label}`).join('、');
-      cell.appendChild(dot);
-    }
-    cell.addEventListener('click', () => { _calendarSelectedDate = dateStr; renderDetail(); highlightSelected(); });
+    if (dateStr === todayStr) cell.classList.add('is-today');
+    if (dateStr === _calendarSelectedDate) cell.classList.add('is-selected');
+    const dotStyle = pct > 0 ? `background:color-mix(in srgb, ${baseVar} ${pct}%, #fff);color:${pct>=48?'#fff':'var(--text-1)'}` : '';
+    cell.innerHTML = `
+      <span class="cal-day" style="${dotStyle}">${d}${pending.length ? '<i class="cal-pending"></i>' : ''}</span>
+      <span class="cal-amt" style="color:${!hasNet || net===0 ? 'var(--text-3)' : baseVar}">${hasNet ? (net===0 ? '±0' : heatLabel(net)) : ''}</span>`;
+    const tips = [];
+    if (hasNet) tips.push(`當天淨${net>=0?'收入':'支出'} NT$ ${fmt(Math.abs(Math.round(net)))}`);
+    pending.forEach(it => tips.push(`${typeIcon[it.type]??''}${it.label}`));
+    if (tips.length) cell.title = tips.join('\n');
+    cell.addEventListener('click', () => {
+      // 再點一次同一天＝取消選取，回到看整個月。
+      _calendarSelectedDate = _calendarSelectedDate === dateStr ? null : dateStr;
+      renderCalendar();
+    });
     cellsGrid.appendChild(cell);
   }
-  grid.appendChild(cellsGrid);
-  content.appendChild(grid);
+  calCard.appendChild(cellsGrid);
+  content.appendChild(calCard);
 
-  const detailContainer = el('div');
-  content.appendChild(detailContainer);
-
-  function highlightSelected() {
-    cellsGrid.querySelectorAll('[data-date]').forEach(c => {
-      const isSel = c.dataset.date === _calendarSelectedDate;
-      // §五十：格子底色現在代表當天淨收支，選取時不能再蓋掉底色——改成只加
-      // 一圈深色外框（今天則是內圈藍框，兩者可以同時存在）。沒有收支的格子
-      // 才補一層淡色底，讓選取狀態看得出來。
-      c.style.outline = isSel ? '2px solid var(--navy)' : 'none';
-      c.style.outlineOffset = '-2px';
-      c.style.background = c.dataset.heatBg || (isSel ? 'var(--accent-tint)' : '');
-    });
-  }
-
+  // ── 選取那天的待處理排程（確認本期／到期入帳／記錄繳款）──────────────────
+  // v2.3.0：這張卡片只放「排程提醒」——實際收支一律在下面的收支明細裡（已經
+  // 篩成只剩這一天），不再兩邊重複列出。
   function buildActionButton(it) {
     const btn = el('button','btn btn-primary btn-sm');
     btn.style.cssText='font-size:11px;flex-shrink:0';
@@ -10735,164 +10920,49 @@ async function renderCalendar() {
     return null; // recurringincome：目前僅供參考顯示，不會自動入帳（見 §十四）
   }
 
-  function renderDetail() {
-    detailContainer.innerHTML = '';
-    if (!_calendarSelectedDate) return;
-    const dayItems = itemsByDate[_calendarSelectedDate] || [];
-    const card = el('div','card');
-    const head = el('div');
-    head.style.cssText='padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600';
-    head.textContent = fmtDate(_calendarSelectedDate);
-    card.appendChild(head);
-    if (dayItems.length === 0) {
-      const e = el('div'); e.style.cssText='padding:20px 18px;text-align:center;color:var(--text-3);font-size:13px';
-      e.textContent = '這天沒有排程或紀錄';
-      card.appendChild(e);
-    }
-    dayItems.forEach(it => {
-      const row = el('div');
-      row.style.cssText='padding:10px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap';
-      const isSchedIncome = it.type==='recurringincome';
-      const isActual = it.type==='actual_income' || it.type==='actual_expense';
-      const amtColor = it.type==='actual_income' ? 'var(--green)' : it.type==='actual_expense' ? 'var(--red)' : (isSchedIncome?'var(--green)':'var(--text-2)');
-      row.innerHTML = `
-        <span style="font-size:16px;flex-shrink:0">${typeIcon[it.type]??'📌'}</span>
-        <span style="flex:1;font-size:13px;min-width:80px">${it.label}</span>
-        ${it.amountLabel?`<span style="font-size:12px;color:${amtColor}">${it.amountLabel}</span>`:''}`;
-      if (isActual) {
-        // 實際發生的收支紀錄用編輯／刪除，跟排程提醒項目的「確認本期」按鈕
-        // 是不同的操作（見 §十五之五）——這裡的邏輯是從已刪除的
-        // renderIncome()／renderExpense() 搬過來的，含收入刪除時仍要同步
-        // 資金池自動提撥／緊急預備金短缺的既有邏輯。
-        const editBtn = el('button','btn btn-ghost btn-sm'); editBtn.style.cssText='font-size:11px;flex-shrink:0';
-        editBtn.textContent = '編輯';
-        const delBtn = el('button','btn btn-ghost btn-sm'); delBtn.style.cssText='font-size:11px;flex-shrink:0;color:var(--red)';
-        delBtn.textContent = '刪除';
-        if (it.type === 'actual_income') {
-          editBtn.addEventListener('click', () => openIncomeModal(it._txn));
-          delBtn.addEventListener('click', () => {
-            openDeleteModal(`確定要刪除「${it.label}」這筆收入記錄嗎？`, async () => {
-              await reverseTxnBalanceEffect(it._txn, true);
-              await reversePeriodConfirmIfNeeded(it._txn, true);
-              const tr = db.transaction(['income_txns'],'readwrite');
-              tr.objectStore('income_txns').delete(it._txn.id);
-              await new Promise((res,rej)=>{tr.oncomplete=res;tr.onerror=()=>rej(tr.error)});
-              showToast('已刪除');
-              await syncAutoBucketContributions().catch(e=>console.warn('[sync auto buckets]', e));
-              await syncEmergencyFundShortfall().catch(e=>console.warn('[sync emergency fund]', e));
-              await renderCalendar();
-            });
-          });
-        } else {
-          editBtn.addEventListener('click', () => openExpenseModal(it._txn));
-          delBtn.addEventListener('click', () => {
-            openDeleteModal(`確定要刪除「${it.label}」這筆支出記錄嗎？`, async () => {
-              await reverseTxnBalanceEffect(it._txn, false);
-              await reversePeriodConfirmIfNeeded(it._txn, false);
-              const tr = db.transaction(['expense_txns'],'readwrite');
-              tr.objectStore('expense_txns').delete(it._txn.id);
-              await new Promise((res,rej)=>{tr.oncomplete=res;tr.onerror=()=>rej(tr.error)});
-              showToast('已刪除');
-              await renderCalendar();
-            });
-          });
-        }
-        row.appendChild(editBtn); row.appendChild(delBtn);
-      } else {
+  if (_calendarSelectedDate) {
+    const schedItems = schedByDate[_calendarSelectedDate] || [];
+    if (schedItems.length) {
+      const card = el('div','card');
+      card.style.borderRadius = '16px';
+      const h = el('div');
+      h.style.cssText = 'padding:11px 18px;font-size:12px;font-weight:600;color:var(--text-2);border-bottom:1px solid var(--border)';
+      h.textContent = `${fmtDate(_calendarSelectedDate)}・排程提醒`;
+      card.appendChild(h);
+      schedItems.forEach(it => {
+        const row = el('div');
+        row.style.cssText = 'padding:10px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap';
+        const amtColor = it.type==='recurringincome' ? 'var(--green)' : 'var(--text-2)';
+        row.innerHTML = `
+          <span style="font-size:16px;flex-shrink:0">${typeIcon[it.type]??'📌'}</span>
+          <span style="flex:1;font-size:13px;min-width:80px">${it.label}</span>
+          ${it.amountLabel?`<span style="font-size:12px;color:${amtColor};font-variant-numeric:tabular-nums">${it.amountLabel}</span>`:''}`;
         const actionBtn = buildActionButton(it);
         if (actionBtn) row.appendChild(actionBtn);
-      }
-      card.appendChild(row);
-    });
-    detailContainer.appendChild(card);
+        card.appendChild(row);
+      });
+      content.appendChild(card);
+    }
   }
 
-  if (!_calendarSelectedDate && itemsByDate[todayStr]) _calendarSelectedDate = todayStr;
-  renderDetail();
-  highlightSelected();
-  }
-
-  // 2026-09-22（使用者回饋：不管上方選月曆還是圖表，下方的收支明細清單都要
-  // 固定顯示，不能被切換掉）——拆出來的 renderTxnMergedList() 永遠在最後
-  // 呼叫一次，接在上面 if/else 畫出來的月曆或甜甜圈圖區塊之後。
-  await renderTxnMergedList(content);
+  // 收支明細：只列目前這個月；有選某一天就只列那一天（使用者要求）。
+  await renderTxnMergedList(content, { month: monthStr, date: _calendarSelectedDate });
+  page.commit();
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// 收支紀錄頁的兩個下半部區塊：renderTxnDonutCard()（上方可切換的甜甜圈圖，
-// _txnViewMode==='list' 時顯示）與 renderTxnMergedList()（下方固定顯示的收支
-// 明細清單，不管上方選哪個模式都會顯示）。
+// 收支紀錄頁下半部的收支明細清單（renderTxnMergedList）。
+// v2.3.0（使用者要求）：清單不再列出所有月份——只列月曆目前停在的那個月；
+// 點了月曆上某一天，就只列那一天。原本跟月曆互斥切換的甜甜圈圖
+// （renderTxnDonutCard）已移除，改由獨立的「帳務報表」頁（renderReport）取代。
 // ════════════════════════════════════════════════════════════════════════════
-// 2026-09-22 前，這兩塊是同一個函式 renderTxnListView()，跟月曆整頁互斥切換
-// ——使用者回饋「不管上方是月曆或甜甜圈圖，下方都要固定顯示收支紀錄」，才拆
-// 成兩個函式：renderCalendar() 的 if/else 只切換上半部要呼叫哪一個，下半部
-// 的 renderTxnMergedList() 永遠都會被呼叫。取代原本各自獨立的
-// renderIncome()／renderExpense() 兩個頁面（已刪除，見 §十五之五）的仍然是
-// renderTxnMergedList()——編輯／刪除都在這裡做。
-async function renderTxnDonutCard(content) {
-  const allCats = await getAll(db,'txn_categories').catch(()=>[]);
-  const catMap = Object.fromEntries(allCats.map(c=>[c.id,c]));
-  function getCat(id, fallbackIcon, fallbackLabel) {
-    return catMap[id] ?? { label: fallbackLabel ?? id, icon: fallbackIcon ?? '·', color:'#6B7280' };
-  }
-  const expenseTxns = state.expenseTxns || [];
-  const { accounts, fxRates } = state;
-
-  // ── 本月甜甜圈圖（支出依類別，沿用既有 calcMonthlyExpenseByCategory，已修正
-  // 舊版 cat.name 筆誤——見 renderAssets() 上方的說明註解）──
-  const now = new Date();
-  const thisMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const byCat = calcMonthlyExpenseByCategory(expenseTxns, thisMonth, accounts, fxRates);
-  const donutEntries = Object.entries(byCat).filter(([,amt])=>amt>0).sort((a,b)=>b[1]-a[1]);
-  const donutTotal = donutEntries.reduce((s,[,a])=>s+a,0);
-
-  if (donutTotal <= 0) {
-    const empty = el('div','card');
-    empty.style.cssText='padding:32px 18px;text-align:center;color:var(--text-3);font-size:13px;margin-bottom:16px';
-    empty.textContent = '本月尚無支出記錄，還沒有東西可以畫成圖表——下方仍會列出所有收支明細。';
-    content.appendChild(empty);
-    return;
-  }
-
-  const donutCard = el('div','card');
-  donutCard.style.cssText='padding:20px 18px;margin-bottom:16px;display:flex;gap:24px;align-items:center;flex-wrap:wrap';
-  let accDeg = 0;
-  const stops = donutEntries.map(([cid,amt]) => {
-    const cat = getCat(cid, '➖', '未分類');
-    const start = accDeg/donutTotal*360; accDeg += amt; const end = accDeg/donutTotal*360;
-    return `${cat.color} ${start}deg ${end}deg`;
-  }).join(', ');
-  const donutWrap = el('div');
-  donutWrap.style.cssText = `width:120px;height:120px;border-radius:50%;flex-shrink:0;background:conic-gradient(${stops});position:relative`;
-  const hole = el('div');
-  hole.style.cssText = 'position:absolute;inset:16px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center';
-  hole.innerHTML = `<div style="font-size:10px;color:var(--text-3)">本月支出</div><div style="font-size:13px;font-weight:700;color:var(--red)">NT$ ${fmt(donutTotal)}</div>`;
-  donutWrap.appendChild(hole);
-  donutCard.appendChild(donutWrap);
-  const legend = el('div'); legend.style.cssText='flex:1;min-width:160px;display:flex;flex-direction:column;gap:6px';
-  donutEntries.slice(0,8).forEach(([cid,amt]) => {
-    const cat = getCat(cid, '➖', '未分類');
-    const pct = (amt/donutTotal*100).toFixed(1);
-    const row = el('div'); row.style.cssText='display:flex;align-items:center;gap:8px;font-size:12px';
-    row.innerHTML = `<span style="width:9px;height:9px;border-radius:50%;background:${cat.color};flex-shrink:0"></span>
-      <span style="flex:1;color:var(--text-2)">${cat.icon??''} ${cat.label}</span>
-      <span style="color:var(--text-3)">${pct}%</span>
-      <span style="font-weight:600;min-width:70px;text-align:right">NT$ ${fmt(amt)}</span>`;
-    legend.appendChild(row);
-  });
-  donutCard.appendChild(legend);
-  content.appendChild(donutCard);
-}
-
-async function renderTxnMergedList(content) {
+async function renderTxnMergedList(content, scope = {}) {
   const allCats = await getAll(db,'txn_categories').catch(()=>[]);
   const catMap = Object.fromEntries(allCats.map(c=>[c.id,c]));
   function getCat(id, fallbackIcon, fallbackLabel) {
     return catMap[id] ?? { label: fallbackLabel ?? id, icon: fallbackIcon ?? '·', color:'#6B7280' };
   }
 
-  const incomeTxns = state.incomeTxns || [];
-  const expenseTxns = state.expenseTxns || [];
   const { accounts, banks, holdings, fxRates } = state;
   const accountMap = Object.fromEntries(accounts.map(a=>[a.id,a]));
   const bankMap = Object.fromEntries(banks.map(b=>[b.id,b]));
@@ -10904,123 +10974,525 @@ async function renderTxnMergedList(content) {
   const projectsForTag = await getAll(db,'projects').catch(()=>[]);
   const projectTagMap = Object.fromEntries(projectsForTag.map(p=>[p.id,p]));
 
-  const listHeader = el('div');
-  listHeader.style.cssText='font-size:13px;font-weight:600;margin:2px 0 10px;color:var(--text-2)';
-  listHeader.textContent = '📒 收支明細';
-  content.appendChild(listHeader);
+  const inScope = t => scope.date ? t.date === scope.date : (scope.month ? t.date?.startsWith(scope.month) : true);
+  const merged = [
+    ...(state.incomeTxns || []).filter(inScope).map(t => ({...t, _kind:'income'})),
+    ...(state.expenseTxns || []).filter(inScope).map(t => ({...t, _kind:'expense'})),
+  ].sort((a,b)=> b.date.localeCompare(a.date) || String(b.created_at??'').localeCompare(String(a.created_at??'')));
 
-  if (incomeTxns.length === 0 && expenseTxns.length === 0) {
-    const empty = el('div','card');
-    empty.style.cssText='padding:48px;text-align:center;color:var(--text-3);font-size:13px';
-    empty.innerHTML = `<div style="font-size:32px;margin-bottom:12px">🧾</div>尚無收支記錄<br><span style="font-size:12px">點下方「新增收入」／「新增支出」開始記帳</span>`;
-    content.appendChild(empty);
+  const sumIncome  = merged.filter(t=>t._kind==='income').reduce((s,t)=>s+resolveIncomeAmountTwd(t),0);
+  const sumExpense = merged.filter(t=>t._kind==='expense').reduce((s,t)=>s+resolveExpenseAmountTwd(t,accounts,fxRates),0);
+
+  // ── 標題列：範圍＋小計＋新增按鈕 ──
+  let scopeLabel = '收支明細';
+  if (scope.date) scopeLabel = `${fmtDate(scope.date)} 收支明細`;
+  else if (scope.month) scopeLabel = `${parseInt(scope.month.slice(5,7))} 月收支明細`;
+  const bar = el('div');
+  bar.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 -6px';
+  bar.innerHTML = `
+    <div style="font-size:14px;font-weight:700;color:var(--text-1)">${scopeLabel}</div>
+    ${scope.date ? `<button type="button" class="chip-btn" data-clear-day>看整個月 ✕</button>` : ''}
+    <div style="margin-left:auto;display:flex;gap:6px">
+      <button type="button" class="btn btn-ghost btn-sm" style="color:var(--green)" data-add-income>+ 收入</button>
+      <button type="button" class="btn btn-primary btn-sm" data-add-expense>+ 支出</button>
+    </div>`;
+  bar.querySelector('[data-add-income]').addEventListener('click', () => openIncomeModal(null, null, null, scope.date ? { date: scope.date } : null));
+  bar.querySelector('[data-add-expense]').addEventListener('click', () => openExpenseModal(null, scope.date ? { date: scope.date } : null));
+  bar.querySelector('[data-clear-day]')?.addEventListener('click', () => { _calendarSelectedDate = null; renderCalendar(); });
+  content.appendChild(bar);
+
+  const card = el('div','card');
+  card.style.borderRadius = '16px';
+  if (merged.length) {
+    const sumRow = el('div');
+    sumRow.style.cssText = 'display:flex;gap:14px;justify-content:flex-end;padding:9px 18px;font-size:12px;font-variant-numeric:tabular-nums;background:var(--surface-2)';
+    sumRow.innerHTML = `
+      <span style="color:var(--text-3)">收入 <b style="color:var(--green)">+${fmt(sumIncome)}</b></span>
+      <span style="color:var(--text-3)">支出 <b style="color:var(--red)">-${fmt(sumExpense)}</b></span>
+      <span style="color:var(--text-3)">結餘 <b style="color:${sumIncome-sumExpense>=0?'var(--text-1)':'var(--red)'}">${sumIncome-sumExpense>=0?'':'-'}${fmt(Math.abs(sumIncome-sumExpense))}</b></span>`;
+    card.appendChild(sumRow);
+  } else {
+    const empty = el('div');
+    empty.style.cssText = 'padding:32px 18px;text-align:center;color:var(--text-3);font-size:13px';
+    empty.innerHTML = `<div style="font-size:28px;margin-bottom:8px">🧾</div>${scope.date ? '這一天沒有收支紀錄' : '這個月還沒有收支紀錄'}`;
+    card.appendChild(empty);
   }
 
-  // ── 工具列：新增收入／新增支出 ──
-  const toolbar = el('div');
-  toolbar.style.cssText='display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:10px';
-  const addIncomeBtn = el('button','btn btn-ghost btn-sm'); addIncomeBtn.style.color='var(--green)';
-  addIncomeBtn.textContent = '+ 新增收入';
-  addIncomeBtn.addEventListener('click', () => openIncomeModal());
-  const addExpenseBtn = el('button','btn btn-primary btn-sm');
-  addExpenseBtn.textContent = '+ 新增支出';
-  addExpenseBtn.addEventListener('click', () => openExpenseModal());
-  toolbar.appendChild(addIncomeBtn); toolbar.appendChild(addExpenseBtn);
-  content.appendChild(toolbar);
+  merged.forEach(t => {
+    const isIncome = t._kind === 'income';
+    const cat = isIncome ? getCat(t.category, '＋', '其他收入') : getCat(t.category, '➖', t.category);
+    const catDisabled = cat.active === false;
+    const catColor = catDisabled ? '#9CA3AF' : cat.color;
+    const acc2 = accountMap[t.account_id];
+    const bank2 = acc2 ? bankMap[acc2.bank_id] : null;
+    const holding = isIncome ? holdingMap[t.dca_holding_id] : null;
+    const cc = !isIncome ? ccMap[t.cc_id] : null;
+    const payLabel = !isIncome ? (t.pay_type==='cc'&&cc ? `💳 ${cc.name}` : t.pay_type==='cash'&&acc2 ? `現金 ${acc2.name}` : acc2 ? `← ${bank2?bank2.name+' ':''}${acc2.name}` : '') : '';
 
-  // ── 合併清單：依月份分組，組內依日期新→舊排序 ──
-  const merged = [
-    ...incomeTxns.map(t => ({...t, _kind:'income'})),
-    ...expenseTxns.map(t => ({...t, _kind:'expense'})),
-  ];
-  if (merged.length === 0) return;
-  merged.sort((a,b)=> b.date.localeCompare(a.date));
-
-  const byMonth = {};
-  merged.forEach(t => { const ym = t.date.slice(0,7); (byMonth[ym] ??= []).push(t); });
-
-  Object.entries(byMonth).sort((a,b)=>b[0].localeCompare(a[0])).forEach(([ym, mTxns], idx) => {
-    const [yr, mo] = ym.split('-');
-    const mIncome = mTxns.filter(t=>t._kind==='income').reduce((s,t)=>s+resolveIncomeAmountTwd(t),0);
-    const mExpense = mTxns.filter(t=>t._kind==='expense').reduce((s,t)=>s+resolveExpenseAmountTwd(t,accounts,fxRates),0);
-
-    const card = el('div','card'); card.style.marginBottom='16px';
-    const mHeader = el('div','card-header-row'); mHeader.setAttribute('role','button');
-    mHeader.innerHTML = `
-      <div class="card-title" style="font-size:14px">${yr} 年 ${parseInt(mo)} 月</div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <span style="font-size:12px;color:var(--green)">+${fmt(mIncome)}</span>
-        <span style="font-size:12px;color:var(--red)">-${fmt(mExpense)}</span>
-        <svg class="chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    const row = el('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:11px 12px 11px 16px;border-top:1px solid var(--border)';
+    row.innerHTML = `
+      <div style="width:34px;height:34px;border-radius:50%;background:${catColor}1f;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${cat.icon??(isIncome?'＋':'－')}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          ${t.description || cat.label}
+          <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:${catColor}18;color:${catColor}">${cat.label}${catDisabled?'（已停用）':''}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
+          ${scope.date ? '' : `<span>${fmtDate(t.date)}</span>`}
+          ${isIncome && acc2?`<span>→ ${bank2?bank2.name+' ':''}${acc2.name}</span>`:''}
+          ${payLabel?`<span>${payLabel}</span>`:''}
+          ${holding && t.dca_shares != null ? `<span>${holding.ticker} +${t.dca_shares}股</span>` : ''}
+          ${!isIncome && t.bucket_id && bucketTagMap[t.bucket_id]?`<span>🧳 ${bucketTagMap[t.bucket_id].name}${t.project_id&&projectTagMap[t.project_id]?'・'+projectTagMap[t.project_id].name:''}</span>`:''}
+          ${t.note?`<span>${t.note}</span>`:''}
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:${isIncome?'var(--green)':'var(--red)'}">${isIncome?'+':'-'}${t.currency&&t.currency!=='TWD'?fmtCurrency(t.amount,t.currency):'NT$ '+fmt(t.amount)}</div>
+        ${t.currency&&t.currency!=='TWD'?`<div style="font-size:10px;color:var(--text-3)">≈ NT$ ${fmt(isIncome?resolveIncomeAmountTwd(t):resolveExpenseAmountTwd(t,accounts,fxRates))}</div>`:''}
+        ${isIncome && t.dca_spent && t.dca_spent!==t.amount?`<div style="font-size:10px;color:var(--text-3)">扣款 ${t.currency&&t.currency!=='TWD'?fmtCurrency(t.dca_spent,t.currency):'NT$ '+fmt(t.dca_spent)}</div>`:''}
+      </div>
+      <div class="txn-acts">
+        <button type="button" class="icon-act" data-edit-txn aria-label="編輯" title="編輯"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>
+        <button type="button" class="icon-act danger" data-del-txn aria-label="刪除" title="刪除"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg></button>
       </div>`;
-    card.appendChild(mHeader);
-    const mBody = el('div', `card-body${idx===0?' open':''}`);
-
-    mTxns.forEach(t => {
-      const isIncome = t._kind === 'income';
-      const cat = isIncome ? getCat(t.category, '＋', '其他收入') : getCat(t.category, '➖', t.category);
-      const catDisabled = cat.active === false;
-      const catColor = catDisabled ? '#9CA3AF' : cat.color;
-      const acc2 = accountMap[t.account_id];
-      const bank2 = acc2 ? bankMap[acc2.bank_id] : null;
-      const holding = isIncome ? holdingMap[t.dca_holding_id] : null;
-      const cc = !isIncome ? ccMap[t.cc_id] : null;
-      const payLabel = !isIncome ? (t.pay_type==='cc'&&cc ? `💳 ${cc.name}` : t.pay_type==='cash'&&acc2 ? `現金 ${acc2.name}` : acc2 ? `← ${bank2?bank2.name+' ':''}${acc2.name}` : '') : '';
-
-      const row = el('div');
-      row.style.cssText='display:flex;align-items:center;gap:12px;padding:11px 18px;border-top:1px solid var(--border)';
-      row.innerHTML = `
-        <div style="width:32px;height:32px;border-radius:50%;background:${isIncome?'var(--green-bg)':'var(--red-bg)'};color:${isIncome?'var(--green)':'var(--red)'};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0">${isIncome?'＋':'－'}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            ${t.description || cat.label}
-            <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:${catColor}18;color:${catColor}">${cat.icon??''} ${cat.label}${catDisabled?'（已停用）':''}</span>
-          </div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
-            <span>${fmtDate(t.date)}</span>
-            ${isIncome && acc2?`<span>→ ${bank2?bank2.name+' ':''}${acc2.name}</span>`:''}
-            ${payLabel?`<span>${payLabel}</span>`:''}
-            ${holding && t.dca_shares != null ? `<span>${holding.ticker} +${t.dca_shares}股</span>` : ''}
-            ${!isIncome && t.bucket_id && bucketTagMap[t.bucket_id]?`<span>🧳 ${bucketTagMap[t.bucket_id].name}${t.project_id&&projectTagMap[t.project_id]?'・'+projectTagMap[t.project_id].name:''}</span>`:''}
-            ${t.note?`<span>${t.note}</span>`:''}
-          </div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:13px;font-weight:600;color:${isIncome?'var(--green)':'var(--red)'}">${isIncome?'+':'-'}${t.currency&&t.currency!=='TWD'?fmtCurrency(t.amount,t.currency):'NT$ '+fmt(t.amount)}</div>
-          ${t.currency&&t.currency!=='TWD'?`<div style="font-size:10px;color:var(--text-3)">≈ NT$ ${fmt(isIncome?resolveIncomeAmountTwd(t):resolveExpenseAmountTwd(t,accounts,fxRates))}</div>`:''}
-          ${isIncome && t.dca_spent && t.dca_spent!==t.amount?`<div style="font-size:10px;color:var(--text-3)">扣款 ${t.currency&&t.currency!=='TWD'?fmtCurrency(t.dca_spent,t.currency):'NT$ '+fmt(t.dca_spent)}</div>`:''}
-        </div>
-        <div style="display:flex;gap:4px;flex-shrink:0">
-          <button class="btn btn-ghost btn-sm" style="font-size:11px;padding:4px 8px" data-edit-txn>編輯</button>
-          <button class="btn btn-ghost btn-sm" style="font-size:11px;padding:4px 8px;color:var(--red)" data-del-txn>刪除</button>
-        </div>`;
-      row.querySelector('[data-edit-txn]').addEventListener('click', () => isIncome ? openIncomeModal(t) : openExpenseModal(t));
-      row.querySelector('[data-del-txn]').addEventListener('click', () => {
-        openDeleteModal(`確定要刪除「${t.description||cat.label}」這筆${isIncome?'收入':'支出'}記錄嗎？`, async () => {
-          await reverseTxnBalanceEffect(t, isIncome);
-          await reversePeriodConfirmIfNeeded(t, isIncome);
-          const store = isIncome ? 'income_txns' : 'expense_txns';
-          const tr = db.transaction([store],'readwrite');
-          tr.objectStore(store).delete(t.id);
-          await new Promise((res,rej)=>{tr.oncomplete=res;tr.onerror=()=>rej(tr.error)});
-          showToast('已刪除');
-          if (isIncome) {
-            await syncAutoBucketContributions().catch(e=>console.warn('[sync auto buckets]', e));
-            await syncEmergencyFundShortfall().catch(e=>console.warn('[sync emergency fund]', e));
-          }
-          await renderCalendar();
-        });
+    row.querySelector('[data-edit-txn]').addEventListener('click', () => isIncome ? openIncomeModal(t) : openExpenseModal(t));
+    row.querySelector('[data-del-txn]').addEventListener('click', () => {
+      openDeleteModal(`確定要刪除「${t.description||cat.label}」這筆${isIncome?'收入':'支出'}記錄嗎？`, async () => {
+        await deleteTxnRecord(t, isIncome);
+        showToast('已刪除');
+        await renderCalendar();
       });
-      mBody.appendChild(row);
     });
-    card.appendChild(mBody);
-    mHeader.addEventListener('click', () => {
-      const isOpen = mBody.classList.contains('open');
-      mBody.classList.toggle('open', !isOpen);
-      mHeader.classList.toggle('card-open', !isOpen);
-    });
-    content.appendChild(card);
+    card.appendChild(row);
   });
+  content.appendChild(card);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// 帳務報表（v2.3.0 新增，使用者提供 7 張參考截圖）
+// ════════════════════════════════════════════════════════════════════════════
+// 取代原本收支紀錄頁「🍩 圖表檢視」那張單一甜甜圈圖，獨立成一頁：
+//   - 上方切換「支出／收入／結餘」
+//   - 期間：月／近 6 個月／年／自訂（‹ › 前後切換，自訂用起訖日期）
+//   - 幣別：全幣別（一律換算台幣，外幣用每筆自己存的匯率快照）或只看某一種幣別
+//     （顯示原幣金額）
+//   - 圖表：甜甜圈圖 ↔ 長條圖（點長條會跳出分類／金額／百分比的提示）
+//   - 分類佔比圖例（兩欄，百分比）＋分類明細（金額＋跟上一期相比的增減；點一
+//     列展開這個分類的每一筆紀錄，可直接編輯／刪除）
+//   - 「結餘」：收入、支出、結餘三個數字，加上逐日（單月）或逐月（多月）的
+//     收支對照長條圖
+// 全部只讀既有的 income_txns／expense_txns／txn_categories，沒有新增任何資料表。
+const _reportState = {
+  kind: 'expense',      // 'expense' | 'income' | 'balance'
+  period: 'month',      // 'month' | '6m' | 'year' | 'custom'
+  year: null, month: null,
+  from: null, to: null, // 自訂期間（YYYY-MM-DD）
+  currency: 'ALL',      // 'ALL' 或幣別代碼
+  chart: 'donut',       // 'donut' | 'bar'
+  sort: 'desc',         // 明細排序：'desc' 金額大到小 | 'asc'
+  openCat: null,        // 明細裡展開中的分類 id
+};
+
+function reportRange(st) {
+  const pad = n => String(n).padStart(2,'0');
+  const lastDay = (y, m) => new Date(y, m, 0).getDate();
+  if (st.period === 'month') {
+    const from = `${st.year}-${pad(st.month)}-01`, to = `${st.year}-${pad(st.month)}-${pad(lastDay(st.year, st.month))}`;
+    let py = st.year, pm = st.month - 1; if (pm < 1) { pm = 12; py--; }
+    return { from, to, prevFrom: `${py}-${pad(pm)}-01`, prevTo: `${py}-${pad(pm)}-${pad(lastDay(py, pm))}`,
+      label: `${st.year} 年 ${st.month} 月`, prevLabel: '上個月', multiMonth: false };
+  }
+  if (st.period === '6m') {
+    let sy = st.year, sm = st.month - 5; while (sm < 1) { sm += 12; sy--; }
+    let py = sy, pm = sm - 6; while (pm < 1) { pm += 12; py--; }
+    let pey = sy, pem = sm - 1; if (pem < 1) { pem = 12; pey--; }
+    return { from: `${sy}-${pad(sm)}-01`, to: `${st.year}-${pad(st.month)}-${pad(lastDay(st.year, st.month))}`,
+      prevFrom: `${py}-${pad(pm)}-01`, prevTo: `${pey}-${pad(pem)}-${pad(lastDay(pey, pem))}`,
+      label: `${sy}/${sm} – ${st.year}/${st.month}`, prevLabel: '前 6 個月', multiMonth: true };
+  }
+  if (st.period === 'year') {
+    return { from: `${st.year}-01-01`, to: `${st.year}-12-31`, prevFrom: `${st.year-1}-01-01`, prevTo: `${st.year-1}-12-31`,
+      label: `${st.year} 年`, prevLabel: '去年', multiMonth: true };
+  }
+  // custom：前一期＝緊接在前、天數相同的區間
+  const f = new Date(st.from + 'T00:00:00'), t = new Date(st.to + 'T00:00:00');
+  const days = Math.max(1, Math.round((t - f) / 86400000) + 1);
+  const pt = new Date(f); pt.setDate(pt.getDate() - 1);
+  const pf = new Date(pt); pf.setDate(pf.getDate() - days + 1);
+  return { from: st.from, to: st.to, prevFrom: isoDate(pf), prevTo: isoDate(pt),
+    label: `${st.from.replaceAll('-','/')} – ${st.to.replaceAll('-','/')}`, prevLabel: '前一段期間',
+    multiMonth: st.from.slice(0,7) !== st.to.slice(0,7) };
+}
+
+async function renderReport() {
+  const page = beginPageRender();
+  const content = page.content;
+  await loadData();
+  try { await buildReportPage(content); } finally { page.commit(); }
+}
+async function buildReportPage(content) {
+  const st = _reportState;
+  const now = new Date();
+  if (st.year == null) { st.year = now.getFullYear(); st.month = now.getMonth() + 1; }
+  if (!st.from) { st.from = `${isoDate(now).slice(0,7)}-01`; st.to = isoDate(now); }
+
+  const allCats = await getAll(db,'txn_categories').catch(()=>[]);
+  const catMap = Object.fromEntries(allCats.map(c=>[c.id,c]));
+  const { accounts, fxRates } = state;
+  const range = reportRange(st);
+
+  // 幣別：沒有 currency 欄位的舊資料一律視為台幣（跟 resolve*AmountTwd 同一個前提）。
+  const txnCurr = t => t.currency || 'TWD';
+  const currsInUse = [...new Set([...(state.incomeTxns||[]), ...(state.expenseTxns||[])].map(txnCurr))]
+    .sort((a,b) => (a==='TWD'?-1:b==='TWD'?1:a.localeCompare(b)));
+  if (st.currency !== 'ALL' && !currsInUse.includes(st.currency)) st.currency = 'ALL';
+  const isAll = st.currency === 'ALL';
+  const unitCurr = isAll ? 'TWD' : st.currency;
+  const money = v => fmtCurrency(v, unitCurr);
+  const amtOf = (t, isIncome) => isAll
+    ? (isIncome ? resolveIncomeAmountTwd(t) : resolveExpenseAmountTwd(t, accounts, fxRates))
+    : (t.amount || 0);
+  const pick = (list, from, to) => (list||[]).filter(t => t.date >= from && t.date <= to && (isAll || txnCurr(t) === st.currency));
+
+  const incCur = pick(state.incomeTxns, range.from, range.to), incPrev = pick(state.incomeTxns, range.prevFrom, range.prevTo);
+  const expCur = pick(state.expenseTxns, range.from, range.to), expPrev = pick(state.expenseTxns, range.prevFrom, range.prevTo);
+  const sumOf = (list, isIncome) => list.reduce((s,t)=>s+amtOf(t,isIncome),0);
+
+  // ── 頁首：返回、類型切換 ──
+  const top = el('div','rpt-top');
+  top.innerHTML = `
+    <button type="button" class="rpt-back" data-rpt-back aria-label="回收支紀錄">‹</button>
+    <div class="rpt-seg" role="tablist">
+      ${[['expense','支出'],['income','收入'],['balance','結餘']].map(([k,l]) =>
+        `<button type="button" role="tab" aria-selected="${st.kind===k}" class="${st.kind===k?'on':''}" data-rpt-kind="${k}">${l}</button>`).join('')}
+    </div>`;
+  content.appendChild(top);
+  top.querySelector('[data-rpt-back]').addEventListener('click', () => navigate('calendar'));
+  top.querySelectorAll('[data-rpt-kind]').forEach(b => b.addEventListener('click', () => { st.kind = b.dataset.rptKind; st.openCat = null; renderReport(); }));
+
+  // ── 期間頁籤 ──
+  const tabs = el('div','rpt-tabs');
+  tabs.innerHTML = [['month','月'],['6m','近 6 個月'],['year','年'],['custom','自訂']].map(([k,l]) =>
+    `<button type="button" class="${st.period===k?'on':''}" data-rpt-period="${k}">${l}</button>`).join('');
+  content.appendChild(tabs);
+  tabs.querySelectorAll('[data-rpt-period]').forEach(b => b.addEventListener('click', () => { st.period = b.dataset.rptPeriod; st.openCat = null; renderReport(); }));
+
+  // ── 期間導覽＋幣別 ──
+  const navRow = el('div','rpt-navrow');
+  if (st.period === 'custom') {
+    navRow.innerHTML = `
+      <div class="rpt-custom">
+        <input type="date" value="${st.from}" data-rpt-from aria-label="開始日期">
+        <span>–</span>
+        <input type="date" value="${st.to}" data-rpt-to aria-label="結束日期">
+      </div>`;
+  } else {
+    navRow.innerHTML = `
+      <div class="rpt-nav">
+        <button type="button" data-rpt-step="-1" aria-label="上一期">◀</button>
+        <span>${range.label}</span>
+        <button type="button" data-rpt-step="1" aria-label="下一期">▶</button>
+      </div>`;
+  }
+  const currSel = el('select','rpt-curr');
+  currSel.setAttribute('aria-label','幣別');
+  currSel.innerHTML = `<option value="ALL">全幣別（TWD）</option>` + currsInUse.map(c => `<option value="${c}">只看 ${c}</option>`).join('');
+  currSel.value = st.currency;
+  currSel.addEventListener('change', () => { st.currency = currSel.value; renderReport(); });
+  navRow.appendChild(currSel);
+  content.appendChild(navRow);
+  navRow.querySelectorAll('[data-rpt-step]').forEach(b => b.addEventListener('click', () => {
+    const step = Number(b.dataset.rptStep);
+    if (st.period === 'year') st.year += step;
+    else {
+      st.month += step * (st.period === '6m' ? 6 : 1);
+      while (st.month < 1) { st.month += 12; st.year--; }
+      while (st.month > 12) { st.month -= 12; st.year++; }
+    }
+    st.openCat = null; renderReport();
+  }));
+  const fromIn = navRow.querySelector('[data-rpt-from]'), toIn = navRow.querySelector('[data-rpt-to]');
+  if (fromIn) {
+    const apply = () => {
+      if (!fromIn.value || !toIn.value) return;
+      if (fromIn.value > toIn.value) { showToast('開始日期不能晚於結束日期'); return; }
+      st.from = fromIn.value; st.to = toIn.value; renderReport();
+    };
+    fromIn.addEventListener('change', apply); toIn.addEventListener('change', apply);
+  }
+
+  if (st.kind === 'balance') {
+    renderReportBalance(content, { range, incCur, expCur, incPrev, expPrev, sumOf, amtOf, money, unitCurr });
+    return;
+  }
+
+  // ── 支出／收入：依分類加總 ──
+  const isIncome = st.kind === 'income';
+  const cur  = isIncome ? incCur : expCur;
+  const prev = isIncome ? incPrev : expPrev;
+  const UNCAT = '__uncat__';
+  const group = list => {
+    const m = {};
+    list.forEach(t => { const k = catMap[t.category] ? t.category : UNCAT; m[k] = (m[k] ?? 0) + amtOf(t, isIncome); });
+    return m;
+  };
+  const byCat = group(cur), byCatPrev = group(prev);
+  const total = Object.values(byCat).reduce((s,v)=>s+v,0);
+  const totalPrev = Object.values(byCatPrev).reduce((s,v)=>s+v,0);
+  const catInfo = id => id === UNCAT
+    ? { label: '未分類', icon: isIncome ? '＋' : '➖', color: '#9CA3AF' }
+    : { label: catMap[id].label, icon: catMap[id].icon, color: catMap[id].active === false ? '#9CA3AF' : (catMap[id].color || '#6B7280') };
+  const entries = Object.entries(byCat).filter(([,v]) => v > 0).sort((a,b) => b[1]-a[1]);
+  // 同色的類別（例如自訂類別沿用預設色）在圖上會分不出來——遇到重複色就依序
+  // 微調明度，維持類別原本的色相。
+  const usedColors = new Set();
+  const colorOf = {};
+  entries.forEach(([id]) => {
+    let c = catInfo(id).color, n = 0;
+    while (usedColors.has(c.toLowerCase()) && n < 6) { n++; c = mixHexColors(catInfo(id).color, n % 2 ? '#FFFFFF' : '#000000', 1 - 0.18 * Math.ceil(n/2)); }
+    usedColors.add(c.toLowerCase()); colorOf[id] = c;
+  });
+  // 跟上一期比：支出變多是紅色↑、變少是綠色↓；收入相反。
+  const deltaHtml = (curV, prevV, small = false) => {
+    const d = curV - prevV;
+    if (Math.abs(d) < 0.5) return `<span class="rpt-delta" style="color:var(--text-3)">${small?'':'與'+range.prevLabel+'持平'}${small?'—':''}</span>`;
+    const good = isIncome ? d > 0 : d < 0;
+    return `<span class="rpt-delta" style="color:${good?'var(--green)':'var(--red)'}" title="跟${range.prevLabel}相比">${d>0?'↑':'↓'} ${money(Math.abs(d))}</span>`;
+  };
+
+  // ── 圖表卡片 ──
+  const chartCard = el('div','card rpt-card');
+  const kindLabel = isIncome ? '收入' : '支出';
+  if (total <= 0) {
+    chartCard.innerHTML = `<div class="rpt-empty"><div style="font-size:30px;margin-bottom:8px">${isIncome?'💰':'🧾'}</div>${range.label}沒有${kindLabel}紀錄</div>`;
+    content.appendChild(chartCard);
+    return;
+  }
+  const toggle = `<button type="button" class="rpt-chart-toggle" data-rpt-chart aria-label="${st.chart==='donut'?'改看長條圖':'改看甜甜圈圖'}" title="${st.chart==='donut'?'改看長條圖':'改看甜甜圈圖'}">
+      ${st.chart==='donut'
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M2 20h20"/></svg>'
+        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/></svg>'}
+    </button>`;
+  if (st.chart === 'donut') {
+    const R = 70, C = 2 * Math.PI * R, GAP = entries.length > 1 ? 2.5 : 0;
+    let acc = 0;
+    const arcs = entries.map(([id, v]) => {
+      const len = v / total * C;
+      const seg = `<circle cx="90" cy="90" r="${R}" fill="none" stroke="${colorOf[id]}" stroke-width="26"
+        stroke-dasharray="${Math.max(0.01, len - GAP).toFixed(2)} ${(C - Math.max(0.01, len - GAP)).toFixed(2)}" stroke-dashoffset="${(-acc).toFixed(2)}"
+        data-rpt-seg="${id}" style="cursor:pointer"><title>${catInfo(id).label} ${money(v)}（${(v/total*100).toFixed(1)}%）</title></circle>`;
+      acc += len; return seg;
+    }).join('');
+    chartCard.innerHTML = `${toggle}
+      <div class="rpt-donut">
+        <svg viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="${kindLabel}分類佔比">
+          <g transform="rotate(-90 90 90)">${arcs}</g>
+        </svg>
+        <div class="rpt-donut-center">
+          <div style="font-size:11px;color:var(--text-3);font-weight:600">總${kindLabel}</div>
+          <div class="rpt-big" style="font-size:${money(total).length > 11 ? 16 : money(total).length > 9 ? 19 : 22}px">${money(total)}</div>
+          ${deltaHtml(total, totalPrev, true)}
+        </div>
+      </div>`;
+    chartCard.querySelectorAll('[data-rpt-seg]').forEach(c => c.addEventListener('click', () => {
+      st.openCat = c.dataset.rptSeg; renderReport();
+      setTimeout(() => document.querySelector(`[data-rpt-row="${st.openCat}"]`)?.scrollIntoView({ behavior:'smooth', block:'center' }), 60);
+    }));
+  } else {
+    const maxPct = Math.max(...entries.map(([,v]) => v / total * 100));
+    const topPct = Math.min(100, Math.ceil(maxPct / 10) * 10 || 10);
+    const ticks = []; for (let p = 0; p <= topPct; p += topPct <= 30 ? 5 : 10) ticks.push(p);
+    chartCard.innerHTML = `${toggle}
+      <div class="rpt-bars-wrap">
+        <div class="rpt-yaxis">${ticks.map(p => `<span style="bottom:calc(24px + (100% - 24px) * ${p/topPct})">${p}%</span>`).join('')}</div>
+        <div class="rpt-bars">
+          ${ticks.map(p => `<i class="rpt-grid" style="bottom:calc(24px + (100% - 24px) * ${p/topPct})"></i>`).join('')}
+          ${entries.map(([id, v]) => {
+            const pct = v / total * 100;
+            return `<button type="button" class="rpt-bar" data-rpt-bar="${id}" aria-label="${catInfo(id).label} ${pct.toFixed(1)}%">
+              <span class="rpt-bar-fill" style="height:${Math.max(1.5, pct/topPct*100)}%;background:${colorOf[id]}"></span>
+              <span class="rpt-bar-lbl">${catInfo(id).label}</span>
+            </button>`;
+          }).join('')}
+          <div class="rpt-tip" hidden></div>
+        </div>
+      </div>`;
+    const tip = chartCard.querySelector('.rpt-tip');
+    chartCard.querySelectorAll('[data-rpt-bar]').forEach(b => b.addEventListener('click', () => {
+      const id = b.dataset.rptBar, v = byCat[id];
+      chartCard.querySelectorAll('.rpt-bar').forEach(x => x.classList.toggle('dim', x !== b));
+      tip.innerHTML = `<b>${catInfo(id).icon??''} ${catInfo(id).label}</b><br>${money(v)}<br>${(v/total*100).toFixed(2)}%`;
+      tip.hidden = false;
+      const fill = b.querySelector('.rpt-bar-fill');
+      const barsW = b.parentElement.clientWidth;
+      const tipW = tip.offsetWidth;
+      // 提示框貼在長條正上方；靠邊的長條要往內收，避免被卡片邊緣切掉。
+      const left = Math.min(Math.max(b.offsetLeft + b.offsetWidth / 2, tipW / 2 + 2), barsW - tipW / 2 - 2);
+      tip.style.left = `${left}px`;
+      tip.style.bottom = `${24 + fill.offsetHeight + 8}px`;
+    }));
+  }
+  chartCard.querySelector('[data-rpt-chart]').addEventListener('click', () => { st.chart = st.chart === 'donut' ? 'bar' : 'donut'; renderReport(); });
+  content.appendChild(chartCard);
+
+  // ── 圖例（兩欄、百分比）──
+  const legend = el('div','card rpt-card rpt-legend');
+  legend.innerHTML = entries.map(([id, v]) => `
+    <div class="rpt-leg"><i style="background:${colorOf[id]}"></i><span>${catInfo(id).label}</span><b>${(v/total*100).toFixed(1).replace(/\.0$/,'')}%</b></div>`).join('');
+  content.appendChild(legend);
+
+  // ── 多月份期間：每月走勢 ──
+  if (range.multiMonth) content.appendChild(buildReportMonthlyCard(range, cur, isIncome, amtOf, money, isIncome ? 'var(--green)' : 'var(--red)', `每月${kindLabel}`));
+
+  // ── 分類明細（可排序；點一列展開該分類的每一筆紀錄）──
+  const detail = el('div','card rpt-card');
+  detail.style.padding = '0';
+  const rows = st.sort === 'desc' ? entries : entries.slice().reverse();
+  // 上一期有、這一期完全沒有的分類，也列在最後（金額 0），才看得出「這期沒花」。
+  const goneCats = Object.entries(byCatPrev).filter(([id,v]) => v > 0 && !(byCat[id] > 0));
+  detail.innerHTML = `
+    <div class="rpt-detail-head">
+      <span>${kindLabel}明細</span>
+      <span style="font-size:11px;color:var(--text-3);font-weight:500;margin-left:6px">箭頭＝跟${range.prevLabel}相比</span>
+      <button type="button" class="rpt-sort" data-rpt-sort aria-label="切換排序">${st.sort==='desc'?'金額 ↓':'金額 ↑'}</button>
+    </div>`;
+  detail.querySelector('[data-rpt-sort]').addEventListener('click', () => { st.sort = st.sort === 'desc' ? 'asc' : 'desc'; renderReport(); });
+  [...rows, ...goneCats.map(([id]) => [id, 0])].forEach(([id, v]) => {
+    const info = catInfo(id);
+    const row = el('div','rpt-row');
+    row.dataset.rptRow = id;
+    const open = st.openCat === id && v > 0;
+    row.innerHTML = `
+      <button type="button" class="rpt-row-main" ${v>0?'':'disabled'} aria-expanded="${open}">
+        <span class="rpt-ico" style="background:${(colorOf[id]||info.color)}22">${info.icon??'·'}</span>
+        <span class="rpt-row-name">${info.label}${catMap[id]?.active===false?'<em>已停用</em>':''}</span>
+        <span class="rpt-row-amt"><b>${money(v)}</b>${deltaHtml(v, byCatPrev[id] ?? 0, true)}</span>
+      </button>`;
+    if (v > 0) row.querySelector('.rpt-row-main').addEventListener('click', () => { st.openCat = open ? null : id; renderReport(); });
+    if (open) {
+      const list = el('div','rpt-txns');
+      cur.filter(t => (catMap[t.category] ? t.category : UNCAT) === id)
+        .sort((a,b) => b.date.localeCompare(a.date))
+        .forEach(t => {
+          const r = el('div','rpt-txn');
+          const showOrig = isAll && t.currency && t.currency !== 'TWD';
+          r.innerHTML = `
+            <span class="rpt-txn-date">${t.date.slice(5).replace('-','/')}</span>
+            <span class="rpt-txn-desc">${t.description || info.label}</span>
+            <span class="rpt-txn-amt">${money(amtOf(t, isIncome))}${showOrig?`<small>${fmtCurrency(t.amount, t.currency)}</small>`:''}</span>
+            <button type="button" class="btn btn-ghost btn-sm" data-e>編輯</button>
+            <button type="button" class="btn btn-ghost btn-sm" style="color:var(--red)" data-d>刪除</button>`;
+          r.querySelector('[data-e]').addEventListener('click', () => isIncome ? openIncomeModal(t) : openExpenseModal(t));
+          r.querySelector('[data-d]').addEventListener('click', () => openDeleteModal(`確定要刪除「${t.description||info.label}」這筆${kindLabel}記錄嗎？`, async () => {
+            await deleteTxnRecord(t, isIncome); showToast('已刪除'); await renderReport();
+          }));
+          list.appendChild(r);
+        });
+      row.appendChild(list);
+    }
+    detail.appendChild(row);
+  });
+  content.appendChild(detail);
+}
+
+// 結餘：收入、支出、結餘三個數字＋收支對照長條圖（單月逐日、多月逐月）。
+function renderReportBalance(content, { range, incCur, expCur, incPrev, expPrev, sumOf, amtOf, money }) {
+  const inc = sumOf(incCur, true), exp = sumOf(expCur, false), bal = inc - exp;
+  const pBal = sumOf(incPrev, true) - sumOf(expPrev, false);
+  const d = bal - pBal;
+  const summary = el('div','card rpt-card');
+  summary.innerHTML = `
+    <div style="text-align:center;padding:4px 0 14px">
+      <div style="font-size:12px;color:var(--text-3);font-weight:600">${range.label}結餘</div>
+      <div class="rpt-big" style="font-size:30px;color:${bal>=0?'var(--text-1)':'var(--red)'}">${bal<0?'−':''}${money(Math.abs(bal))}</div>
+      ${Math.abs(d) >= 0.5 ? `<span class="rpt-delta" style="color:${d>0?'var(--green)':'var(--red)'}">${d>0?'↑':'↓'} ${money(Math.abs(d))}（比${range.prevLabel}）</span>` : `<span class="rpt-delta" style="color:var(--text-3)">與${range.prevLabel}持平</span>`}
+    </div>
+    <div class="rpt-bal-split">
+      <div><span>收入</span><b style="color:var(--green)">${money(inc)}</b></div>
+      <div><span>支出</span><b style="color:var(--red)">${money(exp)}</b></div>
+      <div><span>儲蓄率</span><b>${inc > 0 ? Math.round(bal / inc * 100) + '%' : '—'}</b></div>
+    </div>`;
+  content.appendChild(summary);
+
+  // 收支對照：逐日（單月）或逐月（多月）。
+  const buckets = [];
+  if (range.multiMonth) {
+    let [y, m] = range.from.slice(0,7).split('-').map(Number);
+    const [ey, em] = range.to.slice(0,7).split('-').map(Number);
+    while (y < ey || (y === ey && m <= em)) { buckets.push({ key: `${y}-${String(m).padStart(2,'0')}`, label: `${m}月` }); m++; if (m > 12) { m = 1; y++; } }
+  } else {
+    const days = new Date(+range.from.slice(0,4), +range.from.slice(5,7), 0).getDate();
+    for (let i = 1; i <= days; i++) buckets.push({ key: `${range.from.slice(0,7)}-${String(i).padStart(2,'0')}`, label: i % 5 === 1 ? String(i) : '' });
+  }
+  const keyOf = t => range.multiMonth ? t.date.slice(0,7) : t.date;
+  const incBy = {}, expBy = {};
+  incCur.forEach(t => { incBy[keyOf(t)] = (incBy[keyOf(t)] ?? 0) + amtOf(t, true); });
+  expCur.forEach(t => { expBy[keyOf(t)] = (expBy[keyOf(t)] ?? 0) + amtOf(t, false); });
+  const card = el('div','card rpt-card');
+  if (!range.multiMonth) {
+    // 單月：逐日長條圖會被發薪日那一根壓扁（其他天的支出幾乎看不見），所以
+    // 改畫「本月累計結餘」折線——每天收入加上去、支出扣掉，看得出錢是在哪幾天
+    // 流出去的。
+    let run = 0;
+    const pts = buckets.map(bk => { run += (incBy[bk.key] ?? 0) - (expBy[bk.key] ?? 0); return run; });
+    const lo = Math.min(0, ...pts), hi = Math.max(0, ...pts), span = (hi - lo) || 1;
+    const W = 320, H = 140, n = pts.length;
+    const x = i => n > 1 ? (i / (n - 1)) * W : W / 2;
+    const y = v => H - ((v - lo) / span) * H;
+    const today = isoDate(new Date());
+    // 本月還沒過完的話，線只畫到今天，不把未來的日子畫成一條平線。
+    const lastIdx = Math.max(0, buckets.findIndex(bk => bk.key > today) - 1);
+    const endIdx = buckets.some(bk => bk.key > today) ? lastIdx : n - 1;
+    const endVal = pts[endIdx];
+    const line = pts.slice(0, endIdx + 1).map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    card.innerHTML = `
+      <div class="rpt-sub-head">本月累計結餘<span style="margin-left:auto;font-size:12px;font-weight:700;color:${endVal>=0?'var(--green)':'var(--red)'}">${endVal<0?'−':''}${money(Math.abs(endVal))}</span></div>
+      <svg viewBox="-4 -8 ${W + 8} ${H + 30}" width="100%" style="display:block;overflow:visible" role="img" aria-label="本月累計結餘走勢">
+        <defs><linearGradient id="rptBalFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--blue)" stop-opacity=".22"/><stop offset="1" stop-color="var(--blue)" stop-opacity="0"/></linearGradient></defs>
+        <line x1="0" x2="${W}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="var(--border)" stroke-dasharray="3 3"/>
+        <path d="${line} L${x(endIdx).toFixed(1)},${y(lo).toFixed(1)} L0,${y(lo).toFixed(1)} Z" fill="url(#rptBalFill)"/>
+        <path d="${line}" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="${x(endIdx).toFixed(1)}" cy="${y(endVal).toFixed(1)}" r="4" fill="#fff" stroke="var(--blue)" stroke-width="2.2"/>
+        ${buckets.map((bk, i) => bk.label ? `<text x="${x(i).toFixed(1)}" y="${H + 20}" font-size="10" text-anchor="middle" fill="var(--text-3)">${bk.label}</text>` : '').join('')}
+      </svg>`;
+    content.appendChild(card);
+    return;
+  }
+  const max = Math.max(1, ...buckets.map(b => Math.max(incBy[b.key] ?? 0, expBy[b.key] ?? 0)));
+  card.innerHTML = `
+    <div class="rpt-sub-head">每月收支
+      <span class="rpt-key"><i style="background:var(--green)"></i>收入<i style="background:var(--red)"></i>支出</span></div>
+    <div class="rpt-pairs">
+      ${buckets.map(b => {
+        const i = incBy[b.key] ?? 0, e = expBy[b.key] ?? 0;
+        return `<div class="rpt-pair" title="${b.key}　收入 ${money(i)}　支出 ${money(e)}">
+          <div class="rpt-pair-bars"><span style="height:${i/max*100}%;background:var(--green)"></span><span style="height:${e/max*100}%;background:var(--red)"></span></div>
+          <span class="rpt-pair-lbl">${b.label}</span></div>`;
+      }).join('')}
+    </div>`;
+  content.appendChild(card);
+}
+
+// 多月份期間的「每月走勢」小長條圖（支出／收入頁共用）。
+function buildReportMonthlyCard(range, list, isIncome, amtOf, money, color, title) {
+  const months = [];
+  let [y, m] = range.from.slice(0,7).split('-').map(Number);
+  const [ey, em] = range.to.slice(0,7).split('-').map(Number);
+  while (y < ey || (y === ey && m <= em)) { months.push(`${y}-${String(m).padStart(2,'0')}`); m++; if (m > 12) { m = 1; y++; } }
+  const by = {};
+  list.forEach(t => { const k = t.date.slice(0,7); by[k] = (by[k] ?? 0) + amtOf(t, isIncome); });
+  const max = Math.max(1, ...months.map(k => by[k] ?? 0));
+  const avg = months.length ? months.reduce((s,k)=>s+(by[k]??0),0) / months.length : 0;
+  const card = el('div','card rpt-card');
+  card.innerHTML = `
+    <div class="rpt-sub-head">${title}<span style="margin-left:auto;font-size:11px;color:var(--text-3);font-weight:500">月平均 ${money(avg)}</span></div>
+    <div class="rpt-pairs">
+      ${months.map(k => `<div class="rpt-pair" title="${k}　${money(by[k] ?? 0)}">
+        <div class="rpt-pair-bars"><span style="height:${(by[k]??0)/max*100}%;background:${color};width:60%"></span></div>
+        <span class="rpt-pair-lbl">${+k.slice(5)}月</span></div>`).join('')}
+    </div>`;
+  return card;
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -11104,27 +11576,51 @@ let _txnManageActiveTab = null;
 // 頁，同一頁再點一次格子會回到方格選單本身（方便來回切換，不需要額外的
 // 「返回」按鈕）。「資金池」這次沒有一併併入這個方格（見廿一之六，使用者
 // 只確認了落點、動工方式還沒查證，維持獨立側邊欄項目，這批不動它）。
+let _txnManageRenderToken = 0;
 async function renderTxnManage() {
   const content = document.getElementById('content');
   content.innerHTML = '';
 
   if (!_txnManageActiveTab) {
-    const grid = el('div');
-    grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px';
-    for (const tab of TXN_MANAGE_TABS) {
-      const cell = el('div','card');
-      cell.style.cssText = 'padding:16px 14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;justify-content:center;min-height:96px';
-      cell.setAttribute('role','button');
-      let summaryText = '';
-      try { summaryText = await tab.summary(); } catch { summaryText = ''; }
-      cell.innerHTML = `
-        <div style="font-size:26px">${tab.icon}</div>
-        <div style="font-size:13px;font-weight:600">${tab.label}</div>
-        <div style="font-size:11px;color:var(--text-3)">${summaryText}</div>`;
-      cell.addEventListener('click', () => { _txnManageActiveTab = tab.key; renderTxnManage(); });
-      grid.appendChild(cell);
+    // v2.3.0（使用者要求：11 個區塊要不用上下滑動就能一次看完）：從 2 欄改成
+    // 3 欄、方塊縮小，並依用途分三組（支出／收入與轉帳／規劃）。iPhone 寬度
+    // 下整頁高度約 520px，扣掉上方標題列與底部導覽列仍有餘裕。
+    const groups = [
+      { title:'支出', keys:['creditcard','recurring','subscriptions','insurance_exp','installment'] },
+      { title:'收入與轉帳', keys:['recurring_income','rectransfer','dcaschedule'] },
+      { title:'規劃', keys:['budgetplan','goals','incomeAllocation'] },
+    ];
+    const listed = new Set(groups.flatMap(g => g.keys));
+    const leftovers = TXN_MANAGE_TABS.filter(t => !listed.has(t.key)).map(t => t.key);
+    if (leftovers.length) groups[groups.length-1].keys.push(...leftovers);
+    const token = ++_txnManageRenderToken;
+    const summaries = await Promise.all(TXN_MANAGE_TABS.map(t => t.summary().catch(() => '')));
+    // 連點兩下（或其他地方同時觸發重畫）時，只讓最後一次畫面生效，避免方塊重複出現兩份。
+    if (token !== _txnManageRenderToken) return;
+    const sumOf = Object.fromEntries(TXN_MANAGE_TABS.map((t,i) => [t.key, summaries[i]]));
+    const wrap = el('div','tm-wrap');
+    for (const g of groups) {
+      const sec = el('section','tm-sec');
+      sec.innerHTML = `<h3 class="tm-sec-title">${g.title}</h3>`;
+      const grid = el('div','tm-grid');
+      for (const key of g.keys) {
+        const tab = TXN_MANAGE_TABS.find(t => t.key === key);
+        if (!tab) continue;
+        const cell = el('button','tm-tile');
+        cell.type = 'button';
+        const summaryText = sumOf[key] || '';
+        const muted = /^0 |尚未設定|^0個/.test(summaryText);
+        cell.innerHTML = `
+          <span class="tm-ico">${tab.icon}</span>
+          <span class="tm-label">${tab.label}</span>
+          <span class="tm-sum${muted?' muted':''}">${summaryText}</span>`;
+        cell.addEventListener('click', () => { _txnManageActiveTab = tab.key; renderTxnManage(); });
+        grid.appendChild(cell);
+      }
+      sec.appendChild(grid);
+      wrap.appendChild(sec);
     }
-    content.appendChild(grid);
+    content.appendChild(wrap);
     return;
   }
 
@@ -12020,7 +12516,8 @@ document.getElementById('expenseModalSave').addEventListener('click', async () =
 // === 'goals' 保留當 safety net。§四十一之七：「App 訂閱」跟「定期支出」共用
 // renderRecurring()。
 async function refreshAfterExpenseSaved() {
-  if (currentView === 'goals') await renderBuckets();
+  if (currentView === 'report') await renderReport();
+  else if (currentView === 'goals') await renderBuckets();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'goals') await renderBuckets();
   else if (currentView === 'txnmanage' && (_txnManageActiveTab === 'recurring' || _txnManageActiveTab === 'subscriptions')) await renderRecurring();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'installment') await renderInstallment();
@@ -12031,7 +12528,7 @@ async function refreshAfterExpenseSaved() {
 // ════════════════════════════════════════════════════════════════════════════
 // INCOME MODAL
 // ════════════════════════════════════════════════════════════════════════════
-async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null) {
+async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null, prefillGeneral=null) {
   await loadData();
   const { accounts, banks, brokerages, holdings, receivables, fxRates } = state;
   const bankMap = Object.fromEntries(banks.map(b=>[b.id,b]));
@@ -12057,7 +12554,7 @@ async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null
   // §卅六：原本這裡沒有讀 prefillDca?.date，不管「確認本期」是哪一天到期都
   // 一律用今天——現在補上，跟 openExpenseModal 的 txn?.date ?? prefill?.date
   // ?? today 是同一個寫法。
-  document.getElementById('incomeDate').value = txn?.date ?? prefillDca?.date ?? today;
+  document.getElementById('incomeDate').value = txn?.date ?? prefillDca?.date ?? prefillGeneral?.date ?? today;
   document.getElementById('incomeDesc').value = txn?.description ?? (prefillReceivable ? `${prefillReceivable.name} 結清入帳` : (prefillDca ? prefillDca.description : ''));
   document.getElementById('incomeAmount').value = txn?.amount ?? (prefillReceivable ? (prefillReceivable.total_amount - prefillReceivable.received_amount) : '');
   document.getElementById('incomeNote').value = txn?.note ?? '';
@@ -12095,7 +12592,7 @@ async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null
   foreignToggle.checked = false;
   const incomeCurrPrefs = await loadCurrencyPrefs(ALL_CURRENCY_CODES);
   function populateIncomeAccountOptions() {
-    const { visible, hiddenCount } = filterAccountsByCurrencyPrefs(accounts, incomeCurrPrefs, selectedAccId, foreignToggle.checked);
+    const { visible, hiddenCount } = filterAccountsByCurrencyPrefs(accounts, incomeCurrPrefs, selectedAccId, foreignToggle.checked, 'income');
     document.getElementById('incomeAccShowForeignWrap').style.display = (hiddenCount > 0 || foreignToggle.checked) ? 'inline-flex' : 'none';
     accSel.innerHTML = `<option value="">── 不更新帳戶餘額 ──</option>` +
       visible.map(a => {
@@ -12135,7 +12632,7 @@ async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null
     accounts.push(newAcc);
     quickAddForm.style.display = 'none';
     showToast('現金帳戶已新增');
-    if (!isCurrencyInPicker(incomeCurrPrefs, 'TWD')) foreignToggle.checked = true;
+    if (!isCurrencyInPicker(incomeCurrPrefs, 'TWD', 'income')) foreignToggle.checked = true;
     populateIncomeAccountOptions();
     accSel.value = newAcc.id;
     accSel.dispatchEvent(new Event('change'));
@@ -12271,7 +12768,12 @@ async function saveIncomeRecord(input) {
   let oldTxn = null;
   if (editId) {
     oldTxn = await getOne(db, 'income_txns', editId);
-    if (oldTxn) await reverseTxnBalanceEffect(oldTxn, true);
+    if (oldTxn) {
+      await reverseTxnBalanceEffect(oldTxn, true);
+      // v2.3.0：應收款已收金額、定期定額股數也一起先撤銷，再由下面用新值重新
+      // 套用——編輯不會再重複累加（見 reverseIncomeSideEffects）。
+      await reverseIncomeSideEffects(oldTxn);
+    }
   }
   const acc = accId ? await getOne(db, 'accounts', accId) : null;
 
@@ -12337,7 +12839,7 @@ async function saveIncomeRecord(input) {
       ...recvRecord, received_amount: newReceived,
       is_settled: newReceived >= recvRecord.total_amount,
     });
-    await addReceivablePayment(recvRecord.id, txn.date, newReceived - recvRecord.received_amount, txn.description || '收入記帳結清', applyNow ? (acc?.id ?? null) : null);
+    await addReceivablePayment(recvRecord.id, txn.date, newReceived - recvRecord.received_amount, txn.description || '收入記帳結清', applyNow ? (acc?.id ?? null) : null, txn.id);
   }
 
   // §卅八／§四十三之三：從「定期定額」的「確認本期」存過來的——記下排程 id、
@@ -12414,7 +12916,8 @@ document.getElementById('incomeModalSave').addEventListener('click', async () =>
 // 這個彈窗可以從收支紀錄、帳戶管理（應收款結清）、資產總覽（應收款結清）、
 // 定期定額排程頁（確認本期）打開，存完要留在原頁籤。
 async function refreshAfterIncomeSaved() {
-  if (currentView === 'settings') await renderSettings();
+  if (currentView === 'report') await renderReport();
+  else if (currentView === 'settings') await renderSettings();
   else if (currentView === 'assets') await renderAssets();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'dcaschedule') await renderDcaSchedules();
   else await renderCalendar();
