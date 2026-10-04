@@ -69,7 +69,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .nav-item.disabled{opacity:.35;cursor:default;pointer-events:none}
 .nav-item svg{flex-shrink:0;opacity:.7}
 .nav-item.active svg{opacity:1}
-.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100dvh}
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100dvh;min-width:0}
 
 /* ── Bottom nav（§廿三之五，2026-09-26）──
    手機版「導覽架構」第二層改動：桌面版維持原本的側邊欄（.sidebar，上面那些
@@ -120,7 +120,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .topbar{min-height:var(--header-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:env(safe-area-inset-top) 24px 0;gap:12px;position:sticky;top:0;z-index:50}
 .topbar-title{font-size:15px;font-weight:600;flex:1}
 .topbar-right{display:flex;align-items:center;gap:8px}
-.content{padding:24px;display:flex;flex-direction:column;gap:16px;max-width:1100px}
+.content{padding:24px;display:flex;flex-direction:column;gap:16px;max-width:1100px;min-width:0}
 
 /* ── Collapsible card ── */
 .card{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden}
@@ -553,6 +553,28 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 @media(min-width:769px){.home-tiles{grid-template-columns:repeat(4,1fr)}.home-hero .networth-amount{font-size:44px}}
 @media(max-width:768px){.home-hero .networth-amount{font-size:32px}}
 [hidden]{display:none!important}
+/* ── v2.4.1 月曆標頭：不論年月幾位數都維持單行；「今天」與「報表」改成
+   不會被擠成直排的緊湊按鈕（報表為圓形圖示按鈕）。 ── */
+.cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap;min-width:0;overflow:hidden}
+.cal-card{min-width:0;max-width:100%}
+.cal-head-month{display:flex;align-items:center;gap:2px;flex:0 0 auto}
+.cal-head-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.cal-head .cal-nav{flex:0 0 auto}
+.cal-title{white-space:nowrap;min-width:0;font-size:clamp(14px,4.3vw,17px);padding:4px 4px;letter-spacing:-.01em}
+.cal-title small{font-size:.78em;font-weight:600;color:var(--text-2);margin:0 2px}
+.cal-today-btn{margin-left:0;white-space:nowrap;flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 5px;writing-mode:horizontal-tb}
+.cal-today-ico{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:var(--blue);color:#fff;font-size:10.5px;font-weight:800;font-variant-numeric:tabular-nums;position:relative}
+.cal-today-ico::before{content:'';position:absolute;top:-2px;left:4px;right:4px;height:3px;border-left:2px solid var(--blue);border-right:2px solid var(--blue)}
+.cal-icon-btn{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:#fff;color:var(--text-2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s,color .15s}
+.cal-icon-btn:hover{border-color:var(--blue);color:var(--blue)}
+.cal-head.fit-1 .cal-today-btn{font-size:0;gap:0;padding:4px;width:34px;height:34px;justify-content:center;border-radius:50%}
+.cal-head.fit-1 .cal-today-ico{font-size:10.5px}
+.cal-head.fit-2 .cal-title{font-size:14px;padding:4px 2px}
+.cal-head.fit-2 .cal-nav{width:26px;height:26px}
+.cal-head.fit-3{gap:4px}
+.cal-head.fit-3 .cal-title{font-size:12.5px!important}
+.cal-head.fit-3 .cal-title svg{display:none}
+.cal-head.fit-3 .cal-icon-btn,.cal-head.fit-3 .cal-today-btn{width:30px;height:30px}
 </style>
 </head>
 <body>
@@ -582,10 +604,6 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
     <a class="nav-item" href="#" data-view="calendar">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
       收支紀錄
-    </a>
-    <a class="nav-item" href="#" data-view="report">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/></svg>
-      帳務報表
     </a>
     <a class="nav-item" href="#" data-view="trend">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
@@ -701,11 +719,6 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 <div class="bottom-sheet-backdrop" id="moreSheetBackdrop"></div>
 <div class="bottom-sheet" id="moreSheet">
   <div class="bottom-sheet-handle"></div>
-  <div class="nav-section">帳務</div>
-  <a class="nav-item" href="#" data-view="report">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/></svg>
-    帳務報表
-  </a>
   <div class="nav-section">管理</div>
   <a class="nav-item" href="#" data-view="settings">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
@@ -1423,7 +1436,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
       <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
         <input type="checkbox" id="bucketIsEmergencyFund">作為緊急預備金
       </label>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">「本月收入分配」試算如果發現本月收入不夠支應固定支出，會自動從這個存錢計畫扣一筆（虛擬），並在該筆紀錄註明原因。同時間只能有一個存錢計畫是緊急預備金，勾選這個會自動取消其他存錢計畫的勾選。</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">每個月如果收入不夠支應「設定預算」裡的固定金額類別，會自動從這個存錢計畫扣一筆（虛擬），並在該筆紀錄註明原因。同時間只能有一個存錢計畫是緊急預備金，勾選這個會自動取消其他存錢計畫的勾選。</div>
     </div>
     <div class="modal-field">
       <label>備註（選填）</label>
@@ -2602,19 +2615,16 @@ const THEME_CSS_VAR_NAMES = { navy:'--navy', navyMid:'--navy-mid', navyLight:'--
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.4.0';
+const APP_VERSION = 'v2.4.1';
 const CHANGELOG_LAST_UPDATED = '2026-10-04';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '首頁改成一頁看完：總資產下方是資產配置色條＋各類別小方塊，點方塊才展開那一類的明細',
-  '首頁「近期到期／即將繳款」只提醒 5 天內的項目（已逾期的照樣列出）',
-  '收支紀錄：點年月可以直接選年份與月份；新增「今天」按鈕，一鍵回到今天的紀錄',
-  '「帳戶移轉」移進記帳管理（轉帳與收入那一組）',
-  '頂端的匯出／匯入按鈕移除，統一在「設定 › 資料與紀錄」操作',
-  '修正「設定預算」與快速設定精靈同一個月改過預算後，可能顯示舊數字的問題——兩邊改的是同一個「本月總預算」，以最後存的為準',
+  '收入分配只保留「收入分配法」一個入口：「設定預算」拿掉重複的「本月收入分配」試算卡，類別預算只填每月固定上限',
+  '收支紀錄的年月不論幾位數都維持一行；「今天」改成橫式的小日曆按鈕，「報表」改成圓形圖示按鈕',
+  '帳務報表只從收支紀錄進入，「更多」選單與側邊欄不再重複列出',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -6839,68 +6849,14 @@ async function renderBudgetPlan() {
   const totalSpent  = calcMonthlyExpenseTotal(expenseTxns, thisMonth, accounts, fxRates);
   const allocated   = calcAllocatedBudget(budgets, expenseCats.map(c=>c.id), thisMonth);
 
-  // ── 本月收入分配（Income Allocation Cascade） ──────────────────────────
-  // 本月收入 → 資金池提撥 → 固定支出類別 → 百分比類別（如可投資股票）→
-  // 剩餘平分類別。見 calc.js 的 calcIncomeAllocationCascade 與
-  // index.html 的 syncEmergencyFundShortfall（自動處理收入不足時的
-  // 緊急預備金動用）。這裡純粹是顯示，實際的自動提撥/動用寫入已經在
-  // init／收入異動／資金池儲存時同步完成，不需要在畫面渲染時另外寫入。
-  const monthlyIncomeTotal = calcMonthlyIncomeTotal(incomeTxns, thisMonth, INCOME_PERCENT_EXCLUDED_CATEGORIES);
-  const activeBuckets = buckets.filter(b => b.status !== 'closed');
-  const bucketContributions = activeBuckets.map(b => ({
-    id: b.id, name: b.name, amount: calcBucketMonthlyContribution(b, monthlyIncomeTotal) || 0,
-  }));
-  const categoryBudgetsForCascade = buildCategoryBudgetsForCascade(budgets, expenseCats, thisMonth);
-  const cascade = calcIncomeAllocationCascade(monthlyIncomeTotal, bucketContributions, categoryBudgetsForCascade);
-  const emergencyBucket = buckets.find(b => b.is_emergency_fund && b.status !== 'closed');
-
   const content = _activeContentContainer;
   content.innerHTML = '';
 
-  if (expenseCats.length > 0) {
-    const cascadeCard = el('div','card');
-    cascadeCard.style.cssText = 'margin-bottom:16px;padding:16px 18px';
-    const stepRow = (label, amount, opts={}) => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12.5px;${opts.dim?'color:var(--text-3)':''}">
-        <span>${label}</span>
-        <span style="font-weight:${opts.bold?'700':'600'};font-variant-numeric:tabular-nums;${opts.red?'color:var(--red)':''}">${amount}</span>
-      </div>`;
-    let html = `<div style="font-size:13.5px;font-weight:700;margin-bottom:8px">🌊 本月收入分配</div>`;
-    html += stepRow('本月收入（薪水、利息、二手交易等，不含應收款）', `NT$ ${fmt(cascade.income)}`, {bold:true});
-    if (cascade.buckets.length > 0) {
-      html += `<div style="margin-top:6px;font-size:11.5px;color:var(--text-3)">－ 存錢計畫提撥</div>`;
-      cascade.buckets.forEach(b => html += stepRow(`　${b.name}`, `－NT$ ${fmt(b.amount)}`, {dim:true}));
-    }
-    html += stepRow('剩餘（扣除存錢計畫提撥）', `NT$ ${fmt(cascade.afterBuckets)}`);
-    if (cascade.fixedCategories.length > 0) {
-      html += `<div style="margin-top:6px;font-size:11.5px;color:var(--text-3)">－ 固定支出類別</div>`;
-      cascade.fixedCategories.forEach(c => html += stepRow(`　${c.name}`, `－NT$ ${fmt(c.amount)}`, {dim:true}));
-    }
-    html += stepRow('剩餘（扣除固定支出）', `NT$ ${fmt(cascade.afterFixed)}`, {red: cascade.afterFixed < 0});
-    if (cascade.shortfall > 0) {
-      html += `<div style="margin-top:8px;padding:8px 10px;border-radius:7px;background:#FEF2F2;border:1px solid #FECACA;color:#B91C1C;font-size:11.5px;line-height:1.6">
-        ⚠ 本月收入不足以支應已知固定支出，短缺 NT$ ${fmt(cascade.shortfall)}
-        ${emergencyBucket ? `，已自動由「${emergencyBucket.name}」支應（該存錢計畫會多一筆自動動用紀錄）` : '，且尚未指定緊急預備金存錢計畫 —— 請到「存錢計畫」編輯一個存錢計畫、勾選「作為緊急預備金」'}
-      </div>`;
-    }
-    if (cascade.percentCategories.length > 0) {
-      html += `<div style="margin-top:6px;font-size:11.5px;color:var(--text-3)">－ 百分比類別（可投資股票等，佔剩餘金額的比例）</div>`;
-      cascade.percentCategories.forEach(c => html += stepRow(`　${c.name}（${c.percent}%）`, `－NT$ ${fmt(c.amount)}`, {dim:true}));
-      html += stepRow('剩餘（扣除百分比類別）', `NT$ ${fmt(cascade.afterPercent)}`);
-    }
-    if (cascade.remainderCategories.length > 0) {
-      html += `<div style="margin-top:6px;font-size:11.5px;color:var(--text-3)">－ 剩餘平分類別（共 ${cascade.remainderCategories.length} 項）</div>`;
-      cascade.remainderCategories.forEach(c => html += stepRow(`　${c.name}`, `NT$ ${fmt(c.amount)}`, {dim:true}));
-    }
-    html += `<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)">` +
-      stepRow('本月收支結餘', `NT$ ${fmt(cascade.netSettlement)}`, {bold:true, red: cascade.netSettlement < 0}) + `</div>`;
-    if (cascade.netSettlement < 0) {
-      html += `<div style="margin-top:4px;font-size:11px;color:var(--text-3)">結餘為負代表這個月已知要花的錢比收入多，短缺的部分是上面緊急預備金支應的金額。</div>`;
-    }
-    cascadeCard.innerHTML = html;
-    content.appendChild(cascadeCard);
-  }
-
+  // v2.4.1（使用者要求「收入分配只保留一個、入口只留一個」）：原本這裡有一張
+  // 「🌊 本月收入分配」試算卡，跟記帳管理裡的「收入分配法」重複，已移除——
+  // 依收入比例分配一律在「收入分配法」設定。「設定預算」只負責每個類別每月
+  // 最多花多少（固定金額）。緊急預備金的自動支應仍在背景依固定金額類別計算
+  // （見 syncEmergencyFundShortfall），不受影響。
   const intro = el('div'); intro.style.cssText='font-size:12px;color:var(--text-3);margin-bottom:14px;line-height:1.6';
   intro.textContent = `每筆預算都是「從這個月開始生效」的設定，不是每個月各自輸入：改了本月的預算，之前月份的紀錄不會跟著變動，之後每個月會自動延續這裡最新輸入的金額，想調整隨時可以再回來改。`;
   content.appendChild(intro);
@@ -6947,17 +6903,14 @@ async function renderBudgetPlan() {
     return row;
   }
 
-  // Per-category row, once a category budget can be one of three modes
-  // (unlike the plain fixed-amount 本月總預算 row above, which never needed
-  // this): 'fixed' behaves exactly like before (fixed amount, progress bar
-  // against this month's spend); 'percent' and 'remainder' are computed
-  // dynamically from this month's income cascade (see the 🌊 本月收入分配
-  // card above) so there's no fixed target to bar-chart here — just a note
-  // pointing back up to that card for the actual computed amount.
+  // Per-category row：v2.4.1 起只剩固定金額一種（見函式內說明）。
   function buildCategoryBudgetRow(cat, rec) {
-    const mode = rec?.allocation_mode || 'fixed';
+    // v2.4.1：類別預算只剩「固定金額」一種。之前設成「剩餘金額的百分比／剩餘平分」
+    // 的舊設定不再生效（依收入比例分配已整合到「收入分配法」），畫面上會提示一次，
+    // 請使用者改填固定金額。
+    const legacyMode = rec?.allocation_mode && rec.allocation_mode !== 'fixed' ? rec.allocation_mode : null;
     const spent = spentByCat[cat.id] || 0;
-    const current = mode === 'fixed' ? (rec?.amount ?? null) : null;
+    const current = legacyMode ? null : (rec?.amount ?? null);
     const pct = current > 0 ? Math.round((spent/current)*100) : 0;
     const over = current != null && spent > current;
     const barColor = over ? 'var(--red)' : (pct >= 80 ? 'var(--amber)' : 'var(--green, #16A34A)');
@@ -6967,49 +6920,25 @@ async function renderBudgetPlan() {
         <span style="width:28px;height:28px;border-radius:7px;background:${cat.color}18;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${cat.icon ?? '·'}</span>
         <span style="font-size:13px;font-weight:600;flex:1;min-width:80px">${cat.label}</span>
         <span style="font-size:12px;color:var(--text-2);font-variant-numeric:tabular-nums">本月已花 NT$ ${fmt(spent)}</span>
-        <select class="budgetModeSel" style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px">
-          <option value="fixed" ${mode==='fixed'?'selected':''}>固定金額</option>
-          <option value="percent" ${mode==='percent'?'selected':''}>剩餘金額的百分比</option>
-          <option value="remainder" ${mode==='remainder'?'selected':''}>剩餘平分</option>
-        </select>
-        <input type="number" class="budgetAmountInput" inputmode="decimal" placeholder="未設定" min="0" step="1" value="${mode==='fixed'?(rec?.amount ?? ''):''}"
-          style="width:100px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;${mode!=='fixed'?'display:none':''}">
-        <input type="number" class="budgetPercentInput" inputmode="decimal" placeholder="%" min="0" max="100" step="0.1" value="${mode==='percent'?(rec?.percent ?? ''):''}"
-          style="width:70px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;${mode!=='percent'?'display:none':''}">
+        <input type="number" class="budgetAmountInput" inputmode="decimal" placeholder="每月上限" min="0" step="1" value="${current ?? ''}"
+          style="width:110px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
         <button class="btn btn-primary btn-sm budgetSaveBtn">儲存</button>
-        <button class="btn btn-ghost btn-sm budgetDelBtn" style="color:var(--red)" title="刪除這個分類">刪除</button>
+        <button class="btn btn-ghost btn-sm budgetDelBtn" style="color:var(--amber,#B45309)" title="停用這個分類">停用</button>
       </div>
-      ${mode==='fixed' && current != null ? `
+      ${current != null ? `
       <div style="margin-top:10px;height:6px;border-radius:3px;background:var(--border);overflow:hidden">
         <div style="height:100%;width:${Math.min(pct,100)}%;background:${barColor};border-radius:3px"></div>
       </div>
       <div style="margin-top:5px;font-size:11px;color:var(--text-3)">
         ${over ? `已超出 NT$ ${fmt(spent-current)}` : `剩餘 NT$ ${fmt(current-spent)}（${pct}%）`}
       </div>` : ''}
-      ${mode!=='fixed' ? `<div style="margin-top:6px;font-size:11px;color:var(--text-3)">實際金額依本月收入即時計算，見上方「本月收入分配」卡片</div>` : ''}`;
+      ${legacyMode ? `<div style="margin-top:8px;font-size:11px;line-height:1.6;color:#92400E;background:var(--amber-bg,#FFFBEB);border-radius:6px;padding:6px 9px">原本設定為「${legacyMode==='percent' ? `剩餘金額的 ${rec.percent ?? 0}%` : '剩餘平分'}」——依收入比例分配已整合到「收入分配法」，這個設定不再生效；這裡請改填每月固定上限金額。</div>` : ''}`;
 
-    const modeSel = row.querySelector('.budgetModeSel');
     const amtInput = row.querySelector('.budgetAmountInput');
-    const pctInput = row.querySelector('.budgetPercentInput');
-    modeSel.addEventListener('change', () => {
-      amtInput.style.display = modeSel.value === 'fixed' ? '' : 'none';
-      pctInput.style.display = modeSel.value === 'percent' ? '' : 'none';
-    });
     row.querySelector('.budgetSaveBtn').addEventListener('click', async () => {
-      const selMode = modeSel.value;
-      let newRec;
-      if (selMode === 'fixed') {
-        const amt = parseFloat(amtInput.value);
-        if (!amt || amt <= 0) { amtInput.style.borderColor='var(--red)'; return; }
-        newRec = { amount: amt, percent: null, allocation_mode: 'fixed' };
-      } else if (selMode === 'percent') {
-        const pctVal = parseFloat(pctInput.value);
-        if (!(pctVal >= 0)) { pctInput.style.borderColor='var(--red)'; return; }
-        newRec = { amount: null, percent: pctVal, allocation_mode: 'percent' };
-      } else {
-        newRec = { amount: null, percent: null, allocation_mode: 'remainder' };
-      }
-      await saveBudgetRecord(cat.id, newRec);
+      const amt = parseFloat(amtInput.value);
+      if (!amt || amt <= 0) { amtInput.style.borderColor='var(--red)'; return; }
+      await saveBudgetRecord(cat.id, { amount: amt, percent: null, allocation_mode: 'fixed' });
       showToast('✓ 預算已更新');
       await syncEmergencyFundShortfall();
       await renderBudgetPlan();
@@ -7776,12 +7705,10 @@ async function syncAutoBucketContributions() {
 function buildCategoryBudgetsForCascade(budgets, expenseCats, monthStr) {
   return expenseCats.map(c => {
     const rec = resolveBudgetRecord(budgets, c.id, monthStr);
-    const mode = rec?.allocation_mode || 'fixed';
-    return {
-      id: c.id, name: c.label, mode,
-      amount: mode === 'fixed' ? (rec?.amount || 0) : 0,
-      percent: mode === 'percent' ? (rec?.percent || 0) : 0,
-    };
+    // v2.4.1：只有固定金額的類別預算才算數；舊的百分比／剩餘平分設定已不再生效
+    // （依收入比例分配改由「收入分配法」處理），一律視為沒有設定。
+    const isFixed = (rec?.allocation_mode || 'fixed') === 'fixed';
+    return { id: c.id, name: c.label, mode: 'fixed', amount: isFixed ? (rec?.amount || 0) : 0, percent: 0 };
   });
 }
 
@@ -8494,7 +8421,7 @@ async function renderIncomeAllocation() {
   incomeCard.innerHTML = `
     <div>
       <div style="font-size:12px;color:var(--text-2);font-weight:600">本月收入（來自記帳管理）</div>
-      <div style="font-size:11px;color:var(--text-3);margin-top:2px">薪水、利息、二手交易等，不含應收款——跟「設定預算」頁的🌊本月收入分配卡是同一個數字</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:2px">薪水、利息、二手交易等，不含應收款</div>
     </div>
     <div style="font-size:20px;font-weight:800;flex-shrink:0">${monthlyIncomeTotal>0?('NT$ '+fmt(monthlyIncomeTotal)):'尚無紀錄'}</div>`;
   content.appendChild(incomeCard);
@@ -10910,11 +10837,15 @@ async function renderCalendar() {
   // 本月並選取今天，下方明細只列今天的紀錄。
   const isOnToday = _calendarSelectedDate === todayStr;
   head.innerHTML = `
-    <button type="button" class="cal-nav" data-cal-nav="-1" aria-label="上個月">‹</button>
-    <button type="button" class="cal-title" data-cal-pick aria-haspopup="dialog" aria-label="選擇年月">${_calendarYear} 年 ${_calendarMonth} 月<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-    <button type="button" class="cal-nav" data-cal-nav="1" aria-label="下個月">›</button>
-    <button type="button" class="cal-today-btn${isOnToday ? ' is-on' : ''}" data-cal-today>今天</button>
-    <button type="button" class="cal-report-btn" data-cal-report title="帳務報表">📊 報表</button>`;
+    <div class="cal-head-month">
+      <button type="button" class="cal-nav" data-cal-nav="-1" aria-label="上個月">‹</button>
+      <button type="button" class="cal-title" data-cal-pick aria-haspopup="dialog" aria-label="選擇年月"><span>${_calendarYear}<small>年</small>${_calendarMonth}<small>月</small></span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+      <button type="button" class="cal-nav" data-cal-nav="1" aria-label="下個月">›</button>
+    </div>
+    <div class="cal-head-actions">
+      <button type="button" class="cal-today-btn${isOnToday ? ' is-on' : ''}" data-cal-today aria-label="回到今天" title="回到今天"><span class="cal-today-ico" aria-hidden="true">${now.getDate()}</span>今天</button>
+      <button type="button" class="cal-icon-btn" data-cal-report aria-label="帳務報表" title="帳務報表"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12A9 9 0 1112 3v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z" fill="currentColor" stroke="none" opacity=".35"/></svg></button>
+    </div>`;
   calCard.appendChild(head);
   head.querySelectorAll('[data-cal-nav]').forEach(btn => btn.addEventListener('click', () => {
     _calendarMonth += Number(btn.dataset.calNav);
@@ -11068,7 +10999,28 @@ async function renderCalendar() {
   // 收支明細：只列目前這個月；有選某一天就只列那一天（使用者要求）。
   await renderTxnMergedList(content, { month: monthStr, date: _calendarSelectedDate });
   page.commit();
+  fitCalendarHead();
 }
+
+// v2.4.1：手機的文字大小設定（例如 Safari 調大字級）會讓月曆標頭塞不下，原本
+// 會被擠成兩行、「今天」變直排。畫好之後實際量一次寬度：放得下就維持完整樣式；
+// 放不下先把「今天」縮成只剩小日曆圖示，還不夠再把年月字級縮小——一律維持單行。
+function fitCalendarHead() {
+  const head = document.querySelector('#content .cal-head');
+  if (!head) return;
+  const fits = () => {
+    const hr = head.getBoundingClientRect();
+    const last = head.querySelector('.cal-head-actions')?.getBoundingClientRect();
+    const t = head.querySelector('.cal-title');
+    return (!last || last.right <= hr.right + 0.5) && (!t || t.scrollWidth <= t.clientWidth + 1);
+  };
+  head.classList.remove('fit-1', 'fit-2', 'fit-3');
+  for (const step of ['fit-1', 'fit-2', 'fit-3']) {
+    if (fits()) return;
+    head.classList.add(step);
+  }
+}
+window.addEventListener('resize', () => { if (currentView === 'calendar') fitCalendarHead(); });
 
 // ════════════════════════════════════════════════════════════════════════════
 // 收支紀錄頁下半部的收支明細清單（renderTxnMergedList）。
