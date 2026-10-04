@@ -511,6 +511,48 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .icon-act{width:30px;height:28px;border:none;background:none;border-radius:8px;color:var(--text-3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,color .15s}
 .icon-act:hover{background:var(--surface-2);color:var(--text-1)}
 .icon-act.danger:hover{background:var(--red-bg,#FEF2F2);color:var(--red)}
+/* ── v2.4.0 年月選擇器＋今天 ── */
+.cal-card{position:relative}
+.cal-title{display:inline-flex;align-items:center;gap:4px}
+.cal-title svg{opacity:.55;transition:transform .2s}
+.cal-title:hover{background:var(--surface)}
+.cal-today-btn{margin-left:auto;border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:5px 11px;font:inherit;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;transition:background .15s,border-color .15s}
+.cal-today-btn:hover{border-color:var(--blue)}
+.cal-today-btn.is-on{background:var(--accent-tint);border-color:transparent}
+.cal-today-btn + .cal-report-btn{margin-left:0}
+.cal-picker{position:absolute;top:56px;left:12px;right:12px;z-index:20;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 12px 32px rgba(17,24,39,.16);padding:12px;animation:calPickIn .16s ease-out}
+@keyframes calPickIn{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+.cal-picker-year{display:flex;align-items:center;justify-content:space-between;padding:0 2px 10px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.cal-picker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cal-picker-grid button{position:relative;border:none;background:var(--surface);border-radius:10px;padding:11px 0;font:inherit;font-size:13px;font-weight:600;color:var(--text-1);cursor:pointer;font-variant-numeric:tabular-nums;transition:background .12s,transform .1s}
+.cal-picker-grid button:hover{background:var(--accent-tint)}
+.cal-picker-grid button:active{transform:scale(.95)}
+.cal-picker-grid button.is-now{box-shadow:inset 0 0 0 1.5px var(--blue)}
+.cal-picker-grid button.is-cur{background:var(--navy);color:#fff}
+.cal-picker-grid button i{position:absolute;top:5px;right:6px;width:5px;height:5px;border-radius:50%;background:var(--blue)}
+.cal-picker-grid button.is-cur i{background:#fff}
+/* ── v2.4.0 首頁一屏化 ── */
+.home-hero{padding:22px 22px 18px}
+.home-hero .networth-amount{font-size:38px}
+.home-hero-sub{font-size:12px;color:rgba(255,255,255,.62);margin-top:4px}
+.home-alloc{display:flex;gap:2px;height:7px;border-radius:999px;overflow:hidden;margin:16px 0 14px;background:rgba(255,255,255,.12)}
+.home-alloc span{min-width:3px}
+.home-tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.home-tile{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font:inherit;cursor:pointer;transition:background .15s,border-color .15s,transform .1s;-webkit-tap-highlight-color:transparent}
+.home-tile:hover{background:rgba(255,255,255,.1)}
+.home-tile:active{transform:scale(.97)}
+.home-tile.on{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.38)}
+.home-tile-label{display:flex;align-items:center;gap:6px;font-size:11.5px;color:rgba(255,255,255,.75);white-space:nowrap;max-width:100%}
+.home-tile-label i{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+.home-tile-label em{font-style:normal;font-size:9.5px;padding:0 5px;border-radius:4px;background:rgba(255,255,255,.14);color:rgba(255,255,255,.75)}
+.home-tile-value{font-size:16px;font-weight:600;color:#F1F5F9;font-variant-numeric:tabular-nums;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.home-tile-sub{font-size:10.5px;color:rgba(255,255,255,.55);font-variant-numeric:tabular-nums;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.home-details{display:flex;flex-direction:column;gap:12px;scroll-margin-top:72px}
+.home-details:empty{display:none}
+.home-details [data-home-group]{scroll-margin-top:72px}
+@media(min-width:769px){.home-tiles{grid-template-columns:repeat(4,1fr)}.home-hero .networth-amount{font-size:44px}}
+@media(max-width:768px){.home-hero .networth-amount{font-size:32px}}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -559,10 +601,6 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       帳戶管理
     </a>
-    <a class="nav-item" href="#" data-view="transfer">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
-      帳戶移轉
-    </a>
     <a class="nav-item" href="#" data-view="holdings">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
       投資持倉
@@ -601,10 +639,10 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
       <button class="btn btn-ghost btn-icon" id="refreshBtn" title="更新報價與匯率">
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4v5h5M20 20v-5h-5"/><path d="M4 9a8 8 0 0115 3M20 15a8 8 0 01-15-3"/></svg>
       </button>
-      <button class="btn btn-ghost btn-icon" title="匯出備份" id="exportBtn">
+      <button class="btn btn-ghost btn-icon" title="匯出備份" id="exportBtn" hidden>
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
       </button>
-      <button class="btn btn-ghost btn-icon" title="匯入備份" id="importBtn">
+      <button class="btn btn-ghost btn-icon" title="匯入備份" id="importBtn" hidden>
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
       </button>
     </div>
@@ -676,10 +714,6 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
   <a class="nav-item" href="#" data-view="txnmanage">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
     記帳管理
-  </a>
-  <a class="nav-item" href="#" data-view="transfer">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
-    帳戶移轉
   </a>
   <a class="nav-item" href="#" data-view="appsettings">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -2568,23 +2602,19 @@ const THEME_CSS_VAR_NAMES = { navy:'--navy', navyMid:'--navy-mid', navyLight:'--
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.3.0';
+const APP_VERSION = 'v2.4.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-04';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '新增「帳務報表」：支出／收入／結餘三種檢視，可看月、近 6 個月、年或自訂期間，甜甜圈圖與長條圖切換，每個分類都會標出跟上一期相比多了或少了多少；點分類可以展開看每一筆',
-  '收支紀錄月曆改成圓潤的圓形日期樣式，格子變扁；金額與排程小藍點更好辨識',
-  '收支紀錄只列出目前月曆所在月份的紀錄；點某一天就只看那一天，再點一次回到整個月',
-  '記帳管理改成 3 欄、分「支出／收入與轉帳／規劃」三組，11 個項目一頁看完',
-  '收入與應收款收款的帳戶選單，預設只列出台幣帳戶（外幣帳戶可臨時勾選顯示）',
-  '類別除了停用，也可以直接刪除；已有紀錄的類別會先請你選擇要改歸到哪個類別',
-  '「開啟時預設頁面」的第二個選項改成「收支紀錄」',
-  '資料健檢按「前往」會直接開到有問題的那一筆',
-  '刪除或編輯收入時，應收款的已收金額、定期定額的持股股數會一起正確還原',
-  '手動轉帳的移轉記錄也可以刪除，兩邊帳戶餘額會自動還原',
+  '首頁改成一頁看完：總資產下方是資產配置色條＋各類別小方塊，點方塊才展開那一類的明細',
+  '首頁「近期到期／即將繳款」只提醒 5 天內的項目（已逾期的照樣列出）',
+  '收支紀錄：點年月可以直接選年份與月份；新增「今天」按鈕，一鍵回到今天的紀錄',
+  '「帳戶移轉」移進記帳管理（轉帳與收入那一組）',
+  '頂端的匯出／匯入按鈕移除，統一在「設定 › 資料與紀錄」操作',
+  '修正「設定預算」與快速設定精靈同一個月改過預算後，可能顯示舊數字的問題——兩邊改的是同一個「本月總預算」，以最後存的為準',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -2996,7 +3026,9 @@ async function loadData() {
   const goldPriceRec  = prices.find(p => p.ticker === 'XAU_USD') ?? null;
   const gold = calcGoldAssets(goldHoldings, goldPriceRec?.price ?? null, fxRates);
   const netWorth   = calcNetWorth({ cashTWD:cash.totalTWD, depositTWD:depositRes.totalTWD, investmentTWD:inv.totalTWD, otherAssetsTWD:otherAssets.totalTWD, goldTWD:gold.totalTWD }) - ccDebt;
-  const reminders  = calcUpcomingReminders({ depositItems:depositRes.items, creditCards:cards, recurringExpenses, installments, recurringIncome });
+  // v2.4.0（使用者要求）：首頁「近期到期／即將繳款」只提醒 5 天內到期的
+  // 項目；已經過期還沒處理的（天數為負）一律照樣列出。
+  const reminders  = calcUpcomingReminders({ depositItems:depositRes.items, creditCards:cards, recurringExpenses, installments, recurringIncome }, { windowDays: 5 });
 
   // 本月預算 vs 實際花費 — dashboard progress card (see renderAssets).
   // Only the total budget (category_id: null) is tracked for now; per-
@@ -3106,61 +3138,59 @@ setInterval(() => { refreshMarketData(false).catch(e=>console.warn('[FX hourly]'
 // ════════════════════════════════════════════════════════════════════════════
 // ASSETS VIEW
 // ════════════════════════════════════════════════════════════════════════════
+// 首頁目前展開的是哪一類的明細（v2.4.0）。只記在記憶體裡，重新開 App 回到全部收起。
+let _homeOpenTile = null;
 async function renderAssets() {
   await loadData();
   const { netWorth, cash, depositRes, inv, recv, otherAssets, gold, goldPriceRec, fxRates, ccDebt, reminders, cards, accounts } = state;
   const content = document.getElementById('content');
   content.innerHTML = '';
 
-  // Net worth hero
+  // ── 首頁一屏化（v2.4.0，使用者要求「整個畫面儘量保留在一個頁面、不用上下
+  // 滑動」）──────────────────────────────────────────────────────────────
+  // 原本手機版的總資產卡片，把「現金／定存／投資／黃金／應收款」直向一個一個疊
+  // 下來（光這張卡片就佔掉一整個螢幕），底下又有 8 個可收合區塊重複列一次同樣
+  // 的小計。改成：
+  //   - 總資產＋一條「資產配置」比例色條
+  //   - 2 欄小方塊（每一類一格：金額＋占比），點方塊才在下方展開那一類的明細
+  //     （同一時間只展開一類，再點一次收起）
+  //   - 原本的 8 個收合區塊內容完全不變，只是預設不顯示，改由方塊叫出來
+  const tiles = [
+    { key:'cash', label:'現金 & 存款', value: cash.totalTWD, color:'#2F9E6E',
+      sub: Object.entries(cash.byCurrency).filter(([c,v])=>v>0 && c!=='TWD').map(([c,v])=>`${c} ${fmt(v,{currency:c})}`).join(' · ') },
+    { key:'dep', label:'定存', value: depositRes.totalTWD, color:'#3B82C4' },
+    { key:'inv', label:'投資資產', value: inv.totalTWD, color:'#8B5CF6',
+      sub: inv.hasMissingPrices || (inv.staleTickers?.length ?? 0) > 0 ? '⚠ 部分報價需更新' : '' },
+    ...(gold.enriched.length > 0 ? [{ key:'gold', label:'黃金', value: gold.totalTWD, color:'#D4A017' }] : []),
+    ...(otherAssets.enriched.length > 0 ? [{ key:'other', label:'其他資產', value: otherAssets.totalTWD, color:'#0EA5A4' }] : []),
+    ...(recv.pending.length > 0 ? [{ key:'recv', label:'應收款', value: recv.totalTWD, color:'#F59E0B', note:'不計入' }] : []),
+    ...(ccDebt > 0 ? [{ key:'cc', label:'待繳卡費', value: ccDebt, color:'#E5484D', note:'已扣除', negative:true }] : []),
+  ];
+  const posTiles = tiles.filter(t => !t.negative && t.key !== 'recv' && t.value > 0);
+  const grossAssets = posTiles.reduce((s,t)=>s+t.value,0) || 1;
   const wrap = el('div');
-  const nw = el('div','networth-card');
+  const nw = el('div','networth-card home-hero');
   nw.innerHTML = `
     <div class="networth-label">總資產（折合台幣）</div>
     <div class="networth-amount"><span class="networth-currency">NT$</span>${fmt(netWorth)}</div>
-    ${ccDebt>0?`<div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:2px">已扣除 NT$ ${fmt(ccDebt)} 信用卡負債</div>`:''}
-    <div class="networth-breakdown">
-      <div class="networth-item">
-        <div class="networth-item-label">現金 &amp; 存款</div>
-        <div class="networth-item-value">NT$ ${fmt(cash.totalTWD)}</div>
-        <div class="networth-item-sub" style="font-variant-numeric:tabular-nums;line-height:1.7">
-          ${Object.entries(cash.byCurrency).filter(([,v])=>v>0).map(([c,v])=>`<span style="display:inline-block;min-width:30px;font-weight:500">${c}</span> <span>${fmt(v,{currency:c})}</span>`).join('<br>')}
-        </div>
-      </div>
-      <div class="networth-item">
-        <div class="networth-item-label">定存</div>
-        <div class="networth-item-value">NT$ ${fmt(depositRes.totalTWD)}</div>
-      </div>
-      <div class="networth-item">
-        <div class="networth-item-label">投資資產</div>
-        <div class="networth-item-value">NT$ ${fmt(inv.totalTWD)}</div>
-      </div>
-      ${otherAssets.enriched.length>0?`
-      <div class="networth-item">
-        <div class="networth-item-label">其他資產</div>
-        <div class="networth-item-value">NT$ ${fmt(otherAssets.totalTWD)}</div>
-      </div>`:''}
-      ${gold.enriched.length>0?`
-      <div class="networth-item">
-        <div class="networth-item-label">黃金</div>
-        <div class="networth-item-value">NT$ ${fmt(gold.totalTWD)}</div>
-      </div>`:''}
-      ${recv.pending.length>0?`
-      <div class="networth-item">
-        <div class="networth-item-label" style="color:#B45309">應收款（不計入）</div>
-        <div class="networth-item-value" style="color:#FCD34D">NT$ ${fmt(recv.totalTWD)}</div>
-      </div>`:''}
+    ${ccDebt>0?`<div class="home-hero-sub">已扣除 NT$ ${fmt(ccDebt)} 信用卡負債</div>`:''}
+    <div class="home-alloc" role="img" aria-label="資產配置：${posTiles.map(t=>`${t.label} ${Math.round(t.value/grossAssets*100)}%`).join('、')}">
+      ${posTiles.map(t=>`<span style="flex:${t.value};background:${t.color}"></span>`).join('')}
+    </div>
+    <div class="home-tiles">
+      ${tiles.map(t => `
+        <button type="button" class="home-tile${_homeOpenTile===t.key?' on':''}" data-home-tile="${t.key}" aria-expanded="${_homeOpenTile===t.key}">
+          <span class="home-tile-label"><i style="background:${t.color}"></i>${t.label}${t.note?`<em>${t.note}</em>`:''}</span>
+          <span class="home-tile-value">${t.negative?'−':''}NT$ ${fmt(t.value)}</span>
+          <span class="home-tile-sub">${t.sub || (!t.negative && t.key!=='recv' ? `${Math.round(t.value/grossAssets*100)}%` : '&nbsp;')}</span>
+        </button>`).join('')}
     </div>`;
-    // 待繳卡費 moved out of this hero block into its own collapsible section
-    // below (see "6. Credit cards"), listed per-card with due dates —
-    // the total here is already net of it either way. Changed 2026-09-16.
   wrap.appendChild(nw);
   const bar = el('div','freshness-bar');
   const fxAge = fxRates.fetched_at ? relativeTime(fxRates.fetched_at) : '未取得';
   const fxAbsTime = fxRates.fetched_at ? fmtShortTime(fxRates.fetched_at) : '';
   // §四十五之二：這一行後面要列出哪些幣別的匯率，改成跟著「實際有在用的幣別」
-  // ＋「幣別管理」裡的手動覆寫決定，不再寫死美金／日幣兩種。日圓以 100 為單位
-  // 顯示（維持原本的習慣寫法），其他幣別以 1 為單位。
+  // ＋「幣別管理」裡的手動覆寫決定，不再寫死美金／日幣兩種。
   const homeFxCodes = await getCurrenciesInUse().catch(() => ['TWD','USD','JPY']);
   const homeFxPrefs = await loadCurrencyPrefs(homeFxCodes);
   const sep = '<span style="color:rgba(255,255,255,.3);margin:0 4px">·</span>';
@@ -3187,6 +3217,18 @@ async function renderAssets() {
   // 的 `cat.name` 筆誤（txn_categories 實際欄位是 `label`），新版收支紀錄頁
   // 已經用正確的 `cat.label` 重寫。
 
+  // 明細區：各類的收合區塊統一放這裡，預設隱藏，由上面的方塊切換顯示。
+  const detailsHost = el('div','home-details');
+  const homeSection = (key, node) => {
+    node.dataset.homeGroup = key;
+    node.hidden = _homeOpenTile !== key;
+    if (!node.hidden) {
+      node.querySelector('.card-body')?.classList.add('open');
+      node.querySelector('.card-header-row')?.classList.add('card-open');
+    }
+    detailsHost.appendChild(node);
+  };
+
   // Upcoming reminders: deposits maturing, credit card / installment due,
   // recurring billing (monthly/yearly/custom — see calcUpcomingReminders).
   if (reminders && reminders.length > 0) {
@@ -3200,8 +3242,8 @@ async function renderAssets() {
     // 內」（黃）、總共幾項，一眼看出這張卡片的急迫程度分佈，不用把每一列都
     // 看過一遍才知道。純粹是既有 reminders 資料的呈現方式調整，沒有新增任何
     // 資料或計算邏輯。
-    const urgentCount = reminders.filter(r=>r.daysUntil<=3).length;
-    const soonCount    = reminders.filter(r=>r.daysUntil>3 && r.daysUntil<=7).length;
+    const urgentCount = reminders.filter(r=>r.daysUntil<=1).length;
+    const soonCount    = reminders.filter(r=>r.daysUntil>1 && r.daysUntil<=3).length;
     const remCard = el('div','card');
     remCard.style.cssText = 'border-color:#FDE68A';
     // 2026-09-24（使用者回報）：這張卡片先前是唯一一個沒有收合功能、永遠展開
@@ -3226,7 +3268,8 @@ async function renderAssets() {
     remCard.appendChild(remHeader);
     const remBody = el('div','card-body');
     remBody.innerHTML = reminders.map(r => {
-      const urgencyColor = r.daysUntil<=3 ? 'var(--red)' : (r.daysUntil<=7 ? 'var(--amber)' : 'var(--text-3)');
+      // 5 天的提醒窗口內再分三級：今天／明天或已逾期＝紅、3 天內＝黃、其餘灰。
+      const urgencyColor = r.daysUntil<=1 ? 'var(--red)' : (r.daysUntil<=3 ? 'var(--amber)' : 'var(--text-3)');
       const isIncome = r.type === 'recurringincome';
       return `
       <div style="padding:10px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px">
@@ -3267,7 +3310,9 @@ async function renderAssets() {
   // 的話，整家銀行也就自然不會出現（不用額外判斷「只有一個帳戶時才隱藏」這種
   // 特例，篩選帳戶數是 1 筆或 10 筆都適用同一套邏輯）。
   // 1. Cash (collapsible)
-  content.appendChild(buildCollapsibleSection({
+  // 沒有任何要顯示的現金帳戶時，點「現金 & 存款」只列銀行帳戶，不多一張空卡片。
+  const hasVisibleCash = (cash.byBank['__cash__']?.accounts ?? []).some(a => a.show_on_home !== false);
+  homeSection(hasVisibleCash ? 'cash' : 'cash-none', buildCollapsibleSection({
     icon: `<div class="icon-circle ic-green"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></div>`,
     label: '現金',
     total: (cash.byBank['__cash__']?.accounts ?? []).filter(a=>a.show_on_home!==false).reduce((s,a)=>s+a.balTWD,0),
@@ -3303,7 +3348,7 @@ async function renderAssets() {
     })
     .filter(g => g.accounts.length > 0);
   const bankTWD = bankGroups.reduce((s,g)=>s+g.totalTWD, 0);
-  content.appendChild(buildCollapsibleSection({
+  homeSection('cash', buildCollapsibleSection({
     icon: `<div class="icon-circle ic-blue"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>`,
     label: '銀行帳戶',
     total: bankTWD,
@@ -3374,7 +3419,7 @@ async function renderAssets() {
   }));
 
   // 3. Deposits (collapsible, read-only)
-  content.appendChild(buildCollapsibleSection({
+  homeSection('dep', buildCollapsibleSection({
     icon: `<div class="icon-circle ic-amber"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></div>`,
     label: soonDeps.length > 0
       ? `定存 <span style="font-size:11px;color:var(--red);margin-left:4px">⚠ 有一筆定存即將到期</span>`
@@ -3503,7 +3548,7 @@ async function renderAssets() {
       return frag;
     }
   });
-  content.appendChild(invSection);
+  homeSection('inv', invSection);
   invSection.querySelector('#invRefreshPricesBtn')?.addEventListener('click', e => {
     e.stopPropagation();
     refreshMarketData(true); // 使用者主動按下，強制更新
@@ -3515,7 +3560,7 @@ async function renderAssets() {
   // 完全沒有價值時（使用者沒有這類資產）整個區塊不顯示，維持「沒有的東西
   // 不佔畫面」的既有原則，跟現金／定存／投資這些一定會顯示的區塊不同。
   if (otherAssets.enriched.length > 0) {
-    content.appendChild(buildCollapsibleSection({
+    homeSection('other', buildCollapsibleSection({
       icon: `<div class="icon-circle" style="background:#EDE9FE;color:#6D28D9"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1"/></svg></div>`,
       label: '其他資產',
       total: otherAssets.totalTWD,
@@ -3558,7 +3603,7 @@ async function renderAssets() {
   // 時，市值欄位顯示「尚未取得金價」而不是 0 或 NT$ 空白，避免使用者誤以為
   // 黃金真的完全沒有價值。
   if (gold.enriched.length > 0) {
-    content.appendChild(buildCollapsibleSection({
+    homeSection('gold', buildCollapsibleSection({
       icon: `<div class="icon-circle" style="background:#FEF3C7;color:#B45309"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/></svg></div>`,
       label: '黃金',
       total: gold.totalTWD,
@@ -3598,7 +3643,7 @@ async function renderAssets() {
   }
 
   // 5. Receivables (collapsible, after investments, not counted in total)
-  content.appendChild(buildCollapsibleSection({
+  homeSection('recv', buildCollapsibleSection({
     icon: `<div class="icon-circle ic-amber"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v3m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>`,
     label: '應收款 <span style="font-size:11px;font-weight:400;color:var(--text-3);margin-left:4px">不計入總資產</span>',
     total: recv.totalTWD,
@@ -3634,7 +3679,7 @@ async function renderAssets() {
   // 6. Credit cards / 待繳卡費 (collapsible) — moved here from the net-worth
   // hero block so each card's due date is visible, not just the total.
   // The grand total above already has this deducted.
-  content.appendChild(buildCollapsibleSection({
+  homeSection('cc', buildCollapsibleSection({
     icon: `<div class="icon-circle" style="background:var(--red-bg);color:var(--red)"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>`,
     label: '待繳卡費 <span style="font-size:11px;font-weight:400;color:var(--text-3);margin-left:4px">已從總資產扣除</span>',
     total: ccDebt,
@@ -3662,6 +3707,18 @@ async function renderAssets() {
       });
       return frag;
     }
+  }));
+  content.appendChild(detailsHost);
+  nw.querySelectorAll('[data-home-tile]').forEach(btn => btn.addEventListener('click', () => {
+    const key = btn.dataset.homeTile;
+    _homeOpenTile = _homeOpenTile === key ? null : key;
+    nw.querySelectorAll('[data-home-tile]').forEach(b => { const on = b.dataset.homeTile === _homeOpenTile; b.classList.toggle('on', on); b.setAttribute('aria-expanded', on); });
+    detailsHost.querySelectorAll('[data-home-group]').forEach(sec => {
+      const show = sec.dataset.homeGroup === _homeOpenTile;
+      sec.hidden = !show;
+      if (show) { sec.querySelector('.card-body')?.classList.add('open'); sec.querySelector('.card-header-row')?.classList.add('card-open'); }
+    });
+    if (_homeOpenTile) detailsHost.querySelector(`[data-home-group="${_homeOpenTile}"]`)?.scrollIntoView({ behavior:'smooth', block:'start' });
   }));
 }
 
@@ -5335,7 +5392,9 @@ async function renderHoldings() {
 async function renderTransfer() {
   await loadData();
   const { accounts, banks, fxRates } = state;
-  const content = document.getElementById('content');
+  // v2.4.0：「帳戶移轉」收進記帳管理的方格裡，跟其他子頁一樣畫進
+  // _activeContentContainer（直接 navigate('transfer') 時它就是 #content）。
+  const content = _activeContentContainer || document.getElementById('content');
   content.innerHTML = '';
   const bankMap = Object.fromEntries(banks.map(b=>[b.id,b]));
 
@@ -6744,6 +6803,25 @@ document.getElementById('categoryModalSave').addEventListener('click',async()=>{
 // they just don't expose per-category rows, so this page is where those
 // categories get set.
 // ════════════════════════════════════════════════════════════════════════════
+// v2.4.0：「設定預算」與「快速設定精靈」共用的預算存檔——同一個類別在同一個
+// 月份只保留一筆紀錄（有就覆寫，沒有才新增），不再每存一次就多一筆；跟
+// calc.js 的 budgetRecordNewestFirst 一起確保兩個入口改的永遠是同一個數字。
+async function saveBudgetRecord(categoryId, fields) {
+  const month = currentMonthStr();
+  const all = await getAll(db, 'budgets').catch(() => []);
+  const same = all.filter(b => (b.category_id ?? null) === (categoryId ?? null) && b.effective_month === month);
+  const keep = same.sort((a, b) => String(b.created_at ?? '').localeCompare(String(a.created_at ?? '')))[0];
+  if (same.length > 1) {
+    const tr = db.transaction(['budgets'], 'readwrite');
+    same.filter(b => b !== keep).forEach(b => tr.objectStore('budgets').delete(b.id));
+    await new Promise((res, rej) => { tr.oncomplete = res; tr.onerror = () => rej(tr.error); });
+  }
+  await putOne(db, 'budgets', {
+    ...(keep ?? {}), id: keep?.id ?? crypto.randomUUID(), category_id: categoryId ?? null, ...fields,
+    effective_month: month, created_at: new Date().toISOString(),
+  });
+}
+
 async function renderBudgetPlan() {
   const [budgets, expenseTxns, cats, buckets, incomeTxns, accounts] = await Promise.all([
     getAll(db,'budgets').catch(()=>[]),
@@ -6931,10 +7009,7 @@ async function renderBudgetPlan() {
       } else {
         newRec = { amount: null, percent: null, allocation_mode: 'remainder' };
       }
-      await putOne(db,'budgets',{
-        id: crypto.randomUUID(), category_id: cat.id, ...newRec,
-        effective_month: thisMonth, created_at: new Date().toISOString(),
-      });
+      await saveBudgetRecord(cat.id, newRec);
       showToast('✓ 預算已更新');
       await syncEmergencyFundShortfall();
       await renderBudgetPlan();
@@ -6960,10 +7035,7 @@ async function renderBudgetPlan() {
   content.appendChild(buildBudgetRow({
     icon: '🎯', iconBg: 'var(--border)', label: '本月總預算',
     spent: totalSpent, current: totalBudget,
-    onSave: (amt) => putOne(db,'budgets',{
-      id: crypto.randomUUID(), category_id: null, amount: amt,
-      effective_month: thisMonth, created_at: new Date().toISOString(),
-    }),
+    onSave: (amt) => saveBudgetRecord(null, { amount: amt }),
   }));
 
   // Allocation check: does the sum of everything set below actually fit
@@ -10709,6 +10781,46 @@ function computeNextChargeDate(item) {
   return null;
 }
 
+// v2.4.0：收支紀錄月曆的年月選擇器——上面是年份（‹ 2026 ›），下面 4×3 個月份
+// 方格。目前檢視的月份實心標示、這個月外框標示、有收支紀錄的月份右上角一個小點。
+// 點月份直接跳過去；點外面或按 Esc 關閉。
+function openCalendarMonthPicker(anchorCard, trigger) {
+  anchorCard.querySelector('.cal-picker')?.remove();
+  const now = new Date();
+  let year = _calendarYear;
+  const monthsWithData = new Set([...(state.incomeTxns||[]), ...(state.expenseTxns||[])].map(t => t.date?.slice(0,7)).filter(Boolean));
+  const pop = el('div','cal-picker');
+  pop.setAttribute('role','dialog');
+  pop.setAttribute('aria-label','選擇年月');
+  const draw = () => {
+    pop.innerHTML = `
+      <div class="cal-picker-year">
+        <button type="button" class="cal-nav" data-py="-1" aria-label="前一年">‹</button>
+        <span>${year} 年</span>
+        <button type="button" class="cal-nav" data-py="1" aria-label="下一年">›</button>
+      </div>
+      <div class="cal-picker-grid">
+        ${Array.from({length:12}, (_, i) => {
+          const m = i + 1, key = `${year}-${String(m).padStart(2,'0')}`;
+          const cls = [year === _calendarYear && m === _calendarMonth ? 'is-cur' : '',
+                       year === now.getFullYear() && m === now.getMonth() + 1 ? 'is-now' : ''].join(' ');
+          return `<button type="button" class="${cls}" data-pm="${m}">${m} 月${monthsWithData.has(key) ? '<i></i>' : ''}</button>`;
+        }).join('')}
+      </div>`;
+    pop.querySelectorAll('[data-py]').forEach(b => b.addEventListener('click', ev => { ev.stopPropagation(); year += Number(b.dataset.py); draw(); }));
+    pop.querySelectorAll('[data-pm]').forEach(b => b.addEventListener('click', () => {
+      _calendarYear = year; _calendarMonth = Number(b.dataset.pm); _calendarSelectedDate = null; close(); renderCalendar();
+    }));
+  };
+  const onDoc = ev => { if (!pop.contains(ev.target)) close(); };
+  const onKey = ev => { if (ev.key === 'Escape') { close(); trigger?.focus(); } };
+  function close() { pop.remove(); document.removeEventListener('click', onDoc, true); document.removeEventListener('keydown', onKey); }
+  draw();
+  anchorCard.appendChild(pop);
+  setTimeout(() => { document.addEventListener('click', onDoc, true); document.addEventListener('keydown', onKey); }, 0);
+  pop.querySelector('.is-cur, [data-pm]')?.focus();
+}
+
 // v2.3.0：收支紀錄、帳務報表都先畫在一個暫存容器裡，全部畫完才一次換上去——
 // 連點或同時觸發兩次重畫時，只有最後一次會生效，不會出現兩份重複的內容。
 let _pageRenderToken = 0;
@@ -10794,11 +10906,15 @@ async function renderCalendar() {
   // 金額越大」兩行說明文字依使用者要求移除。
   const calCard = el('div','card cal-card');
   const head = el('div','cal-head');
+  // v2.4.0（使用者要求）：點年月會跳出年月選擇器；另外加一顆「今天」——跳回
+  // 本月並選取今天，下方明細只列今天的紀錄。
+  const isOnToday = _calendarSelectedDate === todayStr;
   head.innerHTML = `
     <button type="button" class="cal-nav" data-cal-nav="-1" aria-label="上個月">‹</button>
-    <button type="button" class="cal-title" data-cal-today title="回到本月">${_calendarYear} 年 ${_calendarMonth} 月</button>
+    <button type="button" class="cal-title" data-cal-pick aria-haspopup="dialog" aria-label="選擇年月">${_calendarYear} 年 ${_calendarMonth} 月<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
     <button type="button" class="cal-nav" data-cal-nav="1" aria-label="下個月">›</button>
-    <button type="button" class="cal-report-btn" data-cal-report>📊 帳務報表</button>`;
+    <button type="button" class="cal-today-btn${isOnToday ? ' is-on' : ''}" data-cal-today>今天</button>
+    <button type="button" class="cal-report-btn" data-cal-report title="帳務報表">📊 報表</button>`;
   calCard.appendChild(head);
   head.querySelectorAll('[data-cal-nav]').forEach(btn => btn.addEventListener('click', () => {
     _calendarMonth += Number(btn.dataset.calNav);
@@ -10807,7 +10923,11 @@ async function renderCalendar() {
     _calendarSelectedDate = null; renderCalendar();
   }));
   head.querySelector('[data-cal-today]').addEventListener('click', () => {
-    _calendarYear = now.getFullYear(); _calendarMonth = now.getMonth()+1; _calendarSelectedDate = null; renderCalendar();
+    _calendarYear = now.getFullYear(); _calendarMonth = now.getMonth()+1; _calendarSelectedDate = todayStr; renderCalendar();
+  });
+  head.querySelector('[data-cal-pick]').addEventListener('click', (e) => {
+    e.stopPropagation();
+    openCalendarMonthPicker(calCard, head.querySelector('[data-cal-pick]'));
   });
   head.querySelector('[data-cal-report]').addEventListener('click', () => {
     _reportState.year = _calendarYear; _reportState.month = _calendarMonth;
@@ -11537,6 +11657,9 @@ const TXN_MANAGE_TABS = [
     } },
   { key:'recurring_income', label:'固定收入',       icon:'💵', render: () => renderRecurringIncome(),
     summary: async () => `${(await getAll(db,'recurring_income').catch(()=>[])).length} 筆` },
+  // v2.4.0（使用者要求）：「帳戶移轉」從側邊欄／「更多」選單移進這裡。
+  { key:'transfer',         label:'帳戶移轉',       icon:'🔀', render: () => renderTransfer(),
+    summary: async () => { const n = (await getAll(db,'transfer_logs').catch(()=>[])).length; return n ? `${n} 筆紀錄` : '手動轉帳'; } },
   { key:'rectransfer',      label:'定期轉帳／換匯', icon:'🔄', render: () => renderRecurringTransfers(),
     summary: async () => `${(await getAll(db,'recurring_transfers').catch(()=>[])).length} 筆` },
   { key:'dcaschedule',      label:'定期定額排程',   icon:'📈', render: () => renderDcaSchedules(),
@@ -11587,7 +11710,7 @@ async function renderTxnManage() {
     // 下整頁高度約 520px，扣掉上方標題列與底部導覽列仍有餘裕。
     const groups = [
       { title:'支出', keys:['creditcard','recurring','subscriptions','insurance_exp','installment'] },
-      { title:'收入與轉帳', keys:['recurring_income','rectransfer','dcaschedule'] },
+      { title:'轉帳與收入', keys:['transfer','rectransfer','recurring_income','dcaschedule'] },
       { title:'規劃', keys:['budgetplan','goals','incomeAllocation'] },
     ];
     const listed = new Set(groups.flatMap(g => g.keys));
@@ -13478,7 +13601,7 @@ async function stepBudget(body) {
   const thisMonth = currentMonthStr();
   const current = resolveBudget(budgets, null, thisMonth);
   body.innerHTML = `
-    <div style="font-size:13px;color:var(--text-2);margin-bottom:12px">這個月大概抓多少預算？這裡先設一個總額就好，設定後每個月會自動延續這個金額，之前月份的紀錄不會被改動，改了的話從這個月開始生效。設定後可以到「資產總覽」看實際花費進度，或到「設定預算」頁面設定每個支出分類各自的預算。</div>
+    <div style="font-size:13px;color:var(--text-2);margin-bottom:12px">這個月大概抓多少預算？這裡先設一個總額就好——這個數字就是「記帳管理 › 設定預算」最上面的「本月總預算」，兩邊改的是同一個，以最後存的為準。之後每個月會自動延續，改了從這個月開始生效。各分類的預算到「設定預算」頁再細分。</div>
     <div style="display:flex;gap:8px;align-items:center">
       <input type="number" id="obBudgetInput" inputmode="decimal" placeholder="尚未設定" min="0" step="1" value="${current ?? ''}"
         style="max-width:200px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;box-sizing:border-box">
@@ -13487,11 +13610,8 @@ async function stepBudget(body) {
   body.querySelector('#obBudgetSave').addEventListener('click', async () => {
     const amt = parseFloat(document.getElementById('obBudgetInput').value);
     if (!amt || amt <= 0) { document.getElementById('obBudgetInput').style.borderColor='var(--red)'; return; }
-    await putOne(db,'budgets',{
-      id: crypto.randomUUID(), category_id: null, amount: amt,
-      effective_month: thisMonth, created_at: new Date().toISOString(),
-    });
-    showToast('✓ 本月預算已設定');
+    await saveBudgetRecord(null, { amount: amt });
+    showToast('✓ 本月總預算已設定（跟「設定預算」頁是同一個數字）');
   });
 }
 

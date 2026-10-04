@@ -306,10 +306,19 @@ export function currentMonthStr(fromDate = new Date()) {
   return fromDate.toISOString().slice(0, 7);
 }
 
+// v2.4.0：同一個月份如果存了好幾筆（例如先在「設定預算」改過、又在快速設定
+// 精靈改一次），原本只比 effective_month，同月份的幾筆誰排前面取決於資料庫
+// 裡隨機 id 的順序——畫面可能顯示舊的那個數字。改成同月份再比 created_at，
+// 一律以最後存的那筆為準。
+function budgetRecordNewestFirst(a, b) {
+  return b.effective_month.localeCompare(a.effective_month)
+    || String(b.created_at ?? '').localeCompare(String(a.created_at ?? ''));
+}
+
 export function resolveBudget(budgets, categoryId, monthStr) {
   const candidates = budgets
     .filter(b => (b.category_id ?? null) === (categoryId ?? null) && b.effective_month <= monthStr)
-    .sort((a, b) => b.effective_month.localeCompare(a.effective_month));
+    .sort(budgetRecordNewestFirst);
   return candidates[0]?.amount ?? null;
 }
 
@@ -324,7 +333,7 @@ export function resolveBudget(budgets, categoryId, monthStr) {
 export function resolveBudgetRecord(budgets, categoryId, monthStr) {
   const candidates = budgets
     .filter(b => (b.category_id ?? null) === (categoryId ?? null) && b.effective_month <= monthStr)
-    .sort((a, b) => b.effective_month.localeCompare(a.effective_month));
+    .sort(budgetRecordNewestFirst);
   return candidates[0] ?? null;
 }
 
