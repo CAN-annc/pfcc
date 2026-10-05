@@ -5344,7 +5344,8 @@ function refreshHoldingClassIfNeeded(enriched, force = false) {
         const old = merged[k] || {};
         merged[k] = {
           industry: v?.industry?.mix?.length || !old.industry?.mix?.length ? v?.industry : old.industry,
-          style: v?.style?.key || !old.style?.key ? v?.style : old.style,
+          // 新結果只是備援的不完整判定（needsTwse）時，保留之前用完整官方數字判定的結果。
+          style: (v?.style?.key && !(v.style.needsTwse && old.style?.key && !old.style.needsTwse)) || !old.style?.key ? v?.style : old.style,
         };
       }
       _holdClass = { fetched_at: data.fetched_at || new Date().toISOString(), results: merged };

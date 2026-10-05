@@ -164,6 +164,12 @@ export function parseYahooSector(html) {
   return m ? canonicalIndustry(strip(m[1]), 'TW') : null;
 }
 
+// Yahoo 公司頁：<span>14.47 (26.43)</span><span>本益比 (同業平均)</span>
+export function parseYahooPe(html) {
+  const m = html.match(/<span[^>]*>\s*([-\d.,]+)\s*(?:\([^)]*\))?\s*<\/span>\s*<span[^>]*>\s*本益比/);
+  return m ? num(m[1]) : null;
+}
+
 // 台股 ETF 代號一律是 00 開頭（0050、006208、00878、00679B…）。
 export function isTwEtf(t) { return /^00\d{2,4}[A-Z]?$/.test(t); }
 
@@ -171,13 +177,13 @@ async function classifyTwStock(code, src, fetch, timed) {
   const r = { industry: null, style: null };
   const [op, ov, yhTW, zca] = await Promise.all([
     src.tpexProfile, src.tpexVal,
-    timed(`yahoo_${code}`, () => getText(fetch, `https://tw.stock.yahoo.com/quote/${code}.TW/profile`).then(parseYahooSector)),
+    timed(`yahoo_${code}`, () => getText(fetch, `https://tw.stock.yahoo.com/quote/${code}.TW/profile`).then(h => ({ sector: parseYahooSector(h), pe: parseYahooPe(h) }))),
     timed(`moneydj_${code}`, () => getText(fetch, `https://www.moneydj.com/z/zc/zca/zca_${code}.djhtm`).then(parseMoneydjValuation)),
   ]);
   const o = Array.isArray(op) ? op.find(x => String(x.SecuritiesCompanyCode ?? '').trim() === code) : null;
   let indName = null, indSource = null;
   if (o) { indName = TW_INDUSTRY_CODES[String(o.SecuritiesIndustryCode ?? '').trim().padStart(2, '0')] ?? null; indSource = '櫃買中心產業別'; }
-  if (!indName && yhTW) { indName = yhTW; indSource = '產業類別（Yahoo 奇摩股市，同證交所分類）'; }
+  if (!indName && yhTW?.sector) { indName = yhTW.sector; indSource = '產業類別（Yahoo 奇摩股市，同證交所分類）'; }
   if (!indName && !o) {
     const yhTWO = await timed(`yahoo_${code}_two`, () => getText(fetch, `https://tw.stock.yahoo.com/quote/${code}.TWO/profile`).then(parseYahooSector));
     if (yhTWO) { indName = yhTWO; indSource = '產業類別（Yahoo 奇摩股市，同櫃買分類）'; }
@@ -187,10 +193,13 @@ async function classifyTwStock(code, src, fetch, timed) {
 
   let fromO = ov?.get(code);
   if (!fromO && o) fromO = (await src.tpexValWeb())?.get(code);
-  const metrics = fromO ?? zca ?? null;
+  let metrics = fromO ?? zca ?? null, partial = false;
+  // 最後備援：Yahoo 頁面上的本益比（沒有殖利率／淨值比，只能判斷成長或平衡；
+  // 前端拿到證交所資料後會用完整數字重新判定）。
+  if (!metrics && yhTW?.pe != null) { metrics = { pe: yhTW.pe, yield: null, pb: null }; partial = true; }
   r.style = metrics
     ? { ...classifyStockStyle(metrics, { market: 'TW', defensive: DEFENSIVE_TW.has(indName) }), metrics,
-        source: fromO ? '櫃買中心本益比／殖利率' : '本益比／殖利率（MoneyDJ 個股資料）' }
+        source: fromO ? '櫃買中心本益比／殖利率' : partial ? '本益比（Yahoo 奇摩股市）' : '本益比／殖利率（MoneyDJ 個股資料）', ...(partial ? { needsTwse: true } : {}) }
     // 上市股本益比的主要來源是證交所，但證交所擋雲端主機，前端會直接向證交所
     // 開放資料補查（openapi 支援跨網域），這裡回 null 讓前端接手。
     : { key: null, reason: o ? '櫃買中心本益比資料暫時查不到' : '待證交所資料', needsTwse: !o };
