@@ -221,7 +221,7 @@ export function classifyStockStyle(m, { market, defensive }) {
   if (m.pe != null && m.pe >= T.g) return { key: 'growth', reason: `本益比 ${f(m.pe)} ≥ ${T.g}` };
   if ((m.pe == null || m.pe <= 0) && m.pb != null && m.pb >= 3) return { key: 'growth', reason: `目前虧損（無本益比），淨值比 ${f(m.pb, 2)} ≥ 3` };
   if (m.pe == null && m.yield == null && m.pb == null) return { key: null, reason: '沒有本益比／殖利率資料' };
-  return { key: 'balanced', reason: `本益比 ${f(m.pe)}、殖利率 ${f(m.yield, 2)}%，未達其他門檻` };
+  return { key: 'balanced', reason: `${[m.pe != null ? `本益比 ${f(m.pe)}` : null, m.yield != null ? `殖利率 ${f(m.yield, 2)}%` : null].filter(Boolean).join('、')}，未達其他門檻` };
 }
 
 // ETF 投資屬性：依基金名稱＋追蹤指數（MoneyDJ ETF 基本資料），加上證交所
