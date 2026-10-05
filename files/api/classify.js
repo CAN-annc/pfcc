@@ -63,13 +63,10 @@ export default async function handler(req) {
   if (searchParams.get('probe') === '1') return json(await probeSources(globalThis.fetch));
   if (searchParams.get('peek')) {
     const code = searchParams.get('peek').replace(/\D/g, '').slice(0, 6);
-    const out = {};
-    for (const [k, u] of Object.entries({ quote: `https://tw.stock.yahoo.com/quote/${code}.TW`, profile: `https://tw.stock.yahoo.com/quote/${code}.TW/profile`, dividend: `https://tw.stock.yahoo.com/quote/${code}.TW/dividend` })) {
-      const html = await globalThis.fetch(u, { headers: UA }).then(r => r.text()).catch(e => String(e));
-      const snip = w => { const i = html.indexOf(w); return i < 0 ? null : html.slice(Math.max(0, i - 120), i + 260).replace(/class="[^"]*"/g, ''); };
-      out[k] = { len: html.length, pe: snip('本益比'), y: snip('殖利率'), pb: snip('淨值比'), eps: snip('"peRatio') ?? snip('priceEarning') };
-    }
-    return json(out);
+    const html = await globalThis.fetch(`https://tw.stock.yahoo.com/quote/${code}.TW/profile`, { headers: UA }).then(r => r.text()).catch(e => String(e));
+    const keys = [...html.matchAll(/"([A-Za-z]*(?:[Yy]ield|[Pp]e[Rr]atio|[Pp]b[Rr]|[Bb]ook|[Dd]ividend|eps|EPS)[A-Za-z]*)"\s*:\s*("[^"]{0,40}"|[-\d.]+|null)/g)].slice(0, 60).map(m => `${m[1]}=${m[2]}`);
+    const snip = w => { const out = []; let i = -1; while ((i = html.indexOf(w, i + 1)) >= 0 && out.length < 3) out.push(html.slice(Math.max(0, i - 150), i + 150).replace(/class="[^"]*"/g, '')); return out; };
+    return json({ keys: [...new Set(keys)], y: snip('殖利率'), pb: snip('淨值比') });
   }
   const items = (searchParams.get('items') ?? '').split(',').map(s => s.trim().toUpperCase()).filter(Boolean)
     .map(s => { const [market, ticker] = s.split(':'); return { market, ticker }; })
