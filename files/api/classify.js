@@ -65,6 +65,8 @@ const DEFENSIVE_TW = new Set(['食品','油電燃氣']);
 export default async function handler(req) {
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
   const { searchParams } = new URL(req.url);
+  // 診斷用：列出各資料來源從 Vercel 連得到連不到（不含任何使用者資料）。
+  if (searchParams.get('probe') === '1') return json(await probeSources(globalThis.fetch));
   const items = (searchParams.get('items') ?? '').split(',').map(s => s.trim().toUpperCase()).filter(Boolean)
     .map(s => { const [market, ticker] = s.split(':'); return { market, ticker }; })
     .filter(i => ['TW', 'US'].includes(i.market) && /^[A-Z0-9.\-]{1,12}$/.test(i.ticker ?? ''))
@@ -294,4 +296,31 @@ async function getText(fetch, url) {
 }
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, s-maxage=21600', ...CORS } });
+}
+
+const PROBE_URLS = [
+  'https://openapi.twse.com.tw/v1/exchangeReport/BWIBBU_ALL',
+  'https://openapi.twse.com.tw/v1/opendata/t187ap03_L',
+  'https://openapi.twse.com.tw/v1/opendata/t187ap47_L',
+  'https://www.twse.com.tw/rwd/zh/afterTrading/BWIBBU_d?response=json&selectType=ALL',
+  'https://www.twse.com.tw/exchangeReport/BWIBBU_ALL?response=json',
+  'https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O',
+  'https://www.tpex.org.tw/openapi/v1/tpex_mainboard_peratio_analysis',
+  'https://www.tpex.org.tw/www/zh-tw/afterTrading/peQryDate?response=json',
+  'https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_2330.tw',
+  'https://www.moneydj.com/z/zc/zca/zca_2330.djhtm',
+  'https://tw.stock.yahoo.com/quote/2330.TW',
+  'https://www.moneydj.com/ETF/X/Basic/Basic0004.xdjhtm?etfid=0050.TW',
+];
+async function probeSources(fetch) {
+  const out = {};
+  await Promise.all(PROBE_URLS.map(async u => {
+    const t0 = Date.now();
+    try {
+      const res = await fetch(u, { headers: UA, signal: AbortSignal.timeout(9000) });
+      const text = await res.text();
+      out[u] = { status: res.status, ms: Date.now() - t0, bytes: text.length, head: text.slice(0, 80) };
+    } catch (e) { out[u] = { error: String(e?.message ?? e), ms: Date.now() - t0 }; }
+  }));
+  return out;
 }
