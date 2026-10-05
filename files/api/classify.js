@@ -61,6 +61,13 @@ export default async function handler(req) {
   const { searchParams } = new URL(req.url);
   // 診斷用：列出各資料來源從 Vercel 連得到連不到（不含任何使用者資料）。
   if (searchParams.get('probe') === '1') return json(await probeSources(globalThis.fetch));
+  if (searchParams.get('peek')) {
+    const code = searchParams.get('peek').replace(/\D/g, '').slice(0, 6);
+    const res = await globalThis.fetch(`https://www.moneydj.com/z/zc/zca/zca_${code}.djhtm`, { headers: UA });
+    const html = await res.text();
+    const i = html.indexOf('本益比');
+    return json({ status: res.status, ct: res.headers.get('content-type'), len: html.length, at: i, snip: html.slice(Math.max(0, i - 200), i + 300), head: html.slice(0, 400) });
+  }
   const items = (searchParams.get('items') ?? '').split(',').map(s => s.trim().toUpperCase()).filter(Boolean)
     .map(s => { const [market, ticker] = s.split(':'); return { market, ticker }; })
     .filter(i => ['TW', 'US'].includes(i.market) && /^[A-Z0-9.\-]{1,12}$/.test(i.ticker ?? ''))
