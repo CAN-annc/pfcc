@@ -5322,7 +5322,8 @@ function refreshHoldingClassIfNeeded(enriched, force = false) {
   if (!keys.length) return;
   const cache = _holdClass ?? { results: {} };
   const stale = !cache.fetched_at || (Date.now() - new Date(cache.fetched_at).getTime()) > HOLD_CLASS_MAX_AGE;
-  const missing = keys.some(k => !cache.results?.[k]);
+  // 有任何一檔還沒判定成功（或只有備援的不完整結果），也算需要重抓——不用等 3 天。
+  const missing = keys.some(k => { const r = cache.results?.[k]; return !r || !r.industry?.mix?.length || !r.style?.key || r.style?.needsTwse; });
   if (!force && !stale && !missing) return;
   if (!force && Date.now() - _holdClassLastTry < 60e3) return;
   _holdClassLastTry = Date.now(); _holdClassState = 'loading';
