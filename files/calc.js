@@ -1322,3 +1322,23 @@ export function runDataHealthChecks(data = {}) {
   findings.sort((x, y) => (x.severity === y.severity ? 0 : x.severity === 'warn' ? -1 : 1));
   return findings;
 }
+
+
+// ── 個股投資屬性判定（v2.7.2）──────────────────────────────────────────────
+// 跟 api/classify.js 的 classifyStockStyle 是同一套規則（兩邊各一份，測試會比對
+// 兩邊結果一致）。前端需要自己算的原因：證交所擋雲端主機，上市股的本益比／
+// 殖利率／淨值比改由瀏覽器直接向證交所開放資料（BWIBBU_ALL，支援跨網域）查。
+export function classifyStockStyle(m, { market, defensive }) {
+  const T = market === 'US' ? { y: 4, pe: 15, pb: 2.5, g: 30 } : { y: 5, pe: 12, pb: 1.5, g: 25 };
+  const f = (n, d = 1) => (n == null ? '—' : n.toFixed(d));
+  if (m.yield != null && m.yield >= T.y) return { key: 'dividend', reason: `殖利率 ${f(m.yield, 2)}% ≥ ${T.y}%` };
+  if (defensive && m.yield != null && m.yield >= 2.5) return { key: 'defensive', reason: `民生／公用類股，殖利率 ${f(m.yield, 2)}% ≥ 2.5%` };
+  if (m.pe != null && m.pe > 0 && m.pe <= T.pe && m.pb != null && m.pb <= T.pb) return { key: 'value', reason: `本益比 ${f(m.pe)} ≤ ${T.pe}、淨值比 ${f(m.pb, 2)} ≤ ${T.pb}` };
+  if (m.pe != null && m.pe >= T.g) return { key: 'growth', reason: `本益比 ${f(m.pe)} ≥ ${T.g}` };
+  if ((m.pe == null || m.pe <= 0) && m.pb != null && m.pb >= 3) return { key: 'growth', reason: `目前虧損（無本益比），淨值比 ${f(m.pb, 2)} ≥ 3` };
+  if (m.pe == null && m.yield == null && m.pb == null) return { key: null, reason: '沒有本益比／殖利率資料' };
+  return { key: 'balanced', reason: `本益比 ${f(m.pe)}、殖利率 ${f(m.yield, 2)}%，未達其他門檻` };
+}
+
+
+export const DEFENSIVE_TW_INDUSTRIES = new Set(['食品', '油電燃氣']);

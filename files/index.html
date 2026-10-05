@@ -2447,6 +2447,7 @@ import {
   calcMonthCalendarItems, calcOtherAssets, calcDividendByYear, calcTodayAllowance, calcGoldAssets,
   calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent, rebalanceJarPercents,
   runDataHealthChecks,
+  classifyStockStyle, DEFENSIVE_TW_INDUSTRIES,
 } from './calc.js';
 
 let db, state = {}, currentView = 'assets';
@@ -2720,14 +2721,15 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.7.2';
+const APP_VERSION = 'v2.7.3';
 const CHANGELOG_LAST_UPDATED = '2026-10-05';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '修正產業別／投資屬性常出現「未能判定」：資料來源改成同時查詢、每個來源都有備援，不會因為某一個來源慢就整批失敗；某次查詢失敗也不會蓋掉之前判定好的結果',
+  '修正投資屬性出現「未能判定」：證交所會擋雲端主機，上市股的本益比、殖利率、淨值比改由 App 直接向證交所開放資料查詢；上櫃股用櫃買中心資料，查不到時還有備援來源',
+  '修正產業名稱不一致（例如「電腦週邊」與「電腦及週邊設備」、同一產業出現兩次），統一成證交所分類（台股）與 GICS 類股（海外）',
   '產業別改成產業排行：最上面一條看集中度，每個產業一列顯示佔比與金額，點開可看這個產業的錢來自哪幾檔（ETF 會註明成分比重）',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
@@ -5326,9 +5328,16 @@ function refreshHoldingClassIfNeeded(enriched, force = false) {
   _holdClassLastTry = Date.now(); _holdClassState = 'loading';
   (async () => {
     try {
-      const res = await fetch(`/api/classify?items=${encodeURIComponent(keys.join(','))}`, { signal: AbortSignal.timeout(30000) });
+      // 伺服器端（櫃買、Yahoo、MoneyDJ、Finnhub）跟瀏覽器直接查證交所開放資料
+      // 同時進行——證交所擋雲端主機，但開放資料允許網頁跨網域讀取。
+      const twListed = keys.filter(k => /^TW:(?!00)\d{4,6}$/.test(k));
+      const [res, twseVal] = await Promise.all([
+        fetch(`/api/classify?items=${encodeURIComponent(keys.join(','))}`, { signal: AbortSignal.timeout(30000) }),
+        twListed.length ? fetchTwseOpenData('exchangeReport/BWIBBU_ALL') : null,
+      ]);
       if (!res.ok) throw new Error(res.status);
       const data = await res.json();
+      await applyTwseOfficialData(data.results || {}, twListed, twseVal);
       // 單一來源暫時失敗時，不拿「查不到」蓋掉之前已經判定成功的結果。
       const merged = { ...(cache.results || {}) };
       for (const [k, v] of Object.entries(data.results || {})) {
@@ -5346,6 +5355,37 @@ function refreshHoldingClassIfNeeded(enriched, force = false) {
     }
     if (currentView === 'holdings') await rerenderHoldingsKeepScroll();
   })();
+}
+async function fetchTwseOpenData(path) {
+  try {
+    const r = await fetch(`https://openapi.twse.com.tw/v1/${path}`, { signal: AbortSignal.timeout(20000) });
+    return r.ok ? await r.json() : null;
+  } catch (e) { console.warn('[twse]', path, e); return null; }
+}
+// 上市股：用證交所公布的本益比／殖利率／淨值比判定投資屬性（官方數字優先於
+// 伺服器端的備援來源）；伺服器查不到產業時，再向證交所公司基本資料補產業別。
+const TWSE_INDUSTRY_CODES = { '01':'水泥','02':'食品','03':'塑膠','04':'紡織纖維','05':'電機機械','06':'電器電纜','08':'玻璃陶瓷','09':'造紙','10':'鋼鐵','11':'橡膠','12':'汽車','14':'建材營造','15':'航運','16':'觀光餐旅','17':'金融保險','18':'貿易百貨','19':'綜合','20':'其他','21':'化學','22':'生技醫療','23':'油電燃氣','24':'半導體','25':'電腦及週邊設備','26':'光電','27':'通信網路','28':'電子零組件','29':'電子通路','30':'資訊服務','31':'其他電子','32':'文化創意','33':'農業科技','34':'電子商務','35':'綠能環保','36':'數位雲端','37':'運動休閒','38':'居家生活','91':'存託憑證' };
+async function applyTwseOfficialData(results, twListed, twseVal) {
+  const num = v => { const n = parseFloat(String(v ?? '').replace(/[,%]/g, '')); return Number.isFinite(n) ? n : null; };
+  if (twListed.some(k => !results[k]?.industry?.mix?.length)) {
+    const prof = await fetchTwseOpenData('opendata/t187ap03_L');
+    if (Array.isArray(prof)) twListed.forEach(k => {
+      if (results[k]?.industry?.mix?.length) return;
+      const row = prof.find(x => String(x['公司代號']).trim() === k.slice(3));
+      const name = row && TWSE_INDUSTRY_CODES[String(row['產業別']).trim().padStart(2, '0')];
+      if (name) results[k] = { ...(results[k] || {}), industry: { mix: [{ name, pct: 100 }], source: '證交所產業別' } };
+    });
+  }
+  if (!Array.isArray(twseVal)) return;
+  const map = new Map(twseVal.map(r => [String(r.Code).trim(), r]));
+  twListed.forEach(k => {
+    const row = map.get(k.slice(3));
+    if (!row) return;
+    const metrics = { pe: num(row.PEratio), yield: num(row.DividendYield), pb: num(row.PBratio) };
+    const indName = results[k]?.industry?.mix?.[0]?.name;
+    const st = classifyStockStyle(metrics, { market: 'TW', defensive: DEFENSIVE_TW_INDUSTRIES.has(indName) });
+    if (st.key) results[k] = { ...(results[k] || {}), style: { ...st, metrics, source: '證交所本益比／殖利率' } };
+  });
 }
 // 一檔持股的產業組成：手動覆寫 > 自動判定（ETF 是多個產業的比例）。
 function holdingIndustryMix(h) {
@@ -5521,7 +5561,7 @@ function buildClassifyBasisPanel(pctEntries, scopeTotal, mode) {
   const note = el('div'); note.className = 'hp-qt-desc'; note.style.marginTop = '10px';
   note.innerHTML = mode === 'industry'
     ? '台股個股用證交所／櫃買中心的官方產業別；ETF 依成分股的產業比重拆開計算（例如 0050 會分到半導體、電子零組件、金融保險…）；美股用 GICS 類股。'
-    : '個股依殖利率、本益比、股價淨值比判定：殖利率 ≥ 5%（美股 4%）高股息；本益比 ≤ 12 且淨值比 ≤ 1.5（美股 15／2.5）價值型；本益比 ≥ 25（美股 30）成長型；其餘平衡型。ETF 依證交所登記的基金類型與追蹤指數判定。';
+    : '個股依殖利率、本益比、股價淨值比判定：殖利率 ≥ 5%（美股 4%）高股息；本益比 ≤ 12 且淨值比 ≤ 1.5（美股 15／2.5）價值型；本益比 ≥ 25（美股 30）成長型；其餘平衡型。ETF 依基金名稱與追蹤指數判定（高股息、市值型、產業主題、債券、槓桿反向等）。';
   wrap.appendChild(note);
   wrap.appendChild(buildClassifyStatusBar());
   return wrap;

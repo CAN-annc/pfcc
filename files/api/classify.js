@@ -38,6 +38,33 @@ export const TW_INDUSTRY_CODES = {
   '34':'電子商務','35':'綠能環保','36':'數位雲端','37':'運動休閒','38':'居家生活','80':'管理股票','91':'存託憑證',
 };
 
+// 產業名稱統一：不同來源對同一個產業寫法不同（Yahoo「電腦週邊」、MoneyDJ
+// 台股 ETF 頁「資訊技術」「工業」、美股 ETF 頁「資訊科技」…），全部對到證交所
+// 產業名稱（台股）或 GICS 11 大類（海外）的同一套寫法，才能加總在同一類。
+const TW_NAMES = new Set(Object.values({
+  a:'水泥',b:'食品',c:'塑膠',d:'紡織纖維',e:'電機機械',f:'電器電纜',g:'玻璃陶瓷',h:'造紙',i:'鋼鐵',j:'橡膠',k:'汽車',l:'建材營造',m:'航運',n:'觀光餐旅',
+  o:'金融保險',p:'貿易百貨',q:'綜合',r:'其他',s:'化學',t:'生技醫療',u:'油電燃氣',v:'半導體',w:'電腦及週邊設備',x:'光電',y:'通信網路',z:'電子零組件',
+  aa:'電子通路',ab:'資訊服務',ac:'其他電子',ad:'文化創意',ae:'農業科技',af:'電子商務',ag:'綠能環保',ah:'數位雲端',ai:'運動休閒',aj:'居家生活',ak:'存託憑證',
+}));
+const NAME_ALIASES = {
+  '電腦週邊':'電腦及週邊設備','電腦及週邊':'電腦及週邊設備','營建':'建材營造','建材':'建材營造','化工':'化學','化學工業':'化學','生技':'生技醫療',
+  '紡織':'紡織纖維','電機':'電機機械','電器':'電器電纜','玻璃':'玻璃陶瓷','觀光':'觀光餐旅','金融':'金融保險','貿易':'貿易百貨','油電':'油電燃氣',
+  '資訊技術':'資訊科技','信息技術':'資訊科技','通訊服務':'通信服務','電信服務':'通信服務','工':'工業','原材料':'原料','原物料':'原料','材料':'原料',
+  '非核心消費':'非必需消費品','非必需消費':'非必需消費品','可選消費':'非必需消費品','核心消費':'必需性消費品','必需消費':'必需性消費品','日常消費':'必需性消費品',
+  '醫療保健':'健康護理','醫療':'健康護理','房地產':'不動產','公用':'公用事業',
+};
+// market：'TW' 時「金融」→「金融保險」（證交所分類），'GICS' 時維持「金融」。
+export function canonicalIndustry(raw, market = 'TW') {
+  let n = String(raw ?? '').replace(/\s+/g, '').trim();
+  if (!n) return null;
+  if (TW_NAMES.has(n)) return n;
+  if (n.endsWith('業') && TW_NAMES.has(n.slice(0, -1))) return n.slice(0, -1);
+  if (market === 'GICS' && n === '金融') return '金融';
+  if (NAME_ALIASES[n]) return NAME_ALIASES[n];
+  if (n.endsWith('業') && NAME_ALIASES[n.slice(0, -1)]) return NAME_ALIASES[n.slice(0, -1)];
+  return n;
+}
+
 // Finnhub finnhubIndustry → GICS 11 大類（MoneyDJ 美股 ETF 類股分佈用的中文名）。
 const FINNHUB_TO_GICS = {
   'Technology':'資訊科技','Semiconductors':'資訊科技','Electrical Equipment':'工業','Communications':'通信服務',
@@ -61,13 +88,6 @@ export default async function handler(req) {
   const { searchParams } = new URL(req.url);
   // 診斷用：列出各資料來源從 Vercel 連得到連不到（不含任何使用者資料）。
   if (searchParams.get('probe') === '1') return json(await probeSources(globalThis.fetch));
-  if (searchParams.get('peek')) {
-    const code = searchParams.get('peek').replace(/\D/g, '').slice(0, 6);
-    const html = await globalThis.fetch(`https://tw.stock.yahoo.com/quote/${code}.TW/profile`, { headers: UA }).then(r => r.text()).catch(e => String(e));
-    const keys = [...html.matchAll(/"([A-Za-z]*(?:[Yy]ield|[Pp]e[Rr]atio|[Pp]b[Rr]|[Bb]ook|[Dd]ividend|eps|EPS)[A-Za-z]*)"\s*:\s*("[^"]{0,40}"|[-\d.]+|null)/g)].slice(0, 60).map(m => `${m[1]}=${m[2]}`);
-    const snip = w => { const out = []; let i = -1; while ((i = html.indexOf(w, i + 1)) >= 0 && out.length < 3) out.push(html.slice(Math.max(0, i - 150), i + 150).replace(/class="[^"]*"/g, '')); return out; };
-    return json({ keys: [...new Set(keys)], y: snip('殖利率'), pb: snip('淨值比') });
-  }
   const items = (searchParams.get('items') ?? '').split(',').map(s => s.trim().toUpperCase()).filter(Boolean)
     .map(s => { const [market, ticker] = s.split(':'); return { market, ticker }; })
     .filter(i => ['TW', 'US'].includes(i.market) && /^[A-Z0-9.\-]{1,12}$/.test(i.ticker ?? ''))
@@ -101,7 +121,8 @@ export async function classifyItems(items, { fetch, finnhubKey, diag = {} }) {
   const need = twStocks.length > 0;
   const src = {
     tpexProfile: need ? timed('tpex_profile', () => getJson(fetch, 'https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O')) : null,
-    tpexVal: need ? timed('tpex_val', () => getJson(fetch, 'https://www.tpex.org.tw/openapi/v1/tpex_mainboard_peratio_analysis').then(normTpexOpenVal)) : null,
+    tpexVal: need ? timed('tpex_val', () => getJson(fetch, 'https://www.tpex.org.tw/openapi/v1/tpex_mainboard_peratio_analysis', 12000).then(normTpexOpenVal)) : null,
+    tpexValWeb: lazy(() => timed('tpex_val_web', () => getJson(fetch, 'https://www.tpex.org.tw/www/zh-tw/afterTrading/peQryDate?response=json', 10000).then(normTpexWebVal))),
   };
   const out = {};
   await Promise.all([
@@ -112,12 +133,19 @@ export async function classifyItems(items, { fetch, finnhubKey, diag = {} }) {
   return out;
 }
 
+const lazy = fn => { let p; return () => (p ??= fn()); };
 const num = v => { const n = parseFloat(String(v ?? '').replace(/[,%]/g, '')); return Number.isFinite(n) ? n : null; };
 function normTpexOpenVal(v) {
   if (!Array.isArray(v)) return null;
   const m = new Map();
   for (const r of v) m.set(String(r.SecuritiesCompanyCode).trim(), { pe: num(r.PriceEarningRatio), yield: num(r.YieldRatio ?? r.DividendYield), pb: num(r.PriceBookRatio) });
   return m.size ? m : null;
+}
+function normTpexWebVal(v) {
+  const rows = v?.tables?.[0]?.data;
+  if (!Array.isArray(rows)) return null;
+  // 欄位：股票代號,公司名稱,本益比,每股股利,股利年度,殖利率(%),股價淨值比,財報年/季
+  return new Map(rows.map(r => [String(r[0]).trim(), { pe: num(r[2]), yield: num(r[5]), pb: num(r[6]) }]));
 }
 const strip = s => String(s ?? '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 
@@ -133,8 +161,7 @@ export function parseMoneydjValuation(html) {
 // Yahoo 奇摩股市公司基本資料：…<span>產業類別</span></span><div …>半導體</div> 或 "ySector":"半導體"
 export function parseYahooSector(html) {
   const m = html.match(/產業類別<\/span>\s*<\/span>\s*<div[^>]*>([^<]+)</) ?? html.match(/"ySector"\s*:\s*"([^"]+)"/);
-  const name = m ? strip(m[1]).replace(/業$/, '') : '';
-  return name || null;
+  return m ? canonicalIndustry(strip(m[1]), 'TW') : null;
 }
 
 // 台股 ETF 代號一律是 00 開頭（0050、006208、00878、00679B…）。
@@ -158,12 +185,15 @@ async function classifyTwStock(code, src, fetch, timed) {
   r.industry = indName ? { mix: [{ name: indName, pct: 100 }], source: indSource }
     : { mix: null, reason: '櫃買中心與 Yahoo 奇摩股市都查不到這個代號的產業' };
 
-  const fromO = ov?.get(code);
+  let fromO = ov?.get(code);
+  if (!fromO && o) fromO = (await src.tpexValWeb())?.get(code);
   const metrics = fromO ?? zca ?? null;
   r.style = metrics
     ? { ...classifyStockStyle(metrics, { market: 'TW', defensive: DEFENSIVE_TW.has(indName) }), metrics,
         source: fromO ? '櫃買中心本益比／殖利率' : '本益比／殖利率（MoneyDJ 個股資料）' }
-    : { key: null, reason: '櫃買中心與 MoneyDJ 都查不到這個代號的本益比' };
+    // 上市股本益比的主要來源是證交所，但證交所擋雲端主機，前端會直接向證交所
+    // 開放資料補查（openapi 支援跨網域），這裡回 null 讓前端接手。
+    : { key: null, reason: o ? '櫃買中心本益比資料暫時查不到' : '待證交所資料', needsTwse: !o };
   return r;
 }
 
@@ -257,12 +287,20 @@ export function parseIndustryTable(html) {
     const name = cells.find(c => c && !/^[\d,.\-%]+$/.test(c));
     const pct = parseFloat(String(cells[cells.length - 1] ?? '').replace(/[,%]/g, ''));
     if (!name || !Number.isFinite(pct) || /產業|比例|顏色/.test(name)) continue;
-    rows.push({ name: name.replace(/業$/, ''), pct });
+    rows.push({ raw: name, pct });
   }
-  const real = rows.filter(r => !NON_INDUSTRY.test(r.name) && r.pct > 0);
-  const total = real.reduce((s, r) => s + r.pct, 0);
-  if (!real.length || total < 30) return null; // 幾乎都是地區／存款：不是產業表
-  return real.map(r => ({ name: r.name, pct: r.pct / total * 100 })).sort((a, b) => b.pct - a.pct);
+  // 表裡只要出現 GICS 才有的類別（資訊科技／資訊技術、通信服務…），整張表
+  // 就當 GICS 表：「金融」維持「金融」，不轉成證交所的「金融保險」。
+  const gics = rows.some(r => /資訊(科技|技術)|通(信|訊)服務|消費|原(料|材料)|健康護理|醫療保健|房地產|不動產/.test(r.raw));
+  const merged = new Map();
+  for (const r of rows) {
+    if (NON_INDUSTRY.test(r.raw) || !(r.pct > 0)) continue;
+    const name = canonicalIndustry(r.raw, gics ? 'GICS' : 'TW');
+    merged.set(name, (merged.get(name) ?? 0) + r.pct);
+  }
+  const total = [...merged.values()].reduce((s, v) => s + v, 0);
+  if (!merged.size || total < 30) return null; // 幾乎都是地區／存款：不是產業表
+  return [...merged].map(([name, v]) => ({ name, pct: v / total * 100 })).sort((a, b) => b.pct - a.pct);
 }
 
 async function classifyUs(ticker, fetch, key, timed) {
@@ -293,8 +331,8 @@ async function classifyUs(ticker, fetch, key, timed) {
   return r;
 }
 
-async function getJson(fetch, url) {
-  const res = await fetch(url, { headers: UA, signal: AbortSignal.timeout(8000) });
+async function getJson(fetch, url, ms = 8000) {
+  const res = await fetch(url, { headers: UA, signal: AbortSignal.timeout(ms) });
   if (!res.ok) throw new Error(`${res.status}`);
   return res.json();
 }
