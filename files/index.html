@@ -599,6 +599,12 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .theme-mini-card b{position:absolute;right:7px;bottom:6px;width:12px;height:12px;border-radius:50%}
 .theme-tiers{display:flex;height:6px;border-radius:999px;overflow:hidden}
 .theme-name{font-size:11px;font-weight:600;color:var(--text-2);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ── v2.6.0 帳戶管理：方格首頁＋子頁，與記帳管理一致 ── */
+.tm-sub{font-size:10px;color:var(--text-3);line-height:1.2;font-variant-numeric:tabular-nums}
+.acc-sub-card > .card-header-row{cursor:default}
+.acc-sub-card > .card-header-row .chevron{display:none}
+.acc-sub-card > .card-header-row .card-title{font-size:15px;gap:8px}
+.acc-sub-ico{font-size:18px;line-height:1}
 </style>
 </head>
 <body>
@@ -2657,17 +2663,16 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.5.0';
+const APP_VERSION = 'v2.6.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-05';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '5 個畫作配色改成「5 色階層」整頁換色：底色約 50%、卡片與導覽列 25%、標題與總資產卡片 12%、次要文字與框線 8%、按鈕與重點標示 5%，每個主題的差異一眼就看得出來',
-  '首頁資產方塊與配置色條改用各主題自己的顏色',
-  '文字、按鈕顏色會自動檢查對比度，淺色畫作（紫陽花、杏花）的粉色按鈕保留原色、改配深色字',
-  '「配色主題」選項改成縮小版畫面預覽，並附 5 色階層比例條',
+  '帳戶管理改成跟記帳管理一樣的方格首頁：分「現金與存款」「其他資產與債權」兩組，每格直接顯示金額與筆數',
+  '點方格進入該類別，頂端有「← 帳戶管理」返回鍵；「新增」按鈕統一放在該類別標題列右側',
+  '從導覽列點「帳戶管理」「記帳管理」一律回到方格首頁',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3025,6 +3030,9 @@ function setupNav() {
   document.querySelectorAll('.nav-item[data-view]').forEach(item => {
     item.addEventListener('click', e => {
       e.preventDefault();
+      // 從導覽列點「帳戶管理」「記帳管理」一律回到方格首頁（v2.6.0）。
+      if (item.dataset.view === 'settings') _accManageActiveSection = null;
+      if (item.dataset.view === 'txnmanage') _txnManageActiveTab = null;
       navigate(item.dataset.view);
       document.getElementById('sidebar').classList.remove('open');
       closeMoreSheet();
@@ -4286,7 +4294,7 @@ async function renderSystemSettings() {
   {
     const row = addRow({ icon:'📜', title:'歷史紀錄', subtitle:'帳戶餘額調整等變動紀錄，在「帳戶管理」點帳戶的「明細」查看',
       rightHtml:`<button class="btn btn-ghost btn-sm" id="goAccountHistory">前往</button>` });
-    row.querySelector('#goAccountHistory').addEventListener('click', () => navigate('settings'));
+    row.querySelector('#goAccountHistory').addEventListener('click', () => { _accManageActiveSection = 'bank'; navigate('settings'); });
   }
 
   // ── 📤 匯出／匯入備份：跟頂端列的兩顆按鈕是同一套邏輯（直接觸發）。
@@ -4348,7 +4356,7 @@ const _expandedRegistry = new Set();
 async function goToHealthFinding(f) {
   const link = f?.link || {};
   if (link.tab) _txnManageActiveTab = link.tab;
-  if (link.action === 'receivable') toggleExpanded('recvSection', true);
+  if (link.action === 'receivable') { toggleExpanded('recvSection', true); _accManageActiveSection = 'recv'; }
   await navigate(link.view || 'settings');
   try {
     if (link.action === 'account') {
@@ -5047,6 +5055,118 @@ async function renderSettings() {
     goldHeader.classList.toggle('card-open', next);
   });
   content.appendChild(goldCard);
+
+  applyAccountManageLayout({ content, toolbar, banks, sections: {
+    cash: cashCard, bank: bankCard, recv: recvCard, dep: depCard, other: otherCard, gold: goldCard,
+  } });
+}
+
+// ── v2.6.0（使用者要求「帳戶管理有沒有更好的呈現方式，讓所有頁面更統一」）──
+// 改成跟「記帳管理」同一套「方格選單 → 點進子頁」的結構：
+//   - 第一層：分組的 3 欄方格（同一個 .tm-tile 樣式），每格顯示筆數＋折合台幣
+//     金額，一眼看完全部資產類別，不用一張張展開。
+//   - 第二層：點方格進到那一類，頂端是「← 帳戶管理」返回鍵（跟記帳管理同一個
+//     按鈕），下面就是原本那張卡片，固定展開、不能收合；這一類的「新增」按鈕
+//     統一放在卡片標題列右側（原本頁面最上方的「新增銀行／新增帳戶」移進
+//     「銀行帳戶」子頁）。
+// 6 張卡片的內容與所有編輯／刪除／排序功能完全沒動，只改外層怎麼呈現。
+let _accManageActiveSection = null;
+const ACC_MANAGE_GROUPS = [
+  { title:'現金與存款', items:[
+    { key:'cash',  icon:'💵', label:'現金' },
+    { key:'bank',  icon:'🏦', label:'銀行帳戶' },
+    { key:'dep',   icon:'⏳', label:'定存' },
+  ]},
+  { title:'其他資產與債權', items:[
+    { key:'gold',  icon:'🪙', label:'實體黃金' },
+    { key:'other', icon:'🏠', label:'其他資產' },
+    { key:'recv',  icon:'🤝', label:'應收款' },
+  ]},
+];
+function accManageSummary(key) {
+  const { cash, depositRes, otherAssets, gold, recv, banks } = state;
+  const cashAccs = cash.byBank['__cash__']?.accounts ?? [];
+  const cashTWD = cashAccs.reduce((s, a) => s + (a.balTWD || 0), 0);
+  const money = v => `NT$ ${fmt(v)}`;
+  switch (key) {
+    case 'cash':  return { count: `${cashAccs.length} 個帳戶`, amount: cashAccs.length ? money(cashTWD) : '' };
+    case 'bank':  return { count: `${(banks || []).length} 家銀行`, amount: money(cash.totalTWD - cashTWD) };
+    case 'dep':   { const n = (depositRes.items || []).filter(d => d.status !== 'matured').length; return { count: `${n} 筆進行中`, amount: n ? money(depositRes.totalTWD) : '' }; }
+    case 'gold':  return { count: `${gold.enriched.length} 筆`, amount: gold.enriched.length ? money(gold.totalTWD) : '' };
+    case 'other': return { count: `${otherAssets.enriched.length} 筆`, amount: otherAssets.enriched.length ? money(otherAssets.totalTWD) : '' };
+    case 'recv':  return { count: `${recv.pending.length} 筆待收`, amount: recv.pending.length ? money(recv.totalTWD) : '' };
+  }
+  return { count: '', amount: '' };
+}
+function applyAccountManageLayout({ content, toolbar, banks, sections }) {
+  const active = _accManageActiveSection;
+  if (!active || !sections[active]) {
+    _accManageActiveSection = null;
+    toolbar.remove();
+    Object.values(sections).forEach(c => { c.hidden = true; });
+    const wrap = el('div','tm-wrap');
+    for (const g of ACC_MANAGE_GROUPS) {
+      const sec = el('section','tm-sec');
+      sec.innerHTML = `<h3 class="tm-sec-title">${g.title}</h3>`;
+      const grid = el('div','tm-grid');
+      for (const it of g.items) {
+        const sum = accManageSummary(it.key);
+        const cell = el('button','tm-tile');
+        cell.type = 'button';
+        const muted = /^0 /.test(sum.count);
+        cell.innerHTML = `
+          <span class="tm-ico">${it.icon}</span>
+          <span class="tm-label">${it.label}</span>
+          <span class="tm-sum${muted ? ' muted' : ''}">${sum.amount || sum.count}</span>
+          ${sum.amount ? `<span class="tm-sub">${sum.count}</span>` : ''}`;
+        cell.addEventListener('click', () => { _accManageActiveSection = it.key; renderSettings(); window.scrollTo(0, 0); });
+        grid.appendChild(cell);
+      }
+      sec.appendChild(grid);
+      wrap.appendChild(sec);
+    }
+    content.prepend(wrap);
+    return;
+  }
+  // 子頁：返回鍵＋只顯示這一張卡片，固定展開。
+  Object.entries(sections).forEach(([k, c]) => { c.hidden = k !== active; });
+  const card = sections[active];
+  card.classList.add('acc-sub-card');
+  card.style.marginBottom = '0';
+  const header = card.querySelector(':scope > .card-header-row');
+  const body = card.querySelector(':scope > .card-body');
+  body?.classList.add('open');
+  header?.classList.add('card-open');
+  // 子頁的卡片不能收合：攔掉標題列本身的點擊（標題列裡的按鈕照常可以按）。
+  header?.addEventListener('click', e => { if (!e.target.closest('button')) e.stopImmediatePropagation(); }, true);
+  // 標題前的圖示改成跟方格同一個（原本「現金」用時鐘、「應收款」用警告三角形，
+  // 意思對不上）。
+  const meta = ACC_MANAGE_GROUPS.flatMap(g => g.items).find(it => it.key === active);
+  const titleEl = header?.querySelector('.card-title');
+  if (titleEl && meta) {
+    titleEl.querySelector('svg')?.remove();
+    titleEl.insertAdjacentHTML('afterbegin', `<span class="acc-sub-ico" aria-hidden="true">${meta.icon}</span>`);
+  }
+  const right = header?.lastElementChild;
+  if (active === 'bank') {
+    toolbar.style.cssText = 'display:flex;gap:6px';
+    toolbar.querySelectorAll('button').forEach(b => { b.classList.add('btn-sm'); b.style.fontSize = '11px'; });
+    right?.prepend(toolbar);
+  } else {
+    toolbar.remove();
+    if (active === 'cash') {
+      const addCash = el('button','btn btn-ghost btn-sm');
+      addCash.style.fontSize = '11px';
+      addCash.textContent = '＋ 新增現金帳戶';
+      addCash.addEventListener('click', e => { e.stopPropagation(); openAccountModal(null, banks); });
+      right?.prepend(addCash);
+    }
+  }
+  const backBtn = el('button','btn btn-ghost btn-sm');
+  backBtn.style.cssText = 'align-self:flex-start';
+  backBtn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> 帳戶管理`;
+  backBtn.addEventListener('click', () => { _accManageActiveSection = null; renderSettings(); window.scrollTo(0, 0); });
+  content.prepend(backBtn);
 }
 
 // ════════════════════════════════════════════════════════════════════════════

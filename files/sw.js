@@ -36,7 +36,7 @@
  * 伺服器要最新版本。
  */
 
-const CACHE_NAME  = 'pfcc-shell-v20'; // 2026-10-05：v2.5.0（配色主題 5 色階層整頁換色），index.html 異動。
+const CACHE_NAME  = 'pfcc-shell-v21'; // 2026-10-05：v2.6.0（帳戶管理改方格首頁＋子頁），index.html 異動。
 // （上一版 v15，2026-10-02：「新增收入」轉入帳戶／「應收款入帳」選擇帳戶新增「顯示外幣帳戶」勾選（預設只顯示台幣）＋「新增現金帳戶」快速新增捷徑，index.html 異動，版本號照約定往上跳一碼。）
 const SHELL_URLS  = ['/', '/index.html', '/db.js', '/market.js', '/calc.js', '/manifest.json'];
 
