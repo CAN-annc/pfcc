@@ -1,34 +1,27 @@
 /**
  * PFCC — 持股產業別／投資屬性自動判定（Vercel Edge Function）
- * GET /api/classify?items=TW:2330,TW:0050,US:AAPL
+ * GET /api/classify?items=TW:2330,TW:0050,US:AAPL   （?probe=1：各資料來源連線診斷）
  * ADR-001/002：只有「市場＋代號」離開裝置，不帶股數、金額或任何使用者資料。
  *
- * v2.7.1（使用者回報：產業別、投資屬性應該由系統自動判定，不該交給使用者）
- * 全部改成「依公開資料判定」，每一筆結果都附上資料來源與判定理由，畫面上
- * 照實顯示，使用者看得到為什麼這檔被歸在這一類：
+ * v2.7.1 起產業別、投資屬性由系統依公開資料判定（使用者：這不該交給使用者
+ * 選），每一筆結果附資料來源與判定理由。v2.7.3 依實測調整資料來源——證交所
+ * 會擋雲端主機（openapi 逾時、網站 403），改用從 Vercel 連得到的來源：
  *
  * 產業別
- *   台股個股：證交所 t187ap03_L「產業別」／櫃買中心 mopsfin_t187ap03_O
- *             SecuritiesIndustryCode（兩邊同一套兩位數代碼，例如 24＝半導體）。
- *   台股 ETF：穿透成分股——MoneyDJ「持股分佈(依產業)」（產業名稱跟證交所
- *             分類同一套），0050 會拆成半導體 69%、電子零組件 9%…；海外成分
- *             的 ETF 該頁只有地區，改抓同站 GICS 類股分佈。
- *   美股個股：Finnhub profile2 的 finnhubIndustry，對應到 GICS 11 大類中文名
- *             （跟美股 ETF 穿透用的 MoneyDJ 類股名稱同一套）。
- *   美股 ETF：MoneyDJ「持股分佈(依產業)」（GICS 11 大類）。
- *   債券 ETF（代號結尾 B）：債券。
+ *   上櫃個股：櫃買中心 openapi mopsfin_t187ap03_O（官方兩位數產業代碼）。
+ *   上市個股：Yahoo 奇摩股市公司基本資料「產業類別」（與證交所分類同名）。
+ *   台股 ETF：MoneyDJ「持股分佈(依產業)」穿透成分股（0050 → 半導體 69%…）；
+ *             海外成分 ETF 該頁只有地區，改抓同站 GICS 類股分佈。
+ *   美股個股：Finnhub profile2 finnhubIndustry → GICS 11 大類中文名。
+ *   美股 ETF：MoneyDJ「持股分佈(依產業)」（GICS）。債券 ETF：債券。
  *
  * 投資屬性
- *   台股 ETF：證交所 t187ap47_L 的「基金類型」＋「標的指數名稱」——槓桿／
- *             反向、期貨、主動式直接看基金類型；其餘看追蹤的指數名稱（高股息、
- *             債、成長、價值、低波動、特定產業主題），都不是的就是市值型指數。
- *   台股個股：證交所 BWIBBU_d／櫃買 peQryDate 的殖利率、本益比、股價淨值比，
- *             依固定門檻判定（見 classifyStockStyle），門檻與實際數值一起回傳。
- *   美股個股：Finnhub /stock/metric 的同三項指標，門檻依美股水準調整。
- *   美股 ETF：Finnhub profile 沒有 ETF 資料，改用基金名稱關鍵字（Dividend、
- *             Bond、Growth、Value…）判定，理由會註明「依基金名稱」。
+ *   個股：本益比／殖利率／股價淨值比（上櫃＝櫃買 openapi；上市＝MoneyDJ 個股
+ *         基本資料，數字與證交所公布一致；美股＝Finnhub），門檻見 classifyStockStyle。
+ *   ETF：MoneyDJ ETF 基本資料的基金名稱＋追蹤指數，加證交所代號規則
+ *         （B 債券、L／R 槓桿反向、U 期貨），見 classifyEtfStyle。
  *
- * 任何一個來源失敗都只影響那一部分（回傳 null＋原因），不會整批失敗。
+ * 任何一個來源失敗只影響那一部分（回傳 null＋原因），不會整批失敗。
  */
 export const config = { runtime: 'edge' };
 
@@ -62,23 +55,12 @@ const FINNHUB_TO_GICS = {
 const DEFENSIVE_GICS = new Set(['必需性消費品','公用事業','健康護理']);
 const DEFENSIVE_TW = new Set(['食品','油電燃氣']);
 
+
 export default async function handler(req) {
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
   const { searchParams } = new URL(req.url);
   // 診斷用：列出各資料來源從 Vercel 連得到連不到（不含任何使用者資料）。
   if (searchParams.get('probe') === '1') return json(await probeSources(globalThis.fetch));
-  if (searchParams.get('peek') === 'yp') {
-    const code = (searchParams.get('code') ?? '2330').replace(/\D/g, '').slice(0, 6);
-    const html = await getText(globalThis.fetch, `https://tw.stock.yahoo.com/quote/${code}.TW/profile`).catch(e => String(e));
-    const all = k => { const r = []; let i = -1; while ((i = html.indexOf(k, i + 1)) >= 0 && r.length < 4) r.push(html.slice(Math.max(0, i - 200), i + 300)); return r; };
-    return json({ len: html.length, ind: all('產業類別'), ind2: all('半導體') .slice(0,2), twseisin: await getText(globalThis.fetch, 'https://isin.twse.com.tw/isin/class_main.jsp?owncode=2330&stockname=&isincode=&market=1&issuetype=1&industry_code=&Page=1&chklike=Y').then(t => t.slice(0, 1500)).catch(e => String(e)) });
-  }
-  if (searchParams.get('peek') === 'zca') {
-    const code = (searchParams.get('code') ?? '2330').replace(/\D/g, '').slice(0, 6);
-    const html = await getText(globalThis.fetch, `https://www.moneydj.com/z/zc/zca/zca_${code}.djhtm`).catch(e => String(e));
-    const around = k => { const i = html.indexOf(k); return i < 0 ? null : html.slice(Math.max(0, i - 300), i + 400); };
-    return json({ len: html.length, pe: around('本益比'), ind: around('產業'), yieldx: around('殖利率'), title: html.match(/<title>[^<]*<\/title>/)?.[0] });
-  }
   const items = (searchParams.get('items') ?? '').split(',').map(s => s.trim().toUpperCase()).filter(Boolean)
     .map(s => { const [market, ticker] = s.split(':'); return { market, ticker }; })
     .filter(i => ['TW', 'US'].includes(i.market) && /^[A-Z0-9.\-]{1,12}$/.test(i.ticker ?? ''))
@@ -90,77 +72,91 @@ export default async function handler(req) {
   return json({ fetched_at: new Date().toISOString(), results, sources: diag });
 }
 
-// v2.7.2：上一版是「需要時才依序抓」，台股個股要等公司資料（上市＋上櫃兩份
-// 大檔）→ 再等本益比資料，任一來源慢就累加超過 Edge Function 的 25 秒上限，
-// 整批逾時、前端全部變成「未能判定」。改成一開始就把會用到的來源全部並行
-// 發出，每個來源 8 秒逾時，主要來源失敗才改用備援來源：
-//   本益比／殖利率：證交所 openapi BWIBBU_ALL → 證交所網站 BWIBBU_d（上市）
-//                   櫃買 openapi tpex_mainboard_peratio_analysis → 櫃買網站 peQryDate（上櫃）
+// v2.7.3：實測（?probe=1）從 Vercel 連證交所的 openapi.twse.com.tw 會逾時、
+// www.twse.com.tw 回 403——證交所擋掉雲端主機，所以上市公司的資料改用連得到
+// 的來源（數字跟證交所公布的一致，例如台積電本益比 28.98、殖利率 0.88%、
+// 淨值比 10.08 兩邊相同）：
+//   上櫃：櫃買中心 openapi（公司產業別 mopsfin_t187ap03_O、本益比
+//         tpex_mainboard_peratio_analysis）——官方來源，連得到。
+//   上市：產業別＝Yahoo 奇摩股市「公司基本資料」的產業類別（同證交所分類）；
+//         本益比／殖利率／淨值比＝MoneyDJ 個股基本資料。
+//   ETF：MoneyDJ ETF 基本資料的「追蹤指數」＋基金名稱判定屬性、
+//         「持股分佈(依產業)」穿透成分股產業。
+// 所有來源一開始就並行發出、每個 8 秒逾時，不會因為一個來源慢就整批逾時。
 export async function classifyItems(items, { fetch, finnhubKey, diag = {} }) {
   const tw = items.filter(i => i.market === 'TW'), us = items.filter(i => i.market === 'US');
   const twStocks = tw.filter(i => !isTwEtf(i.ticker)), twEtfs = tw.filter(i => isTwEtf(i.ticker));
   const timed = (name, fn) => {
     const t0 = Date.now();
-    return fn().then(v => { diag[name] = { ok: true, ms: Date.now() - t0 }; return v; },
+    return fn().then(v => { diag[name] = { ok: v != null, ms: Date.now() - t0 }; return v; },
                      e => { diag[name] = { ok: false, ms: Date.now() - t0, error: String(e?.message ?? e) }; return null; });
   };
-  const need = twStocks.length > 0, needEtf = twEtfs.length > 0;
+  const need = twStocks.length > 0;
   const src = {
-    twseProfile: need ? timed('twse_profile', () => getJson(fetch, 'https://openapi.twse.com.tw/v1/opendata/t187ap03_L')) : null,
     tpexProfile: need ? timed('tpex_profile', () => getJson(fetch, 'https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O')) : null,
-    twseVal: need ? timed('twse_val', () => getJson(fetch, 'https://openapi.twse.com.tw/v1/exchangeReport/BWIBBU_ALL').then(normTwseOpenVal)) : null,
     tpexVal: need ? timed('tpex_val', () => getJson(fetch, 'https://www.tpex.org.tw/openapi/v1/tpex_mainboard_peratio_analysis').then(normTpexOpenVal)) : null,
-    // 備援：主要來源失敗、或主要來源裡剛好沒有這個代號時才抓（只抓一次）。
-    twseValWeb: lazy(() => timed('twse_val_web', () => getJson(fetch, 'https://www.twse.com.tw/rwd/zh/afterTrading/BWIBBU_d?response=json&selectType=ALL').then(normTwseWebVal))),
-    tpexValWeb: lazy(() => timed('tpex_val_web', () => getJson(fetch, 'https://www.tpex.org.tw/www/zh-tw/afterTrading/peQryDate?response=json').then(normTpexWebVal))),
-    twseEtf: needEtf ? timed('twse_etf', () => getJson(fetch, 'https://openapi.twse.com.tw/v1/opendata/t187ap47_L')) : null,
   };
   const out = {};
   await Promise.all([
-    ...twStocks.map(async i => { out[`TW:${i.ticker}`] = await classifyTwStock(i.ticker, src); }),
-    ...twEtfs.map(async i => { out[`TW:${i.ticker}`] = await classifyTwEtf(i.ticker, src, fetch, timed); }),
+    ...twStocks.map(async i => { out[`TW:${i.ticker}`] = await classifyTwStock(i.ticker, src, fetch, timed); }),
+    ...twEtfs.map(async i => { out[`TW:${i.ticker}`] = await classifyTwEtf(i.ticker, fetch, timed); }),
     ...us.map(async i => { out[`US:${i.ticker}`] = await classifyUs(i.ticker, fetch, finnhubKey, timed); }),
   ]);
   return out;
 }
 
-const lazy = fn => { let p; return () => (p ??= fn()); };
 const num = v => { const n = parseFloat(String(v ?? '').replace(/[,%]/g, '')); return Number.isFinite(n) ? n : null; };
-const toMap = (rows, f) => { const m = new Map(); for (const r of rows ?? []) { const x = f(r); if (x) m.set(x.code, x); } return m.size ? m : null; };
-// 各來源統一成 Map(code → {pe, yield, pb})。
-function normTwseOpenVal(v) { return Array.isArray(v) ? toMap(v, r => ({ code: String(r.Code).trim(), pe: num(r.PEratio), yield: num(r.DividendYield), pb: num(r.PBratio) })) : null; }
-function normTwseWebVal(v) { return toMap(v?.data, r => ({ code: String(r[0]).trim(), yield: num(r[3]), pe: num(r[5]), pb: num(r[6]) })); }
-function normTpexOpenVal(v) { return Array.isArray(v) ? toMap(v, r => ({ code: String(r.SecuritiesCompanyCode).trim(), pe: num(r.PriceEarningRatio), yield: num(r.YieldRatio ?? r.DividendYield), pb: num(r.PriceBookRatio) })) : null; }
-function normTpexWebVal(v) { return toMap(v?.tables?.[0]?.data, r => ({ code: String(r[0]).trim(), pe: num(r[2]), yield: num(r[5]), pb: num(r[6]) })); }
+function normTpexOpenVal(v) {
+  if (!Array.isArray(v)) return null;
+  const m = new Map();
+  for (const r of v) m.set(String(r.SecuritiesCompanyCode).trim(), { pe: num(r.PriceEarningRatio), yield: num(r.YieldRatio ?? r.DividendYield), pb: num(r.PriceBookRatio) });
+  return m.size ? m : null;
+}
+const strip = s => String(s ?? '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+
+// MoneyDJ 個股基本資料（zca）：<td class="t4t1">本益比</td><td class="t3n1">29.85</td>
+export function parseMoneydjValuation(html) {
+  const pick = label => {
+    const m = html.match(new RegExp(`>\\s*${label}\\s*</td>\\s*<td[^>]*>([\\s\\S]*?)</td>`));
+    return m ? num(strip(m[1])) : null;
+  };
+  const r = { pe: pick('本益比'), yield: pick('殖利率'), pb: pick('股價淨值比') };
+  return r.pe == null && r.yield == null && r.pb == null ? null : r;
+}
+// Yahoo 奇摩股市公司基本資料：…<span>產業類別</span></span><div …>半導體</div> 或 "ySector":"半導體"
+export function parseYahooSector(html) {
+  const m = html.match(/產業類別<\/span>\s*<\/span>\s*<div[^>]*>([^<]+)</) ?? html.match(/"ySector"\s*:\s*"([^"]+)"/);
+  const name = m ? strip(m[1]).replace(/業$/, '') : '';
+  return name || null;
+}
 
 // 台股 ETF 代號一律是 00 開頭（0050、006208、00878、00679B…）。
 export function isTwEtf(t) { return /^00\d{2,4}[A-Z]?$/.test(t); }
 
-async function classifyTwStock(code, src) {
+async function classifyTwStock(code, src, fetch, timed) {
   const r = { industry: null, style: null };
-  const [lp, op, lv, ov] = await Promise.all([src.twseProfile, src.tpexProfile, src.twseVal, src.tpexVal]);
-  let indCode = null, board = null;
-  const l = Array.isArray(lp) ? lp.find(x => String(x['公司代號']).trim() === code) : null;
-  if (l) { indCode = String(l['產業別'] ?? '').trim(); board = '上市'; }
-  else {
-    const o = Array.isArray(op) ? op.find(x => String(x.SecuritiesCompanyCode ?? '').trim() === code) : null;
-    if (o) { indCode = String(o.SecuritiesIndustryCode ?? '').trim(); board = '上櫃'; }
+  const [op, ov, yhTW, zca] = await Promise.all([
+    src.tpexProfile, src.tpexVal,
+    timed(`yahoo_${code}`, () => getText(fetch, `https://tw.stock.yahoo.com/quote/${code}.TW/profile`).then(parseYahooSector)),
+    timed(`moneydj_${code}`, () => getText(fetch, `https://www.moneydj.com/z/zc/zca/zca_${code}.djhtm`).then(parseMoneydjValuation)),
+  ]);
+  const o = Array.isArray(op) ? op.find(x => String(x.SecuritiesCompanyCode ?? '').trim() === code) : null;
+  let indName = null, indSource = null;
+  if (o) { indName = TW_INDUSTRY_CODES[String(o.SecuritiesIndustryCode ?? '').trim().padStart(2, '0')] ?? null; indSource = '櫃買中心產業別'; }
+  if (!indName && yhTW) { indName = yhTW; indSource = '產業類別（Yahoo 奇摩股市，同證交所分類）'; }
+  if (!indName && !o) {
+    const yhTWO = await timed(`yahoo_${code}_two`, () => getText(fetch, `https://tw.stock.yahoo.com/quote/${code}.TWO/profile`).then(parseYahooSector));
+    if (yhTWO) { indName = yhTWO; indSource = '產業類別（Yahoo 奇摩股市，同櫃買分類）'; }
   }
-  const indName = indCode ? (TW_INDUSTRY_CODES[indCode.padStart(2, '0')] ?? null) : null;
-  r.industry = indName
-    ? { mix: [{ name: indName, pct: 100 }], source: board === '上市' ? '證交所產業別' : '櫃買中心產業別' }
-    : { mix: null, reason: (lp || op) ? '證交所與櫃買中心的公司資料都查不到這個代號' : '證交所／櫃買中心暫時連不上' };
+  r.industry = indName ? { mix: [{ name: indName, pct: 100 }], source: indSource }
+    : { mix: null, reason: '櫃買中心與 Yahoo 奇摩股市都查不到這個代號的產業' };
 
-  let fromL = lv?.get(code), fromO = ov?.get(code);
-  if (!fromL && !fromO) {
-    const [lw, ow] = await Promise.all([board === '上櫃' ? null : src.twseValWeb(), board === '上市' ? null : src.tpexValWeb()]);
-    fromL = lw?.get(code); fromO = ow?.get(code);
-  }
-  const metrics = fromL ?? fromO ?? null;
+  const fromO = ov?.get(code);
+  const metrics = fromO ?? zca ?? null;
   r.style = metrics
-    ? { ...classifyStockStyle(metrics, { market: 'TW', defensive: DEFENSIVE_TW.has(indName) }), metrics: { pe: metrics.pe, yield: metrics.yield, pb: metrics.pb },
-        source: fromL ? '證交所本益比／殖利率' : '櫃買中心本益比／殖利率' }
-    : { key: null, reason: (lv || ov) ? '證交所與櫃買中心的本益比資料裡沒有這個代號' : '證交所／櫃買中心暫時連不上' };
+    ? { ...classifyStockStyle(metrics, { market: 'TW', defensive: DEFENSIVE_TW.has(indName) }), metrics,
+        source: fromO ? '櫃買中心本益比／殖利率' : '本益比／殖利率（MoneyDJ 個股資料）' }
+    : { key: null, reason: '櫃買中心與 MoneyDJ 都查不到這個代號的本益比' };
   return r;
 }
 
@@ -182,30 +178,44 @@ export function classifyStockStyle(m, { market, defensive }) {
   return { key: 'balanced', reason: `本益比 ${f(m.pe)}、殖利率 ${f(m.yield, 2)}%，未達其他門檻` };
 }
 
-// 台股 ETF 投資屬性：證交所基金類型＋標的指數名稱。
-export function classifyEtfStyleTw(fundType, indexName, code) {
-  const t = fundType ?? '', n = indexName ?? '';
-  const why = () => (n ? `追蹤「${n}」` : (t ? `基金類型「${t}」` : '依證券代號規則'));
-  if (/槓桿|反向/.test(t) || /[LR]$/.test(code)) return { key: 'leveraged', reason: why('槓桿／反向型') };
-  if (/期貨/.test(t) || /U$/.test(code)) return { key: 'commodity', reason: why('期貨型') };
-  if (/債/.test(n) || /B$/.test(code)) return { key: 'bond', reason: why('債券') };
-  if (/主動/.test(t)) return { key: 'active', reason: `基金類型為「${t}」` };
-  if (/高股息|高息|股利|收益/.test(n)) return { key: 'dividend', reason: why('高股息指數') };
-  if (/低波/.test(n)) return { key: 'defensive', reason: why('低波動指數') };
-  if (/成長/.test(n)) return { key: 'growth', reason: why('成長指數') };
-  if (/價值/.test(n)) return { key: 'value', reason: why('價值指數') };
-  if (THEME_RE.test(n)) return { key: 'theme', reason: why('產業／主題指數') };
-  if (!n && !t) return { key: null, reason: '證交所 ETF 資料查不到這個代號' };
-  return { key: 'index', reason: why('市值型指數') };
+// ETF 投資屬性：依基金名稱＋追蹤指數（MoneyDJ ETF 基本資料），加上證交所
+// 代號規則（B＝債券、L／R＝槓桿反向、U＝期貨）。依序判斷，第一個符合的就是答案。
+export function classifyEtfStyle(code, fundName, indexName) {
+  const f = fundName ?? '', n = indexName ?? '', both = `${f} ${n}`;
+  const why = () => (n ? `追蹤「${n}」` : f ? `基金名稱「${f}」` : '依證券代號規則');
+  if (/[LR]$/.test(code) || /正2|反1|反向|槓桿|2X|3X|Ultra|Leveraged|Inverse|\bShort\b/i.test(both)) return { key: 'leveraged', reason: f ? `基金名稱「${f}」` : '代號 L／R 結尾' };
+  if (/U$/.test(code) || /期貨|Futures/i.test(both)) return { key: 'commodity', reason: why() };
+  if (/B$/.test(code) || /債|Bond|Treasury|Fixed Income|Aggregate/i.test(both)) return { key: 'bond', reason: why() };
+  if (/主動|Active/i.test(f)) return { key: 'active', reason: `基金名稱「${f}」` };
+  if (/高股息|高息|股利|收益|Dividend|High Yield|Income/i.test(both)) return { key: 'dividend', reason: why() };
+  if (/低波|Min(imum)? Vol|Low Vol/i.test(both)) return { key: 'defensive', reason: why() };
+  if (/成長|Growth/i.test(both)) return { key: 'growth', reason: why() };
+  if (/價值|Value/i.test(both)) return { key: 'value', reason: why() };
+  if (THEME_RE.test(both)) return { key: 'theme', reason: why() };
+  if (!f && !n) return { key: null, reason: '查不到這檔 ETF 的基本資料' };
+  return { key: 'index', reason: why() };
 }
-const THEME_RE = /半導體|科技|電子|5G|AI|人工智慧|電動車|生技|醫療|金融|銀行|REIT|不動產|能源|綠能|網路|雲端|資安|機器人|晶片|航運|軍工|國防|元宇宙|遊戲|消費|品牌/;
+const THEME_RE = /半導體|科技|電子|5G|AI|人工智慧|電動車|生技|醫療|金融|銀行|REIT|不動產|能源|綠能|網路|雲端|資安|機器人|晶片|航運|軍工|國防|元宇宙|遊戲|消費|品牌|Semiconductor|Technology|Tech\b|Health|Financial|Energy|Real Estate|Innovation|Clean/i;
 
-async function classifyTwEtf(code, src, fetch, timed) {
+// MoneyDJ ETF 基本資料（Basic0004）：<td>追蹤指數</td><td>MSCI臺灣ESG永續高股息精選30指數</td>
+export function parseMoneydjEtfBasic(html) {
+  const cell = label => {
+    const i = html.indexOf(label);
+    if (i < 0) return null;
+    const after = html.slice(i + label.length, i + label.length + 1500);
+    const m = after.match(/<td[^>]*>([\s\S]*?)<\/td>/i);
+    const v = m ? strip(m[1]) : '';
+    return v && v !== '--' ? v : null;
+  };
+  const title = html.match(/<title>([^<]+)<\/title>/i)?.[1] ?? '';
+  return { index: cell('追蹤指數') ?? cell('標的指數'), name: cell('基金名稱') ?? (strip(title).replace(/[-－|(（].*$/, '').trim() || null) };
+}
+
+async function classifyTwEtf(code, fetch, timed) {
   const r = { industry: null, style: null };
-  const list = await src.twseEtf;
-  const e = Array.isArray(list) ? list.find(x => String(x['基金代號']).trim() === code) : null;
-  r.style = { ...classifyEtfStyleTw(e?.['基金類型'], e?.['標的指數/追蹤指數名稱'], code), source: e ? '證交所 ETF 基本資料' : '證券代號規則' };
-  if (/B$/.test(code) || r.style.key === 'bond') {
+  const basic = await timed(`moneydj_basic_${code}`, () => getText(fetch, `https://www.moneydj.com/ETF/X/Basic/Basic0004.xdjhtm?etfid=${code}.TW`).then(parseMoneydjEtfBasic));
+  r.style = { ...classifyEtfStyle(code, basic?.name, basic?.index), source: basic ? 'MoneyDJ ETF 基本資料' : '證券代號規則' };
+  if (r.style.key === 'bond') {
     r.industry = { mix: [{ name: '債券', pct: 100 }], source: '債券 ETF' };
     return r;
   }
@@ -216,7 +226,7 @@ async function classifyTwEtf(code, src, fetch, timed) {
 // MoneyDJ「持股分佈(依產業)」：Basic0007a 是台股成分（證交所產業名稱），
 // Basic0007 是海外成分（GICS 類股）。台股 ETF 先試 0007a，結果如果只有地區／
 // 存款（海外成分 ETF）再試 0007。存款、現金不算產業，排除後重新換算成 100%。
-const NON_INDUSTRY = /存款|現金|保證金|應收|應付|其他資產|北美|美國|歐洲|日本|亞洲|新興|已開發|全球|中國|香港|區域|附買回|期貨|基金/;
+const NON_INDUSTRY = /附條件|存款|現金|保證金|應收|應付|其他資產|北美|美國|歐洲|日本|亞洲|新興|已開發|全球|中國|香港|區域|附買回|期貨|基金/;
 async function etfLookThrough(fetch, etfid, timed = (n, f) => f().catch(() => null)) {
   const pages = etfid.endsWith('.TW') ? ['Basic0007a', 'Basic0007'] : ['Basic0007'];
   for (const p of pages) {
@@ -267,31 +277,13 @@ async function classifyUs(ticker, fetch, key, timed) {
     return r;
   }
   // 不是個股（Finnhub 沒有公司資料）→ 當作 ETF：產業穿透成分股，屬性看基金名稱。
-  const [ind, nm] = await Promise.all([etfLookThrough(fetch, ticker, timed), moneydjEtfName(fetch, ticker)]);
+  const [ind, basic] = await Promise.all([
+    etfLookThrough(fetch, ticker, timed),
+    timed(`moneydj_basic_${ticker}`, () => getText(fetch, `https://www.moneydj.com/ETF/X/Basic/Basic0004.xdjhtm?etfid=${encodeURIComponent(ticker)}`).then(parseMoneydjEtfBasic)),
+  ]);
   r.industry = ind;
-  const name = nm ?? '';
-  r.style = { ...classifyEtfStyleUs(name), source: '依基金名稱' };
+  r.style = { ...classifyEtfStyle(ticker, basic?.name, basic?.index), source: basic ? 'MoneyDJ ETF 基本資料' : '—' };
   return r;
-}
-
-async function moneydjEtfName(fetch, ticker) {
-  const html = await getText(fetch, `https://www.moneydj.com/ETF/X/Basic/Basic0007.xdjhtm?etfid=${encodeURIComponent(ticker)}`).catch(() => null);
-  const m = html?.match(/<title>([^<]+)<\/title>/i);
-  return m ? m[1].replace(/[-－|].*$/, '').trim() : null;
-}
-
-export function classifyEtfStyleUs(name) {
-  const n = name ?? '';
-  const why = () => `基金名稱「${n}」`;
-  if (!n) return { key: null, reason: '查不到基金名稱' };
-  if (/2x|3x|Ultra|Leveraged|Inverse|Short|槓桿|反向/i.test(n)) return { key: 'leveraged', reason: why('槓桿／反向') };
-  if (/Bond|Treasury|Fixed Income|Aggregate|公債|債/i.test(n)) return { key: 'bond', reason: why('債券') };
-  if (/Dividend|Yield|Income|股息|股利|收益/i.test(n)) return { key: 'dividend', reason: why('高股息') };
-  if (/Min(imum)? Vol|Low Vol|低波/i.test(n)) return { key: 'defensive', reason: why('低波動') };
-  if (/Growth|成長/i.test(n)) return { key: 'growth', reason: why('成長') };
-  if (/Value|價值/i.test(n)) return { key: 'value', reason: why('價值') };
-  if (/Semiconductor|Technology|Tech|Health|Financial|Energy|Real Estate|REIT|Innovation|Clean|半導體|科技|醫療|金融|能源|不動產/i.test(n)) return { key: 'theme', reason: why('產業／主題') };
-  return { key: 'index', reason: why('市值型指數') };
 }
 
 async function getJson(fetch, url) {
