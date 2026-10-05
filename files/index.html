@@ -21,6 +21,7 @@
   --green:#059669;--green-bg:#ECFDF5;
   --red:#DC2626;--red-bg:#FEF2F2;
   --amber:#D97706;--amber-bg:#FFFBEB;
+  --card:#FFFFFF;--bar:#FFFFFF;--accent-deco:var(--blue);--on-accent:#FFFFFF;--detail:#9CA3AF;
   --sidebar-w:220px;--header-h:56px;
   /* 2026-09-20（見 §十五之七：配色主題深化）── 延伸色階，全部用 color-mix()
      從既有的 --navy/--blue/--red 三個「主題色」變數即時算出來，不是另外幫五
@@ -30,8 +31,8 @@
      hover 深色（原本是寫死的 #1D4ED8／#B91C1C，套用主題後 hover 卻還是預設
      藍/紅，跟按鈕本身的顏色對不起來）也跟著主題變色。 */
   --hero-gradient: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
-  --accent-tint: color-mix(in srgb, var(--blue) 10%, white);
-  --accent-tint-strong: color-mix(in srgb, var(--blue) 20%, white);
+  --accent-tint: color-mix(in srgb, var(--blue) 10%, var(--card));
+  --accent-tint-strong: color-mix(in srgb, var(--blue) 20%, var(--card));
   --accent-hover: color-mix(in srgb, var(--blue) 82%, black);
   --danger-hover: color-mix(in srgb, var(--red) 82%, black);
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue','PingFang TC','Noto Sans TC',sans-serif;
@@ -79,13 +80,13 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
    裡對 `.nav-item[data-view]` 的 querySelectorAll）——底部導覽列跟下面的下滑
    選單裡的項目都只是「多一份 `.nav-item` 元素、指到同一個 data-view」，不需要
    新增任何點擊或作用中狀態切換的 JS 邏輯，風險最低。 */
-.bottom-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:150;background:#fff;border-top:1px solid var(--border)}
+.bottom-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:150;background:var(--card);border-top:1px solid var(--border)}
 .bottom-nav-row{display:flex;padding:4px 2px calc(4px + env(safe-area-inset-bottom))}
 .bottom-nav .nav-item,.bottom-nav-more{flex:1;flex-direction:column;justify-content:center;gap:2px;padding:6px 2px;font-size:10px;border-left:none;text-align:center}
 /* 2026-09-27（見卅三）：使用者回報「下方選單的字體顏色平常時候都看不到」——
    根本原因是 .bottom-nav .nav-item 重用了側邊欄的 .nav-item class（見上方
    基礎規則 color:rgba(255,255,255,.68)，是給深色 navy 側邊欄背景設計的白色
-   文字），但底部導覽列本身是白色背景（.bottom-nav{background:#fff}），沒有
+   文字），但底部導覽列本身是白色背景（.bottom-nav{background:var(--card)}），沒有
    顯示中狀態時等於是白字疊白底，幾乎看不見；只有 .active 狀態另外蓋成
    var(--blue) 才看得到。這裡補上非啟用狀態專屬的深色，跟已經是正確做法的
    .bottom-nav-more（rgba(17,24,39,.55)）保持一致，圖示是 stroke="currentColor"
@@ -102,7 +103,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
    版寬度下被這組新元件取代，桌面版不受影響。 */
 .bottom-sheet-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:160}
 .bottom-sheet-backdrop.open{display:block}
-.bottom-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:16px 16px 0 0;z-index:170;transform:translateY(100%);transition:transform .25s ease;max-height:70vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)}
+.bottom-sheet{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-radius:16px 16px 0 0;z-index:170;transform:translateY(100%);transition:transform .25s ease;max-height:70vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)}
 .bottom-sheet.open{transform:translateY(0)}
 .bottom-sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:10px auto}
 .bottom-sheet .nav-section{padding:10px 20px 4px;color:var(--text-3);text-transform:uppercase;font-size:11px;font-weight:600;letter-spacing:.06em}
@@ -117,13 +118,13 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
    instead of below it — without this padding the topbar's own title/icons
    render directly behind the clock/battery icons and are unusable. The
    safe-area inset is 0 on desktop/Android, so this is a no-op there. */
-.topbar{min-height:var(--header-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:env(safe-area-inset-top) 24px 0;gap:12px;position:sticky;top:0;z-index:50}
+.topbar{min-height:var(--header-h);background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:env(safe-area-inset-top) 24px 0;gap:12px;position:sticky;top:0;z-index:50}
 .topbar-title{font-size:15px;font-weight:600;flex:1}
 .topbar-right{display:flex;align-items:center;gap:8px}
 .content{padding:24px;display:flex;flex-direction:column;gap:16px;max-width:1100px;min-width:0}
 
 /* ── Collapsible card ── */
-.card{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .card-header-row{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;user-select:none;transition:background .12s}
 .card-header-row:hover{background:var(--surface)}
 .card-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
@@ -233,7 +234,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 
 /* ── Badges ── */
 .stale-badge{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--amber-bg);color:var(--amber)}
-.enter-price-btn{font-size:11px;padding:3px 8px;border-radius:4px;border:1px solid var(--border-2);background:#fff;cursor:pointer;color:var(--text-2)}
+.enter-price-btn{font-size:11px;padding:3px 8px;border-radius:4px;border:1px solid var(--border-2);background:var(--card);cursor:pointer;color:var(--text-2)}
 .enter-price-btn:hover{background:var(--surface-2)}
 
 /* ── Buttons ── */
@@ -250,17 +251,17 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 /* ── Modal ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:12px;padding:24px;width:min(480px,90vw);box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90dvh;overflow-y:auto}
+.modal{background:var(--card);border-radius:12px;padding:24px;width:min(480px,90vw);box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90dvh;overflow-y:auto}
 .modal h2{font-size:16px;font-weight:600;margin-bottom:16px}
 .modal-field{margin-bottom:14px}
 .modal-field label{font-size:12px;color:var(--text-2);display:block;margin-bottom:5px;font-weight:500}
-.modal-field input,.modal-field select{width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:7px;font-size:14px;outline:none;transition:border-color .15s;background:#fff}
+.modal-field input,.modal-field select{width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:7px;font-size:14px;outline:none;transition:border-color .15s;background:var(--card)}
 .modal-field input:focus,.modal-field select:focus{border-color:var(--blue)}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
 /* ── Settings ── */
-.settings-section{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.settings-section{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px}
 .settings-section-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .settings-section-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
 .settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border)}
@@ -275,7 +276,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .empty-state p{font-size:13px}
 
 /* ── Transfer ── */
-.transfer-panel{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;max-width:540px}
+.transfer-panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px;max-width:540px}
 .transfer-arrow{display:flex;align-items:center;justify-content:center;padding:6px 0;color:var(--text-3)}
 
 /* ── Toast ── */
@@ -398,7 +399,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .cal-nav{border:none;background:var(--surface);width:30px;height:30px;border-radius:50%;font-size:18px;line-height:1;color:var(--text-2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,transform .1s}
 .cal-nav:hover{background:var(--accent-tint)}
 .cal-nav:active,.cal-cell:active .cal-day{transform:scale(.92)}
-.cal-report-btn{margin-left:auto;border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:5px 12px;font:inherit;font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;transition:border-color .15s,color .15s}
+.cal-report-btn{margin-left:auto;border:1.5px solid var(--border);background:var(--card);border-radius:999px;padding:5px 12px;font:inherit;font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;transition:border-color .15s,color .15s}
 .cal-report-btn:hover{border-color:var(--blue);color:var(--blue)}
 .cal-week{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:10px;font-weight:600;color:var(--text-3);padding-bottom:4px}
 .cal-week span:first-child,.cal-week span:last-child{color:color-mix(in srgb,var(--red) 55%,var(--text-3))}
@@ -420,7 +421,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .rpt-back:hover{background:var(--surface-2)}
 .rpt-seg{display:inline-flex;background:var(--surface-2);border-radius:12px;padding:3px;gap:2px}
 .rpt-seg button{border:none;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--text-2);padding:7px 18px;border-radius:9px;cursor:pointer;transition:background .15s,color .15s,box-shadow .15s}
-.rpt-seg button.on{background:#fff;color:var(--text-1);box-shadow:0 1px 3px rgba(17,24,39,.14)}
+.rpt-seg button.on{background:var(--card);color:var(--text-1);box-shadow:0 1px 3px rgba(17,24,39,.14)}
 .rpt-tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1.5px solid var(--border);margin-top:-6px}
 .rpt-tabs button{border:none;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--text-3);padding:9px 0;cursor:pointer;position:relative}
 .rpt-tabs button.on{color:var(--blue)}
@@ -431,7 +432,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .rpt-nav button:hover{background:var(--surface-2)}
 .rpt-custom{display:flex;align-items:center;gap:6px}
 .rpt-custom input{font-size:13px;padding:5px 6px;border:1px solid var(--border);border-radius:8px;max-width:142px}
-.rpt-curr{font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:#fff;font-weight:600;color:var(--text-2)}
+.rpt-curr{font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:var(--card);font-weight:600;color:var(--text-2)}
 .rpt-card{padding:16px;border-radius:16px;position:relative;overflow:visible}
 .rpt-empty{padding:28px 8px;text-align:center;color:var(--text-3);font-size:13px}
 .rpt-chart-toggle{position:absolute;top:10px;right:10px;border:none;background:var(--surface);color:var(--text-2);width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
@@ -458,7 +459,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .rpt-leg span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-2)}
 .rpt-leg b{font-variant-numeric:tabular-nums}
 .rpt-detail-head{display:flex;align-items:center;padding:13px 16px;font-size:14px;font-weight:700;border-bottom:1px solid var(--border)}
-.rpt-sort{margin-left:auto;border:1px solid var(--border);background:#fff;border-radius:999px;font:inherit;font-size:11px;font-weight:600;color:var(--text-2);padding:4px 10px;cursor:pointer}
+.rpt-sort{margin-left:auto;border:1px solid var(--border);background:var(--card);border-radius:999px;font:inherit;font-size:11px;font-weight:600;color:var(--text-2);padding:4px 10px;cursor:pointer}
 .rpt-row{border-top:1px solid var(--border)}
 .rpt-row:first-of-type{border-top:none}
 .rpt-row-main{width:100%;display:flex;align-items:center;gap:12px;padding:12px 16px;border:none;background:none;font:inherit;text-align:left;cursor:pointer}
@@ -495,7 +496,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .tm-wrap{display:flex;flex-direction:column;gap:14px}
 .tm-sec-title{font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.06em;margin:0 0 7px 2px}
 .tm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.tm-tile{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 6px 10px;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font:inherit;text-align:center;transition:transform .12s ease,box-shadow .15s ease,border-color .15s ease;-webkit-tap-highlight-color:transparent}
+.tm-tile{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 6px 10px;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font:inherit;text-align:center;transition:transform .12s ease,box-shadow .15s ease,border-color .15s ease;-webkit-tap-highlight-color:transparent}
 .tm-tile:hover{border-color:var(--accent-tint-strong);box-shadow:0 3px 10px rgba(17,24,39,.07)}
 .tm-tile:active{transform:scale(.96)}
 .tm-ico{font-size:24px;line-height:1.1}
@@ -516,11 +517,11 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .cal-title{display:inline-flex;align-items:center;gap:4px}
 .cal-title svg{opacity:.55;transition:transform .2s}
 .cal-title:hover{background:var(--surface)}
-.cal-today-btn{margin-left:auto;border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:5px 11px;font:inherit;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;transition:background .15s,border-color .15s}
+.cal-today-btn{margin-left:auto;border:1.5px solid var(--border);background:var(--card);border-radius:999px;padding:5px 11px;font:inherit;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;transition:background .15s,border-color .15s}
 .cal-today-btn:hover{border-color:var(--blue)}
 .cal-today-btn.is-on{background:var(--accent-tint);border-color:transparent}
 .cal-today-btn + .cal-report-btn{margin-left:0}
-.cal-picker{position:absolute;top:56px;left:12px;right:12px;z-index:20;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 12px 32px rgba(17,24,39,.16);padding:12px;animation:calPickIn .16s ease-out}
+.cal-picker{position:absolute;top:56px;left:12px;right:12px;z-index:20;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 12px 32px rgba(17,24,39,.16);padding:12px;animation:calPickIn .16s ease-out}
 @keyframes calPickIn{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
 .cal-picker-year{display:flex;align-items:center;justify-content:space-between;padding:0 2px 10px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
 .cal-picker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
@@ -530,7 +531,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .cal-picker-grid button.is-now{box-shadow:inset 0 0 0 1.5px var(--blue)}
 .cal-picker-grid button.is-cur{background:var(--navy);color:#fff}
 .cal-picker-grid button i{position:absolute;top:5px;right:6px;width:5px;height:5px;border-radius:50%;background:var(--blue)}
-.cal-picker-grid button.is-cur i{background:#fff}
+.cal-picker-grid button.is-cur i{background:var(--card)}
 /* ── v2.4.0 首頁一屏化 ── */
 .home-hero{padding:22px 22px 18px}
 .home-hero .networth-amount{font-size:38px}
@@ -565,7 +566,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .cal-today-btn{margin-left:0;white-space:nowrap;flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 5px;writing-mode:horizontal-tb}
 .cal-today-ico{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:var(--blue);color:#fff;font-size:10.5px;font-weight:800;font-variant-numeric:tabular-nums;position:relative}
 .cal-today-ico::before{content:'';position:absolute;top:-2px;left:4px;right:4px;height:3px;border-left:2px solid var(--blue);border-right:2px solid var(--blue)}
-.cal-icon-btn{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:#fff;color:var(--text-2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s,color .15s}
+.cal-icon-btn{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:var(--card);color:var(--text-2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s,color .15s}
 .cal-icon-btn:hover{border-color:var(--blue);color:var(--blue)}
 .cal-head.fit-1 .cal-today-btn{font-size:0;gap:0;padding:4px;width:34px;height:34px;justify-content:center;border-radius:50%}
 .cal-head.fit-1 .cal-today-ico{font-size:10.5px}
@@ -575,6 +576,29 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .cal-head.fit-3 .cal-title{font-size:12.5px!important}
 .cal-head.fit-3 .cal-title svg{display:none}
 .cal-head.fit-3 .cal-icon-btn,.cal-head.fit-3 .cal-today-btn{width:30px;height:30px}
+/* ── v2.5.0 配色主題：5 色階層 ── */
+.card,.settings-section,.transfer-panel,.tm-tile,.modal,.bottom-sheet,.cal-picker{background:var(--card)}
+.topbar,.bottom-nav{background:var(--bar)}
+.bottom-nav .nav-item,.bottom-nav-more{color:var(--text-3)}
+.btn-primary{background:var(--accent-fill,var(--blue));color:var(--on-accent,#fff)}
+.btn-primary:hover{background:color-mix(in srgb,var(--accent-fill,var(--blue)) 85%,var(--text-1))}
+.cal-today-ico{background:var(--accent-fill,var(--blue));color:var(--on-accent,#fff)}
+.cal-today-ico::before{border-color:var(--accent-fill,var(--blue))}
+.cal-cell.is-selected .cal-day{background:var(--navy)!important}
+.cal-cell.is-today .cal-day{box-shadow:0 0 0 2px var(--accent-deco,var(--blue))}
+.cal-pending{background:var(--accent-deco,var(--blue));box-shadow:0 0 0 2px var(--card)}
+.rpt-tabs button.on::after{background:var(--accent-deco,var(--blue))}
+.tm-sec-title,.cal-week{color:var(--text-3)}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.theme-opt{display:flex;flex-direction:column;gap:6px;padding:6px 6px 8px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;font:inherit;transition:border-color .15s,transform .1s,box-shadow .15s}
+.theme-opt:active{transform:scale(.97)}
+.theme-opt.on{border-color:var(--blue);box-shadow:0 0 0 3px var(--accent-tint)}
+.theme-mini{display:flex;align-items:center;justify-content:center;height:54px;border-radius:8px;padding:8px}
+.theme-mini-card{position:relative;width:100%;height:100%;border-radius:6px;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:0 8px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.theme-mini-card i{display:block;height:5px;border-radius:3px}
+.theme-mini-card b{position:absolute;right:7px;bottom:6px;width:12px;height:12px;border-radius:50%}
+.theme-tiers{display:flex;height:6px;border-radius:999px;overflow:hidden}
+.theme-name{font-size:11px;font-weight:600;color:var(--text-2);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -2584,24 +2608,42 @@ let onboardingStepIndex = 0;
 // 2026-09-24（使用者要求）：選項名稱直接用畫作本名，不要另外取一個「取自
 // 《...》」的衍生名字——之前的名字（深海之藍／赤富士之紅／紫陽花之燕／
 // 杏花之緣／緋貓）拿掉，改回畫作本名。
+// ── v2.5.0（使用者要求「強化 5+1 個配色的視覺性」）────────────────────────
+// 原本每個主題只換 7 個識別色，底色、卡片、文字、框線全部維持中性灰白，所以
+// 換主題時畫面看起來幾乎一樣。改成依使用者指定的「5 色階層」配比，把每幅畫
+// 萃取出的 5 個顏色分配到 5 個層級，整個畫面一起換：
+//   主色   base   ≈50%  頁面底色（畫作的紙色／天空色）
+//   次主色 second ≈25%  卡片、頂端列、底部導覽列、彈窗等大區塊（依 cardMix／
+//                        barMix 跟白色調和，維持文字可讀）
+//   輔助色 ink    ≈12%  總資產卡片、標題與主要文字、側邊欄
+//   細節色 detail ≈8%   次要文字、框線、分隔線、次要圖示
+//   焦點色 focus  ≈5%   主要按鈕、選取狀態、今天、提醒小點等最需要被看到的地方
+// income／expense 是收支金額的語意色（收入／支出），各取畫中最能區分正負的兩色。
+// 文字與按鈕顏色會在套用時自動檢查對比度，不夠就往深色方向調，避免淺色畫作
+// （例如粉色杏花、紫陽花）的焦點色拿來當文字時看不清楚——畫作原色仍保留給
+// 裝飾性的地方（--accent-deco：今天的外圈、提醒小點、頁籤底線）。
+// 「預設」不在這個陣列裡：選預設時清掉所有覆寫，回到原本的中性設計。
 const THEMES = [
   { id: 'wave', name: '神奈川沖浪裏',
-    navy:'#16324F', navyMid:'#3B536B', navyLight:'#65788B',
-    blue:'#2E5C8A', blueSoft:'#5C80A4', green:'#2E5C8A', red:'#16324F' },
+    base:'#EDE1C0', second:'#A9C2C9', ink:'#16324F', detail:'#6E93A8', focus:'#2E5C8A',
+    cardMix:0.24, barMix:0.42, income:'#2E5C8A', expense:'#A8553C' },
   { id: 'redfuji', name: '凱風快晴',
-    navy:'#3A2318', navyMid:'#5A463D', navyLight:'#7D6E67',
-    blue:'#C1442D', blueSoft:'#CF6D5B', green:'#1B3A63', red:'#C1442D' },
+    base:'#F5F0E4', second:'#1B3A63', ink:'#3A2318', detail:'#46512F', focus:'#C1442D',
+    cardMix:0.06, barMix:0.13, income:'#1B3A63', expense:'#C1442D' },
   { id: 'hydrangea', name: '紫陽花與燕子',
-    navy:'#2E3B23', navyMid:'#4F5A46', navyLight:'#757E6E',
-    blue:'#E0A98C', blueSoft:'#E7BCA5', green:'#8FA97D', red:'#E0A98C' },
+    base:'#EDE6C2', second:'#8FA97D', ink:'#2E3B23', detail:'#C9A83E', focus:'#E0A98C',
+    cardMix:0.20, barMix:0.38, income:'#5E7A4B', expense:'#B4644A' },
   { id: 'almond', name: '盛開的杏花',
-    navy:'#1F5563', navyMid:'#43707C', navyLight:'#6B8F98',
-    blue:'#3E93A8', blueSoft:'#68ABBB', green:'#1F5563', red:'#E8B4A8' },
+    base:'#F5F0E0', second:'#3E93A8', ink:'#1F5563', detail:'#6B4A2E', focus:'#E8B4A8',
+    cardMix:0.11, barMix:0.22, income:'#1F5563', expense:'#B0574A' },
   { id: 'cat', name: '貓',
-    navy:'#17171A', navyMid:'#3C3C3F', navyLight:'#666668',
-    blue:'#C7282A', blueSoft:'#D35759', green:'#D68A55', red:'#C7282A' },
+    base:'#F5F3EC', second:'#E8A9A0', ink:'#17171A', detail:'#D68A55', focus:'#C7282A',
+    cardMix:0.16, barMix:0.30, income:'#B5652E', expense:'#C7282A' },
 ];
-const THEME_CSS_VAR_NAMES = { navy:'--navy', navyMid:'--navy-mid', navyLight:'--navy-light', blue:'--blue', blueSoft:'--blue-soft', green:'--green', red:'--red' };
+// 套用主題時會寫入的所有 CSS 變數——選「預設」時逐一清掉，回到 :root 原值。
+const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--border','--border-2',
+  '--text-1','--text-2','--text-3','--navy','--navy-mid','--navy-light','--blue','--blue-soft',
+  '--accent-deco','--on-accent','--accent-fill','--tile-cash','--tile-dep','--tile-inv','--tile-gold','--tile-other','--tile-cc','--green','--green-bg','--red','--red-bg','--detail'];
 
 // ── 更新日誌／開發藍圖（§廿一之一，2026-09-26 新增）──────────────────────
 // 版面參考見廿二之二（探吉 App 的「開發藍圖」頁：已推出／規劃中兩區塊＋版本
@@ -2615,26 +2657,95 @@ const THEME_CSS_VAR_NAMES = { navy:'--navy', navyMid:'--navy-mid', navyLight:'--
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.4.1';
-const CHANGELOG_LAST_UPDATED = '2026-10-04';
+const APP_VERSION = 'v2.5.0';
+const CHANGELOG_LAST_UPDATED = '2026-10-05';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '收入分配只保留「收入分配法」一個入口：「設定預算」拿掉重複的「本月收入分配」試算卡，類別預算只填每月固定上限',
-  '收支紀錄的年月不論幾位數都維持一行；「今天」改成橫式的小日曆按鈕，「報表」改成圓形圖示按鈕',
-  '帳務報表只從收支紀錄進入，「更多」選單與側邊欄不再重複列出',
+  '5 個畫作配色改成「5 色階層」整頁換色：底色約 50%、卡片與導覽列 25%、標題與總資產卡片 12%、次要文字與框線 8%、按鈕與重點標示 5%，每個主題的差異一眼就看得出來',
+  '首頁資產方塊與配置色條改用各主題自己的顏色',
+  '文字、按鈕顏色會自動檢查對比度，淺色畫作（紫陽花、杏花）的粉色按鈕保留原色、改配深色字',
+  '「配色主題」選項改成縮小版畫面預覽，並附 5 色階層比例條',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
 // styles on <html> win over the :root block in <style>, so this needs no
 // injected <style> tag and no per-page re-render.
+// WCAG 相對亮度與對比度——套用主題時用來確保文字、按鈕都讀得清楚。
+function relLuminance(hex) {
+  return hexToRgbArr(hex).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; })
+    .reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0);
+}
+function contrastRatio(a, b) {
+  const [x, y] = [relLuminance(a), relLuminance(b)].sort((m, n) => n - m);
+  return (x + 0.05) / (y + 0.05);
+}
+// 把 color 一點一點往 toward（預設深色）調，直到跟 against 的對比度達到 min。
+function ensureContrast(color, against, min, toward = '#000000') {
+  for (let r = 1; r >= 0; r -= 0.04) {
+    const c = mixHexColors(color, toward, r);
+    if (contrastRatio(c, against) >= min) return c;
+  }
+  return toward;
+}
+function themeVars(t) {
+  const card = mixHexColors(t.second, '#FFFFFF', t.cardMix);
+  const bar  = mixHexColors(t.second, '#FFFFFF', t.barMix);
+  const accent = ensureContrast(t.focus, card, 4.5, t.ink);
+  return {
+    '--surface': t.base,
+    '--surface-2': mixHexColors(t.base, t.ink, 0.9),
+    '--card': card,
+    '--bar': bar,
+    '--border': mixHexColors(t.detail, card, 0.3),
+    '--border-2': mixHexColors(t.detail, card, 0.48),
+    '--text-1': t.ink,
+    '--text-2': ensureContrast(mixHexColors(t.ink, t.detail, 0.72), card, 6.5, t.ink),
+    '--text-3': ensureContrast(ensureContrast(mixHexColors(t.detail, t.ink, 0.72), card, 3.6, t.ink), bar, 3.4, t.ink),
+    '--navy': t.ink,
+    '--navy-mid': mixHexColors(t.ink, t.second, 0.74),
+    '--navy-light': mixHexColors(t.ink, t.second, 0.52),
+    '--blue': accent,
+    '--blue-soft': t.focus,
+    '--accent-deco': t.focus,
+    '--green': ensureContrast(t.income, card, 4.5, t.ink),
+    '--green-bg': mixHexColors(t.income, '#FFFFFF', 0.1),
+    '--red': ensureContrast(t.expense, card, 4.5, t.ink),
+    '--red-bg': mixHexColors(t.expense, '#FFFFFF', 0.1),
+    '--detail': t.detail,
+    // 主要按鈕的底色：畫作焦點色本身配深色或白色字，只要對比夠就直接用原色
+    // （紫陽花、杏花的粉色按鈕就不會被壓成咖啡色）；不夠才用加深過的 --blue。
+    '--accent-fill': fillOf(t, accent),
+    '--on-accent': onAccentOf(t, fillOf(t, accent)),
+    // 首頁資產方塊與配置色條：改用這幅畫自己的顏色（在深色總資產卡片上自動
+    // 調亮到看得清楚）；應收款維持琥珀色、待繳卡費用支出色，保留語意。
+    '--tile-cash':  onDark(t.second, t.ink),
+    '--tile-dep':   onDark(t.focus, t.ink),
+    '--tile-inv':   onDark(t.detail, t.ink),
+    '--tile-gold':  onDark(mixHexColors(t.focus, t.detail, 0.5), t.ink),
+    '--tile-other': onDark(t.base, t.ink),
+    '--tile-cc':    onDark(t.expense, t.ink),
+  };
+}
+function fillOf(t, accentText) {
+  return Math.max(contrastRatio('#FFFFFF', t.focus), contrastRatio(t.ink, t.focus)) >= 4.5 ? t.focus : accentText;
+}
+function onAccentOf(t, fill) {
+  return contrastRatio('#FFFFFF', fill) >= contrastRatio(t.ink, fill) ? '#FFFFFF' : t.ink;
+}
+// 在深色（ink）底上要看得到的版本：往白色調亮直到對比達 3:1。
+function onDark(c, ink) { return ensureContrast(c, ink, 3, '#FFFFFF'); }
 function applyTheme(themeId) {
   const root = document.documentElement.style;
   const theme = THEMES.find(t => t.id === themeId);
-  if (!theme) { Object.values(THEME_CSS_VAR_NAMES).forEach(v => root.removeProperty(v)); return; }
-  Object.entries(THEME_CSS_VAR_NAMES).forEach(([k, v]) => root.setProperty(v, theme[k]));
+  THEME_CSS_VAR_NAMES.forEach(v => root.removeProperty(v));
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (!theme) { meta?.setAttribute('content', '#0F1B2D'); return; }
+  const vars = themeVars(theme);
+  Object.entries(vars).forEach(([k, v]) => root.setProperty(k, v));
+  meta?.setAttribute('content', vars['--bar']);
 }
 
 // ── App lock (§十二) ─────────────────────────────────────────────────────────
@@ -3166,15 +3277,15 @@ async function renderAssets() {
   //     （同一時間只展開一類，再點一次收起）
   //   - 原本的 8 個收合區塊內容完全不變，只是預設不顯示，改由方塊叫出來
   const tiles = [
-    { key:'cash', label:'現金 & 存款', value: cash.totalTWD, color:'#2F9E6E',
+    { key:'cash', label:'現金 & 存款', value: cash.totalTWD, color:'var(--tile-cash,#2F9E6E)',
       sub: Object.entries(cash.byCurrency).filter(([c,v])=>v>0 && c!=='TWD').map(([c,v])=>`${c} ${fmt(v,{currency:c})}`).join(' · ') },
-    { key:'dep', label:'定存', value: depositRes.totalTWD, color:'#3B82C4' },
-    { key:'inv', label:'投資資產', value: inv.totalTWD, color:'#8B5CF6',
+    { key:'dep', label:'定存', value: depositRes.totalTWD, color:'var(--tile-dep,#3B82C4)' },
+    { key:'inv', label:'投資資產', value: inv.totalTWD, color:'var(--tile-inv,#8B5CF6)',
       sub: inv.hasMissingPrices || (inv.staleTickers?.length ?? 0) > 0 ? '⚠ 部分報價需更新' : '' },
-    ...(gold.enriched.length > 0 ? [{ key:'gold', label:'黃金', value: gold.totalTWD, color:'#D4A017' }] : []),
-    ...(otherAssets.enriched.length > 0 ? [{ key:'other', label:'其他資產', value: otherAssets.totalTWD, color:'#0EA5A4' }] : []),
+    ...(gold.enriched.length > 0 ? [{ key:'gold', label:'黃金', value: gold.totalTWD, color:'var(--tile-gold,#D4A017)' }] : []),
+    ...(otherAssets.enriched.length > 0 ? [{ key:'other', label:'其他資產', value: otherAssets.totalTWD, color:'var(--tile-other,#0EA5A4)' }] : []),
     ...(recv.pending.length > 0 ? [{ key:'recv', label:'應收款', value: recv.totalTWD, color:'#F59E0B', note:'不計入' }] : []),
-    ...(ccDebt > 0 ? [{ key:'cc', label:'待繳卡費', value: ccDebt, color:'#E5484D', note:'已扣除', negative:true }] : []),
+    ...(ccDebt > 0 ? [{ key:'cc', label:'待繳卡費', value: ccDebt, color:'var(--tile-cc,#E5484D)', note:'已扣除', negative:true }] : []),
   ];
   const posTiles = tiles.filter(t => !t.negative && t.key !== 'recv' && t.value > 0);
   const grossAssets = posTiles.reduce((s,t)=>s+t.value,0) || 1;
@@ -3940,22 +4051,33 @@ async function renderSystemSettings() {
   // 色點按鈕（預設＋5 種主題），固定 3 欄 grid。
   {
     const themeId = await getSetting(db, 'theme_id', null);
-    const swatchThemes = [{ id:'', name:'預設', navy:'#0F1B2D', blue:'#2563EB', green:'#059669', red:'#DC2626' }, ...THEMES];
+    // v2.5.0：每個選項是一張縮小版畫面預覽（底色、卡片、主要文字、細節線、焦點
+    // 按鈕），下面一條依 50：25：12：8：5 比例畫的色條，直接看出這個主題的 5
+    // 色階層——不列色碼，選項名稱仍是畫作本名。
+    const DEFAULT_PREVIEW = { id:'', name:'預設', base:'#F7F8FA', second:'#FFFFFF', ink:'#0F1B2D', detail:'#9CA3AF', focus:'#2563EB', cardMix:1, barMix:1 };
+    const swatchThemes = [DEFAULT_PREVIEW, ...THEMES];
     const currentTheme = swatchThemes.find(t => t.id === (themeId || '')) ?? swatchThemes[0];
     const body = addCollapsible({ key:'theme', icon:'🎨', title:'配色主題', subtitle: currentTheme.name });
-    const swatchesHtml = swatchThemes.map(t => `
-      <button type="button" data-theme-swatch="${t.id}" title="${t.name}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 6px;border-radius:8px;cursor:pointer;width:100%;background:${(themeId||'')===t.id?'var(--accent-tint-strong)':'transparent'};border:1.5px solid ${(themeId||'')===t.id?'var(--blue)':'var(--border)'}">
-        <span style="display:flex;gap:2px">
-          <span style="width:10px;height:10px;border-radius:50%;background:${t.navy}"></span>
-          <span style="width:10px;height:10px;border-radius:50%;background:${t.blue}"></span>
-          <span style="width:10px;height:10px;border-radius:50%;background:${t.green}"></span>
-          <span style="width:10px;height:10px;border-radius:50%;background:${t.red}"></span>
+    const swatchesHtml = swatchThemes.map(t => {
+      const on = (themeId || '') === t.id;
+      const card = mixHexColors(t.second, '#FFFFFF', t.cardMix);
+      const tiers = [[t.base,50],[t.second,25],[t.ink,12],[t.detail,8],[t.focus,5]];
+      return `
+      <button type="button" class="theme-opt${on ? ' on' : ''}" data-theme-swatch="${t.id}" aria-pressed="${on}">
+        <span class="theme-mini" style="background:${t.base}">
+          <span class="theme-mini-card" style="background:${card}">
+            <i style="background:${t.ink};width:62%"></i>
+            <i style="background:${t.detail};width:40%;height:3px;opacity:.85"></i>
+            <b style="background:${t.focus}"></b>
+          </span>
         </span>
-        <span style="font-size:10px;color:var(--text-3);white-space:nowrap">${t.name}</span>
-      </button>`).join('');
+        <span class="theme-tiers">${tiers.map(([c, w]) => `<i style="flex:${w};background:${c}"></i>`).join('')}</span>
+        <span class="theme-name">${t.name}</span>
+      </button>`;
+    }).join('');
     body.innerHTML = `
-      <div id="themeSwatches" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${swatchesHtml}</div>
-      <div style="font-size:11px;color:var(--text-3);margin-top:10px">點選後立即套用到整個 App（側邊欄、按鈕、收支金額顏色、首頁資產卡片漸層等），純視覺樣式，不影響任何資料，隨時可以換回「預設」。</div>`;
+      <div id="themeSwatches" class="theme-grid">${swatchesHtml}</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:10px;line-height:1.6">每個主題依 5 色階層配色：底色約 50%、卡片與導覽列 25%、標題與總資產卡片 12%、次要文字與框線 8%、按鈕與重點標示 5%。點選後立即套用，純視覺樣式，不影響任何資料。</div>`;
     body.querySelectorAll('[data-theme-swatch]').forEach(btn => {
       btn.addEventListener('click', async () => {
         const val = btn.dataset.themeSwatch;
@@ -5456,12 +5578,12 @@ async function renderTransfer() {
       <div class="modal-field">
         <label>${label}</label>
         <div class="custom-sel" id="${id}-wrapper" style="position:relative">
-          <div id="${id}-display" style="border:1px solid var(--border-2);border-radius:7px;padding:9px 36px 9px 12px;font-size:14px;cursor:pointer;background:#fff;display:grid;grid-template-columns:72px 1fr 28px 80px;gap:4px;align-items:center;min-height:40px;position:relative">
+          <div id="${id}-display" style="border:1px solid var(--border-2);border-radius:7px;padding:9px 36px 9px 12px;font-size:14px;cursor:pointer;background:var(--card);display:grid;grid-template-columns:72px 1fr 28px 80px;gap:4px;align-items:center;min-height:40px;position:relative">
             <span style="color:var(--text-3);grid-column:1/-1">── 請選擇帳戶 ──</span>
             <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </div>
           <input type="hidden" id="${id}" value="">
-          <div id="${id}-list" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:#fff;border:1px solid var(--border-2);border-radius:7px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:280px;overflow-y:auto;margin-top:2px">
+          <div id="${id}-list" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:var(--card);border:1px solid var(--border-2);border-radius:7px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:280px;overflow-y:auto;margin-top:2px">
             ${opts}
           </div>
         </div>
@@ -6658,7 +6780,7 @@ async function openCategoryHardDelete(cat, allCats) {
       <h2 id="catDelTitle">刪除類別「${cat.label}」</h2>
       <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:12px">有 <b>${used.length}</b> 筆紀錄用到這個類別。刪除前請選擇它們要改歸到哪裡——紀錄本身不會被刪除，金額與帳戶餘額都不受影響。</p>
       <label style="font-size:12px;color:var(--text-3);display:block;margin-bottom:4px">這 ${used.length} 筆紀錄改歸到</label>
-      <select data-cat-target style="width:100%;margin-bottom:6px;padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff">
+      <select data-cat-target style="width:100%;margin-bottom:6px;padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--card)">
         ${targets.map(c => `<option value="${c.id}">${c.icon ?? ''} ${c.label}</option>`).join('')}
         <option value="">不分類</option>
       </select>
@@ -8664,7 +8786,7 @@ function buildIncomeAllocationPoolBody(body, jar, jars, method, activeBuckets) {
     pickerLabel.textContent = '選擇要連結的存錢計畫：';
     body.appendChild(pickerLabel);
     const select = el('select');
-    select.style.cssText = 'width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:7px;font-size:14px;background:#fff';
+    select.style.cssText = 'width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:7px;font-size:14px;background:var(--card)';
     select.innerHTML = `<option value="">── 請選擇 ──</option>` + pickable.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
     select.addEventListener('change', async () => {
       if (!select.value) return;
@@ -10161,12 +10283,12 @@ function buildAccountPickerHtml(id, accountsList, bankMap, selectedId) {
   const opts = accountsList.map(a => `<div class="acc-opt" data-id="${a.id}"
     style="display:grid;grid-template-columns:52px 1fr 18px 64px;gap:4px;padding:8px 10px;cursor:pointer;font-size:12px;align-items:center;border-bottom:1px solid var(--border)">${accPickerRowHtml(a,bankMap)}</div>`).join('');
   return `<div class="custom-sel" id="${id}-wrapper" style="position:relative">
-    <div id="${id}-display" style="border:1px solid var(--border-2);border-radius:7px;padding:9px 32px 9px 10px;font-size:13px;cursor:pointer;background:#fff;display:grid;grid-template-columns:52px 1fr 18px 64px;gap:4px;align-items:center;min-height:40px;position:relative">
+    <div id="${id}-display" style="border:1px solid var(--border-2);border-radius:7px;padding:9px 32px 9px 10px;font-size:13px;cursor:pointer;background:var(--card);display:grid;grid-template-columns:52px 1fr 18px 64px;gap:4px;align-items:center;min-height:40px;position:relative">
       ${sel ? accPickerRowHtml(sel,bankMap) : `<span style="color:var(--text-3);grid-column:1/-1">── 請選擇帳戶 ──</span>`}
       <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <input type="hidden" id="${id}" value="${selectedId??''}">
-    <div id="${id}-list" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:250;background:#fff;border:1px solid var(--border-2);border-radius:7px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:220px;overflow-y:auto;margin-top:2px">${opts}</div>
+    <div id="${id}-list" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:250;background:var(--card);border:1px solid var(--border-2);border-radius:7px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:220px;overflow-y:auto;margin-top:2px">${opts}</div>
   </div>`;
 }
 let _accPickerOutsideClickBound = false;
