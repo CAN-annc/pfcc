@@ -67,6 +67,12 @@ export default async function handler(req) {
   const { searchParams } = new URL(req.url);
   // 診斷用：列出各資料來源從 Vercel 連得到連不到（不含任何使用者資料）。
   if (searchParams.get('probe') === '1') return json(await probeSources(globalThis.fetch));
+  if (searchParams.get('peek') === 'zca') {
+    const code = (searchParams.get('code') ?? '2330').replace(/\D/g, '').slice(0, 6);
+    const html = await getText(globalThis.fetch, `https://www.moneydj.com/z/zc/zca/zca_${code}.djhtm`).catch(e => String(e));
+    const around = k => { const i = html.indexOf(k); return i < 0 ? null : html.slice(Math.max(0, i - 300), i + 400); };
+    return json({ len: html.length, pe: around('本益比'), ind: around('產業'), yieldx: around('殖利率'), title: html.match(/<title>[^<]*<\/title>/)?.[0] });
+  }
   const items = (searchParams.get('items') ?? '').split(',').map(s => s.trim().toUpperCase()).filter(Boolean)
     .map(s => { const [market, ticker] = s.split(':'); return { market, ticker }; })
     .filter(i => ['TW', 'US'].includes(i.market) && /^[A-Z0-9.\-]{1,12}$/.test(i.ticker ?? ''))
