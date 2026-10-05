@@ -67,6 +67,12 @@ export default async function handler(req) {
   const { searchParams } = new URL(req.url);
   // 診斷用：列出各資料來源從 Vercel 連得到連不到（不含任何使用者資料）。
   if (searchParams.get('probe') === '1') return json(await probeSources(globalThis.fetch));
+  if (searchParams.get('peek') === 'yp') {
+    const code = (searchParams.get('code') ?? '2330').replace(/\D/g, '').slice(0, 6);
+    const html = await getText(globalThis.fetch, `https://tw.stock.yahoo.com/quote/${code}.TW/profile`).catch(e => String(e));
+    const all = k => { const r = []; let i = -1; while ((i = html.indexOf(k, i + 1)) >= 0 && r.length < 4) r.push(html.slice(Math.max(0, i - 200), i + 300)); return r; };
+    return json({ len: html.length, ind: all('產業類別'), ind2: all('半導體') .slice(0,2), twseisin: await getText(globalThis.fetch, 'https://isin.twse.com.tw/isin/class_main.jsp?owncode=2330&stockname=&isincode=&market=1&issuetype=1&industry_code=&Page=1&chklike=Y').then(t => t.slice(0, 1500)).catch(e => String(e)) });
+  }
   if (searchParams.get('peek') === 'zca') {
     const code = (searchParams.get('code') ?? '2330').replace(/\D/g, '').slice(0, 6);
     const html = await getText(globalThis.fetch, `https://www.moneydj.com/z/zc/zca/zca_${code}.djhtm`).catch(e => String(e));
