@@ -63,10 +63,13 @@ export default async function handler(req) {
   if (searchParams.get('probe') === '1') return json(await probeSources(globalThis.fetch));
   if (searchParams.get('peek')) {
     const code = searchParams.get('peek').replace(/\D/g, '').slice(0, 6);
-    const res = await globalThis.fetch(`https://www.moneydj.com/z/zc/zca/zca_${code}.djhtm`, { headers: UA });
-    const html = await res.text();
-    const i = html.indexOf('本益比');
-    return json({ status: res.status, ct: res.headers.get('content-type'), len: html.length, at: i, snip: html.slice(Math.max(0, i - 200), i + 300), head: html.slice(0, 400) });
+    const out = {};
+    for (const [k, u] of Object.entries({ quote: `https://tw.stock.yahoo.com/quote/${code}.TW`, profile: `https://tw.stock.yahoo.com/quote/${code}.TW/profile`, dividend: `https://tw.stock.yahoo.com/quote/${code}.TW/dividend` })) {
+      const html = await globalThis.fetch(u, { headers: UA }).then(r => r.text()).catch(e => String(e));
+      const snip = w => { const i = html.indexOf(w); return i < 0 ? null : html.slice(Math.max(0, i - 120), i + 260).replace(/class="[^"]*"/g, ''); };
+      out[k] = { len: html.length, pe: snip('本益比'), y: snip('殖利率'), pb: snip('淨值比'), eps: snip('"peRatio') ?? snip('priceEarning') };
+    }
+    return json(out);
   }
   const items = (searchParams.get('items') ?? '').split(',').map(s => s.trim().toUpperCase()).filter(Boolean)
     .map(s => { const [market, ticker] = s.split(':'); return { market, ticker }; })
