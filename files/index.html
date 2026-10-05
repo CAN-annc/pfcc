@@ -195,6 +195,54 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
   border-top:1px solid var(--border);
 }
 
+/* v2.7.0 投資持倉：持股列改用跟銀行帳戶同一套合併儲存格。類型色（--type-c）
+   由 JS 帶入 ASSET_TYPE_COLORS，合併格用較深、整列用較淺，都跟卡片底色
+   color-mix，深色主題也不會刺眼。 */
+.hold-merge-cell{background:color-mix(in srgb,var(--type-c) 20%,var(--card));color:color-mix(in srgb,var(--type-c) 78%,var(--text-1))}
+.hold-row{grid-column:2;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;
+  padding:8px 12px 8px 12px;border-top:1px solid var(--border);font-size:12px;background:color-mix(in srgb,var(--type-c) 6%,var(--card))}
+.hold-id{display:flex;flex-direction:column;min-width:0;gap:1px}
+.hold-id b{font-weight:700;font-variant-numeric:tabular-nums;font-size:13px}
+.hold-id span{color:var(--text-3);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hold-num{display:flex;flex-direction:column;align-items:flex-end;gap:1px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hold-num b{font-weight:600;color:var(--text-1)}
+.hold-num small{font-size:10px;font-weight:400;color:var(--text-3)}
+.hold-num span{font-size:11px;color:var(--text-2)}
+.hold-num span.is-missing{color:var(--text-3);font-style:italic}
+.hold-acts{display:flex;gap:4px}
+
+/* 持股佔比：依券商的內部組成、產業／屬性快速分類 */
+.hp-sub-title{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.04em;margin-bottom:8px}
+.hp-brok-detail{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border)}
+.hp-brok-row{padding:8px 0}
+.hp-brok-row + .hp-brok-row{border-top:1px solid var(--border)}
+.hp-brok-head{display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:6px}
+.hp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.hp-brok-name{flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hp-brok-val{color:var(--text-3);font-size:11px;font-variant-numeric:tabular-nums}
+.hp-brok-pct{font-weight:700;min-width:44px;text-align:right;font-variant-numeric:tabular-nums}
+.hp-stack{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;background:var(--surface-2)}
+.hp-stack span{min-width:3px}
+.hp-stack-legend{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:11px;color:var(--text-2)}
+.hp-stack-legend span{display:inline-flex;align-items:center;gap:4px}
+.hp-stack-legend i{width:6px;height:6px;border-radius:50%;display:inline-block}
+.hp-stack-legend b{font-weight:600;color:var(--text-1);font-variant-numeric:tabular-nums}
+.hp-quicktag{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border)}
+.hp-quicktag.is-empty-state{margin-top:0;padding-top:0;border-top:none}
+.hp-qt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
+.hp-qt-title{font-size:13px;font-weight:600;color:var(--text-1)}
+.hp-qt-desc{font-size:11px;color:var(--text-3);margin-top:3px;line-height:1.5}
+.hp-qt-row{padding:10px 0;border-top:1px solid var(--border)}
+.hp-qt-name{display:flex;align-items:baseline;gap:6px;font-size:12px;margin-bottom:7px;min-width:0}
+.hp-qt-name b{font-weight:700;font-variant-numeric:tabular-nums}
+.hp-qt-name span{flex:1;min-width:0;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hp-qt-name em{font-style:normal;color:var(--text-3);font-size:11px;font-variant-numeric:tabular-nums}
+.hp-chips{display:flex;flex-wrap:wrap;gap:5px}
+.hp-chip{font:inherit;font-size:11px;line-height:1;padding:6px 10px;border-radius:999px;cursor:pointer;
+  border:1px solid color-mix(in srgb,var(--chip) 35%,var(--border));background:var(--card);color:var(--text-2);transition:background .12s,color .12s}
+.hp-chip:hover{background:color-mix(in srgb,var(--chip) 10%,var(--card))}
+.hp-chip.on{background:var(--chip);border-color:var(--chip);color:#fff;font-weight:600}
+
 /* ── Bank row amount alignment ── */
 .bank-twd-label{font-size:13px;font-weight:600;color:var(--text-1);flex-shrink:0;margin-right:2px}
 .bank-twd-num{font-size:13px;font-weight:600;min-width:74px;text-align:right;font-variant-numeric:tabular-nums}
@@ -1159,12 +1207,17 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
         <label>產業別（選填）</label>
         <select id="holdingIndustry">
           <option value="">── 未分類 ──</option>
+          <option value="broad">綜合／大盤</option>
           <option value="tech">科技</option>
+          <option value="semi">半導體</option>
           <option value="finance">金融</option>
           <option value="consumer">民生消費</option>
+          <option value="healthcare">醫療保健</option>
+          <option value="comm">通訊</option>
           <option value="industrial">工業</option>
           <option value="energy">能源</option>
           <option value="utilities">公用事業</option>
+          <option value="bond">債券</option>
           <option value="other">其他</option>
         </select>
       </div>
@@ -1172,6 +1225,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
         <label>投資屬性（選填）</label>
         <select id="holdingInvestmentStyle">
           <option value="">── 未分類 ──</option>
+          <option value="index">指數型</option>
           <option value="growth">成長型</option>
           <option value="value">價值型</option>
           <option value="dividend">高股息</option>
@@ -2663,16 +2717,16 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.6.0';
+const APP_VERSION = 'v2.7.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-05';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '帳戶管理改成跟記帳管理一樣的方格首頁：分「現金與存款」「其他資產與債權」兩組，每格直接顯示金額與筆數',
-  '點方格進入該類別，頂端有「← 帳戶管理」返回鍵；「新增」按鈕統一放在該類別標題列右側',
-  '從導覽列點「帳戶管理」「記帳管理」一律回到方格首頁',
+  '投資持倉的持股清單改成跟銀行帳戶一樣：最前面一格標出「ETF／個股」，同類整列同色，展開券商就直接看到所有持股與市值',
+  '持股佔比「依券商」改成一個總圖看資金分在哪幾家，下面每家一條組成橫條，看得出各檔佔該券商多少',
+  '持股佔比「產業別／投資屬性」可直接在卡片裡逐檔點標籤分類（同代號一起套用），新增「綜合／大盤」「半導體」「醫療保健」「通訊」「債券」「指數型」等選項',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -5234,9 +5288,76 @@ function buildPctEntriesView(entries, totalValue, colorFn, primaryLabelFn, secon
 // 用固定的灰色跟其他有分類的項目區分開來，其餘顏色沿用 colorForGroupName()
 // 的雜湊上色（跟依券商模式裡每檔持股的配色邏輯一致，不需要另外維護一份
 // 調色盤）。
-const INDUSTRY_LABELS = { tech:'科技', finance:'金融', consumer:'民生消費', industrial:'工業', energy:'能源', utilities:'公用事業', other:'其他' };
-const INVESTMENT_STYLE_LABELS = { growth:'成長型', value:'價值型', dividend:'高股息', balanced:'平衡型', defensive:'防禦型' };
+// v2.7.0：補上「綜合／大盤」（0050、VOO 這類追蹤整體市場的 ETF 本來沒有
+// 合適的產業可選）、「醫療保健」「通訊」「債券」，投資屬性補「指數型」。
+// 舊資料的 key 完全不變，只是多了選項。
+const INDUSTRY_LABELS = { broad:'綜合／大盤', tech:'科技', semi:'半導體', finance:'金融', consumer:'民生消費', healthcare:'醫療保健', comm:'通訊', industrial:'工業', energy:'能源', utilities:'公用事業', bond:'債券', other:'其他' };
+const INVESTMENT_STYLE_LABELS = { index:'指數型', growth:'成長型', value:'價值型', dividend:'高股息', balanced:'平衡型', defensive:'防禦型' };
+// 甜甜圈／堆疊條的分類顏色：固定一組可辨識的色票，依標籤順序指派，比雜湊
+// 上色好分辨（雜湊容易兩類撞到很像的顏色）。
+const TAG_PALETTE = ['#2563EB','#059669','#D97706','#DC2626','#7C3AED','#0891B2','#DB2777','#65A30D','#EA580C','#4F46E5','#0D9488','#A16207'];
+function tagColor(labelMap, key) {
+  const i = Object.keys(labelMap).indexOf(key);
+  return i < 0 ? colorForGroupName(key) : TAG_PALETTE[i % TAG_PALETTE.length];
+}
 const UNCLASSIFIED_COLOR = '#9CA3AF';
+
+// 使用者自己輸入的文字（券商名、股票名稱）插進 innerHTML 前先跳脫。
+function escHtml(v) { return String(v ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); }
+// v2.7.0：產業別／投資屬性的「快速分類」區塊——同一個代號只列一次（多家
+// 券商都有的話合併市值），預設只列還沒分類的；「顯示全部」可以回頭改已經
+// 分類過的。點標籤立即寫回 holdings（同代號全部一起），再點同一個標籤＝
+// 取消分類。
+let _quickTagShowAll = false;
+function buildQuickTagPanel(pctEntries, scopeTotal, field, labelMap, nothingClassified) {
+  const byTicker = {};
+  pctEntries.forEach(h => {
+    (byTicker[h.ticker] ??= { ticker: h.ticker, name: h.name, value: 0, ids: [], tag: h[field] || null });
+    byTicker[h.ticker].value += h.marketValueTWD; byTicker[h.ticker].ids.push(h.id);
+    if (!byTicker[h.ticker].tag && h[field]) byTicker[h.ticker].tag = h[field];
+  });
+  const list = Object.values(byTicker).sort((a, b) => b.value - a.value);
+  const unclassified = list.filter(t => !t.tag);
+  const shown = _quickTagShowAll ? list : unclassified;
+  const fieldName = field === 'industry' ? '產業別' : '投資屬性';
+
+  const wrap = el('div'); wrap.className = 'hp-quicktag' + (nothingClassified ? ' is-empty-state' : '');
+  const head = el('div'); head.className = 'hp-qt-head';
+  head.innerHTML = nothingClassified
+    ? `<div><div class="hp-qt-title">還沒有替持股標上${fieldName}</div><div class="hp-qt-desc">在下面逐檔點一個標籤就會存起來，分好之後這裡會畫出${fieldName}的佔比。</div></div>`
+    : `<div class="hp-sub-title" style="margin:0">${unclassified.length ? `尚未分類 ${unclassified.length} 檔` : `全部 ${list.length} 檔都已分類`}</div>`;
+  if (list.length > unclassified.length) {
+    const tgl = el('button', 'btn btn-ghost btn-sm'); tgl.style.fontSize = '11px';
+    tgl.textContent = _quickTagShowAll ? '只看未分類' : '修改已分類';
+    tgl.addEventListener('click', async () => { _quickTagShowAll = !_quickTagShowAll; await rerenderHoldingsKeepScroll(); });
+    head.appendChild(tgl);
+  }
+  wrap.appendChild(head);
+
+  shown.forEach(t => {
+    const row = el('div'); row.className = 'hp-qt-row';
+    const chips = Object.entries(labelMap).map(([k, lab]) =>
+      `<button type="button" class="hp-chip${t.tag === k ? ' on' : ''}" data-qt-key="${k}" style="--chip:${tagColor(labelMap, k)}">${lab}</button>`).join('');
+    row.innerHTML = `
+      <div class="hp-qt-name"><b>${escHtml(t.ticker)}</b><span>${escHtml(t.name || '')}</span><em>${(t.value / scopeTotal * 100).toFixed(1)}%</em></div>
+      <div class="hp-chips">${chips}</div>`;
+    row.querySelectorAll('[data-qt-key]').forEach(btn => btn.addEventListener('click', async () => {
+      const key = btn.dataset.qtKey;
+      const next = t.tag === key ? null : key;
+      const recs = state.holdings.filter(h => h.ticker === t.ticker);
+      for (const h of recs) await putOne(db, 'holdings', { ...h, [field]: next });
+      showToast(next ? `${t.ticker} → ${labelMap[next]}` : `${t.ticker} 已取消分類`);
+      await rerenderHoldingsKeepScroll();
+    }));
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+async function rerenderHoldingsKeepScroll() {
+  const y = window.scrollY;
+  await renderHoldings();
+  window.scrollTo(0, y);
+}
 
 function buildHoldingsPctCard(inv) {
   const allEntries = inv.enriched
@@ -5249,10 +5370,8 @@ function buildHoldingsPctCard(inv) {
 
   const titleRow = el('div'); titleRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px';
   titleRow.innerHTML = `<span style="font-size:13px;font-weight:600">📊 持股佔比</span>`;
-  // 圖表／清單切換只適用「整體」「ETF／個股」「產業別」「投資屬性」——
-  // 「依券商」模式本身就是要同時看到好幾個甜甜圈圖互相比較，改成清單就
-  // 失去意義了，所以這個模式底下不顯示這組按鈕。
-  if (_holdingsPctMode !== 'brokerage') {
+  // v2.7.0：「依券商」改成跟其他模式同一種主圖，圖表／清單切換五種模式都適用。
+  {
     const viewToggle = el('div'); viewToggle.style.cssText = 'display:flex;gap:4px';
     const donutBtn = el('button', `btn btn-sm ${_holdingsPctView === 'donut' ? 'btn-primary' : 'btn-ghost'}`); donutBtn.style.fontSize = '11px'; donutBtn.textContent = '🍩 圖表';
     const listBtn = el('button', `btn btn-sm ${_holdingsPctView === 'list' ? 'btn-primary' : 'btn-ghost'}`); listBtn.style.fontSize = '11px'; listBtn.textContent = '📋 清單';
@@ -5335,54 +5454,63 @@ function buildHoldingsPctCard(inv) {
       e => e.key === '__unclassified__' ? UNCLASSIFIED_COLOR : (ASSET_TYPE_COLORS[e.key] || '#6B7280'),
       e => e.label, e => `${e.count} 檔`, `${typeEntries.length} 類`
     ));
-  } else if (_holdingsPctMode === 'industry') {
-    const industryEntries = groupByField('industry', INDUSTRY_LABELS, '未分類');
-    body.appendChild(buildPctEntriesView(
-      industryEntries, scopeTotal,
-      e => e.key === '__unclassified__' ? UNCLASSIFIED_COLOR : colorForGroupName(e.key),
-      e => e.label, e => `${e.count} 檔`, `${industryEntries.length} 類`
-    ));
-  } else if (_holdingsPctMode === 'style') {
-    const styleEntries = groupByField('investment_style', INVESTMENT_STYLE_LABELS, '未分類');
-    body.appendChild(buildPctEntriesView(
-      styleEntries, scopeTotal,
-      e => e.key === '__unclassified__' ? UNCLASSIFIED_COLOR : colorForGroupName(e.key),
-      e => e.label, e => `${e.count} 檔`, `${styleEntries.length} 類`
-    ));
+  } else if (_holdingsPctMode === 'industry' || _holdingsPctMode === 'style') {
+    // v2.7.0（使用者回報：「產業別、投資屬性完全沒有可參考的內容」）：這兩個
+    // 欄位只能由使用者自己選（查價來源沒有分類資料，不用程式猜），原本只能
+    // 一檔一檔打開「編輯」彈窗去選，結果幾乎沒人填、畫面永遠是「未分類
+    // 100%」。改成：圖表下方直接列出還沒分類的持股，每檔一排標籤按鈕，
+    // 點一下就存——同一個代號在不同券商的持倉一起套用（同一檔股票的產業
+    // 不會因為放在哪家券商而不同）。全部都沒分類時不畫一個灰色整圈，直接
+    // 引導去分類。
+    const field = _holdingsPctMode === 'industry' ? 'industry' : 'investment_style';
+    const labelMap = field === 'industry' ? INDUSTRY_LABELS : INVESTMENT_STYLE_LABELS;
+    const entries = groupByField(field, labelMap, '未分類');
+    const hasClassified = entries.some(e => e.key !== '__unclassified__');
+    if (hasClassified) {
+      body.appendChild(buildPctEntriesView(
+        entries, scopeTotal,
+        e => e.key === '__unclassified__' ? UNCLASSIFIED_COLOR : tagColor(labelMap, e.key),
+        e => e.label, e => `${e.count} 檔`, `${entries.length} 類`
+      ));
+    }
+    body.appendChild(buildQuickTagPanel(pctEntries, scopeTotal, field, labelMap, !hasClassified));
   } else {
-    // 依券商（使用者要求）：每家券商各自一個甜甜圈圖，分母是「這家券商自己
-    // 的市值小計」，不是整體投資部位——這樣才看得出「這檔在這家券商裡佔
-    // 多少」，跟「整體」模式（分母是全部券商加總，或篩選後那個市場的加總）
-    // 是刻意不同的兩種問題。
+    // v2.7.0（使用者回報：「依券商」的呈現方式不直覺）：原本是每家券商各畫
+    // 一個小甜甜圈、旁邊只有前 4 檔代號，彼此大小一樣、看不出哪家券商
+    // 放比較多錢。改成兩層：
+    //   1. 一個甜甜圈＋圖例＝「資金分在哪幾家券商」（跟其他模式同一種圖）；
+    //   2. 每家券商一條 100% 堆疊橫條＝「這家券商裡面放了什麼」，下面列出
+    //      每檔佔這家券商的百分比。
     const byBrok = {};
     pctEntries.forEach(h => {
       const bid = h.brokerage_id || '__unknown__';
-      (byBrok[bid] ??= { brokerage: h.brokerage, value: 0, items: [] });
-      byBrok[bid].value += h.marketValueTWD; byBrok[bid].items.push(h);
+      (byBrok[bid] ??= { key: bid, brokerage: h.brokerage, marketValueTWD: 0, items: [] });
+      byBrok[bid].marketValueTWD += h.marketValueTWD; byBrok[bid].items.push(h);
     });
-    const brokList = Object.values(byBrok).sort((a, b) => b.value - a.value);
-    const grid = el('div'); grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:24px';
-    brokList.forEach(({ brokerage, value, items }) => {
-      const cell = el('div'); cell.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:8px;width:136px';
-      cell.appendChild(buildDonut(items.map(h => ({ value: h.marketValueTWD, color: colorForGroupName(h.ticker) })), value, { size: 88, holeLabel: `${items.length} 檔` }));
-      const nameEl = el('div'); nameEl.style.cssText = 'font-size:12px;font-weight:600;text-align:center'; nameEl.textContent = brokerage?.name ?? '未指定券商';
-      cell.appendChild(nameEl);
-      const valEl = el('div'); valEl.style.cssText = 'font-size:11px;color:var(--text-3)'; valEl.textContent = `NT$ ${fmt(value)}`;
-      cell.appendChild(valEl);
-      const legend = el('div'); legend.style.cssText = 'display:flex;flex-direction:column;gap:2px;width:100%';
-      items.slice(0, 4).forEach(h => {
-        const row = el('div'); row.style.cssText = 'display:flex;align-items:center;gap:4px;font-size:10px';
-        row.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:${colorForGroupName(h.ticker)};flex-shrink:0"></span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-2)">${h.ticker}</span><span style="color:var(--text-3)">${(h.marketValueTWD / value * 100).toFixed(0)}%</span>`;
-        legend.appendChild(row);
-      });
-      if (items.length > 4) {
-        const more = el('div'); more.style.cssText = 'font-size:9px;color:var(--text-3);text-align:center'; more.textContent = `其餘 ${items.length - 4} 檔`;
-        legend.appendChild(more);
-      }
-      cell.appendChild(legend);
-      grid.appendChild(cell);
+    const brokList = Object.values(byBrok).sort((a, b) => b.marketValueTWD - a.marketValueTWD)
+      .map(b => ({ ...b, pctOfPortfolio: b.marketValueTWD / scopeTotal * 100, label: b.brokerage?.name ?? '未指定券商' }));
+    const brokColor = b => TAG_PALETTE[brokList.indexOf(b) % TAG_PALETTE.length];
+    body.appendChild(buildPctEntriesView(
+      brokList, scopeTotal, brokColor, b => b.label, b => `${b.items.length} 檔`, `${brokList.length} 家`
+    ));
+    const detail = el('div'); detail.className = 'hp-brok-detail';
+    const dh = el('div'); dh.className = 'hp-sub-title'; dh.textContent = '各券商內部組成';
+    detail.appendChild(dh);
+    brokList.forEach(b => {
+      const row = el('div'); row.className = 'hp-brok-row';
+      const items = [...b.items].sort((x, y) => y.marketValueTWD - x.marketValueTWD);
+      row.innerHTML = `
+        <div class="hp-brok-head">
+          <span class="hp-dot" style="background:${brokColor(b)}"></span>
+          <span class="hp-brok-name">${escHtml(b.label)}</span>
+          <span class="hp-brok-val">NT$ ${fmt(b.marketValueTWD)}</span>
+          <span class="hp-brok-pct">${b.pctOfPortfolio.toFixed(1)}%</span>
+        </div>
+        <div class="hp-stack">${items.map(h => `<span style="flex:${h.marketValueTWD};background:${colorForGroupName(h.ticker)}" title="${escHtml(h.ticker)}"></span>`).join('')}</div>
+        <div class="hp-stack-legend">${items.map(h => `<span><i style="background:${colorForGroupName(h.ticker)}"></i>${escHtml(h.ticker)} <b>${(h.marketValueTWD / b.marketValueTWD * 100).toFixed(0)}%</b></span>`).join('')}</div>`;
+      detail.appendChild(row);
     });
-    body.appendChild(grid);
+    body.appendChild(detail);
   }
 
   return card;
@@ -5398,7 +5526,7 @@ async function renderHoldings() {
   content.innerHTML = '';
   const bankMap  = Object.fromEntries(banks.map(b=>[b.id,b]));
   const brokMap  = Object.fromEntries(brokerages.map(b=>[b.id,b]));
-  const assetLabel = { stock:'個股', etf:'ETF', fund:'基金' };
+  const enrichedById = Object.fromEntries((inv?.enriched ?? []).map(h=>[h.id,h]));
 
   // Load saved market colors
   const twColor = await getSetting(db,'market_tw_bg').catch(()=>null) || '#F0FFF4';
@@ -5552,44 +5680,39 @@ async function renderHoldings() {
         });
 
         // ── Layer 3: Holdings list ───────────────────────────────────────
-        const bBody = el('div'); bBody.style.display='none';
+        // v2.7.0（使用者要求：「持倉的呈現方式要跟銀行帳戶一樣，ETF、個股的
+        // 小標籤放在最前面」）：原本是「ETF／個股」各自一個可收合的子標題，
+        // 要多點一層才看得到持股。改成跟銀行帳戶同一套合併儲存格
+        // （.acc-currency-grid／.acc-merge-cell）：最左邊一格直向標出類型、
+        // 橫跨該類所有持股列，同類整列淡淡同色底，類型顏色沿用持股佔比
+        // 「ETF／個股」模式的同一組顏色（ASSET_TYPE_COLORS），兩處對得起來。
+        const bBody = el('div','acc-currency-grid hold-grid'); bBody.style.display='none';
 
         if (bHoldings.length === 0) {
-          const e = el('div'); e.style.cssText='padding:12px 18px 12px 36px;font-size:12px;color:var(--text-3);border-top:1px solid var(--border)';
+          const e = el('div'); e.style.cssText='padding:12px 18px 12px 12px;font-size:12px;color:var(--text-3);border-top:1px solid var(--border);grid-column:1/-1';
           e.textContent='尚無持倉，點右方「＋ 新增持倉」。';
           bBody.appendChild(e);
         } else {
-          // Group by asset_type
           const typeOrder = ['etf','stock','fund'];
-          const typeLabel2 = { etf:'ETF', stock:'個股', fund:'基金' };
-          const typesByCat = typeOrder.filter(t=>bHoldings.some(h=>h.asset_type===t));
-          // also catch unknown types
-          const unknownTypes = [...new Set(bHoldings.map(h=>h.asset_type))].filter(t=>!typeOrder.includes(t));
-
-          [...typesByCat, ...unknownTypes].forEach(assetType => {
+          const typeKeys = [...typeOrder.filter(t=>bHoldings.some(h=>h.asset_type===t)),
+            ...[...new Set(bHoldings.map(h=>h.asset_type))].filter(t=>!typeOrder.includes(t))];
+          typeKeys.forEach(assetType => {
             const catHoldings = bHoldings.filter(h=>h.asset_type===assetType);
-            if (catHoldings.length === 0) return;
-
-            // Asset type sub-header (collapsible)
-            const catHead = el('div');
-            catHead.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:7px 18px 7px 36px;border-top:1px solid var(--border);cursor:pointer;user-select:none;background:var(--surface-2);transition:background .12s';
-            catHead.innerHTML = `
-              <div style="display:flex;align-items:center;gap:8px">
-                <span class="curr-badge curr-TWD" style="background:#F0FDF4;color:#166534;font-size:10px">${typeLabel2[assetType]??assetType}</span>
-                <span style="font-size:11px;color:var(--text-3)">${catHoldings.length} 支</span>
-              </div>
-              <svg class="chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M9 18l6-6-6-6"/></svg>`;
-
-            const catBody = el('div'); catBody.style.display='none';
+            const color = ASSET_TYPE_COLORS[assetType] || UNCLASSIFIED_COLOR;
+            const mergeCell = el('div','acc-merge-cell hold-merge-cell');
+            mergeCell.style.cssText = `grid-row:span ${catHoldings.length};--type-c:${color}`;
+            mergeCell.textContent = ASSET_TYPE_LABELS2[assetType] ?? (assetType || '未分類');
+            bBody.appendChild(mergeCell);
             catHoldings.forEach(h => {
-              const hRow = el('div');
-              hRow.style.cssText='display:grid;grid-template-columns:58px 1fr 68px 18px auto;align-items:center;gap:4px;padding:9px 18px 9px 48px;border-top:1px solid var(--border);font-size:12px';
+              const eh = enrichedById[h.id] || h;
+              const isUS = (brok.market ?? h.market) === 'US';
+              const valTxt = eh.marketValueTWD != null ? `NT$ ${fmt(eh.marketValueTWD)}` : '尚無報價';
+              const hRow = el('div','hold-row');
+              hRow.style.setProperty('--type-c', color);
               hRow.innerHTML = `
-                <span style="font-weight:700;font-variant-numeric:tabular-nums">${h.ticker}</span>
-                <span style="color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.name}</span>
-                <span style="color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums">${h.shares}</span>
-                <span style="color:var(--text-3)">股</span>
-                <div style="display:flex;gap:6px;flex-shrink:0;justify-content:flex-end">
+                <div class="hold-id"><b>${escHtml(h.ticker)}</b><span>${escHtml(h.name)}</span></div>
+                <div class="hold-num"><b>${Number(h.shares||0).toLocaleString('en-US',{maximumFractionDigits:isUS?4:0})}<small> 股</small></b><span class="${eh.marketValueTWD==null?'is-missing':''}">${valTxt}</span></div>
+                <div class="hold-acts">
                   <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-hold="${h.id}">編輯</button>
                   <button class="btn btn-ghost btn-sm" style="font-size:11px;color:var(--red)" data-del-hold="${h.id}">刪除</button>
                 </div>`;
@@ -5602,24 +5725,18 @@ async function renderHoldings() {
                   showToast('持倉已刪除'); await renderHoldings();
                 });
               });
-              catBody.appendChild(hRow);
+              bBody.appendChild(hRow);
             });
-
-            catHead.addEventListener('click', () => {
-              const isOpen = catBody.style.display !== 'none';
-              catBody.style.display = isOpen ? 'none' : 'block';
-              catHead.classList.toggle('card-open', !isOpen);
-            });
-
-            bBody.appendChild(catHead);
-            bBody.appendChild(catBody);
           });
         }
 
+        // 展開狀態記在共用登記表（跟銀行帳戶同一套），快速分類或編輯後重繪
+        // 不會把使用者剛打開的券商又收起來。
+        if (isExpanded(`brok:${brok.id}`)) { bBody.style.display = 'grid'; bRow.classList.add('card-open'); }
         bRow.addEventListener('click', () => {
-          const isOpen = bBody.style.display !== 'none';
-          bBody.style.display = isOpen ? 'none' : 'block';
-          bRow.classList.toggle('card-open', !isOpen);
+          const next = toggleExpanded(`brok:${brok.id}`, bBody.style.display === 'none');
+          bBody.style.display = next ? 'grid' : 'none';
+          bRow.classList.toggle('card-open', next);
         });
 
         mBody.appendChild(bRow);
@@ -5627,11 +5744,12 @@ async function renderHoldings() {
       });
     }
 
+    if (isExpanded(`market:${market}`)) { mBody.classList.add('open'); mHeader.classList.add('card-open'); }
     mHeader.addEventListener('click', e => {
       if (e.target.closest('button')) return; // don't toggle on button click
-      const isOpen = mBody.classList.contains('open');
-      mBody.classList.toggle('open', !isOpen);
-      mHeader.classList.toggle('card-open', !isOpen);
+      const next = toggleExpanded(`market:${market}`, !mBody.classList.contains('open'));
+      mBody.classList.toggle('open', next);
+      mHeader.classList.toggle('card-open', next);
     });
 
     content.appendChild(mCard);
