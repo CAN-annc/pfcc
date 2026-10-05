@@ -825,9 +825,13 @@ export function calcUpcomingReminders(
 
   for (const c of creditCards) {
     if (!((c.current_balance || 0) > 0)) continue;
-    const days = c.actual_due_date ? daysUntil(c.actual_due_date) : daysToMonthDay(c.due_day);
+    // v2.7.4：上一期沒記錄繳款就提醒那一期（會是逾期、天數為負），否則提醒下一期。
+    const st = ccPeriodStatus(c);
+    const target = st.overdue ?? st.upcoming;
+    if (!target?.due) continue;
+    const days = daysUntil(target.due);
     if (days == null || days > windowDays) continue;
-    items.push({ type: 'creditcard', id: c.id, label: `${c.name} 繳款`, daysUntil: days, amount: c.current_balance });
+    items.push({ type: 'creditcard', id: c.id, label: `${c.name} ${ccPeriodLabel(target.ym)}繳款${st.overdue ? '（未記錄）' : ''}`, daysUntil: days, amount: c.current_balance });
   }
 
   for (const r of recurringExpenses) {
@@ -960,11 +964,16 @@ export function calcMonthCalendarItems(
 
   for (const c of creditCards) {
     if (!((c.current_balance || 0) > 0)) continue;
-    let date = null;
-    if (c.actual_due_date && c.actual_due_date.startsWith(monthPrefix)) date = c.actual_due_date;
-    else if (c.due_day) date = monthlyDateInMonth(c.due_day, year, month);
+    // v2.7.4：已記錄繳款的期別不再顯示；也不顯示比「下一期」更遠的未來月份。
+    const ym = `${year}-${pad2(month)}`;
+    if ((c.last_paid_period ?? '') >= ym) continue;
+    const st = ccPeriodStatus(c);
+    if (st.upcoming && ym > st.upcoming.ym) continue;
+    const earliest = st.overdue?.ym ?? st.upcoming?.ym;
+    if (earliest && ym < earliest) continue; // 更早的月份：不回頭追溯（只追最近一期）
+    const date = ccDueDateFor(c, ym);
     if (!date) continue;
-    items.push({ date, type: 'creditcard', id: c.id, refId: c.id, label: `${c.name} 繳款`, amountLabel: `NT$ ${fmt(c.current_balance)}` });
+    items.push({ date, type: 'creditcard', id: c.id, refId: c.id, label: `${c.name} ${ccPeriodLabel(ym)}繳款`, amountLabel: `NT$ ${fmt(c.current_balance)}` });
   }
 
   // §卅八（2026-09-29，使用者回報「按確認本期之後，變成有兩筆電話費，而那
@@ -1342,3 +1351,34 @@ export function classifyStockStyle(m, { market, defensive }) {
 
 
 export const DEFENSIVE_TW_INDUSTRIES = new Set(['食品', '油電燃氣']);
+
+
+// ── 信用卡期別（v2.7.4）─────────────────────────────────────────────────────
+// 使用者回報：「信用卡前一期沒有按確認的話，該怎麼調整和修改？」——原本信用卡
+// 只有一個「待繳金額」，沒有「期」的概念：錯過的那期不會被標出來，只填一次的
+// 「本期實際繳款日」過了也不會失效（9/19 一直卡在那裡）。改成以「繳款月份」
+// 當期別（'YYYY-MM'），卡片記 last_paid_period（最近一次記錄繳款的期別）。
+const _ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const _ymShift = (ym, n) => { const [y, m] = ym.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; };
+// 某一期的繳款日：「實際繳款日」落在這個月就用它（遇假日順延），否則用每月繳款日。
+export function ccDueDateFor(card, ym) {
+  if (card?.actual_due_date && card.actual_due_date.startsWith(ym)) return card.actual_due_date;
+  const [y, m] = ym.split('-').map(Number);
+  return monthlyDateInMonth(card?.due_day, y, m);
+}
+// overdue：最近一個已經過了的繳款日，那期還沒記錄繳款（而且還有待繳金額）；
+// upcoming：下一個還沒到的繳款日（含今天）。
+export function ccPeriodStatus(card, fromDate = new Date()) {
+  if (!card?.due_day && !card?.actual_due_date) return { overdue: null, upcoming: null };
+  const today = _ymd(fromDate), thisYm = today.slice(0, 7);
+  const dueThis = ccDueDateFor(card, thisYm);
+  const passedThis = dueThis && today > dueThis;
+  const pastYm = passedThis ? thisYm : _ymShift(thisYm, -1);
+  const upYm = passedThis ? _ymShift(thisYm, 1) : thisYm;
+  const past = { ym: pastYm, due: ccDueDateFor(card, pastYm) };
+  const upcoming = { ym: upYm, due: ccDueDateFor(card, upYm) };
+  const paidUpTo = card.last_paid_period ?? '';
+  const overdue = past.due && paidUpTo < past.ym && (card.current_balance || 0) > 0 ? past : null;
+  return { overdue, upcoming };
+}
+export function ccPeriodLabel(ym) { return `${Number(ym.slice(5, 7))} 月期`; }

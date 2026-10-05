@@ -232,6 +232,14 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hp-qt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
 .hp-qt-title{font-size:13px;font-weight:600;color:var(--text-1)}
 .hp-qt-desc{font-size:11px;color:var(--text-3);margin-top:3px;line-height:1.5}
+.cc-overdue{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 18px 12px;padding:10px 12px;border-radius:8px;background:var(--red-bg,#FEF2F2);border:1px solid color-mix(in srgb,var(--red) 30%,transparent)}
+.cc-overdue strong{display:block;font-size:13px;color:var(--red)}
+.cc-overdue span{display:block;font-size:11px;color:var(--text-2);margin-top:2px;line-height:1.5}
+.cc-overdue .btn{flex-shrink:0}
+.cc-history{margin:0 18px 10px;padding-top:8px;border-top:1px dashed var(--border)}
+.cc-history-title{font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:2px}
+.cc-history-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;font-size:12px;color:var(--text-2);padding:2px 0}
+.cc-history-row strong{font-variant-numeric:tabular-nums;color:var(--text-1);font-weight:600}
 .hp-status{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3)}
 .ind-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:10px}
 .ind-kpi{font-size:15px;font-weight:600;color:var(--text-1)}
@@ -328,6 +336,11 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .modal-field label{font-size:12px;color:var(--text-2);display:block;margin-bottom:5px;font-weight:500}
 .modal-field input,.modal-field select{width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:7px;font-size:14px;outline:none;transition:border-color .15s;background:var(--card)}
 .modal-field input:focus,.modal-field select:focus{border-color:var(--blue)}
+/* v2.7.4：iOS Safari 的日期欄位有自己的最小寬度、文字置中，會撐出彈窗右緣
+   （使用者回報「日期的表格超出範圍」）。去掉原生外觀、限制寬度、靠左對齊。 */
+.modal-field input,.modal-field select{box-sizing:border-box;min-width:0;max-width:100%}
+input[type=date],input[type=month],input[type=time],input[type=datetime-local]{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;box-sizing:border-box;min-height:40px;text-align:left}
+input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-and-time-value{text-align:left;margin:0}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
@@ -2053,9 +2066,9 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
       </div>
     </div>
     <div class="modal-field">
-      <label>本期實際繳款日（選填，遇假日順延時填入）</label>
-      <input type="date" id="ccActualDueDate" placeholder="例：本月遇假日，實際繳款日">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">若本期繳款日遇假日，填入實際扣款日期，首頁將顯示倒數此日期。</div>
+      <label id="ccActualDueLabel">本期實際繳款日（選填，遇假日順延時填入）</label>
+      <input type="date" id="ccActualDueDate">
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">只套用在這一期；記錄繳款後自動失效，下一期不必回來清掉。</div>
     </div>
     <div class="modal-field">
       <label>繳款帳戶（選填）</label>
@@ -2072,6 +2085,36 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
         <button class="btn btn-ghost" id="ccModalCancel">取消</button>
         <button class="btn btn-primary" id="ccModalSave">儲存</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Credit card payment modal（v2.7.4）── -->
+<div class="modal-overlay" id="ccPayModal">
+  <div class="modal">
+    <h2 id="ccPayTitle">記錄繳款</h2>
+    <div class="modal-field">
+      <label>繳哪一期</label>
+      <select id="ccPayPeriod"></select>
+    </div>
+    <div class="field-row">
+      <div class="modal-field">
+        <label>實際繳款日</label>
+        <input type="date" id="ccPayDate">
+      </div>
+      <div class="modal-field">
+        <label>繳款金額</label>
+        <input type="number" id="ccPayAmount" inputmode="decimal" min="0" step="1">
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-3);margin:-4px 0 12px">預設是目前待繳全部。如果帳單金額比較少（結帳日後新刷的要下一期才繳），改成帳單上的金額。</div>
+    <div class="modal-field">
+      <label>從哪個帳戶扣款</label>
+      <select id="ccPayFrom"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="ccPayCancel">取消</button>
+      <button class="btn btn-primary" id="ccPaySave">記錄繳款</button>
     </div>
   </div>
 </div>
@@ -2447,7 +2490,7 @@ import {
   calcMonthCalendarItems, calcOtherAssets, calcDividendByYear, calcTodayAllowance, calcGoldAssets,
   calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent, rebalanceJarPercents,
   runDataHealthChecks,
-  classifyStockStyle, DEFENSIVE_TW_INDUSTRIES,
+  classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
 } from './calc.js';
 
 let db, state = {}, currentView = 'assets';
@@ -2721,16 +2764,17 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.7.3';
+const APP_VERSION = 'v2.7.4';
 const CHANGELOG_LAST_UPDATED = '2026-10-05';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '修正投資屬性出現「未能判定」：證交所會擋雲端主機，上市股的本益比、殖利率、淨值比改由 App 直接向證交所開放資料查詢；上櫃股用櫃買中心資料，查不到時還有備援來源',
-  '修正產業名稱不一致（例如「電腦週邊」與「電腦及週邊設備」、同一產業出現兩次），統一成證交所分類（台股）與 GICS 類股（海外）',
-  '產業別改成產業排行：最上面一條看集中度，每個產業一列顯示佔比與金額，點開可看這個產業的錢來自哪幾檔（ETF 會註明成分比重）',
+  '信用卡改成以「期」管理：上一期過了繳款日還沒記錄繳款，卡片上會標出「9 月期還沒記錄繳款」，可直接補記，日期記在實際繳款那天',
+  '記錄繳款改成正式表單：選期別、實際繳款日、金額（可改成帳單金額）、扣款帳戶；扣款會出現在帳戶明細，記錯了可以「復原」',
+  '「實際繳款日」只套用在那一期，記錄繳款後自動失效；提醒與月曆也改依期別顯示',
+  '修正手機上日期欄位超出彈窗範圍',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -11526,7 +11570,7 @@ async function renderCalendar() {
       const bankMap = Object.fromEntries(state.banks.map(b=>[b.id,b]));
       const accMap  = Object.fromEntries(state.accounts.map(a=>[a.id,a]));
       btn.textContent='記錄繳款';
-      btn.addEventListener('click', () => openCcPayModal(card, accMap, bankMap));
+      btn.addEventListener('click', () => openCcPayModal(card, { ym: it.date.slice(0, 7) }));
       return btn;
     }
     if (it.type === 'recurring') {
@@ -12360,14 +12404,8 @@ async function renderCreditCard() {
     const payAcc = accMap[card.pay_account_id];
     const payBank = payAcc ? bankMap[payAcc.bank_id] : null;
 
-    // If actual_due_date is set, use it directly
-    function daysToActualDate(dateStr) {
-      if (!dateStr) return null;
-      const target = new Date(dateStr);
-      target.setHours(0,0,0,0);
-      const now = new Date(); now.setHours(0,0,0,0);
-      return Math.ceil((target - now) / 86400000);
-    }
+    // v2.7.4：以「期別」顯示——上一期沒記錄繳款就醒目提示並可補記；下一期
+    // 顯示繳款日與倒數；最近的繳款紀錄可以復原。
     function daysToDay(day) {
       if (!day) return null;
       const target = new Date(today);
@@ -12375,23 +12413,26 @@ async function renderCreditCard() {
       if (target <= today) target.setMonth(target.getMonth()+1);
       return Math.ceil((target - today) / 86400000);
     }
+    const daysBetween = d => { const t = new Date(d + 'T00:00:00'); const n = new Date(); n.setHours(0,0,0,0); return Math.round((t - n) / 86400000); };
+    const st = ccPeriodStatus(card);
     const daysToBilling = daysToDay(card.billing_day);
-    const daysToDue = card.actual_due_date
-      ? daysToActualDate(card.actual_due_date)
-      : daysToDay(card.due_day);
+    const up = st.upcoming;
+    const daysToDue = up?.due ? daysBetween(up.due) : null;
+    const md = d => `${Number(d.slice(5,7))}/${Number(d.slice(8,10))}`;
+    const recent = [...(card.payments || [])].sort((x, y) => (y.date + y.created_at).localeCompare(x.date + x.created_at)).slice(0, 3);
 
     const cardEl = el('div','card'); cardEl.style.marginBottom='16px';
     cardEl.innerHTML = `
       <div style="padding:16px 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
-        <div style="flex:1">
+        <div style="flex:1;min-width:0">
           <div style="font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px">
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-            ${card.name}
+            ${escHtml(card.name)}
           </div>
-          <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap">
+          <div style="display:flex;gap:6px 16px;margin-top:10px;flex-wrap:wrap">
             ${card.billing_day ? `<div style="font-size:12px;color:var(--text-2)">結帳日 <strong>${card.billing_day}</strong> 號${daysToBilling!=null?` <span style="color:var(--text-3)">（${daysToBilling} 天後）</span>`:''}</div>` : ''}
-            ${card.due_day ? `<div style="font-size:12px;color:var(--text-2)">繳款日 <strong>${card.due_day}</strong> 號${card.actual_due_date?` <span style="color:var(--text-3)">（實際 ${card.actual_due_date}）</span>`:''}${daysToDue!=null?` <span style="color:${daysToDue<=3?'var(--red)':'var(--text-3)'}">（${daysToDue} 天後）</span>`:''}</div>` : ''}
-            ${payAcc ? `<div style="font-size:12px;color:var(--text-2)">繳款帳戶 <strong>${payBank?payBank.name+' ':''} ${payAcc.name}</strong></div>` : ''}
+            ${up?.due ? `<div style="font-size:12px;color:var(--text-2)">${ccPeriodLabel(up.ym)}繳款 <strong>${md(up.due)}</strong>${card.actual_due_date && up.due === card.actual_due_date ? ' <span style="color:var(--text-3)">（順延）</span>' : ''} <span style="color:${daysToDue<=3?'var(--red)':'var(--text-3)'}">（${daysToDue === 0 ? '今天' : daysToDue + ' 天後'}）</span></div>` : ''}
+            ${payAcc ? `<div style="font-size:12px;color:var(--text-2)">繳款帳戶 <strong>${payBank?escHtml(payBank.name)+' ':''}${escHtml(payAcc.name)}</strong></div>` : ''}
           </div>
         </div>
         <div style="text-align:right;flex-shrink:0">
@@ -12399,13 +12440,28 @@ async function renderCreditCard() {
           <div style="font-size:20px;font-weight:600;color:${(card.current_balance||0)>0?'var(--red)':'var(--green)'}">${(card.current_balance||0)>0?'-':''}NT$ ${fmt(Math.abs(card.current_balance||0))}</div>
         </div>
       </div>
+      ${st.overdue ? `
+      <div class="cc-overdue">
+        <div><strong>${ccPeriodLabel(st.overdue.ym)}（${md(st.overdue.due)}）還沒記錄繳款</strong><span>已經繳了就補記，日期會記在實際繳款那天；還沒繳請盡快繳款。</span></div>
+        <button class="btn btn-primary btn-sm" data-pay-overdue="${card.id}">補記繳款</button>
+      </div>` : ''}
+      ${recent.length ? `
+      <div class="cc-history">
+        <div class="cc-history-title">最近繳款</div>
+        ${recent.map(p => `<div class="cc-history-row"><span>${p.period ? ccPeriodLabel(p.period) : ''}</span><span>${md(p.date)} 繳</span><strong>NT$ ${fmt(p.amount)}</strong><button class="btn btn-ghost btn-sm" data-undo-pay="${p.id}">復原</button></div>`).join('')}
+      </div>` : ''}
       <div style="border-top:1px solid var(--border);padding:10px 18px;display:flex;gap:8px;justify-content:flex-end">
         <button class="btn btn-ghost btn-sm" data-pay-cc="${card.id}">💳 記錄繳款</button>
         <button class="btn btn-ghost btn-sm" data-edit-cc="${card.id}">編輯</button>
       </div>`;
 
+    cardEl.querySelector('[data-pay-overdue]')?.addEventListener('click', () => openCcPayModal(card, { ym: st.overdue.ym }));
+    cardEl.querySelectorAll('[data-undo-pay]').forEach(btn => btn.addEventListener('click', () => {
+      const p = recent.find(x => x.id === btn.dataset.undoPay);
+      openDeleteModal(`復原 ${md(p.date)} 這筆 NT$ ${fmt(p.amount)} 的繳款？\n${p.account_id ? '扣款帳戶會加回這筆金額，' : ''}信用卡待繳會加回，期別回到記錄前的狀態。`, () => undoCcPayment(card.id, p.id));
+    }));
     cardEl.querySelector(`[data-edit-cc]`).addEventListener('click', () => openCcModal(card));
-    cardEl.querySelector(`[data-pay-cc]`).addEventListener('click', () => openCcPayModal(card, accMap, bankMap));
+    cardEl.querySelector(`[data-pay-cc]`).addEventListener('click', () => openCcPayModal(card));
     content.appendChild(cardEl);
   });
 }
@@ -12421,7 +12477,13 @@ async function openCcModal(card=null) {
   document.getElementById('ccName').value = card?.name ?? '';
   document.getElementById('ccBillingDay').value = card?.billing_day ?? '';
   document.getElementById('ccDueDay').value = card?.due_day ?? '';
-  document.getElementById('ccActualDueDate').value = card?.actual_due_date ?? '';
+  // v2.7.4：「實際繳款日」只屬於某一期——那期已記錄繳款就不再帶出來。
+  const ccSt = card ? ccPeriodStatus(card) : null;
+  const ccTargetYm = ccSt ? (ccSt.overdue ?? ccSt.upcoming)?.ym : null;
+  document.getElementById('ccActualDueLabel').textContent = ccTargetYm
+    ? `${ccPeriodLabel(ccTargetYm)}實際繳款日（選填，遇假日順延時填入）` : '本期實際繳款日（選填，遇假日順延時填入）';
+  const staleActual = card?.actual_due_date && card.actual_due_date.slice(0, 7) <= (card.last_paid_period ?? '');
+  document.getElementById('ccActualDueDate').value = staleActual ? '' : (card?.actual_due_date ?? '');
   document.getElementById('ccBalance').value = card?.current_balance ?? 0;
 
   const payAccSel = document.getElementById('ccPayAccount');
@@ -12463,6 +12525,8 @@ document.getElementById('ccModalSave').addEventListener('click', async () => {
     actual_due_date: document.getElementById('ccActualDueDate').value||null,
     pay_account_id: document.getElementById('ccPayAccount').value||null,
     current_balance: parseFloat(document.getElementById('ccBalance').value)||0,
+    // v2.7.4：期別紀錄與繳款紀錄不在這個彈窗編輯，存檔時原樣保留。
+    ...(editId ? (({ last_paid_period, payments, created_at }) => ({ last_paid_period, payments, created_at }))(await getOne(db,'credit_cards',editId) ?? {}) : { created_at: new Date().toISOString() }),
     // §四十七：資料健檢第 6 項用來判斷「待繳金額多久沒變動」。
     balance_updated_at: new Date().toISOString(),
   });
@@ -12471,23 +12535,111 @@ document.getElementById('ccModalSave').addEventListener('click', async () => {
   if (currentView === 'onboarding') await renderOnboarding(); else await renderCreditCard();
 });
 
-// ── CC Pay Modal ──────────────────────────────────────────────────────────────
-function openCcPayModal(card, accMap, bankMap) {
-  const amount = card.current_balance || 0;
-  openDeleteModal(
-    `繳清「${card.name}」待繳 NT$ ${fmt(amount)}？\n繳款後將從繳款帳戶扣除，信用卡待繳歸零。`,
-    async () => {
-      // Deduct from pay account
-      if (card.pay_account_id && amount > 0) {
-        const acc = await getOne(db,'accounts',card.pay_account_id);
-        if (acc) await putOne(db,'accounts',{...acc, balance:+(acc.balance-amount).toFixed(6), updated_at:new Date().toISOString()});
-      }
-      // Reset credit card balance
-      await putOne(db,'credit_cards',{...card, current_balance:0, balance_updated_at:new Date().toISOString()});
-      showToast('✓ 繳款完成，待繳金額已歸零');
-      if (currentView === 'calendar') await renderCalendar(); else await renderCreditCard();
+// ── CC Pay Modal（v2.7.4 重寫）────────────────────────────────────────────────
+// 原本是「確定繳清？」一個確認框：一律繳清全部待繳、日期是今天、沒有期別，
+// 錯過的那期沒辦法補記。改成正式的繳款彈窗：
+//   ・選哪一期（上一期沒記錄就預設上一期）；
+//   ・實際繳款日（預設那期的繳款日，不能晚於今天）——補記上個月的也正確；
+//   ・金額（預設待繳全部，可改成帳單金額）；
+//   ・扣款帳戶（預設卡片設定的繳款帳戶；也可選「不扣帳戶」，給已經在別處
+//     調整過帳戶餘額、只想標記這期已繳的情況）。
+// 存檔：帳戶餘額扣款並寫一筆帳戶變動紀錄（帳戶明細看得到）、信用卡待繳扣掉
+// 這筆、這期標記已繳、清掉這期的實際繳款日；每筆繳款都留在卡片的繳款紀錄，
+// 可以復原。
+let _ccPayCtx = null;
+async function openCcPayModal(card, opts = {}) {
+  await loadData();
+  card = (await getOne(db, 'credit_cards', card.id)) ?? card;
+  const st = ccPeriodStatus(card);
+  const periods = [st.overdue, st.upcoming].filter(Boolean);
+  const today = new Date(); const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  const wantYm = opts.ym && periods.some(p => p.ym === opts.ym) ? opts.ym : periods[0]?.ym;
+  const perSel = document.getElementById('ccPayPeriod');
+  perSel.innerHTML = periods.length
+    ? periods.map(p => `<option value="${p.ym}">${ccPeriodLabel(p.ym)}（繳款日 ${Number(p.due.slice(5,7))}/${Number(p.due.slice(8,10))}）${p === st.overdue ? '・尚未記錄' : ''}</option>`).join('')
+    : `<option value="">（這張卡沒有設定繳款日）</option>`;
+  perSel.value = wantYm ?? '';
+  const setDate = () => {
+    const p = periods.find(x => x.ym === perSel.value);
+    const d = p?.due && p.due <= todayStr ? p.due : todayStr;
+    document.getElementById('ccPayDate').value = d;
+  };
+  perSel.onchange = setDate; setDate();
+  document.getElementById('ccPayDate').max = todayStr;
+  document.getElementById('ccPayAmount').value = card.current_balance || 0;
+  const bankMap = Object.fromEntries(state.banks.map(b => [b.id, b]));
+  const fromSel = document.getElementById('ccPayFrom');
+  fromSel.innerHTML = state.accounts.filter(a => a.currency === 'TWD')
+      .map(a => { const b = bankMap[a.bank_id]; return `<option value="${a.id}">${b ? b.name + ' · ' : ''}${escHtml(a.name)}</option>`; }).join('')
+    + `<option value="">不扣帳戶（帳戶餘額已另外調整過，只標記這期已繳）</option>`;
+  fromSel.value = card.pay_account_id && state.accounts.some(a => a.id === card.pay_account_id) ? card.pay_account_id : (fromSel.options[0]?.value ?? '');
+  document.getElementById('ccPayTitle').textContent = `記錄繳款：${card.name}`;
+  _ccPayCtx = { card };
+  document.getElementById('ccPayModal').classList.add('open');
+}
+document.getElementById('ccPayCancel').addEventListener('click', () => document.getElementById('ccPayModal').classList.remove('open'));
+document.getElementById('ccPayModal').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+document.getElementById('ccPaySave').addEventListener('click', async () => {
+  if (!_ccPayCtx) return;
+  const card = (await getOne(db, 'credit_cards', _ccPayCtx.card.id)) ?? _ccPayCtx.card;
+  const period = document.getElementById('ccPayPeriod').value || null;
+  const date = document.getElementById('ccPayDate').value;
+  const amount = Math.max(0, parseFloat(document.getElementById('ccPayAmount').value) || 0);
+  const accId = document.getElementById('ccPayFrom').value || null;
+  if (!date) { document.getElementById('ccPayDate').style.borderColor = 'var(--red)'; return; }
+  const paymentId = crypto.randomUUID();
+  let adjId = null;
+  if (accId && amount > 0) {
+    const acc = await getOne(db, 'accounts', accId);
+    if (acc) {
+      const newBal = +((acc.balance || 0) - amount).toFixed(6);
+      adjId = crypto.randomUUID();
+      await putOne(db, 'accounts', { ...acc, balance: newBal, updated_at: new Date().toISOString() });
+      await putOne(db, 'balance_adjustments', {
+        id: adjId, account_id: accId, old_balance: acc.balance, new_balance: newBal, diff: -amount,
+        note: `💳 繳信用卡：${card.name}${period ? `（${ccPeriodLabel(period)}）` : ''}`,
+        created_at: new Date(`${date}T12:00:00`).toISOString(), cc_payment_id: paymentId,
+      });
     }
-  );
+  }
+  const payment = { id: paymentId, period, date, amount, account_id: accId, adj_id: adjId,
+    prev_last_paid_period: card.last_paid_period ?? null, prev_actual_due_date: card.actual_due_date ?? null, created_at: new Date().toISOString() };
+  const lastPaid = period && period > (card.last_paid_period ?? '') ? period : (card.last_paid_period ?? null);
+  await putOne(db, 'credit_cards', {
+    ...card,
+    current_balance: Math.max(0, +((card.current_balance || 0) - amount).toFixed(2)),
+    last_paid_period: lastPaid,
+    actual_due_date: card.actual_due_date && lastPaid && card.actual_due_date.slice(0, 7) <= lastPaid ? null : (card.actual_due_date ?? null),
+    payments: [...(card.payments || []), payment],
+    balance_updated_at: new Date().toISOString(),
+  });
+  document.getElementById('ccPayModal').classList.remove('open');
+  showToast(`✓ 已記錄${period ? ccPeriodLabel(period) : ''}繳款 NT$ ${fmt(amount)}`);
+  if (currentView === 'calendar') await renderCalendar();
+  else if (currentView === 'assets') await renderAssets();
+  else await renderCreditCard();
+});
+// 復原一筆繳款：帳戶加回、刪掉那筆帳戶變動紀錄、信用卡待繳加回、期別回到記錄前。
+async function undoCcPayment(cardId, paymentId) {
+  const card = await getOne(db, 'credit_cards', cardId);
+  const p = card?.payments?.find(x => x.id === paymentId);
+  if (!p) return;
+  if (p.account_id && p.amount > 0) {
+    const acc = await getOne(db, 'accounts', p.account_id);
+    if (acc) await putOne(db, 'accounts', { ...acc, balance: +((acc.balance || 0) + p.amount).toFixed(6), updated_at: new Date().toISOString() });
+    if (p.adj_id) { const t = db.transaction(['balance_adjustments'], 'readwrite'); t.objectStore('balance_adjustments').delete(p.adj_id); await new Promise(r => { t.oncomplete = r; t.onerror = r; }); }
+  }
+  const rest = card.payments.filter(x => x.id !== paymentId);
+  const isLatest = !rest.some(x => (x.created_at ?? '') > (p.created_at ?? ''));
+  await putOne(db, 'credit_cards', {
+    ...card,
+    current_balance: +((card.current_balance || 0) + (p.amount || 0)).toFixed(2),
+    last_paid_period: isLatest ? (p.prev_last_paid_period ?? null) : card.last_paid_period,
+    actual_due_date: isLatest && !card.actual_due_date ? (p.prev_actual_due_date ?? null) : card.actual_due_date,
+    payments: rest, balance_updated_at: new Date().toISOString(),
+  });
+  showToast('已復原這筆繳款');
+  await renderCreditCard();
 }
 
 // ════════════════════════════════════════════════════════════════════════════
