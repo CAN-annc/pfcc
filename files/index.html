@@ -232,16 +232,15 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hp-qt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
 .hp-qt-title{font-size:13px;font-weight:600;color:var(--text-1)}
 .hp-qt-desc{font-size:11px;color:var(--text-3);margin-top:3px;line-height:1.5}
-.hp-qt-row{padding:10px 0;border-top:1px solid var(--border)}
-.hp-qt-name{display:flex;align-items:baseline;gap:6px;font-size:12px;margin-bottom:7px;min-width:0}
-.hp-qt-name b{font-weight:700;font-variant-numeric:tabular-nums}
-.hp-qt-name span{flex:1;min-width:0;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hp-qt-name em{font-style:normal;color:var(--text-3);font-size:11px;font-variant-numeric:tabular-nums}
-.hp-chips{display:flex;flex-wrap:wrap;gap:5px}
-.hp-chip{font:inherit;font-size:11px;line-height:1;padding:6px 10px;border-radius:999px;cursor:pointer;
-  border:1px solid color-mix(in srgb,var(--chip) 35%,var(--border));background:var(--card);color:var(--text-2);transition:background .12s,color .12s}
-.hp-chip:hover{background:color-mix(in srgb,var(--chip) 10%,var(--card))}
-.hp-chip.on{background:var(--chip);border-color:var(--chip);color:#fff;font-weight:600}
+.hp-basis-row{padding:9px 0;border-top:1px solid var(--border)}
+.hp-basis-top{display:flex;align-items:baseline;gap:6px;font-size:12px;min-width:0}
+.hp-basis-top b{font-weight:700;font-variant-numeric:tabular-nums}
+.hp-basis-name{flex:1;min-width:0;color:var(--text-3);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hp-basis-top em{font-style:normal;color:var(--text-3);font-size:11px;font-variant-numeric:tabular-nums}
+.hp-basis-res{font-size:13px;font-weight:600;color:var(--text-1);margin-top:3px}
+.hp-basis-res .is-missing{color:var(--text-3);font-weight:500}
+.hp-basis-why{font-size:11px;color:var(--text-2);margin-top:2px;line-height:1.5}
+.hp-basis-why span{color:var(--text-3)}
 
 /* ── Bank row amount alignment ── */
 .bank-twd-label{font-size:13px;font-weight:600;color:var(--text-1);flex-shrink:0;margin-right:2px}
@@ -1198,39 +1197,19 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
       <input type="number" id="holdingCostBasis" inputmode="decimal" placeholder="留空則不計算未實現損益" min="0" step="0.01">
       <div style="font-size:11px;color:var(--text-3);margin-top:4px">填了之後，持倉清單會自動顯示「現價 - 成本」算出的未實現損益，僅供參考，不影響任何記帳或資產計算。</div>
     </div>
-    <!-- 2026-09-26（見 §廿一之七）：產業別／投資屬性都是選填，由使用者自己
-         選——查價來源沒有提供產業分類資料，不用程式猜測。沒填的持倉會在
-         「投資持倉」頁的持股佔比卡片裡歸在「未分類」，不影響任何既有計算，
-         純粹是這兩種新分組模式用來分類的標籤。 -->
+    <!-- v2.7.1：產業別／投資屬性由系統依公開資料自動判定（/api/classify），
+         這裡預設「自動判定」，只有資料來源查不到或不同意判定時才手動覆寫。 -->
     <div class="field-row">
       <div class="modal-field">
-        <label>產業別（選填）</label>
+        <label>產業別</label>
         <select id="holdingIndustry">
-          <option value="">── 未分類 ──</option>
-          <option value="broad">綜合／大盤</option>
-          <option value="tech">科技</option>
-          <option value="semi">半導體</option>
-          <option value="finance">金融</option>
-          <option value="consumer">民生消費</option>
-          <option value="healthcare">醫療保健</option>
-          <option value="comm">通訊</option>
-          <option value="industrial">工業</option>
-          <option value="energy">能源</option>
-          <option value="utilities">公用事業</option>
-          <option value="bond">債券</option>
-          <option value="other">其他</option>
+          <option value="">自動判定（建議）</option>
         </select>
       </div>
       <div class="modal-field">
-        <label>投資屬性（選填）</label>
+        <label>投資屬性</label>
         <select id="holdingInvestmentStyle">
-          <option value="">── 未分類 ──</option>
-          <option value="index">指數型</option>
-          <option value="growth">成長型</option>
-          <option value="value">價值型</option>
-          <option value="dividend">高股息</option>
-          <option value="balanced">平衡型</option>
-          <option value="defensive">防禦型</option>
+          <option value="">自動判定（建議）</option>
         </select>
       </div>
     </div>
@@ -2717,16 +2696,16 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.7.0';
+const APP_VERSION = 'v2.7.1';
 const CHANGELOG_LAST_UPDATED = '2026-10-05';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '投資持倉的持股清單改成跟銀行帳戶一樣：最前面一格標出「ETF／個股」，同類整列同色，展開券商就直接看到所有持股與市值',
-  '持股佔比「依券商」改成一個總圖看資金分在哪幾家，下面每家一條組成橫條，看得出各檔佔該券商多少',
-  '持股佔比「產業別／投資屬性」可直接在卡片裡逐檔點標籤分類（同代號一起套用），新增「綜合／大盤」「半導體」「醫療保健」「通訊」「債券」「指數型」等選項',
+  '持股佔比的「產業別」「投資屬性」改由系統自動判定，不用再自己選：台股用證交所／櫃買中心的官方產業別，ETF 依成分股產業比重拆開計算（例如 0050 會分到半導體、電子零組件、金融保險）',
+  '投資屬性依殖利率、本益比、股價淨值比（個股）或證交所登記的基金類型與追蹤指數（ETF）判定；每檔都列出判定理由與資料來源',
+  '資料每 3 天自動更新，也可按「重新判定」；資料來源查不到時，可在「編輯持倉」手動指定',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -5283,74 +5262,115 @@ function buildPctEntriesView(entries, totalValue, colorFn, primaryLabelFn, secon
   return wrap;
 }
 
-// 產業別／投資屬性（見 §廿一之七，2026-09-26 新增）：都是使用者自己選填的
-// 標籤（holdings.industry／investment_style），沒填的一律歸在「未分類」，
-// 用固定的灰色跟其他有分類的項目區分開來，其餘顏色沿用 colorForGroupName()
-// 的雜湊上色（跟依券商模式裡每檔持股的配色邏輯一致，不需要另外維護一份
-// 調色盤）。
-// v2.7.0：補上「綜合／大盤」（0050、VOO 這類追蹤整體市場的 ETF 本來沒有
-// 合適的產業可選）、「醫療保健」「通訊」「債券」，投資屬性補「指數型」。
-// 舊資料的 key 完全不變，只是多了選項。
-const INDUSTRY_LABELS = { broad:'綜合／大盤', tech:'科技', semi:'半導體', finance:'金融', consumer:'民生消費', healthcare:'醫療保健', comm:'通訊', industrial:'工業', energy:'能源', utilities:'公用事業', bond:'債券', other:'其他' };
-const INVESTMENT_STYLE_LABELS = { index:'指數型', growth:'成長型', value:'價值型', dividend:'高股息', balanced:'平衡型', defensive:'防禦型' };
-// 甜甜圈／堆疊條的分類顏色：固定一組可辨識的色票，依標籤順序指派，比雜湊
-// 上色好分辨（雜湊容易兩類撞到很像的顏色）。
+// 產業別／投資屬性——v2.7.1（使用者：「應該要系統自動偵測，不該交給使用者
+// 選」）起全部改由 /api/classify 依公開資料判定（來源與規則見該檔開頭說明），
+// 結果快取在 settings.holding_class_cache，每檔附資料來源與判定理由，畫面上
+// 照實列出。使用者在「編輯持倉」裡仍可手動覆寫（industry_manual／
+// style_manual），只用在資料來源查不到、或使用者明確不同意判定結果時。
+// v2.7.0 的快速分類標籤（holdings.industry／investment_style）不再使用。
+const INVESTMENT_STYLE_LABELS = { index:'市值型指數', dividend:'高股息', growth:'成長型', value:'價值型', balanced:'平衡型', defensive:'防禦型', theme:'產業主題', bond:'債券', active:'主動式', leveraged:'槓桿／反向', commodity:'期貨' };
+// 證交所產業分類（台股）＋ GICS 11 大類（美股／海外 ETF），手動覆寫選單用。
+const TW_INDUSTRY_NAMES = ['半導體','電腦及週邊設備','電子零組件','光電','通信網路','其他電子','電子通路','資訊服務','數位雲端','金融保險','生技醫療','食品','塑膠','化學','鋼鐵','紡織纖維','電機機械','電器電纜','汽車','航運','建材營造','觀光餐旅','貿易百貨','油電燃氣','綠能環保','水泥','玻璃陶瓷','造紙','橡膠','電子商務','文化創意','農業科技','運動休閒','居家生活','其他'];
+const GICS_INDUSTRY_NAMES = ['資訊科技','通信服務','金融','健康護理','非必需消費品','必需性消費品','工業','能源','原料','公用事業','不動產'];
+// 分類顏色：固定色票依佔比排名指派，比雜湊上色好分辨。
 const TAG_PALETTE = ['#2563EB','#059669','#D97706','#DC2626','#7C3AED','#0891B2','#DB2777','#65A30D','#EA580C','#4F46E5','#0D9488','#A16207'];
-function tagColor(labelMap, key) {
-  const i = Object.keys(labelMap).indexOf(key);
-  return i < 0 ? colorForGroupName(key) : TAG_PALETTE[i % TAG_PALETTE.length];
-}
 const UNCLASSIFIED_COLOR = '#9CA3AF';
 
 // 使用者自己輸入的文字（券商名、股票名稱）插進 innerHTML 前先跳脫。
 function escHtml(v) { return String(v ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); }
-// v2.7.0：產業別／投資屬性的「快速分類」區塊——同一個代號只列一次（多家
-// 券商都有的話合併市值），預設只列還沒分類的；「顯示全部」可以回頭改已經
-// 分類過的。點標籤立即寫回 holdings（同代號全部一起），再點同一個標籤＝
-// 取消分類。
-let _quickTagShowAll = false;
-function buildQuickTagPanel(pctEntries, scopeTotal, field, labelMap, nothingClassified) {
+// ── 產業別／投資屬性自動判定（v2.7.1）────────────────────────────────────
+let _holdClass = null;            // { fetched_at, results: { 'TW:2330': {industry, style} } }
+let _holdClassState = 'idle';     // idle | loading | error
+let _holdClassLastTry = 0;
+const HOLD_CLASS_MAX_AGE = 3 * 864e5;
+function holdingClassKey(h) { return `${(h.brokerage?.market ?? h.market ?? 'TW')}:${String(h.ticker).toUpperCase()}`; }
+async function loadHoldingClassCache() {
+  if (_holdClass) return _holdClass;
+  _holdClass = await getSetting(db, 'holding_class_cache', null).catch(() => null) || { fetched_at: null, results: {} };
+  return _holdClass;
+}
+// 缺代號或資料超過 3 天就向 /api/classify 重抓（失敗 1 分鐘內不重試），
+// 抓完寫回快取並重畫持倉頁。不擋畫面：先用快取畫，再背景更新。
+function refreshHoldingClassIfNeeded(enriched, force = false) {
+  if (_holdClassState === 'loading') return;
+  const keys = [...new Set(enriched.map(holdingClassKey))];
+  if (!keys.length) return;
+  const cache = _holdClass ?? { results: {} };
+  const stale = !cache.fetched_at || (Date.now() - new Date(cache.fetched_at).getTime()) > HOLD_CLASS_MAX_AGE;
+  const missing = keys.some(k => !cache.results?.[k]);
+  if (!force && !stale && !missing) return;
+  if (!force && Date.now() - _holdClassLastTry < 60e3) return;
+  _holdClassLastTry = Date.now(); _holdClassState = 'loading';
+  (async () => {
+    try {
+      const res = await fetch(`/api/classify?items=${encodeURIComponent(keys.join(','))}`, { signal: AbortSignal.timeout(30000) });
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      _holdClass = { fetched_at: data.fetched_at || new Date().toISOString(), results: { ...(cache.results || {}), ...(data.results || {}) } };
+      await setSetting(db, 'holding_class_cache', _holdClass).catch(() => {});
+      _holdClassState = 'idle';
+    } catch (e) {
+      console.warn('[classify]', e); _holdClassState = 'error';
+    }
+    if (currentView === 'holdings') await rerenderHoldingsKeepScroll();
+  })();
+}
+// 一檔持股的產業組成：手動覆寫 > 自動判定（ETF 是多個產業的比例）。
+function holdingIndustryMix(h) {
+  if (h.industry_manual) return { mix: [{ name: h.industry_manual, pct: 100 }], source: '手動指定' };
+  return _holdClass?.results?.[holdingClassKey(h)]?.industry ?? null;
+}
+function holdingStyle(h) {
+  if (h.style_manual) return { key: h.style_manual, reason: '', source: '手動指定' };
+  return _holdClass?.results?.[holdingClassKey(h)]?.style ?? null;
+}
+// 圖表下方的「判定依據」：每檔一列，列出結果、理由、資料來源，使用者看得到
+// 系統為什麼這樣分。同代號在不同券商只列一次。
+function buildClassifyBasisPanel(pctEntries, scopeTotal, mode) {
   const byTicker = {};
   pctEntries.forEach(h => {
-    (byTicker[h.ticker] ??= { ticker: h.ticker, name: h.name, value: 0, ids: [], tag: h[field] || null });
-    byTicker[h.ticker].value += h.marketValueTWD; byTicker[h.ticker].ids.push(h.id);
-    if (!byTicker[h.ticker].tag && h[field]) byTicker[h.ticker].tag = h[field];
+    const k = holdingClassKey(h);
+    (byTicker[k] ??= { h, value: 0 }).value += h.marketValueTWD;
   });
   const list = Object.values(byTicker).sort((a, b) => b.value - a.value);
-  const unclassified = list.filter(t => !t.tag);
-  const shown = _quickTagShowAll ? list : unclassified;
-  const fieldName = field === 'industry' ? '產業別' : '投資屬性';
-
-  const wrap = el('div'); wrap.className = 'hp-quicktag' + (nothingClassified ? ' is-empty-state' : '');
+  const wrap = el('div'); wrap.className = 'hp-quicktag';
   const head = el('div'); head.className = 'hp-qt-head';
-  head.innerHTML = nothingClassified
-    ? `<div><div class="hp-qt-title">還沒有替持股標上${fieldName}</div><div class="hp-qt-desc">在下面逐檔點一個標籤就會存起來，分好之後這裡會畫出${fieldName}的佔比。</div></div>`
-    : `<div class="hp-sub-title" style="margin:0">${unclassified.length ? `尚未分類 ${unclassified.length} 檔` : `全部 ${list.length} 檔都已分類`}</div>`;
-  if (list.length > unclassified.length) {
-    const tgl = el('button', 'btn btn-ghost btn-sm'); tgl.style.fontSize = '11px';
-    tgl.textContent = _quickTagShowAll ? '只看未分類' : '修改已分類';
-    tgl.addEventListener('click', async () => { _quickTagShowAll = !_quickTagShowAll; await rerenderHoldingsKeepScroll(); });
-    head.appendChild(tgl);
-  }
+  const when = _holdClass?.fetched_at ? new Date(_holdClass.fetched_at) : null;
+  const status = _holdClassState === 'loading' ? '正在向證交所／櫃買中心等來源查詢…'
+    : _holdClassState === 'error' ? '資料來源暫時連不上，先顯示上次的結果'
+    : when ? `資料更新：${when.getMonth() + 1}/${when.getDate()} ${String(when.getHours()).padStart(2, '0')}:${String(when.getMinutes()).padStart(2, '0')}` : '尚未查詢';
+  head.innerHTML = `<div><div class="hp-sub-title" style="margin:0">判定依據（系統自動）</div><div class="hp-qt-desc">${status}</div></div>`;
+  const btn = el('button', 'btn btn-ghost btn-sm'); btn.style.fontSize = '11px'; btn.textContent = '重新判定';
+  btn.disabled = _holdClassState === 'loading';
+  btn.addEventListener('click', async () => { refreshHoldingClassIfNeeded(state.inv.enriched.filter(x => x.marketValueTWD > 0), true); await rerenderHoldingsKeepScroll(); });
+  head.appendChild(btn);
   wrap.appendChild(head);
-
-  shown.forEach(t => {
-    const row = el('div'); row.className = 'hp-qt-row';
-    const chips = Object.entries(labelMap).map(([k, lab]) =>
-      `<button type="button" class="hp-chip${t.tag === k ? ' on' : ''}" data-qt-key="${k}" style="--chip:${tagColor(labelMap, k)}">${lab}</button>`).join('');
+  list.forEach(({ h, value }) => {
+    const row = el('div'); row.className = 'hp-basis-row';
+    let result = '', reason = '', source = '';
+    if (mode === 'industry') {
+      const ind = holdingIndustryMix(h);
+      if (ind?.mix?.length) {
+        result = ind.mix.length === 1 ? escHtml(ind.mix[0].name)
+          : ind.mix.slice(0, 3).map(m => `${escHtml(m.name)} ${m.pct.toFixed(0)}%`).join('、') + (ind.mix.length > 3 ? '…' : '');
+        reason = ind.mix.length > 1 ? '依 ETF 成分股穿透計算' : ''; source = ind.source ?? '';
+      } else { result = '<span class="is-missing">未能判定</span>'; reason = ind?.reason ?? (_holdClassState === 'loading' ? '查詢中' : '尚無資料'); }
+    } else {
+      const st = holdingStyle(h);
+      if (st?.key) { result = escHtml(INVESTMENT_STYLE_LABELS[st.key] ?? st.key); reason = st.reason ?? ''; source = st.source ?? ''; }
+      else { result = '<span class="is-missing">未能判定</span>'; reason = st?.reason ?? (_holdClassState === 'loading' ? '查詢中' : '尚無資料'); }
+    }
     row.innerHTML = `
-      <div class="hp-qt-name"><b>${escHtml(t.ticker)}</b><span>${escHtml(t.name || '')}</span><em>${(t.value / scopeTotal * 100).toFixed(1)}%</em></div>
-      <div class="hp-chips">${chips}</div>`;
-    row.querySelectorAll('[data-qt-key]').forEach(btn => btn.addEventListener('click', async () => {
-      const key = btn.dataset.qtKey;
-      const next = t.tag === key ? null : key;
-      const recs = state.holdings.filter(h => h.ticker === t.ticker);
-      for (const h of recs) await putOne(db, 'holdings', { ...h, [field]: next });
-      showToast(next ? `${t.ticker} → ${labelMap[next]}` : `${t.ticker} 已取消分類`);
-      await rerenderHoldingsKeepScroll();
-    }));
+      <div class="hp-basis-top"><b>${escHtml(h.ticker)}</b><span class="hp-basis-name">${escHtml(h.name || '')}</span><em>${(value / scopeTotal * 100).toFixed(1)}%</em></div>
+      <div class="hp-basis-res">${result}</div>
+      ${reason || source ? `<div class="hp-basis-why">${escHtml(reason)}${reason && source ? ' · ' : ''}${source ? `<span>${escHtml(source)}</span>` : ''}</div>` : ''}`;
     wrap.appendChild(row);
   });
+  const note = el('div'); note.className = 'hp-qt-desc'; note.style.marginTop = '10px';
+  note.innerHTML = mode === 'industry'
+    ? '台股個股用證交所／櫃買中心的官方產業別；ETF 依成分股的產業比重拆開計算（例如 0050 會分到半導體、電子零組件、金融保險…）；美股用 GICS 類股。'
+    : '個股依殖利率、本益比、股價淨值比判定：殖利率 ≥ 5%（美股 4%）高股息；本益比 ≤ 12 且淨值比 ≤ 1.5（美股 15／2.5）價值型；本益比 ≥ 25（美股 30）成長型；其餘平衡型。ETF 依證交所登記的基金類型與追蹤指數判定。';
+  wrap.appendChild(note);
   return wrap;
 }
 async function rerenderHoldingsKeepScroll() {
@@ -5455,25 +5475,34 @@ function buildHoldingsPctCard(inv) {
       e => e.label, e => `${e.count} 檔`, `${typeEntries.length} 類`
     ));
   } else if (_holdingsPctMode === 'industry' || _holdingsPctMode === 'style') {
-    // v2.7.0（使用者回報：「產業別、投資屬性完全沒有可參考的內容」）：這兩個
-    // 欄位只能由使用者自己選（查價來源沒有分類資料，不用程式猜），原本只能
-    // 一檔一檔打開「編輯」彈窗去選，結果幾乎沒人填、畫面永遠是「未分類
-    // 100%」。改成：圖表下方直接列出還沒分類的持股，每檔一排標籤按鈕，
-    // 點一下就存——同一個代號在不同券商的持倉一起套用（同一檔股票的產業
-    // 不會因為放在哪家券商而不同）。全部都沒分類時不畫一個灰色整圈，直接
-    // 引導去分類。
-    const field = _holdingsPctMode === 'industry' ? 'industry' : 'investment_style';
-    const labelMap = field === 'industry' ? INDUSTRY_LABELS : INVESTMENT_STYLE_LABELS;
-    const entries = groupByField(field, labelMap, '未分類');
-    const hasClassified = entries.some(e => e.key !== '__unclassified__');
-    if (hasClassified) {
+    // v2.7.1：系統自動判定（見 buildClassifyBasisPanel 上方說明）。產業別模式
+    // 把 ETF 依成分股產業比重拆開加總，所以「檔數」是「有多少檔持股貢獻到
+    // 這個產業」。
+    const groups = {};
+    const add = (name, v, ticker) => { const g = (groups[name] ??= { value: 0, tickers: new Set() }); g.value += v; g.tickers.add(ticker); };
+    pctEntries.forEach(h => {
+      if (_holdingsPctMode === 'industry') {
+        const mix = holdingIndustryMix(h)?.mix;
+        if (mix?.length) mix.forEach(m => add(m.name, h.marketValueTWD * m.pct / 100, h.ticker));
+        else add('__unclassified__', h.marketValueTWD, h.ticker);
+      } else {
+        add(holdingStyle(h)?.key || '__unclassified__', h.marketValueTWD, h.ticker);
+      }
+    });
+    const entries = Object.entries(groups).map(([key, g]) => ({
+      key, marketValueTWD: g.value, pctOfPortfolio: g.value / scopeTotal * 100, count: g.tickers.size,
+      label: key === '__unclassified__' ? '未能判定' : (_holdingsPctMode === 'style' ? (INVESTMENT_STYLE_LABELS[key] ?? key) : key),
+    })).sort((a, b) => (a.key === '__unclassified__') - (b.key === '__unclassified__') || b.marketValueTWD - a.marketValueTWD);
+    const ranked = entries.filter(e => e.key !== '__unclassified__');
+    if (ranked.length) {
       body.appendChild(buildPctEntriesView(
         entries, scopeTotal,
-        e => e.key === '__unclassified__' ? UNCLASSIFIED_COLOR : tagColor(labelMap, e.key),
-        e => e.label, e => `${e.count} 檔`, `${entries.length} 類`
+        e => e.key === '__unclassified__' ? UNCLASSIFIED_COLOR : TAG_PALETTE[ranked.indexOf(e) % TAG_PALETTE.length],
+        e => e.label, e => `${e.count} 檔`, `${ranked.length} 類`
       ));
     }
-    body.appendChild(buildQuickTagPanel(pctEntries, scopeTotal, field, labelMap, !hasClassified));
+    body.appendChild(buildClassifyBasisPanel(pctEntries, scopeTotal, _holdingsPctMode));
+    refreshHoldingClassIfNeeded(pctEntries);
   } else {
     // v2.7.0（使用者回報：「依券商」的呈現方式不直覺）：原本是每家券商各畫
     // 一個小甜甜圈、旁邊只有前 4 檔代號，彼此大小一樣、看不出哪家券商
@@ -5527,6 +5556,7 @@ async function renderHoldings() {
   const bankMap  = Object.fromEntries(banks.map(b=>[b.id,b]));
   const brokMap  = Object.fromEntries(brokerages.map(b=>[b.id,b]));
   const enrichedById = Object.fromEntries((inv?.enriched ?? []).map(h=>[h.id,h]));
+  await loadHoldingClassCache();
 
   // Load saved market colors
   const twColor = await getSetting(db,'market_tw_bg').catch(()=>null) || '#F0FFF4';
@@ -6805,8 +6835,18 @@ function openHoldingModal(h=null, brokerages=[], banks=[], defaultBrokId=null) {
   document.getElementById('holdingShares').value = h?.shares??'';
   document.getElementById('holdingManualPrice').value = h?.manual_price??'';
   document.getElementById('holdingCostBasis').value = h?.cost_basis??'';
-  document.getElementById('holdingIndustry').value = h?.industry??'';
-  document.getElementById('holdingInvestmentStyle').value = h?.investment_style??'';
+  // v2.7.1：預設「自動判定」，選單只在資料來源查不到或不同意判定時手動覆寫。
+  const indSel = document.getElementById('holdingIndustry');
+  if (indSel.options.length <= 1) {
+    indSel.insertAdjacentHTML('beforeend',
+      `<optgroup label="台股產業（證交所分類）">${TW_INDUSTRY_NAMES.map(n => `<option value="${n}">${n}</option>`).join('')}</optgroup>` +
+      `<optgroup label="GICS 類股（美股／海外）">${GICS_INDUSTRY_NAMES.map(n => `<option value="${n}">${n}</option>`).join('')}</optgroup>` +
+      `<option value="債券">債券</option>`);
+    document.getElementById('holdingInvestmentStyle').insertAdjacentHTML('beforeend',
+      Object.entries(INVESTMENT_STYLE_LABELS).map(([k, v]) => `<option value="${k}">${v}</option>`).join(''));
+  }
+  indSel.value = h?.industry_manual ?? '';
+  document.getElementById('holdingInvestmentStyle').value = h?.style_manual ?? '';
 
   const brokSel = document.getElementById('holdingBrokId');
   const bankMap = Object.fromEntries(banks.map(b=>[b.id,b]));
@@ -6942,9 +6982,10 @@ document.getElementById('holdingModalSave').addEventListener('click',async()=>{
   const currency = document.getElementById('holdingCurrency').value||(market==='TW'?'TWD':'USD');
   const manualPrice = parseFloat(document.getElementById('holdingManualPrice').value)||null;
   const costBasis = parseFloat(document.getElementById('holdingCostBasis').value)||null;
-  const industry = document.getElementById('holdingIndustry').value||null;
-  const investmentStyle = document.getElementById('holdingInvestmentStyle').value||null;
+  const industryManual = document.getElementById('holdingIndustry').value||null;
+  const styleManual = document.getElementById('holdingInvestmentStyle').value||null;
   const editId = document.getElementById('holdingEditId').value;
+  const prevHolding = editId ? (state.holdings.find(x => x.id === editId) ?? {}) : {};
 
   if (!brokId){document.getElementById('holdingBrokId').style.borderColor='var(--red)';return;}
   if (!ticker){document.getElementById('holdingTicker').style.borderColor='var(--red)';return;}
@@ -6958,7 +6999,8 @@ document.getElementById('holdingModalSave').addEventListener('click',async()=>{
     currency, shares,
     manual_price: manualPrice,
     cost_basis: costBasis,
-    industry, investment_style: investmentStyle,
+    industry_manual: industryManual, style_manual: styleManual,
+    ...(prevHolding.created_at ? { created_at: prevHolding.created_at } : {}),
   });
 
   document.getElementById('holdingModal').classList.remove('open');
