@@ -1432,3 +1432,50 @@ export function calcMonthlyPlan({ income = 0, baseFixed = 0, recurringExpenses =
     suggestedLiving: Math.max(0, Math.round(base - fixed - save - invest)),
   };
 }
+
+// ── 可動用資金（v2.9.0，重整藍圖第 2 步）───────────────────────────────────
+// 使用者問的「可以運用的錢有多少」。現金＋活存（所有計入總資產的帳戶，外幣折
+// 台幣）依序扣掉：
+//   1. 必付：信用卡待繳、30 天內要付的定期支出／分期／定期定額（還沒確認的）
+//   2. 緊急預備金：整個目標金額都要保留（已存的＋還差的缺口）。使用者指出
+//      「預備金還不足」的情況——不足時缺口也要先保留，所以可自由運用可能是 0，
+//      畫面同時顯示還差多少，不讓人誤以為手上錢很多。沒有建立預備金時依
+//      每月計畫的必要開銷 × N 個月當建議目標，一樣先保留。
+//   3. 其他存錢目標已撥入、還沒花掉的錢（已經有用途了）
+// 剩下的才是「可自由運用」。
+export function calcSpendable({ accounts = [], fxRates = {}, cards = [], recurringExpenses = [], installments = [],
+  dcaSchedules = [], buckets = [], allocations = [], expenseTxns = [], essentials = 0, emergencyMonths = 6, windowDays = 30 }) {
+  const liquidAccounts = accounts.filter(a => a.include_in_total !== false);
+  const liquid = liquidAccounts.reduce((s, a) => s + (toTWD(a.balance || 0, a.currency || 'TWD', fxRates) || 0), 0);
+  const cardsDue = cards.reduce((s, c) => s + Math.max(0, c.current_balance || 0), 0);
+  const recById = Object.fromEntries(recurringExpenses.map(r => [r.id, r]));
+  const upcoming = calcUpcomingReminders({ recurringExpenses, installments }, { windowDays })
+    .filter(r => r.type === 'recurring' || r.type === 'installment')
+    .map(r => ({ label: r.label, days: r.daysUntil, amount: r.type === 'recurring' ? (toTWD(r.amount || 0, recById[r.id]?.currency || 'TWD', fxRates) || 0) : (r.amount || 0) }));
+  for (const d of dcaSchedules) {
+    if (d.is_expired || d.freq !== 'monthly' || !d.billing_day) continue;
+    const days = daysToMonthDay(d.billing_day);
+    if (days == null || days > windowDays) continue;
+    if (isoDateAfterDays(days) === d.last_confirmed_date) continue;
+    upcoming.push({ label: `${d.name} 定期定額`, days, amount: toTWD(d.amount || 0, d.currency || 'TWD', fxRates) || 0 });
+  }
+  upcoming.sort((a, b) => a.days - b.days);
+  const upcomingTotal = upcoming.reduce((s, u) => s + u.amount, 0);
+  const bal = b => calcBucketAllocated(allocations, b.id) - calcBucketSpent(expenseTxns, b.id, accounts, fxRates);
+  const active = buckets.filter(b => b.status !== 'closed');
+  const efBucket = active.find(b => b.is_emergency_fund) || null;
+  const suggested = Math.round((essentials || 0) * (emergencyMonths || 6));
+  const efHave = efBucket ? Math.max(0, bal(efBucket)) : 0;
+  const efTarget = efBucket?.target_amount || suggested;
+  const ef = { exists: !!efBucket, have: efHave, target: efTarget, suggested, gap: Math.max(0, efTarget - efHave), protect: Math.max(efHave, efTarget), months: essentials > 0 ? efHave / essentials : null };
+  const goals = active.filter(b => !b.is_emergency_fund).map(b => ({ id: b.id, name: b.name, amount: Math.max(0, bal(b)) })).filter(g => g.amount > 0);
+  const goalsTotal = goals.reduce((s, g) => s + g.amount, 0);
+  const raw = liquid - cardsDue - upcomingTotal - ef.protect - goalsTotal;
+  return {
+    liquid: Math.round(liquid), cardsDue: Math.round(cardsDue), upcoming, upcomingTotal: Math.round(upcomingTotal),
+    ef, goals, goalsTotal: Math.round(goalsTotal),
+    free: Math.max(0, Math.round(raw)), shortfall: raw < 0 ? Math.round(-raw) : 0,
+    // 不保留預備金時能動用的上限（緊急時才看）：現金活存扣掉必付與其他目標
+    beforeReserve: Math.round(liquid - cardsDue - upcomingTotal - goalsTotal),
+  };
+}

@@ -232,6 +232,38 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hp-qt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
 .hp-qt-title{font-size:13px;font-weight:600;color:var(--text-1)}
 .hp-qt-desc{font-size:11px;color:var(--text-3);margin-top:3px;line-height:1.5}
+.seg{display:flex;gap:4px;padding:4px;margin-bottom:14px;border-radius:11px;background:var(--surface-2);border:1px solid var(--border)}
+.seg-btn{flex:1;font:inherit;font-size:13px;font-weight:600;padding:8px 6px;border:none;border-radius:8px;background:transparent;color:var(--text-2);cursor:pointer}
+.seg-btn.on{background:var(--card);color:var(--text-1);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.home2{display:flex;flex-direction:column;gap:12px}
+.sp-hero{position:relative}
+.sp-toggle{margin-top:10px;font:inherit;font-size:12px;padding:5px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:inherit;cursor:pointer}
+.sp-rows{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18);display:flex;flex-direction:column;gap:6px}
+.sp-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:13px}
+.sp-row small{display:block;font-size:10.5px;opacity:.7;margin-top:1px}
+.sp-row b{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.sp-total{padding-top:6px;border-top:1px dashed rgba(255,255,255,.25);font-weight:700}
+.sp-sub{display:flex;flex-direction:column;gap:3px;margin:-2px 0 2px 10px;font-size:11px;opacity:.8}
+.sp-sub span{display:flex;justify-content:space-between;gap:8px}
+.sp-sub b{font-weight:500;font-variant-numeric:tabular-nums}
+.sp-warn{margin-top:12px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,.12);font-size:11.5px;line-height:1.55}
+.sp-warn b{display:block;font-size:13px;margin-bottom:2px}
+.home-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.home-mini{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:3px;padding:12px 14px;cursor:pointer;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.home-mini:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.home-mini-k{font-size:11px;color:var(--text-3)}
+.home-mini-v{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-1)}
+.home-mini-s{font-size:10.5px;color:var(--text-3);line-height:1.4}
+.home-quick{display:grid;grid-template-columns:2fr 1fr;gap:10px}
+.home-quick .btn{justify-content:center;padding:11px;font-size:14px}
+.home-rem{padding:0}
+.home-rem-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-size:13px;font-weight:600}
+.home-rem-head span{font-size:11px;font-weight:400;color:var(--text-3)}
+.home-rem-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--border);font-size:13px}
+.home-rem-l{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.home-rem-a{font-size:12px;font-variant-numeric:tabular-nums}
+.home-rem-d{font-size:11px;font-weight:600;min-width:56px;text-align:right}
+.home-rem-empty{padding:4px 16px 14px;font-size:12px;color:var(--text-3)}
 .mp{display:flex;flex-direction:column;gap:12px}
 .mp-intro{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;background:color-mix(in srgb,var(--blue) 8%,var(--card));border:1px solid color-mix(in srgb,var(--blue) 25%,var(--border))}
 .mp-intro strong{display:block;font-size:13px}
@@ -777,32 +809,18 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     </div>
   </div>
   <div class="nav">
-    <div class="nav-section">總覽</div>
-    <a class="nav-item" href="#" data-view="assets">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-      資產總覽
-    </a>
-    <a class="nav-item" href="#" data-view="calendar">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      收支紀錄
-    </a>
-    <a class="nav-item" href="#" data-view="trend">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-      資產趨勢
-    </a>
-    <div class="nav-section">記帳</div>
+    <a class="nav-item" href="#" data-view="assets"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg>首頁</a>
+    <a class="nav-item" href="#" data-view="calendar"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="16" height="16" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>紀錄</a>
+    <a class="nav-item" href="#" data-view="plan"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>計畫</a>
+    <a class="nav-item" href="#" data-view="wealth"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M21 12A9 9 0 1112 3v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z"/></svg>資產</a>
+    <div class="nav-section">管理</div>
     <a class="nav-item" href="#" data-view="txnmanage">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
       記帳管理
     </a>
-    <div class="nav-section">管理</div>
     <a class="nav-item" href="#" data-view="settings">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       帳戶管理
-    </a>
-    <a class="nav-item" href="#" data-view="holdings">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-      投資持倉
     </a>
     <!-- 2026-09-26（使用者用 AskUserQuestion 確認落點，見 §廿一之六）：「資金
          池」這個獨立側邊欄項目已移除，併入「記帳管理」整合頁的方格選單裡
@@ -869,22 +887,10 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
      "txnmanage" 項目搬到下面的「更多」下滑選單裡。 -->
 <nav class="bottom-nav" id="bottomNav">
   <div class="bottom-nav-row">
-    <a class="nav-item" href="#" data-view="assets">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-      首頁
-    </a>
-    <a class="nav-item" href="#" data-view="calendar">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      收支紀錄
-    </a>
-    <a class="nav-item" href="#" data-view="holdings" id="bottomNavHoldingsSlot">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-      持倉
-    </a>
-    <a class="nav-item" href="#" data-view="trend">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-      趨勢
-    </a>
+    <a class="nav-item" href="#" data-view="assets"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg>首頁</a>
+    <a class="nav-item" href="#" data-view="calendar"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>紀錄</a>
+    <a class="nav-item" href="#" data-view="plan"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>計畫</a>
+    <a class="nav-item" href="#" data-view="wealth"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M21 12A9 9 0 1112 3v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z"/></svg>資產</a>
     <button type="button" class="bottom-nav-more" id="moreNavBtn" aria-label="更多">
       <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       更多
@@ -2579,7 +2585,7 @@ import {
   calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent, rebalanceJarPercents,
   runDataHealthChecks,
   classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
-  calcMonthlyPlan, calcLivingSpent, calcLivingSpentByCategory,
+  calcMonthlyPlan, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
 } from './calc.js';
 
 let db, state = {}, currentView = 'assets';
@@ -2753,17 +2759,9 @@ function buildReorderButtons(isFirst, isLast, onMove) {
 }
 
 function applyHoldingsVisibility(enabled) {
-  document.querySelectorAll('.sidebar .nav-item[data-view="holdings"]').forEach(item => {
-    item.style.display = enabled ? '' : 'none';
-  });
-  const slot = document.getElementById('bottomNavHoldingsSlot');
-  if (slot) {
-    slot.innerHTML = enabled
-      ? `<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>持倉`
-      : `<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>帳戶管理`;
-    slot.dataset.view = enabled ? 'holdings' : 'settings';
-    slot.classList.toggle('active', currentView === slot.dataset.view);
-  }
+  // v2.9.0：持倉收進「資產」頁的分頁，關掉時只是不顯示那個分頁。
+  _holdingsEnabled = !!enabled;
+  if (!enabled && _wealthTab === 'holdings') _wealthTab = 'overview';
 }
 // Categories excluded from the "monthly income" figure that drives Bucket
 // percentage-based auto-contribution: 應收款入帳 isn't new money (it's
@@ -2853,19 +2851,18 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.8.0';
+const APP_VERSION = 'v2.9.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-05';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '「設定預算」「收入分配法」合併成「每月計畫」：本月可分配 → 固定支出 → 存下來 → 投資 → 生活預算，一頁從上到下看完，不再兩套互相打架',
-  '本月可分配：有收入用實際收入，還沒有收入時用自訂的「每月生活費」，沒收入的月份計畫也不會變成 0',
-  '「還有多少沒有安排用途」直接顯示——有計畫就不會有閒置資金；計畫超出時也會提醒差額要從存款支應',
-  '緊急預備金排在存下來的第一位：顯示能撐幾個月、還差多少、照目前撥法幾個月補足，並依必要開銷建議目標金額',
-  '生活預算只跟日常生活支出比（不含固定支出與存錢目標專款的花費），「今天還能花」也改用這個數字',
-  '收入分配法改成「比例參考」，把 321、532 等法則的建議比例跟你的計畫並排比較',
+  '底部導覽列改成「首頁／紀錄／計畫／資產／更多」：每一格回答一個問題——現在能用多少、實際發生什麼、錢怎麼分、錢在哪裡',
+  '首頁新增「可自由運用」：現金與活存扣掉信用卡待繳、30 天內要付的、緊急預備金（含還沒存到的缺口）、其他存錢目標，剩下的才是真正能自由用的錢；點「怎麼算的」看每一層',
+  '緊急預備金不足時，缺口會先保留並在首頁提醒還差多少，不會讓你以為手上錢很多',
+  '首頁同時顯示今天還能花、總資產、快速記帳與近期到期提醒',
+  '「計畫」分頁：每月計畫｜存錢目標；「資產」分頁：總覽｜持倉｜趨勢',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3256,6 +3253,10 @@ function closeMoreSheet() {
 }
 
 async function navigate(view) {
+  // v2.9.0：持倉、趨勢收進「資產」，存錢目標收進「計畫」。
+  if (view === 'holdings') { _wealthTab = 'holdings'; view = 'wealth'; }
+  else if (view === 'trend') { _wealthTab = 'trend'; view = 'wealth'; }
+  else if (view === 'goals') { _planTab = 'goals'; view = 'plan'; }
   currentView = view;
   // Reset the "which container do the 7 記帳管理 sub-pages render into" hook
   // on every top-level navigation (see renderTxnManage() / §十五之五) —
@@ -3275,10 +3276,12 @@ async function navigate(view) {
   // 是 topbar 顯示文字，側邊欄／底部導覽列上的連結文字（資產總覽、收支紀錄）
   // 完全不受影響（navigate() 這裡只處理 topbarTitle 這一個 span，跟 nav-item
   // 的連結文字是兩份獨立的字串，見側邊欄與底部導覽列的 HTML）。
-  const titles = { assets:'虎の子', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'記帳管理', report:'帳務報表', creditcard:'信用卡', recurring:'定期支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢計畫', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
+  const titles = { assets:'手元', plan:'計畫', wealth:'虎の子', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'記帳管理', report:'帳務報表', creditcard:'信用卡', recurring:'定期支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢計畫', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
   document.getElementById('topbarTitle').textContent = titles[view] ?? view;
-  document.getElementById('refreshBtn').style.display = view === 'assets' ? '' : 'none';
-  if (view === 'assets')            await renderAssets();
+  document.getElementById('refreshBtn').style.display = (view === 'assets' || view === 'wealth') ? '' : 'none';
+  if (view === 'assets')            await renderHome();
+  else if (view === 'plan')         await renderPlanHub();
+  else if (view === 'wealth')       await renderWealthHub();
   else if (view === 'calendar')     await renderCalendar();
   else if (view === 'report')       await renderReport();
   else if (view === 'trend')        await renderTrend();
@@ -3439,7 +3442,7 @@ async function refreshMarketData(force = false) {
     refreshGoldPrice(db, { force }).catch(e=>console.warn('[gold]',e)),
   ]);
   if (btn) { btn.style.opacity=''; btn.style.pointerEvents=''; }
-  if (currentView==='assets') await renderAssets();
+  if (currentView==='assets' || currentView==='wealth') await renderAssets();
 }
 // Bug fix 2026-09-19: #refreshBtn (topbar "更新報價與匯率" icon) had its
 // opacity/pointer-events toggled inside refreshMarketData() above, and was
@@ -3464,10 +3467,151 @@ setInterval(() => { refreshMarketData(false).catch(e=>console.warn('[FX hourly]'
 // ════════════════════════════════════════════════════════════════════════════
 // 首頁目前展開的是哪一類的明細（v2.4.0）。只記在記憶體裡，重新開 App 回到全部收起。
 let _homeOpenTile = null;
+// ════════════════════════════════════════════════════════════════════════════
+// v2.9.0 導覽重整（重整藍圖第四節，使用者同意）：首頁／紀錄／計畫／資產／更多。
+//   首頁 'assets'（鍵值沿用，「開啟時預設頁面」設定不受影響）＝可動用資金、
+//        今天還能花、近期提醒、快速記帳。
+//   紀錄 'calendar'＝收支紀錄（不變）。
+//   計畫 'plan'＝每月計畫｜存錢目標。
+//   資產 'wealth'＝總覽（原首頁的總資產與方塊）｜持倉｜趨勢。
+// renderAssets() 變成分派器：所有既有「存檔後 if (currentView==='assets')
+// renderAssets()」的刷新呼叫照舊可用——在首頁就重畫首頁，在資產頁就重畫資產頁。
+// ════════════════════════════════════════════════════════════════════════════
+let _planTab = 'plan';
+let _wealthTab = 'overview';
+let _holdingsEnabled = true;
 async function renderAssets() {
+  if (currentView === 'wealth') return renderWealthHub();
+  if (currentView === 'assets') return renderHome();
+  return navigate(currentView); // 其他頁面存檔後的保底刷新：重畫目前那一頁
+}
+function buildSegBar(tabs, active, onPick) {
+  const bar = el('div'); bar.className = 'seg'; bar.setAttribute('role', 'tablist');
+  tabs.forEach(t => {
+    const b = el('button'); b.type = 'button'; b.className = 'seg-btn' + (t.key === active ? ' on' : '');
+    b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', t.key === active);
+    b.textContent = t.label;
+    b.addEventListener('click', () => { if (t.key !== active) onPick(t.key); });
+    bar.appendChild(b);
+  });
+  return bar;
+}
+async function renderPlanHub() {
+  const root = document.getElementById('content');
+  root.innerHTML = '';
+  root.appendChild(buildSegBar([{ key: 'plan', label: '每月計畫' }, { key: 'goals', label: '存錢目標' }], _planTab,
+    k => { _planTab = k; renderPlanHub(); window.scrollTo(0, 0); }));
+  const sub = el('div'); root.appendChild(sub);
+  _activeContentContainer = sub;
+  if (_planTab === 'goals') await renderBuckets(); else await renderMonthlyPlan();
+}
+async function renderWealthHub() {
+  const root = document.getElementById('content');
+  const tabs = [{ key: 'overview', label: '總覽' }, ...(_holdingsEnabled ? [{ key: 'holdings', label: '持倉' }] : []), { key: 'trend', label: '趨勢' }];
+  if (!tabs.some(t => t.key === _wealthTab)) _wealthTab = 'overview';
+  root.innerHTML = '';
+  root.appendChild(buildSegBar(tabs, _wealthTab, k => { _wealthTab = k; renderWealthHub(); window.scrollTo(0, 0); }));
+  const sub = el('div'); root.appendChild(sub);
+  _activeContentContainer = sub;
+  if (_wealthTab === 'holdings') await renderHoldings();
+  else if (_wealthTab === 'trend') await renderTrend();
+  else await renderAssetOverview();
+}
+
+// ── 首頁 ────────────────────────────────────────────────────────────────────
+let _homeSpendOpen = false;
+async function renderHome() {
   await loadData();
-  const { netWorth, cash, depositRes, inv, recv, otherAssets, gold, goldPriceRec, fxRates, ccDebt, reminders, cards, accounts } = state;
+  const { accounts, fxRates, cards, recurringExpenses, installments, reminders, todayAllowance, netWorth, expenseTxns } = state;
+  const [buckets, allocations, dcaSchedules, budgets, incomeTxns] = await Promise.all([
+    getAll(db,'buckets').catch(()=>[]), getAll(db,'bucket_allocations').catch(()=>[]), getAll(db,'dca_schedules').catch(()=>[]),
+    getAll(db,'budgets').catch(()=>[]), getAll(db,'income_txns').catch(()=>[]),
+  ]);
+  const planSettings = (await getSetting(db, 'monthly_plan', null)) || {};
+  const month = currentMonthStr();
+  const plan = calcMonthlyPlan({ income: calcMonthlyIncomeTotal(incomeTxns, month, INCOME_PERCENT_EXCLUDED_CATEGORIES), baseFixed: Number(planSettings.base_fixed) || 0,
+    recurringExpenses, installments, dcaSchedules, buckets, livingBudget: resolveBudget(budgets, null, month), fxRates });
+  const essentials = plan.fixed.total + plan.living.total;
+  const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses, installments, dcaSchedules, buckets, allocations, expenseTxns,
+    essentials, emergencyMonths: Number(planSettings.emergency_months) || 6 });
+  const money = v => `NT$ ${fmt(Math.round(v))}`;
   const content = document.getElementById('content');
+  content.innerHTML = '';
+  const root = el('div'); root.className = 'home2';
+
+  // 可動用資金
+  const hero = el('div'); hero.className = 'networth-card sp-hero';
+  const efLine = sp.ef.gap > 0
+    ? `<div class="sp-warn"><b>緊急預備金還差 ${money(sp.ef.gap)}</b>${sp.ef.exists ? `目前 ${money(sp.ef.have)}${sp.ef.months != null ? `，可撐 ${sp.ef.months.toFixed(1)} 個月` : ''}。` : '還沒建立，先依必要開銷保留建議金額。'}缺口先保留，所以可自由運用變少${sp.free === 0 ? '到 0' : ''}。</div>`
+    : '';
+  const rows = [
+    ['現金與活存', sp.liquid, ''],
+    ['信用卡待繳', -sp.cardsDue, ''],
+    ['30 天內要付', -sp.upcomingTotal, sp.upcoming.length ? `${sp.upcoming.length} 筆` : ''],
+    [`緊急預備金${sp.ef.gap > 0 ? '（含缺口）' : ''}`, -sp.ef.protect, sp.ef.target ? `目標 ${money(sp.ef.target)}` : '尚未設定'],
+    ['其他存錢目標', -sp.goalsTotal, sp.goals.length ? `${sp.goals.length} 個` : ''],
+  ];
+  hero.innerHTML = `
+    <div class="networth-label">可自由運用</div>
+    <div class="networth-amount"><span class="networth-currency">NT$</span>${fmt(sp.free)}</div>
+    <div class="home-hero-sub">${sp.shortfall > 0 ? `必付與保留的錢比手上多 ${money(sp.shortfall)}` : '扣掉要付的、要留的之後，真正能自由用的錢'}</div>
+    <button type="button" class="sp-toggle" aria-expanded="${_homeSpendOpen}">${_homeSpendOpen ? '收起' : '怎麼算的'}</button>
+    <div class="sp-rows" ${_homeSpendOpen ? '' : 'hidden'}>
+      ${rows.map(([l, v, n], i) => `<div class="sp-row"><span>${l}${n ? `<small>${n}</small>` : ''}</span><b>${v < 0 ? '−' : ''}${money(Math.abs(v))}</b></div>`
+        + (i === 2 && sp.upcoming.length ? `<div class="sp-sub">${sp.upcoming.slice(0, 6).map(u => `<span>${escHtml(u.label)}・${u.days <= 0 ? '已到期' : u.days + ' 天後'}<b>${money(u.amount)}</b></span>`).join('')}</div>` : '')).join('')}
+      <div class="sp-row sp-total"><span>可自由運用</span><b>${money(sp.free)}</b></div>
+    </div>
+    ${efLine}`;
+  hero.querySelector('.sp-toggle').addEventListener('click', () => { _homeSpendOpen = !_homeSpendOpen; renderHome(); });
+  root.appendChild(hero);
+
+  // 今天還能花＋總資產（兩格）
+  const duo = el('div'); duo.className = 'home-duo';
+  const ta = todayAllowance;
+  duo.innerHTML = `
+    <button type="button" class="card home-mini" data-go="plan">
+      <span class="home-mini-k">今天還能花</span>
+      <span class="home-mini-v" style="color:${ta ? (ta.perDay >= 0 ? 'var(--green)' : 'var(--red)') : 'var(--text-3)'}">${ta ? money(ta.perDay) : '—'}</span>
+      <span class="home-mini-s">${ta ? `生活預算剩 ${money(ta.remaining)}・${ta.daysLeft} 天` : '到「計畫」設定生活預算'}</span>
+    </button>
+    <button type="button" class="card home-mini" data-go="wealth">
+      <span class="home-mini-k">總資產</span>
+      <span class="home-mini-v">${money(netWorth)}</span>
+      <span class="home-mini-s">看資產放在哪裡 ›</span>
+    </button>`;
+  duo.querySelector('[data-go="plan"]').addEventListener('click', () => { _planTab = 'plan'; navigate('plan'); });
+  duo.querySelector('[data-go="wealth"]').addEventListener('click', () => { _wealthTab = 'overview'; navigate('wealth'); });
+  root.appendChild(duo);
+
+  // 快速記帳
+  const quick = el('div'); quick.className = 'home-quick';
+  const qe = el('button', 'btn btn-primary'); qe.innerHTML = '＋ 記一筆支出';
+  qe.addEventListener('click', () => openExpenseModal(null));
+  const qi = el('button', 'btn btn-ghost'); qi.innerHTML = '＋ 收入';
+  qi.addEventListener('click', () => openIncomeModal(null));
+  quick.append(qe, qi);
+  root.appendChild(quick);
+
+  // 近期提醒（5 天內，含逾期）
+  const typeIcon = { deposit:'🏦', creditcard:'💳', recurring:'🔁', installment:'🧾', recurringincome:'💵' };
+  const rem = el('div', 'card'); rem.className = 'card home-rem';
+  rem.innerHTML = `<div class="home-rem-head">🔔 近期到期／即將繳款<span>${reminders.length ? `共 ${reminders.length} 項` : ''}</span></div>` +
+    (reminders.length ? reminders.map(r => {
+      const c = r.daysUntil <= 1 ? 'var(--red)' : (r.daysUntil <= 3 ? 'var(--amber)' : 'var(--text-3)');
+      const inc = r.type === 'recurringincome';
+      return `<div class="home-rem-row"><span>${typeIcon[r.type] ?? '📌'}</span><span class="home-rem-l">${escHtml(r.label)}</span>${r.amount != null ? `<span class="home-rem-a" style="color:${inc ? 'var(--green)' : 'var(--text-2)'}">${inc ? '+' : ''}NT$ ${fmt(r.amount)}</span>` : ''}<span class="home-rem-d" style="color:${c}">${fmtDaysLabel(r.daysUntil)}</span></div>`;
+    }).join('') : `<div class="home-rem-empty">5 天內沒有要到期或繳款的項目。</div>`);
+  root.appendChild(rem);
+
+  content.appendChild(root);
+}
+
+// 原首頁（總資產＋方塊）：v2.9.0 起是「資產 › 總覽」。
+async function renderAssetOverview() {
+  await loadData();
+  const { netWorth, cash, depositRes, inv, recv, otherAssets, gold, goldPriceRec, fxRates, ccDebt, cards, accounts } = state;
+  const reminders = []; // 提醒搬到首頁，這裡不再重複
+  const content = _activeContentContainer || document.getElementById('content');
   content.innerHTML = '';
 
   // ── 首頁一屏化（v2.4.0，使用者要求「整個畫面儘量保留在一個頁面、不用上下
@@ -4188,8 +4332,8 @@ async function renderSystemSettings() {
       // _txnManageActiveTab 指到 budgetplan 分頁，再 navigate('txnmanage')，
       // 這樣點下去才會看到完整的頁籤殼（而不是繞過頁籤殼直接把 renderBudgetPlan
       // 畫進 #content，讓側邊欄跟畫面對不起來）。
-      _txnManageActiveTab = 'plan';
-      navigate('txnmanage');
+      _planTab = 'plan';
+      navigate('plan');
     });
   }
 
@@ -4371,9 +4515,9 @@ async function renderSystemSettings() {
   {
     const rawHomeView = await getSetting(db, 'home_view', 'assets').catch(() => 'assets');
     const homeView = rawHomeView === 'txnmanage' ? 'calendar' : rawHomeView;
-    const homeOptions = [{ v:'assets', label:'資產總覽' }, { v:'calendar', label:'收支紀錄' }];
+    const homeOptions = [{ v:'assets', label:'首頁' }, { v:'calendar', label:'紀錄' }];
     const body = addCollapsible({ key:'homeView', icon:'🏠', title:'開啟時預設頁面',
-      subtitle: homeOptions.find(o => o.v === homeView)?.label ?? '資產總覽' });
+      subtitle: homeOptions.find(o => o.v === homeView)?.label ?? '首頁' });
     body.innerHTML = `
       <div style="display:flex;gap:8px">
         ${homeOptions.map(o => `<button type="button" data-home-view="${o.v}" style="flex:1;padding:10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;background:${homeView===o.v?'var(--accent-tint-strong)':'transparent'};border:1.5px solid ${homeView===o.v?'var(--blue)':'var(--border)'}">${o.label}</button>`).join('')}
@@ -4392,7 +4536,7 @@ async function renderSystemSettings() {
   {
     const holdingsEnabled = await getSetting(db, 'holdings_page_enabled', true).catch(() => true);
     const holdCard = addRow({ icon:'📈', title:'顯示「投資持倉」頁面',
-      subtitle:'沒有買股票／ETF 的話可以關閉；側邊欄會拿掉這個項目，手機版底部導覽列「持倉」那一格會改顯示「帳戶管理」。',
+      subtitle:'沒有買股票／ETF 的話可以關閉；「資產」頁就不會顯示「持倉」分頁。',
       rightHtml:`<button type="button" id="holdingsPageToggle" class="toggle-switch" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;flex-shrink:0">
           <span id="holdingsPageThumb" style="position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;display:block"></span>
         </button>` });
@@ -4409,7 +4553,7 @@ async function renderSystemSettings() {
       setHoldingsToggle(next);
       await setSetting(db, 'holdings_page_enabled', next).catch(()=>{});
       applyHoldingsVisibility(next);
-      if (!next && currentView === 'holdings') await navigate('assets');
+      if (!next && currentView === 'wealth' && _wealthTab === 'holdings') { _wealthTab = 'overview'; await navigate('wealth'); }
       showToast(next ? '已開啟「投資持倉」頁面' : '已關閉「投資持倉」頁面');
     };
   }
@@ -5492,7 +5636,7 @@ function refreshHoldingClassIfNeeded(enriched, force = false) {
     } catch (e) {
       console.warn('[classify]', e); _holdClassState = 'error';
     }
-    if (currentView === 'holdings') await rerenderHoldingsKeepScroll();
+    if (currentView === 'wealth' && _wealthTab === 'holdings') await rerenderHoldingsKeepScroll();
   })();
 }
 async function fetchTwseOpenData(path) {
@@ -5889,7 +6033,7 @@ function buildHoldingsPctCard(inv) {
 async function renderHoldings() {
   await loadData();
   const { brokerages, holdings, banks, inv } = state;
-  const content = document.getElementById('content');
+  const content = _activeContentContainer || document.getElementById('content');
   content.innerHTML = '';
   const bankMap  = Object.fromEntries(banks.map(b=>[b.id,b]));
   const brokMap  = Object.fromEntries(brokerages.map(b=>[b.id,b]));
@@ -6987,7 +7131,7 @@ document.getElementById('balanceModalSave').addEventListener('click',async()=>{
       const returnId = _accountDetailReturnId;
       _accountDetailReturnId = null;
       await openAccountDetailModal(returnId);
-    } else if (currentView === 'assets') {
+    } else if (currentView === 'assets' || currentView === 'wealth') {
       await renderAssets();
     } else {
       await renderSettings();
@@ -7537,7 +7681,7 @@ document.getElementById('categoryModalSave').addEventListener('click',async()=>{
   // 併入「設定」頁了，else 分支改用 refreshCategoriesView()（見上方定義）
   // 一併涵蓋「從設定頁裡新增分類」跟「從 safety net 的獨立類別設定頁新增」
   // 兩種情境。
-  if (currentView === 'txnmanage' && _txnManageActiveTab === 'plan') await renderMonthlyPlan();
+  if (currentView === 'plan') await renderPlanHub();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'budgetplan') await renderBudgetPlan();
   else await refreshCategoriesView();
 });
@@ -8278,7 +8422,7 @@ document.getElementById('otherAssetModalSave').addEventListener('click',async()=
   });
   document.getElementById('otherAssetModal').classList.remove('open');
   showToast(editId?'已更新':'已新增');
-  if (currentView === 'assets') await renderAssets(); else await renderSettings();
+  if (currentView === 'assets' || currentView === 'wealth') await renderAssets(); else await renderSettings();
 });
 
 // ── Gold modal（實體黃金，2026-09-24 新增）──────────────────────────────────
@@ -8321,7 +8465,7 @@ document.getElementById('goldModalSave').addEventListener('click',async()=>{
   });
   document.getElementById('goldModal').classList.remove('open');
   showToast(editId?'已更新':'已新增');
-  if (currentView === 'assets') await renderAssets(); else await renderSettings();
+  if (currentView === 'assets' || currentView === 'wealth') await renderAssets(); else await renderSettings();
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -8615,7 +8759,7 @@ async function renderMonthlyPlan() {
     root.appendChild(card);
     return body;
   };
-  const linkBtn = (label, tab) => { const b = el('button', 'btn btn-ghost btn-sm'); b.textContent = label; b.addEventListener('click', () => { _txnManageActiveTab = tab; renderTxnManage(); window.scrollTo(0, 0); }); return b; };
+  const linkBtn = (label, tab) => { const b = el('button', 'btn btn-ghost btn-sm'); b.textContent = label; b.addEventListener('click', () => { _txnManageActiveTab = tab; navigate('txnmanage'); window.scrollTo(0, 0); }); return b; };
   const row = (left, right, sub = '') => `<div class="mp-row"><div class="mp-row-l">${left}${sub ? `<small>${sub}</small>` : ''}</div><div class="mp-row-r">${right}</div></div>`;
   const FIXED_KIND = { general: '定期支出', subscription: 'App 訂閱', insurance: '保險', installment: '分期付款' };
 
@@ -8630,7 +8774,7 @@ async function renderMonthlyPlan() {
   const essentials = plan.fixed.total + plan.living.total;
   const suggestedEF = Math.round(essentials * emergencyMonths);
   const sb = section('save', '🧳', '存下來', plan.save.total, '每個存錢目標每月撥多少；緊急預備金排第一',
-    [(() => { const b = el('button', 'btn btn-ghost btn-sm'); b.textContent = '＋ 新增存錢目標'; b.addEventListener('click', () => openBucketModal()); return b; })(), linkBtn('目標明細與旅行', 'goals')]);
+    [(() => { const b = el('button', 'btn btn-ghost btn-sm'); b.textContent = '＋ 新增存錢目標'; b.addEventListener('click', () => openBucketModal()); return b; })(), (() => { const b = el('button', 'btn btn-ghost btn-sm'); b.textContent = '目標明細與旅行'; b.addEventListener('click', () => { _planTab = 'goals'; renderPlanHub(); window.scrollTo(0, 0); }); return b; })()]);
   const ef = buckets.find(b => b.is_emergency_fund && b.status !== 'closed');
   const efBox = el('div'); efBox.className = 'mp-ef';
   if (!ef) {
@@ -8761,12 +8905,12 @@ document.getElementById('planBaseSave').addEventListener('click', async () => {
   await setSetting(db, 'monthly_plan', { ...s, base_fixed: v > 0 ? v : null, emergency_months: m > 0 ? Math.min(24, m) : 6 });
   document.getElementById('planBaseModal').classList.remove('open');
   showToast('已更新');
-  await renderMonthlyPlan();
+  if (currentView === 'plan') await renderPlanHub(); else await renderMonthlyPlan();
 });
 
 // 存錢目標的彈窗可能從「存錢目標」頁或「每月計畫」頁打開，存檔後重畫打開它的那一頁。
 async function refreshBucketsContext() {
-  if (currentView === 'txnmanage' && _txnManageActiveTab === 'plan') await renderMonthlyPlan();
+  if (currentView === 'plan') await renderPlanHub();
   else await renderBuckets();
 }
 async function renderBuckets() {
@@ -8792,10 +8936,10 @@ async function renderBuckets() {
   toolbar.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:4px';
   const activeCount = buckets.filter(b=>b.status!=='closed').length;
   const summary = el('div'); summary.style.cssText='font-size:13px;color:var(--text-2)';
-  summary.textContent = `${activeCount} 個進行中的存錢計畫`;
+  summary.textContent = `${activeCount} 個進行中的存錢目標`;
   toolbar.appendChild(summary);
   const addBtn = el('button','btn btn-primary btn-sm');
-  addBtn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> 新增存錢計畫`;
+  addBtn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> 新增存錢目標`;
   addBtn.addEventListener('click', () => openBucketModal());
   toolbar.appendChild(addBtn);
   content.appendChild(toolbar);
@@ -8803,7 +8947,7 @@ async function renderBuckets() {
   if (buckets.length === 0) {
     const empty = el('div','card');
     empty.style.cssText='padding:48px;text-align:center;color:var(--text-3);font-size:13px';
-    empty.innerHTML = `<div style="font-size:32px;margin-bottom:12px">🧳</div>尚無存錢計畫<br><span style="font-size:12px">例如：旅遊基金、買房頭期款、緊急備用金</span>`;
+    empty.innerHTML = `<div style="font-size:32px;margin-bottom:12px">🧳</div>尚無存錢目標<br><span style="font-size:12px">例如：旅遊基金、買房頭期款、緊急備用金</span>`;
     content.appendChild(empty); return;
   }
 
@@ -8991,7 +9135,7 @@ document.getElementById('bucketModeFixed').addEventListener('change', ()=>{updat
 document.getElementById('bucketIncomePercent').addEventListener('input', refreshBucketPercentWarning);
 
 async function openBucketModal(bucket=null) {
-  document.getElementById('bucketModalTitle').textContent = bucket?'編輯存錢計畫':'新增存錢計畫';
+  document.getElementById('bucketModalTitle').textContent = bucket?'編輯存錢目標':'新增存錢目標';
   document.getElementById('bucketEditId').value = bucket?.id??'';
   document.getElementById('bucketName').value = bucket?.name??'';
   document.getElementById('bucketTarget').value = bucket?.target_amount??'';
@@ -12611,18 +12755,10 @@ const TXN_MANAGE_TABS = [
   { key:'installment',      label:'分期付款',       icon:'📅', render: () => renderInstallment(),
     summary: async () => `${(await getAll(db,'installments').catch(()=>[])).length} 筆` },
   // v2.8.0：「設定預算」「收入分配法」併成「每月計畫」（見 renderMonthlyPlan）。
-  { key:'plan',             label:'每月計畫',       icon:'🧭', render: () => renderMonthlyPlan(),
-    summary: async () => {
-      const budgets = await getAll(db,'budgets').catch(()=>[]);
-      const lv = resolveBudget(budgets, null, currentMonthStr());
-      return lv != null ? `生活預算 ${fmt(lv)}` : '尚未設定';
-    } },
   // 2026-09-26（見 §廿一之六）：使用者用 AskUserQuestion 確認「資金池」要收納
   // 進這個整合頁——側邊欄原本的獨立「資金池」項目已經移除（見側邊欄 HTML 的
   // 說明），renderBuckets() 也已經改成讀 _activeContentContainer（見該函式
   // 開頭的說明），跟這裡其他 7 個子頁完全同一套機制，不需要另外處理。
-  { key:'goals',            label:'存錢目標',       icon:'🧳', render: () => renderBuckets(),
-    summary: async () => `${(await getAll(db,'buckets').catch(()=>[])).filter(b=>b.status!=='closed').length} 個進行中` },
 ];
 // 2026-09-26（見 §廿三之二）：預設值從「固定選第一個子頁」改成 null（=顯示
 // 方格選單本身），子頁按鈕點下去、或其他頁面直接指定某個 tab 再 navigate
@@ -12640,8 +12776,10 @@ let _txnManageRenderToken = 0;
 async function renderTxnManage() {
   const content = document.getElementById('content');
   content.innerHTML = '';
-  // v2.8.0：舊的「設定預算」「收入分配法」入口一律導到每月計畫。
-  if (_txnManageActiveTab === 'budgetplan' || _txnManageActiveTab === 'incomeAllocation') _txnManageActiveTab = 'plan';
+  // v2.8.0／v2.9.0：每月計畫、存錢目標搬到底部導覽列的「計畫」；舊入口一律導過去。
+  if (['budgetplan','incomeAllocation','plan','goals'].includes(_txnManageActiveTab)) {
+    _planTab = _txnManageActiveTab === 'goals' ? 'goals' : 'plan'; _txnManageActiveTab = null; return navigate('plan');
+  }
 
   if (!_txnManageActiveTab) {
     // v2.3.0（使用者要求：11 個區塊要不用上下滑動就能一次看完）：從 2 欄改成
@@ -12650,7 +12788,6 @@ async function renderTxnManage() {
     const groups = [
       { title:'支出', keys:['creditcard','recurring','subscriptions','insurance_exp','installment'] },
       { title:'轉帳與收入', keys:['transfer','rectransfer','recurring_income','dcaschedule'] },
-      { title:'規劃', keys:['plan','goals'] },
     ];
     const listed = new Set(groups.flatMap(g => g.keys));
     const leftovers = TXN_MANAGE_TABS.filter(t => !listed.has(t.key)).map(t => t.key);
@@ -12956,7 +13093,7 @@ document.getElementById('ccPaySave').addEventListener('click', async () => {
   document.getElementById('ccPayModal').classList.remove('open');
   showToast(`✓ 已記錄${period ? ccPeriodLabel(period) : ''}繳款 NT$ ${fmt(amount)}`);
   if (currentView === 'calendar') await renderCalendar();
-  else if (currentView === 'assets') await renderAssets();
+  else if (currentView === 'assets' || currentView === 'wealth') await renderAssets();
   else await renderCreditCard();
 });
 // 復原一筆繳款：帳戶加回、刪掉那筆帳戶變動紀錄、信用卡待繳加回、期別回到記錄前。
@@ -13687,7 +13824,7 @@ document.getElementById('expenseModalSave').addEventListener('click', async () =
 // renderRecurring()。
 async function refreshAfterExpenseSaved() {
   if (currentView === 'report') await renderReport();
-  else if (currentView === 'goals') await renderBuckets();
+  else if (currentView === 'plan') await renderPlanHub();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'goals') await renderBuckets();
   else if (currentView === 'txnmanage' && (_txnManageActiveTab === 'recurring' || _txnManageActiveTab === 'subscriptions')) await renderRecurring();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'installment') await renderInstallment();
@@ -14088,7 +14225,7 @@ document.getElementById('incomeModalSave').addEventListener('click', async () =>
 async function refreshAfterIncomeSaved() {
   if (currentView === 'report') await renderReport();
   else if (currentView === 'settings') await renderSettings();
-  else if (currentView === 'assets') await renderAssets();
+  else if (currentView === 'assets' || currentView === 'wealth') await renderAssets();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'dcaschedule') await renderDcaSchedules();
   else await renderCalendar();
 }
@@ -14188,7 +14325,7 @@ function describeSnapshotFailure(result) {
 // ════════════════════════════════════════════════════════════════════════════
 let _trendRangeDays = null; // null = 全部；survives re-render via module scope
 async function renderTrend() {
-  const content = document.getElementById('content');
+  const content = _activeContentContainer || document.getElementById('content');
   content.innerHTML = '';
 
   const snapshots = (await getAll(db,'asset_snapshots').catch(()=>[])).sort((a,b)=>a.date.localeCompare(b.date));
