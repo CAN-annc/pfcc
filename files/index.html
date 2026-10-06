@@ -232,6 +232,73 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hp-qt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
 .hp-qt-title{font-size:13px;font-weight:600;color:var(--text-1)}
 .hp-qt-desc{font-size:11px;color:var(--text-3);margin-top:3px;line-height:1.5}
+.mp{display:flex;flex-direction:column;gap:12px}
+.mp-intro{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;background:color-mix(in srgb,var(--blue) 8%,var(--card));border:1px solid color-mix(in srgb,var(--blue) 25%,var(--border))}
+.mp-intro strong{display:block;font-size:13px}
+.mp-intro span{display:block;font-size:11.5px;color:var(--text-2);margin-top:3px;line-height:1.55}
+.mp-intro .btn{flex-shrink:0}
+.mp-hero{padding:16px 18px}
+.mp-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.mp-k{font-size:11px;color:var(--text-3);letter-spacing:.04em}
+.mp-big{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text-1);line-height:1.2;margin-top:2px}
+.mp-src{font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.5}
+.mp-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px;margin:14px 0 10px;background:var(--surface-2)}
+.mp-bar span{min-width:3px}
+.mp-legend{display:grid;grid-template-columns:1fr;gap:5px}
+.mp-legend div{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2);min-width:0;white-space:nowrap}
+.mp-legend i{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.mp-legend b{margin-left:auto;font-weight:600;color:var(--text-1);font-variant-numeric:tabular-nums}
+.mp-legend em{font-style:normal;font-size:11px;color:var(--text-3);min-width:34px;text-align:right;font-variant-numeric:tabular-nums}
+.mp-rest{margin-top:12px;padding:10px 12px;border-radius:8px;font-size:11.5px;line-height:1.55}
+.mp-rest strong{display:block;font-size:13px;margin-bottom:2px}
+.mp-rest.is-free{background:color-mix(in srgb,#D97706 10%,var(--card));color:var(--text-2)}
+.mp-rest.is-free strong{color:#B45309}
+.mp-rest.is-over{background:var(--red-bg,#FEF2F2);color:var(--text-2)}
+.mp-rest.is-over strong{color:var(--red)}
+.mp-rest.is-zero{background:var(--green-bg,#F0FDF4);color:var(--text-2)}
+.mp-rest.is-zero strong{color:var(--green)}
+.mp-sec{padding:0;overflow:hidden}
+.mp-sec-head{display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
+.mp-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.mp-sec-title{flex:1;min-width:0}
+.mp-sec-title b{display:block;font-size:14px}
+.mp-sec-title span{display:block;font-size:11px;color:var(--text-3);margin-top:2px;line-height:1.45}
+.mp-sec-amt{text-align:right;flex-shrink:0}
+.mp-sec-amt b{display:block;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.mp-sec-amt span{display:block;font-size:10.5px;color:var(--text-3)}
+.mp-sec-body{padding:0 16px 8px}
+.mp-sec-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;padding:8px 16px 12px;border-top:1px solid var(--border)}
+.mp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--border);font-size:12.5px}
+.mp-row:first-child{border-top:none}
+.mp-row-l{min-width:0;flex:1;color:var(--text-1);overflow:hidden;text-overflow:ellipsis}
+.mp-row-l small{display:block;font-size:10.5px;color:var(--text-3);margin-top:1px}
+.mp-row-l small.is-over{color:var(--red)}
+.mp-row-r{display:flex;align-items:center;gap:6px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mp-edit input{width:96px;padding:6px 8px;border:1px solid var(--border-2);border-radius:7px;font-size:16px;text-align:right;font-variant-numeric:tabular-nums;background:var(--card);box-sizing:border-box}
+.mp-empty{font-size:11.5px;color:var(--text-3);padding:4px 0 8px;line-height:1.55}
+.mp-ef{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;margin-bottom:6px;border-radius:9px;background:var(--surface-2)}
+.mp-ef strong{display:block;font-size:12.5px}
+.mp-ef span{display:block;font-size:11px;color:var(--text-2);margin-top:4px;line-height:1.5}
+.mp-ef .btn{flex-shrink:0}
+.mp-ef-bar{height:6px;border-radius:3px;background:color-mix(in srgb,var(--text-3) 18%,transparent);overflow:hidden;margin-top:6px}
+.mp-ef-bar span{display:block;height:100%;background:var(--green);border-radius:3px;margin:0}
+.mp-ef-bar.is-over span{background:var(--red)}
+.mp-living{padding:2px 0 8px}
+.mp-living-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.mp-living-top label{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600}
+.mp-living-top input{width:120px;padding:7px 9px;border:1px solid var(--border-2);border-radius:7px;font-size:16px;text-align:right;font-variant-numeric:tabular-nums;background:var(--card);box-sizing:border-box}
+.mp-subhead{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;font-weight:600;color:var(--text-3);margin:10px 0 2px;padding-top:10px;border-top:1px dashed var(--border)}
+.mp-subhead em{font-style:normal;font-weight:500;font-variant-numeric:tabular-nums}
+.mp-subhead em.is-over{color:var(--red)}
+.mp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.mp-chip{font:inherit;font-size:11.5px;padding:6px 10px;border-radius:999px;border:1px solid var(--border-2);background:var(--card);color:var(--text-2);cursor:pointer}
+.mp-chip.on{background:var(--accent-fill,var(--blue));border-color:transparent;color:var(--on-accent,#fff);font-weight:600}
+.mp-ref-row{display:grid;grid-template-columns:92px 1fr;gap:10px;align-items:center;padding:6px 0;font-size:12px;color:var(--text-2)}
+.mp-ref-bars{display:flex;flex-direction:column;gap:3px}
+.mp-ref-bars div{position:relative;height:16px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+.mp-ref-bars i{position:absolute;inset:0 auto 0 0;background:color-mix(in srgb,var(--text-3) 35%,transparent)}
+.mp-ref-bars .is-mine i{background:color-mix(in srgb,var(--blue) 55%,transparent)}
+.mp-ref-bars em{position:relative;font-style:normal;font-size:10.5px;line-height:16px;padding-left:6px;color:var(--text-1)}
 .cc-overdue{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 18px 12px;padding:10px 12px;border-radius:8px;background:var(--red-bg,#FEF2F2);border:1px solid color-mix(in srgb,var(--red) 30%,transparent)}
 .cc-overdue strong{display:block;font-size:13px;color:var(--red)}
 .cc-overdue span{display:block;font-size:11px;color:var(--text-2);margin-top:2px;line-height:1.5}
@@ -1536,7 +1603,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
         <input type="checkbox" id="bucketIsEmergencyFund">作為緊急預備金
       </label>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">每個月如果收入不夠支應「設定預算」裡的固定金額類別，會自動從這個存錢計畫扣一筆（虛擬），並在該筆紀錄註明原因。同時間只能有一個存錢計畫是緊急預備金，勾選這個會自動取消其他存錢計畫的勾選。</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">每個月如果收入不夠支應每月計畫裡的類別預算，會自動從這個存錢目標扣一筆（虛擬），並在該筆紀錄註明原因。同時間只能有一個存錢計畫是緊急預備金，勾選這個會自動取消其他存錢計畫的勾選。</div>
     </div>
     <div class="modal-field">
       <label>備註（選填）</label>
@@ -2089,6 +2156,27 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
   </div>
 </div>
 
+<!-- ── 每月計畫：每月生活費設定（v2.8.0）── -->
+<div class="modal-overlay" id="planBaseModal">
+  <div class="modal">
+    <h2>每月生活費與緊急預備金</h2>
+    <div class="modal-field">
+      <label>每月生活費（沒有收入的月份用這個金額做計畫）</label>
+      <input type="number" id="planBaseFixed" inputmode="decimal" min="0" step="1000" placeholder="例：30000">
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">本月有記錄收入時，計畫一律以實際收入為準；還沒有收入時（例如待業、月初還沒領薪）改用這個金額，計畫才不會整個變成 0。</div>
+    </div>
+    <div class="modal-field">
+      <label>緊急預備金要存幾個月的必要開銷</label>
+      <input type="number" id="planEmergencyMonths" inputmode="numeric" min="1" max="24" step="1" placeholder="6">
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">必要開銷＝固定支出＋生活預算。常見建議是 3～6 個月。</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="planBaseCancel">取消</button>
+      <button class="btn btn-primary" id="planBaseSave">儲存</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Credit card payment modal（v2.7.4）── -->
 <div class="modal-overlay" id="ccPayModal">
   <div class="modal">
@@ -2491,6 +2579,7 @@ import {
   calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent, rebalanceJarPercents,
   runDataHealthChecks,
   classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
+  calcMonthlyPlan, calcLivingSpent, calcLivingSpentByCategory,
 } from './calc.js';
 
 let db, state = {}, currentView = 'assets';
@@ -2764,17 +2853,19 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.7.4';
+const APP_VERSION = 'v2.8.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-05';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '信用卡改成以「期」管理：上一期過了繳款日還沒記錄繳款，卡片上會標出「9 月期還沒記錄繳款」，可直接補記，日期記在實際繳款那天',
-  '記錄繳款改成正式表單：選期別、實際繳款日、金額（可改成帳單金額）、扣款帳戶；扣款會出現在帳戶明細，記錯了可以「復原」',
-  '「實際繳款日」只套用在那一期，記錄繳款後自動失效；提醒與月曆也改依期別顯示',
-  '修正手機上日期欄位超出彈窗範圍',
+  '「設定預算」「收入分配法」合併成「每月計畫」：本月可分配 → 固定支出 → 存下來 → 投資 → 生活預算，一頁從上到下看完，不再兩套互相打架',
+  '本月可分配：有收入用實際收入，還沒有收入時用自訂的「每月生活費」，沒收入的月份計畫也不會變成 0',
+  '「還有多少沒有安排用途」直接顯示——有計畫就不會有閒置資金；計畫超出時也會提醒差額要從存款支應',
+  '緊急預備金排在存下來的第一位：顯示能撐幾個月、還差多少、照目前撥法幾個月補足，並依必要開銷建議目標金額',
+  '生活預算只跟日常生活支出比（不含固定支出與存錢目標專款的花費），「今天還能花」也改用這個數字',
+  '收入分配法改成「比例參考」，把 321、532 等法則的建議比例跟你的計畫並排比較',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3272,7 +3363,9 @@ async function loadData() {
   const incomeTxns   = await getAll(db,'income_txns').catch(()=>[]);
   const thisMonth    = currentMonthStr();
   const budgetAmount = resolveBudget(budgets, null, thisMonth);
-  const budgetSpent  = calcMonthlyExpenseTotal(expenseTxns, thisMonth, accounts, fxRates);
+  // v2.8.0：生活預算只跟「生活支出」比（不含固定支出、存錢目標專款的花費），
+  // 固定支出在每月計畫裡另外列，不會被算兩次。
+  const budgetSpent  = calcLivingSpent(expenseTxns, thisMonth, accounts, fxRates);
   const budgetInfo   = budgetAmount != null ? { amount: budgetAmount, spent: budgetSpent, month: thisMonth } : null;
   // 2026-09-24 新增「今天還能花」（見使用者提供的記帳機器人截圖）：純粹是
   // 既有 budgetInfo 的另一種呈現方式（剩餘預算 ÷ 本月剩餘天數），沒有設定
@@ -4084,10 +4177,10 @@ async function renderSystemSettings() {
     const current = resolveBudget(budgets, null, thisMonth);
     const budgetCard = el('div','card'); budgetCard.style.cssText='margin-bottom:16px;padding:14px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap';
     budgetCard.innerHTML = `
-      <div style="font-size:13px;font-weight:600;flex-shrink:0">🎯 本月預算</div>
-      <span style="font-size:12px;color:var(--text-2)">${current!=null?`目前總預算 NT$ ${fmt(current)}`:'尚未設定'}</span>
-      <button class="btn btn-primary btn-sm" id="goToBudgetPlan">前往「設定預算」頁面</button>
-      <span style="font-size:11px;color:var(--text-3)">可設定本月總預算，以及各支出分類各自的預算</span>`;
+      <div style="font-size:13px;font-weight:600;flex-shrink:0">🧭 每月計畫</div>
+      <span style="font-size:12px;color:var(--text-2)">${current!=null?`生活預算 NT$ ${fmt(current)}`:'尚未設定'}</span>
+      <button class="btn btn-primary btn-sm" id="goToBudgetPlan">前往「每月計畫」</button>
+      <span style="font-size:11px;color:var(--text-3)">收入怎麼分到固定支出、存錢、投資、生活預算</span>`;
     content.appendChild(budgetCard);
     budgetCard.querySelector('#goToBudgetPlan').addEventListener('click', () => {
       // 2026-09-20（見 §十五之五）：「設定預算」已經搬進「記帳管理」整合頁
@@ -4095,7 +4188,7 @@ async function renderSystemSettings() {
       // _txnManageActiveTab 指到 budgetplan 分頁，再 navigate('txnmanage')，
       // 這樣點下去才會看到完整的頁籤殼（而不是繞過頁籤殼直接把 renderBudgetPlan
       // 畫進 #content，讓側邊欄跟畫面對不起來）。
-      _txnManageActiveTab = 'budgetplan';
+      _txnManageActiveTab = 'plan';
       navigate('txnmanage');
     });
   }
@@ -7444,7 +7537,8 @@ document.getElementById('categoryModalSave').addEventListener('click',async()=>{
   // 併入「設定」頁了，else 分支改用 refreshCategoriesView()（見上方定義）
   // 一併涵蓋「從設定頁裡新增分類」跟「從 safety net 的獨立類別設定頁新增」
   // 兩種情境。
-  if (currentView === 'txnmanage' && _txnManageActiveTab === 'budgetplan') await renderBudgetPlan();
+  if (currentView === 'txnmanage' && _txnManageActiveTab === 'plan') await renderMonthlyPlan();
+  else if (currentView === 'txnmanage' && _txnManageActiveTab === 'budgetplan') await renderBudgetPlan();
   else await refreshCategoriesView();
 });
 // ════════════════════════════════════════════════════════════════════════════
@@ -8424,6 +8518,257 @@ async function syncEmergencyFundShortfall() {
   }
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// 每月計畫（v2.8.0）——取代「設定預算」「收入分配法」兩頁，並把「存錢計畫」
+// 的每月金額拉進同一張表。計算見 calc.js calcMonthlyPlan()。
+// 結構（由上往下）：本月可分配 → 固定支出 → 存下來 → 投資 → 生活預算 → 未分配
+//   ・本月可分配：本月有收入用實際收入，沒有就用自訂的「每月生活費」。
+//   ・固定支出、投資：從定期支出／分期／定期定額自動帶入，這裡只看不改。
+//   ・存下來：每個存錢目標的每月金額（緊急預備金固定排第一），可直接改。
+//   ・生活預算：就是原本的「本月總預算」（今天還能花從這裡算），底下再分類別。
+//   ・未分配：> 0 表示有錢還沒安排用途（使用者：有確實計畫就不會有閒置資金
+//     ——這裡就是計畫的漏洞）；< 0 表示計畫超出可分配金額，差額會動用存款。
+// 收入分配法（321、532…）不再是獨立的一套，只剩「比例參考」：把那個法則的
+// 建議比例跟你的計畫並排比較。
+// ════════════════════════════════════════════════════════════════════════════
+function planMethodShares(jars) {
+  const out = { spend: 0, save: 0, invest: 0 };
+  (jars || []).forEach(j => {
+    if (j.type === 'category' || j.linkedInsurance) out.spend += j.percent;
+    else if (['invest', 'ffa'].includes(j.key)) out.invest += j.percent;
+    else out.save += j.percent;
+  });
+  return out;
+}
+async function renderMonthlyPlan() {
+  const content = _activeContentContainer;
+  const [budgets, expenseTxns, cats, buckets, incomeTxns, accounts, recurringExpenses, installments, dcaSchedules, allocations] = await Promise.all([
+    getAll(db,'budgets').catch(()=>[]), getAll(db,'expense_txns').catch(()=>[]), getAll(db,'txn_categories').catch(()=>[]),
+    getAll(db,'buckets').catch(()=>[]), getAll(db,'income_txns').catch(()=>[]), getAll(db,'accounts').catch(()=>[]),
+    getAll(db,'recurring_expenses').catch(()=>[]), getAll(db,'installments').catch(()=>[]), getAll(db,'dca_schedules').catch(()=>[]),
+    getAll(db,'bucket_allocations').catch(()=>[]),
+  ]);
+  const fxRates = await getFxRates(db);
+  const settings = (await getSetting(db, 'monthly_plan', null)) || {};
+  const baseFixed = Number(settings.base_fixed) || 0;
+  const emergencyMonths = Number(settings.emergency_months) || 6;
+  const month = currentMonthStr();
+  const income = calcMonthlyIncomeTotal(incomeTxns, month, INCOME_PERCENT_EXCLUDED_CATEGORIES);
+  const livingBudget = resolveBudget(budgets, null, month);
+  const plan = calcMonthlyPlan({ income, baseFixed, recurringExpenses, installments, dcaSchedules, buckets, livingBudget, fxRates });
+  const expenseCats = cats.filter(c => c.type === 'expense' && c.active !== false && !['cat_dca','cat_bad_debt_writeoff'].includes(c.id))
+    .sort((a,b) => (a.sort_order ?? 99) - (b.sort_order ?? 99));
+  const livingSpent = calcLivingSpent(expenseTxns, month, accounts, fxRates);
+  const livingByCat = calcLivingSpentByCategory(expenseTxns, month, accounts, fxRates);
+  const pctOf = v => plan.base > 0 ? Math.round(v / plan.base * 100) : null;
+  const money = v => `NT$ ${fmt(Math.round(v))}`;
+  const rerender = async () => { const y = window.scrollY; await renderMonthlyPlan(); window.scrollTo(0, y); };
+  const COLORS = { fixed: '#64748B', save: '#0E7A52', invest: '#7A4FE0', living: '#2F6FED', free: '#D97706', over: 'var(--red)' };
+
+  const root = el('div'); root.className = 'mp';
+
+  // ── 一次性說明：三套整合成一套 ──────────────────────────────────────────
+  if (!settings.intro_ack) {
+    const intro = el('div'); intro.className = 'mp-intro';
+    intro.innerHTML = `<div><strong>設定預算、收入分配法、存錢計畫已整合成這一頁</strong>
+      <span>原本的資料都保留：「本月總預算」就是這裡的生活預算、類別預算原封不動，存錢計畫的每月金額出現在「存下來」，收入分配法變成下方的比例參考。請從上到下確認一次金額。</span></div>`;
+    const ok = el('button', 'btn btn-primary btn-sm'); ok.textContent = '確認';
+    ok.addEventListener('click', async () => { await setSetting(db, 'monthly_plan', { ...settings, intro_ack: true }); await rerender(); });
+    intro.appendChild(ok);
+    root.appendChild(intro);
+  }
+
+  // ── 總覽：本月可分配 → 分到哪裡 ──────────────────────────────────────────
+  const hero = el('div', 'card'); hero.className = 'card mp-hero';
+  const srcText = plan.baseSource === 'income' ? `依本月實際收入${baseFixed ? `（沒有收入的月份改用每月生活費 ${money(baseFixed)}）` : ''}`
+    : plan.baseSource === 'fixed' ? `本月還沒有收入，先用你設定的每月生活費` : '本月還沒有收入，也還沒設定每月生活費';
+  const segs = [['fixed', plan.fixed.total], ['save', plan.save.total], ['invest', plan.invest.total], ['living', plan.living.total]];
+  const denom = Math.max(plan.base, segs.reduce((s, [, v]) => s + v, 0)) || 1;
+  hero.innerHTML = `
+    <div class="mp-hero-top">
+      <div><div class="mp-k">本月可分配</div><div class="mp-big">${money(plan.base)}</div><div class="mp-src">${srcText}</div></div>
+      <button class="btn btn-ghost btn-sm" data-mp-base>每月生活費</button>
+    </div>
+    <div class="mp-bar">${segs.map(([k, v]) => v > 0 ? `<span style="flex:${v};background:${COLORS[k]}"></span>` : '').join('')}${plan.unassigned > 0 ? `<span style="flex:${plan.unassigned};background:repeating-linear-gradient(45deg,${COLORS.free}55 0 4px,transparent 4px 8px);border:1px dashed ${COLORS.free}"></span>` : ''}</div>
+    <div class="mp-legend">
+      ${[['fixed','固定支出'],['save','存下來'],['invest','投資'],['living','生活預算']].map(([k, l]) => {
+        const v = k === 'living' ? plan.living.total : plan[k].total;
+        return `<div><i style="background:${COLORS[k]}"></i>${l}<b>${money(v)}</b><em>${pctOf(v) != null ? pctOf(v) + '%' : ''}</em></div>`;
+      }).join('')}
+    </div>
+    <div class="mp-rest ${plan.unassigned < 0 ? 'is-over' : plan.unassigned > 0 ? 'is-free' : 'is-zero'}">
+      ${plan.unassigned > 0 ? `<strong>還有 ${money(plan.unassigned)} 沒有安排用途</strong><span>這就是會變成「閒置資金」的錢——放進存下來、投資或生活預算，讓每一塊錢都有用途。</span>`
+        : plan.unassigned < 0 ? `<strong>計畫超出 ${money(-plan.unassigned)}</strong><span>${plan.base === 0 ? '本月還沒有可分配的錢，' : ''}超出的部分要從存款支應${buckets.some(b => b.is_emergency_fund && b.status !== 'closed') ? '（會先動用緊急預備金）' : ''}。可以調低生活預算或存下來的金額。</span>`
+        : `<strong>每一塊錢都有用途了</strong><span>收入剛好分配完。</span>`}
+    </div>`;
+  hero.querySelector('[data-mp-base]').addEventListener('click', () => openPlanBaseModal(settings));
+  root.appendChild(hero);
+
+  // ── 區塊共用外框 ─────────────────────────────────────────────────────────
+  const section = (key, icon, title, total, note, actions) => {
+    const card = el('div', 'card'); card.className = 'card mp-sec';
+    card.innerHTML = `<div class="mp-sec-head"><span class="mp-ico" style="background:${COLORS[key]}1F;color:${COLORS[key]}">${icon}</span>
+      <div class="mp-sec-title"><b>${title}</b><span>${note}</span></div>
+      <div class="mp-sec-amt"><b>${money(total)}</b><span>${pctOf(total) != null ? `佔 ${pctOf(total)}%` : ''}</span></div></div>`;
+    const body = el('div'); body.className = 'mp-sec-body'; card.appendChild(body);
+    if (actions) { const a = el('div'); a.className = 'mp-sec-actions'; actions.forEach(b => a.appendChild(b)); card.appendChild(a); }
+    root.appendChild(card);
+    return body;
+  };
+  const linkBtn = (label, tab) => { const b = el('button', 'btn btn-ghost btn-sm'); b.textContent = label; b.addEventListener('click', () => { _txnManageActiveTab = tab; renderTxnManage(); window.scrollTo(0, 0); }); return b; };
+  const row = (left, right, sub = '') => `<div class="mp-row"><div class="mp-row-l">${left}${sub ? `<small>${sub}</small>` : ''}</div><div class="mp-row-r">${right}</div></div>`;
+  const FIXED_KIND = { general: '定期支出', subscription: 'App 訂閱', insurance: '保險', installment: '分期付款' };
+
+  // 1 固定支出
+  const fb = section('fixed', '🔁', '固定支出', plan.fixed.total, '從定期支出、訂閱、保險、分期自動帶入（每月約當金額）',
+    [linkBtn('管理定期支出', 'recurring'), linkBtn('分期付款', 'installment')]);
+  fb.innerHTML = plan.fixed.items.length
+    ? plan.fixed.items.map(i => row(escHtml(i.name), money(i.amount), FIXED_KIND[i.category] ?? '定期支出')).join('')
+    : `<div class="mp-empty">還沒有定期支出。房租、電話費、保費等每月固定要付的，記在「定期支出」會自動出現在這裡。</div>`;
+
+  // 2 存下來（緊急預備金優先）
+  const essentials = plan.fixed.total + plan.living.total;
+  const suggestedEF = Math.round(essentials * emergencyMonths);
+  const sb = section('save', '🧳', '存下來', plan.save.total, '每個存錢目標每月撥多少；緊急預備金排第一',
+    [(() => { const b = el('button', 'btn btn-ghost btn-sm'); b.textContent = '＋ 新增存錢目標'; b.addEventListener('click', () => openBucketModal()); return b; })(), linkBtn('目標明細與旅行', 'goals')]);
+  const ef = buckets.find(b => b.is_emergency_fund && b.status !== 'closed');
+  const efBox = el('div'); efBox.className = 'mp-ef';
+  if (!ef) {
+    efBox.innerHTML = `<div><strong>還沒有緊急預備金</strong><span>建議存 ${emergencyMonths} 個月的必要開銷（固定支出＋生活預算）${essentials ? `，約 ${money(suggestedEF)}` : ''}。預備金不足時，可動用的錢會先拿去補它。</span></div>`;
+    const mk = el('button', 'btn btn-primary btn-sm'); mk.textContent = '建立';
+    mk.addEventListener('click', async () => {
+      await putOne(db, 'buckets', { id: crypto.randomUUID(), name: '緊急預備金', target_amount: suggestedEF || null, contribution_mode: 'fixed', monthly_amount: null, is_emergency_fund: true, status: 'active', created_at: new Date().toISOString() });
+      showToast('已建立緊急預備金'); await rerender();
+    });
+    efBox.appendChild(mk);
+  } else {
+    const have = calcBucketAllocated(allocations, ef.id) - calcBucketSpent(expenseTxns, ef.id, accounts, fxRates);
+    const target = ef.target_amount || suggestedEF;
+    const gap = Math.max(0, target - have);
+    const monthsCovered = essentials > 0 ? have / essentials : null;
+    const pctEF = target > 0 ? Math.min(100, Math.round(have / target * 100)) : 0;
+    efBox.innerHTML = `<div style="flex:1;min-width:0"><strong>🚨 緊急預備金 ${money(have)} ／ 目標 ${money(target)}</strong>
+      <div class="mp-ef-bar"><span style="width:${pctEF}%"></span></div>
+      <span>${monthsCovered != null ? `可以撐 ${monthsCovered.toFixed(1)} 個月必要開銷（目標 ${emergencyMonths} 個月）。` : ''}${gap > 0 ? `還差 ${money(gap)}${(plan.save.items.find(x => x.id === ef.id)?.amount || 0) > 0 ? `，照目前每月撥法約 ${Math.ceil(gap / plan.save.items.find(x => x.id === ef.id).amount)} 個月補足` : '，每月撥一點進來，或之後在首頁的「可動用資金」先把錢留給它'}。` : '已經存滿，之後每月可以少撥或不撥。'}</span>
+      ${!ef.target_amount && suggestedEF ? '' : ef.target_amount && suggestedEF && Math.abs(ef.target_amount - suggestedEF) / suggestedEF > 0.1 ? `<span>依目前的必要開銷，${emergencyMonths} 個月約 ${money(suggestedEF)}。</span>` : ''}</div>`;
+    if (suggestedEF && ef.target_amount !== suggestedEF) {
+      const up = el('button', 'btn btn-ghost btn-sm'); up.textContent = ef.target_amount ? '更新目標' : '設定目標';
+      up.addEventListener('click', async () => { await putOne(db, 'buckets', { ...ef, target_amount: suggestedEF }); showToast(`目標已設為 ${money(suggestedEF)}`); await rerender(); });
+      efBox.appendChild(up);
+    }
+  }
+  sb.appendChild(efBox);
+  plan.save.items.forEach(it => {
+    const b = buckets.find(x => x.id === it.id);
+    const monthAlloc = allocations.filter(a => a.bucket_id === it.id && (a.date || '').slice(0, 7) === month && a.amount > 0).reduce((s, a) => s + a.amount, 0);
+    const r = el('div'); r.className = 'mp-row mp-edit';
+    r.innerHTML = `<div class="mp-row-l">${it.isEmergency ? '🚨 ' : ''}${escHtml(it.name)}<small>${it.mode === 'percent' ? `收入的 ${it.percent}%（自動撥入）` : `本月已撥 ${money(monthAlloc)}`}</small></div>
+      <div class="mp-row-r"><input type="number" inputmode="decimal" min="0" step="100" value="${it.mode === 'percent' ? '' : (b.monthly_amount ?? '')}" placeholder="${it.mode === 'percent' ? fmt(it.amount) : '每月'}" aria-label="${escHtml(it.name)} 每月金額"></div>`;
+    const inp = r.querySelector('input');
+    inp.addEventListener('change', async () => {
+      const v = parseFloat(inp.value);
+      await putOne(db, 'buckets', { ...b, contribution_mode: 'fixed', monthly_amount: v > 0 ? v : null, income_percent: null });
+      await syncAutoBucketContributions(); await syncEmergencyFundShortfall(); await rerender();
+    });
+    if (it.mode !== 'percent' && it.amount > 0 && monthAlloc < it.amount) {
+      const give = el('button', 'btn btn-ghost btn-sm'); give.textContent = '撥入'; give.title = '記一筆本月撥入';
+      give.addEventListener('click', () => openBucketAllocModal(b, it.amount - monthAlloc));
+      r.querySelector('.mp-row-r').prepend(give);
+    }
+    sb.appendChild(r);
+  });
+
+  // 3 投資
+  const ib = section('invest', '📈', '投資', plan.invest.total, '從定期定額排程自動帶入', [linkBtn('定期定額排程', 'dcaschedule')]);
+  ib.innerHTML = plan.invest.items.length ? plan.invest.items.map(i => row(escHtml(i.name), money(i.amount))).join('')
+    : `<div class="mp-empty">還沒有定期定額排程。</div>`;
+
+  // 4 生活預算（＝本月總預算，今天還能花從這裡算）
+  const lb = section('living', '🧺', '生活預算', plan.living.total, '吃飯、交通、購物等日常花費的上限；「今天還能花」從這裡算');
+  const lv = el('div'); lv.className = 'mp-living';
+  const usedPct = plan.living.total > 0 ? Math.min(100, Math.round(livingSpent / plan.living.total * 100)) : 0;
+  lv.innerHTML = `
+    <div class="mp-living-top">
+      <label>每月生活預算 <input type="number" inputmode="decimal" min="0" step="500" value="${livingBudget ?? ''}" placeholder="${plan.suggestedLiving ? fmt(plan.suggestedLiving) : '金額'}" data-mp-living></label>
+      ${plan.suggestedLiving && livingBudget !== plan.suggestedLiving ? `<button class="btn btn-ghost btn-sm" data-mp-fill>用剩下的 ${money(plan.suggestedLiving)}</button>` : ''}
+    </div>
+    ${plan.living.set ? `<div class="mp-ef-bar ${livingSpent > plan.living.total ? 'is-over' : ''}"><span style="width:${usedPct}%"></span></div>
+    <div class="mp-src">本月生活支出 ${money(livingSpent)}，${livingSpent > plan.living.total ? `已超出 ${money(livingSpent - plan.living.total)}` : `還剩 ${money(plan.living.total - livingSpent)}`}（不含固定支出與存錢目標專款的花費）</div>` : ''}`;
+  const saveLiving = async v => { await saveBudgetRecord(null, { amount: v }); await syncEmergencyFundShortfall(); await rerender(); };
+  lv.querySelector('[data-mp-living]').addEventListener('change', e => { const v = parseFloat(e.target.value); if (v > 0) saveLiving(v); });
+  lv.querySelector('[data-mp-fill]')?.addEventListener('click', () => saveLiving(plan.suggestedLiving));
+  lb.appendChild(lv);
+  const catHead = el('div'); catHead.className = 'mp-subhead';
+  const catSet = expenseCats.map(c => resolveBudgetRecord(budgets, c.id, month)).filter(r => r && (r.allocation_mode || 'fixed') === 'fixed' && r.amount > 0);
+  const catSum = catSet.reduce((s, r) => s + r.amount, 0);
+  catHead.innerHTML = `<span>分到各類別（選填）</span><em class="${plan.living.set && catSum > plan.living.total ? 'is-over' : ''}">${plan.living.set ? `已分 ${money(catSum)} ／ ${money(plan.living.total)}` : `已分 ${money(catSum)}`}</em>`;
+  lb.appendChild(catHead);
+  expenseCats.forEach(c => {
+    const rec = resolveBudgetRecord(budgets, c.id, month);
+    const cur = rec && (rec.allocation_mode || 'fixed') === 'fixed' ? rec.amount : null;
+    const spent = livingByCat[c.id] || 0;
+    const over = cur != null && spent > cur;
+    const r = el('div'); r.className = 'mp-row mp-edit';
+    r.innerHTML = `<div class="mp-row-l">${c.icon ?? '·'} ${escHtml(c.label)}<small class="${over ? 'is-over' : ''}">本月 ${money(spent)}${cur != null ? (over ? `・超出 ${money(spent - cur)}` : `・剩 ${money(cur - spent)}`) : ''}</small></div>
+      <div class="mp-row-r"><input type="number" inputmode="decimal" min="0" step="100" value="${cur ?? ''}" placeholder="上限" aria-label="${escHtml(c.label)} 每月上限"></div>`;
+    r.querySelector('input').addEventListener('change', async e => {
+      const v = parseFloat(e.target.value);
+      if (v > 0) await saveBudgetRecord(c.id, { amount: v, percent: null, allocation_mode: 'fixed' });
+      else { const ids = budgets.filter(b => b.category_id === c.id).map(b => b.id); if (ids.length) { const t = db.transaction(['budgets'], 'readwrite'); ids.forEach(id => t.objectStore('budgets').delete(id)); await new Promise(res => { t.oncomplete = res; t.onerror = res; }); } }
+      await syncEmergencyFundShortfall(); await rerender();
+    });
+    lb.appendChild(r);
+  });
+
+  // ── 比例參考（原「收入分配法」）─────────────────────────────────────────
+  const methodKey = settings.ref_method || (await getSetting(db, 'income_allocation_method', null)) || '532';
+  const presets = (await getSetting(db, 'income_allocation_presets', {})) || {};
+  const refJars = presets[methodKey]?.jars || INCOME_ALLOCATION_METHODS[methodKey]?.jars || [];
+  const ref = planMethodShares(refJars);
+  const mine = { spend: pctOf(plan.fixed.total + plan.living.total), save: pctOf(plan.save.total), invest: pctOf(plan.invest.total) };
+  const refCard = el('div', 'card'); refCard.className = 'card mp-sec';
+  refCard.innerHTML = `<div class="mp-sec-head"><span class="mp-ico" style="background:var(--surface-2)">🫙</span>
+    <div class="mp-sec-title"><b>比例參考</b><span>拿理財法則的建議比例，跟你的計畫比一比（只是參考，不會改任何數字）</span></div></div>
+    <div class="mp-sec-body">
+      <div class="mp-chips">${INCOME_ALLOCATION_ALL_KEYS.filter(k => !INCOME_ALLOCATION_CUSTOM_KEYS.includes(k) || presets[k]).map(k => `<button type="button" class="mp-chip${k === methodKey ? ' on' : ''}" data-mp-ref="${k}">${INCOME_ALLOCATION_METHODS[k].label}</button>`).join('')}</div>
+      <div class="mp-ref">
+        ${[['spend','花費（固定＋生活）'],['save','存下來'],['invest','投資']].map(([k, l]) => `
+          <div class="mp-ref-row"><span>${l}</span>
+            <div class="mp-ref-bars"><div><i style="width:${ref[k]}%"></i><em>建議 ${ref[k]}%</em></div><div class="is-mine"><i style="width:${Math.min(100, mine[k] ?? 0)}%"></i><em>你的 ${mine[k] != null ? mine[k] + '%' : '—'}</em></div></div>
+          </div>`).join('')}
+      </div>
+      <div class="mp-src">${INCOME_ALLOCATION_METHODS[methodKey]?.tagline ?? ''}</div>
+    </div>`;
+  refCard.querySelectorAll('[data-mp-ref]').forEach(b => b.addEventListener('click', async () => { await setSetting(db, 'monthly_plan', { ...settings, ref_method: b.dataset.mpRef }); await rerender(); }));
+  root.appendChild(refCard);
+
+  content.innerHTML = '';
+  content.appendChild(root);
+}
+
+// 「每月生活費」與緊急預備金月數設定。
+function openPlanBaseModal(settings) {
+  document.getElementById('planBaseFixed').value = settings.base_fixed ?? '';
+  document.getElementById('planEmergencyMonths').value = settings.emergency_months ?? 6;
+  document.getElementById('planBaseModal').classList.add('open');
+}
+document.getElementById('planBaseCancel').addEventListener('click', () => document.getElementById('planBaseModal').classList.remove('open'));
+document.getElementById('planBaseModal').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+document.getElementById('planBaseSave').addEventListener('click', async () => {
+  const s = (await getSetting(db, 'monthly_plan', null)) || {};
+  const v = parseFloat(document.getElementById('planBaseFixed').value);
+  const m = parseInt(document.getElementById('planEmergencyMonths').value);
+  await setSetting(db, 'monthly_plan', { ...s, base_fixed: v > 0 ? v : null, emergency_months: m > 0 ? Math.min(24, m) : 6 });
+  document.getElementById('planBaseModal').classList.remove('open');
+  showToast('已更新');
+  await renderMonthlyPlan();
+});
+
+// 存錢目標的彈窗可能從「存錢目標」頁或「每月計畫」頁打開，存檔後重畫打開它的那一頁。
+async function refreshBucketsContext() {
+  if (currentView === 'txnmanage' && _txnManageActiveTab === 'plan') await renderMonthlyPlan();
+  else await renderBuckets();
+}
 async function renderBuckets() {
   // 2026-09-26（見 §廿一之六）：資金池併入「記帳管理」整合頁之後，跟其他 7
   // 個子功能頁同一種寫法——改讀 _activeContentContainer，平常（側邊欄直接
@@ -8695,7 +9040,7 @@ document.getElementById('bucketModalDelete')?.addEventListener('click',async()=>
     await new Promise((res,rej)=>{t.oncomplete=res;t.onerror=()=>rej(t.error)});
     showToast('已刪除');
     await syncEmergencyFundShortfall();
-    await renderBuckets();
+    await refreshBucketsContext();
   });
 });
 document.getElementById('bucketModalSave').addEventListener('click',async()=>{
@@ -8738,14 +9083,14 @@ document.getElementById('bucketModalSave').addEventListener('click',async()=>{
   showToast(editId?'已更新':'已新增');
   await syncAutoBucketContributions();
   await syncEmergencyFundShortfall();
-  await renderBuckets();
+  await refreshBucketsContext();
 });
 
 // ── Bucket allocation (提撥) modal ───────────────────────────────────────────
-function openBucketAllocModal(bucket) {
+function openBucketAllocModal(bucket, prefillAmount = null) {
   document.getElementById('bucketAllocTargetLabel').textContent = `提撥到「${bucket.name}」`;
   document.getElementById('bucketAllocBucketId').value = bucket.id;
-  document.getElementById('bucketAllocAmount').value = '';
+  document.getElementById('bucketAllocAmount').value = prefillAmount > 0 ? Math.round(prefillAmount) : '';
   document.getElementById('bucketAllocDate').value = new Date().toISOString().slice(0,10);
   document.getElementById('bucketAllocNote').value = '';
   document.getElementById('bucketAllocModal').classList.add('open');
@@ -8765,7 +9110,7 @@ document.getElementById('bucketAllocModalSave').addEventListener('click',async()
   });
   document.getElementById('bucketAllocModal').classList.remove('open');
   showToast(`✓ 已提撥 NT$ ${fmt(amt)}`);
-  await renderBuckets();
+  await refreshBucketsContext();
 });
 
 // ── Project modal ────────────────────────────────────────────────────────────
@@ -10350,7 +10695,7 @@ async function renderRecurring() {
     const combinedCard = el('div','card'); combinedCard.style.cssText='padding:14px 16px;margin-bottom:16px';
     combinedCard.innerHTML = `<div style="font-size:11px;color:var(--text-3);margin-bottom:4px">🛡️ 保費每月約當支出（合併定期支出＋分期付款）</div>
       <div style="font-size:18px;font-weight:700;color:var(--red)">NT$ ${fmt(Math.round(combinedTotal))}</div>
-      <div style="font-size:10px;color:var(--text-3);margin-top:4px">這個數字會直接餵給「收入分配法」裡連結到保險的錢罐，當作它不管怎麼調整% 數都不能低於的下限。</div>`;
+      <div style="font-size:10px;color:var(--text-3);margin-top:4px">這個數字會算進「每月計畫」的固定支出。</div>`;
     content.appendChild(combinedCard);
 
     const card = el('div','card'); card.style.marginBottom='16px';
@@ -11422,7 +11767,7 @@ async function renderCalendar() {
         <div style="font-size:22px;font-weight:700;color:${ta.perDay>=0?'var(--green)':'var(--red)'};font-variant-numeric:tabular-nums">NT$ ${fmt(ta.perDay)}</div>
       </div>
       <div style="text-align:right;font-size:11px;color:var(--text-3);line-height:1.7">
-        本月預算 NT$ ${fmt(ta.totalBudget)}　已花 NT$ ${fmt(ta.spent)}<br>
+        生活預算 NT$ ${fmt(ta.totalBudget)}　已花 NT$ ${fmt(ta.spent)}<br>
         剩餘 NT$ ${fmt(ta.remaining)}　還有 ${ta.daysLeft} 天（含今天）
       </div>`;
     content.appendChild(allowCard);
@@ -12265,26 +12610,19 @@ const TXN_MANAGE_TABS = [
     summary: async () => `${(await getAll(db,'dca_schedules').catch(()=>[])).length} 筆` },
   { key:'installment',      label:'分期付款',       icon:'📅', render: () => renderInstallment(),
     summary: async () => `${(await getAll(db,'installments').catch(()=>[])).length} 筆` },
-  { key:'budgetplan',       label:'設定預算',       icon:'🎯', render: () => renderBudgetPlan(),
+  // v2.8.0：「設定預算」「收入分配法」併成「每月計畫」（見 renderMonthlyPlan）。
+  { key:'plan',             label:'每月計畫',       icon:'🧭', render: () => renderMonthlyPlan(),
     summary: async () => {
       const budgets = await getAll(db,'budgets').catch(()=>[]);
-      return resolveBudget(budgets, null, currentMonthStr()) != null ? '已設定' : '尚未設定';
+      const lv = resolveBudget(budgets, null, currentMonthStr());
+      return lv != null ? `生活預算 ${fmt(lv)}` : '尚未設定';
     } },
   // 2026-09-26（見 §廿一之六）：使用者用 AskUserQuestion 確認「資金池」要收納
   // 進這個整合頁——側邊欄原本的獨立「資金池」項目已經移除（見側邊欄 HTML 的
   // 說明），renderBuckets() 也已經改成讀 _activeContentContainer（見該函式
   // 開頭的說明），跟這裡其他 7 個子頁完全同一套機制，不需要另外處理。
-  { key:'goals',            label:'存錢計畫',       icon:'🧳', render: () => renderBuckets(),
+  { key:'goals',            label:'存錢目標',       icon:'🧳', render: () => renderBuckets(),
     summary: async () => `${(await getAll(db,'buckets').catch(()=>[])).filter(b=>b.status!=='closed').length} 個進行中` },
-  // 2026-10-01 新增：「收入分配法」——321/532/631/168/4321/六個錢包法等 6 種
-  // 預設財務規劃法則＋2 組自訂模式，每個法則底下的「錢罐」卡片連結既有的
-  // 資金池（專款儲蓄）或類別群組（類別監控），不是另一套平行的資料系統。
-  // 詳見 renderIncomeAllocation() 開頭的架構說明。
-  { key:'incomeAllocation', label:'收入分配法',     icon:'🫙', render: () => renderIncomeAllocation(),
-    summary: async () => {
-      const method = await getSetting(db, 'income_allocation_method', null);
-      return method ? `使用中：${INCOME_ALLOCATION_METHODS[method]?.label ?? method}` : '尚未設定';
-    } },
 ];
 // 2026-09-26（見 §廿三之二）：預設值從「固定選第一個子頁」改成 null（=顯示
 // 方格選單本身），子頁按鈕點下去、或其他頁面直接指定某個 tab 再 navigate
@@ -12302,6 +12640,8 @@ let _txnManageRenderToken = 0;
 async function renderTxnManage() {
   const content = document.getElementById('content');
   content.innerHTML = '';
+  // v2.8.0：舊的「設定預算」「收入分配法」入口一律導到每月計畫。
+  if (_txnManageActiveTab === 'budgetplan' || _txnManageActiveTab === 'incomeAllocation') _txnManageActiveTab = 'plan';
 
   if (!_txnManageActiveTab) {
     // v2.3.0（使用者要求：11 個區塊要不用上下滑動就能一次看完）：從 2 欄改成
@@ -12310,7 +12650,7 @@ async function renderTxnManage() {
     const groups = [
       { title:'支出', keys:['creditcard','recurring','subscriptions','insurance_exp','installment'] },
       { title:'轉帳與收入', keys:['transfer','rectransfer','recurring_income','dcaschedule'] },
-      { title:'規劃', keys:['budgetplan','goals','incomeAllocation'] },
+      { title:'規劃', keys:['plan','goals'] },
     ];
     const listed = new Set(groups.flatMap(g => g.keys));
     const leftovers = TXN_MANAGE_TABS.filter(t => !listed.has(t.key)).map(t => t.key);
@@ -14038,7 +14378,7 @@ const ONBOARDING_STEPS = [
   { key:'creditcards',  label:'信用卡',   icon:'💳' },
   { key:'recurring',    label:'固定支出', icon:'🔁' },
   { key:'recurringinc', label:'固定收入', icon:'💵' },
-  { key:'budget',       label:'本月預算', icon:'🎯' },
+  { key:'budget',       label:'生活預算', icon:'🧺' },
 ];
 
 async function finishOnboarding() {
@@ -14308,7 +14648,7 @@ async function stepBudget(body) {
   const thisMonth = currentMonthStr();
   const current = resolveBudget(budgets, null, thisMonth);
   body.innerHTML = `
-    <div style="font-size:13px;color:var(--text-2);margin-bottom:12px">這個月大概抓多少預算？這裡先設一個總額就好——這個數字就是「記帳管理 › 設定預算」最上面的「本月總預算」，兩邊改的是同一個，以最後存的為準。之後每個月會自動延續，改了從這個月開始生效。各分類的預算到「設定預算」頁再細分。</div>
+    <div style="font-size:13px;color:var(--text-2);margin-bottom:12px">每個月日常生活（吃飯、交通、購物等）大概花多少？這個數字就是「記帳管理 › 每月計畫」裡的生活預算，兩邊改的是同一個。之後每個月會自動延續；固定支出、存錢、投資跟各類別細分到「每月計畫」再設定。</div>
     <div style="display:flex;gap:8px;align-items:center">
       <input type="number" id="obBudgetInput" inputmode="decimal" placeholder="尚未設定" min="0" step="1" value="${current ?? ''}"
         style="max-width:200px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;box-sizing:border-box">
@@ -14318,7 +14658,7 @@ async function stepBudget(body) {
     const amt = parseFloat(document.getElementById('obBudgetInput').value);
     if (!amt || amt <= 0) { document.getElementById('obBudgetInput').style.borderColor='var(--red)'; return; }
     await saveBudgetRecord(null, { amount: amt });
-    showToast('✓ 本月總預算已設定（跟「設定預算」頁是同一個數字）');
+    showToast('✓ 生活預算已設定（跟「每月計畫」是同一個數字）');
   });
 }
 

@@ -1382,3 +1382,53 @@ export function ccPeriodStatus(card, fromDate = new Date()) {
   return { overdue, upcoming };
 }
 export function ccPeriodLabel(ym) { return `${Number(ym.slice(5, 7))} 月期`; }
+
+// ── 每月計畫（v2.8.0）──────────────────────────────────────────────────────
+// 使用者：「預算和收入分配做成兩套，彼此打架，讓我很困擾」。原本「設定預算」
+// 「收入分配法」「存錢計畫」三套各自回答「這個月能花多少」。合併成一條由上往
+// 下的計畫：本月可分配金額 → 固定支出 → 存下來 → 投資 → 生活預算（再細分到
+// 類別）→ 未分配。資料仍沿用原本的 store（recurring_expenses／installments／
+// buckets／dca_schedules／budgets），這裡只是把它們算成同一張表。
+//
+// 「生活支出」＝不含固定支出（定期支出、分期確認產生的）、不含從存錢目標專款
+// 支出（例如旅遊基金裡的花費）、不含系統類別的支出——生活預算只跟這部分比。
+const NON_LIVING_CATEGORIES = ['cat_dca', 'cat_bad_debt_writeoff'];
+export function isLivingExpense(t) {
+  return !t.rec_id && !t.inst_id && !t.bucket_id && !NON_LIVING_CATEGORIES.includes(t.category);
+}
+export function calcLivingSpent(expenseTxns, monthStr, accounts = [], fxRates = {}) {
+  return calcMonthlyExpenseTotal(expenseTxns.filter(isLivingExpense), monthStr, accounts, fxRates);
+}
+export function calcLivingSpentByCategory(expenseTxns, monthStr, accounts = [], fxRates = {}) {
+  return calcMonthlyExpenseByCategory(expenseTxns.filter(isLivingExpense), monthStr, accounts, fxRates);
+}
+
+/**
+ * 每月計畫的數字。基準：本月有實際收入（不含應收款入帳）就用實際收入，沒有就
+ * 用使用者自訂的「每月生活費」（使用者決定兩者都要——沒有收入的月份計畫才不
+ * 會整個變成 0）。
+ */
+export function calcMonthlyPlan({ income = 0, baseFixed = 0, recurringExpenses = [], installments = [],
+  dcaSchedules = [], buckets = [], livingBudget = null, fxRates = {} }) {
+  const base = income > 0 ? income : (baseFixed || 0);
+  const baseSource = income > 0 ? 'income' : (baseFixed > 0 ? 'fixed' : 'none');
+  const fixedItems = [
+    ...recurringExpenses.filter(r => !r.is_expired).map(r => ({ id: r.id, kind: 'recurring', name: r.name, category: r.category ?? 'general', amount: calcRecurringMonthlyEquivalent(r, fxRates) })),
+    ...installments.filter(i => (i.paid_periods || 0) < i.total_periods).map(i => ({ id: i.id, kind: 'installment', name: i.name, category: i.is_insurance ? 'insurance' : 'installment', amount: i.per_amount ?? Math.round(i.total_amount / i.total_periods) })),
+  ].filter(x => x.amount > 0).sort((a, b) => b.amount - a.amount);
+  const saveItems = buckets.filter(b => b.status !== 'closed').map(b => ({
+    id: b.id, name: b.name, isEmergency: !!b.is_emergency_fund, mode: b.contribution_mode === 'percent' ? 'percent' : 'fixed',
+    percent: b.income_percent ?? null, amount: Math.round(calcBucketMonthlyContribution(b, income) || 0),
+  })).sort((a, b) => (b.isEmergency - a.isEmergency) || (b.amount - a.amount));
+  const investItems = dcaSchedules.filter(d => !d.is_expired).map(d => ({ id: d.id, name: d.name, amount: calcRecurringMonthlyEquivalent(d, fxRates) })).filter(x => x.amount > 0);
+  const sum = xs => xs.reduce((s, x) => s + x.amount, 0);
+  const fixed = Math.round(sum(fixedItems)), save = Math.round(sum(saveItems)), invest = Math.round(sum(investItems));
+  const living = livingBudget ?? 0;
+  return {
+    base: Math.round(base), baseSource, income: Math.round(income), baseFixed: baseFixed || 0,
+    fixed: { total: fixed, items: fixedItems }, save: { total: save, items: saveItems },
+    invest: { total: invest, items: investItems }, living: { total: Math.round(living), set: livingBudget != null },
+    unassigned: Math.round(base - fixed - save - invest - living),
+    suggestedLiving: Math.max(0, Math.round(base - fixed - save - invest)),
+  };
+}
