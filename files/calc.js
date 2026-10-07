@@ -1452,7 +1452,7 @@ export function calcMonthlyPlan({ income = 0, baseFixed = 0, recurringExpenses =
     ...recurringExpenses.filter(r => !r.is_expired).map(r => ({ id: r.id, kind: 'recurring', name: r.name, category: r.category ?? 'general', amount: calcRecurringMonthlyEquivalent(r, fxRates) })),
     ...installments.filter(i => (i.paid_periods || 0) < i.total_periods).map(i => ({ id: i.id, kind: 'installment', name: i.name, category: i.is_insurance ? 'insurance' : 'installment', amount: i.per_amount ?? Math.round(i.total_amount / i.total_periods) })),
   ].filter(x => x.amount > 0).sort((a, b) => b.amount - a.amount);
-  const saveItems = buckets.filter(b => b.status !== 'closed').map(b => {
+  const saveItems = buckets.filter(b => b.status !== 'closed' && !b.is_income_buffer).map(b => {
     const c = calcBucketPlanContribution(b, income, baseFixed);
     return { id: b.id, name: b.name, isEmergency: !!b.is_emergency_fund, mode: b.contribution_mode === 'percent' ? 'percent' : 'fixed',
       percent: b.income_percent ?? null, amount: Math.round(c.amount || 0), fromEf: c.fromEf };
@@ -1592,14 +1592,23 @@ export function calcFrequentExpenses(expenseTxns, limit = 4, today = new Date())
 // 使用者：「有確實的計畫就不會有閒置資金」。所以這裡不設金額門檻，只抓兩種：
 // 計畫本身的漏洞（未分配）、以及用途對了但放錯地方的錢。
 export function calcIdleMoneyAlerts({ plan = null, spendable = null, essentials = 0, buckets = [], allocations = [], expenseTxns = [],
-  accounts = [], fxRates = {}, deposits = [], receivables = [], today = new Date(), efStorage = null }) {
+  accounts = [], fxRates = {}, deposits = [], receivables = [], today = new Date(), efStorage = null, storageChecks = null }) {
   const t = `${today.getFullYear()}-${pad2(today.getMonth() + 1)}-${pad2(today.getDate())}`;
   const daysSince = iso => iso ? Math.floor((new Date(t) - new Date(String(iso).slice(0, 10))) / 86400000) : null;
   const out = [];
   // v2.13.0：緊急預備金的存放帳戶本來就應該不動——不列入「久沒動」；餘額
   // 不夠撐住預備金帳面金額時，第一個提醒。
-  const efAccId = efStorage?.account?.id ?? null;
-  if (efStorage?.short > 0) out.push({ key: 'ef_short', icon: '🚨', title: `緊急預備金有 NT$ ${fmt(efStorage.short)} 沒有現金撐著`, body: `預備金記了 NT$ ${fmt(efStorage.have)}，但存放帳戶「${efStorage.account.name}」只有 NT$ ${fmt(efStorage.balanceTwd)}。把差額轉進這個帳戶，真的要用時才拿得出來。`, link: 'plan' });
+  // v2.16.0：所有指定了存放帳戶的存錢目標（依帳戶分組）；用途是「儲蓄」的帳戶
+  // 一樣不列入「久沒動」。
+  const quiet = new Set([efStorage?.account?.id, ...(storageChecks || []).map(c => c.account.id), ...accounts.filter(a => a.role === 'saving').map(a => a.id)].filter(Boolean));
+  const efAccId = null;
+  if (storageChecks) {
+    storageChecks.filter(c => c.short > 0).forEach(c => {
+      const hasEf = c.goals.some(g => g.isEmergency);
+      out.push({ key: `store_${c.account.id}`, icon: hasEf ? '🚨' : '🏦', title: `「${c.account.name}」少了 NT$ ${fmt(c.short)}，撐不住放在裡面的存錢目標`,
+        body: `${c.goals.map(g => `${g.name} ${fmt(g.amount)}`).join('、')}，合計 NT$ ${fmt(c.need)}；帳戶只有 NT$ ${fmt(c.balanceTwd)}。把差額轉進去，或改指定其他帳戶。`, link: 'goals' });
+    });
+  } else if (efStorage?.short > 0) out.push({ key: 'ef_short', icon: '🚨', title: `緊急預備金有 NT$ ${fmt(efStorage.short)} 沒有現金撐著`, body: `預備金記了 NT$ ${fmt(efStorage.have)}，但存放帳戶「${efStorage.account.name}」只有 NT$ ${fmt(efStorage.balanceTwd)}。把差額轉進這個帳戶，真的要用時才拿得出來。`, link: 'plan' });
   if (plan && plan.unassigned > 0 && plan.base > 0) out.push({ key: 'unassigned', icon: '🧭', title: `每月計畫還有 NT$ ${fmt(plan.unassigned)} 沒有安排用途`, body: '每個月都有這筆錢沒有去處，久了就會變成閒置資金。放進存下來、投資或生活預算。', link: 'plan' });
   if (spendable && essentials > 0 && spendable.free > essentials * 3) out.push({ key: 'free', icon: '💤', title: `可自由運用 NT$ ${fmt(spendable.free)}，超過 3 個月的必要開銷`, body: '預備金和各個目標都保留之後還有這麼多，可以替它安排一個存錢目標或投資。', link: 'plan' });
   const yearOut = new Date(today); yearOut.setFullYear(yearOut.getFullYear() + 1);
@@ -1611,11 +1620,11 @@ export function calcIdleMoneyAlerts({ plan = null, spendable = null, essentials 
   deposits.filter(d => (d.status ?? 'active') === 'active' && d.maturity_date && d.maturity_date < t).forEach(d => {
     out.push({ key: `dep_${d.id}`, icon: '🏦', title: `定存「${d.label ?? '定存'}」${daysSince(d.maturity_date)} 天前就到期了`, body: '到期後還沒處理（入帳或續存），錢可能只領活存利息。', link: 'settings:dep' });
   });
-  accounts.filter(a => a.id !== efAccId && a.include_in_total !== false && a.currency && a.currency !== 'TWD' && (a.balance || 0) > 0).forEach(a => {
+  accounts.filter(a => !quiet.has(a.id) && a.include_in_total !== false && a.currency && a.currency !== 'TWD' && (a.balance || 0) > 0).forEach(a => {
     const idle = daysSince(a.updated_at || a.created_at);
     if (idle != null && idle >= 90) out.push({ key: `fx_${a.id}`, icon: '💱', title: `外幣「${a.name}」${a.currency} ${fmt(a.balance, { currency: a.currency })} 已經 ${idle} 天沒有動`, body: `約 NT$ ${fmt(toTWD(a.balance, a.currency, fxRates))}。如果沒有要用的計畫，可以考慮外幣定存或換回台幣。`, link: 'settings:bank' });
   });
-  accounts.filter(a => a.id !== efAccId && a.include_in_total !== false && (!a.currency || a.currency === 'TWD') && (a.balance || 0) > 0).forEach(a => {
+  accounts.filter(a => !quiet.has(a.id) && a.include_in_total !== false && (!a.currency || a.currency === 'TWD') && (a.balance || 0) > 0).forEach(a => {
     const idle = daysSince(a.updated_at || a.created_at);
     if (idle != null && idle >= 180) out.push({ key: `acc_${a.id}`, icon: '🗃️', title: `帳戶「${a.name}」NT$ ${fmt(a.balance)} 已經 ${idle} 天沒有異動`, body: '是不是忘了這筆錢？確認一下餘額，或把它併到主要帳戶。', link: 'settings:bank' });
   });
@@ -1720,10 +1729,18 @@ export function calcAvgLivingSpend(expenseTxns = [], accounts = [], fxRates = {}
 // ── 沒有收入可以撐多久（v2.14.0）──────────────────────────────────────────
 // 三層：只用緊急預備金／現金與活存（含預備金）／全部資產（含投資、定存，
 // 需要賣出或解約）。都用每月必要開銷（固定支出＋生活預算）來除。
-export function calcRunway({ efHave = 0, liquid = 0, total = 0, essentials = 0 }) {
+export function calcRunway({ efHave = 0, liquid = 0, total = 0, essentials = 0, passiveMonthly = 0 }) {
   if (!(essentials > 0)) return null;
   const m = v => Math.max(0, v) / essentials;
-  return { essentials: Math.round(essentials), ef: m(efHave), liquid: m(liquid), total: m(total) };
+  // v2.16.0：有被動收入時，每個月只需要從存款拿「必要開銷－被動收入」；被動
+  // 收入已經付得起全部必要開銷時為 Infinity（可以一直撐下去）。
+  const net = essentials - (passiveMonthly || 0);
+  const mp = v => net <= 0 ? Infinity : Math.max(0, v) / net;
+  return {
+    essentials: Math.round(essentials), ef: m(efHave), liquid: m(liquid), total: m(total),
+    passiveMonthly: Math.round(passiveMonthly || 0), coverage: passiveMonthly > 0 ? passiveMonthly / essentials : 0,
+    efP: mp(efHave), liquidP: mp(liquid), totalP: mp(total),
+  };
 }
 
 // ── 年支出（財務自由試算用，v2.15.0）─────────────────────────────────────
@@ -1741,4 +1758,80 @@ export function calcAnnualSpend(expenseTxns = [], accounts = [], fxRates = {}, t
   if (months.length < 3) return null;
   const avg = months.reduce((s, m) => s + calcMonthlyExpenseTotal(tx, m, accounts, fxRates), 0) / months.length;
   return { months: months.length, monthly: Math.round(avg), annual: Math.round(avg * 12) };
+}
+
+// ── 被動收入（v2.16.0）───────────────────────────────────────────────────
+// 不工作也會進來的錢：預設股利（台股）、股息（美股）、利息收入；使用者可以在
+// 類別設定把其他收入類別標成被動收入（txn_categories.passive === true），或把
+// 預設的取消（passive === false）。看最近 12 個完整月份（股利一年只發一兩次，
+// 看單月會忽高忽低），月平均＝合計 ÷ 12。
+export const DEFAULT_PASSIVE_CATEGORIES = ['cat_div_tw', 'cat_div_us', 'cat_interest'];
+export function passiveCategoryIds(cats = []) {
+  const ids = new Set(DEFAULT_PASSIVE_CATEGORIES);
+  cats.forEach(c => { if (c.passive === true) ids.add(c.id); if (c.passive === false) ids.delete(c.id); });
+  return [...ids];
+}
+export function calcPassiveIncome(incomeTxns = [], cats = [], today = new Date()) {
+  const ids = passiveCategoryIds(cats);
+  const end = new Date(today.getFullYear(), today.getMonth(), 1);
+  const start = new Date(today.getFullYear(), today.getMonth() - 12, 1);
+  const iso = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-01`;
+  const from = iso(start), to = iso(end);
+  const annual = incomeTxns.filter(t => ids.includes(t.category) && t.date && t.date >= from && t.date < to)
+    .reduce((s, t) => s + resolveIncomeAmountTwd(t), 0);
+  return { annual: Math.round(annual), monthly: Math.round(annual / 12) };
+}
+
+// ── 收入緩衝（v2.16.0，收入不固定的人用）──────────────────────────────────
+// 使用者決定：計畫基準＝近 6 個完整月份經常性收入裡「最低的那個月」（只看有
+// 收入的月份——沒有收入的月份本來就是要靠緩衝撐的，不能拿來當基準）。比基
+// 準多的部分存進「收入緩衝」，比基準少的月份從緩衝補，緩衝用完才動用緊急預備金。
+export function calcBufferBase(incomeTxns = [], today = new Date(), n = 6) {
+  const reg = incomeTxns.filter(t => !t.irregular && t.date && !['cat_receivable', 'cat_dca'].includes(t.category));
+  const totals = [];
+  for (let i = n; i >= 1; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
+    const v = calcMonthlyIncomeTotal(reg, ym);
+    if (v > 0) totals.push({ ym, v });
+  }
+  if (!totals.length) return null;
+  const low = totals.reduce((a, b) => (b.v < a.v ? b : a));
+  return { base: Math.round(low.v), lowMonth: low.ym, months: totals.length };
+}
+
+// ── 帳戶分流（v2.16.0）───────────────────────────────────────────────────
+// 每個存放帳戶裡，存錢目標加起來應該有多少錢 vs 帳戶實際餘額。只看使用者有
+// 指定存放帳戶（buckets.store_account_id）的目標，沒指定的不管——虛擬分帳
+// 跟實際帳戶本來就不一定一一對應（使用者提醒）。
+export function calcStorageChecks({ buckets = [], allocations = [], expenseTxns = [], accounts = [], fxRates = {} }) {
+  const by = new Map();
+  buckets.filter(b => b.status !== 'closed' && b.store_account_id).forEach(b => {
+    const acc = accounts.find(a => a.id === b.store_account_id);
+    if (!acc) return;
+    const bal = Math.max(0, calcBucketAllocated(allocations, b.id) - calcBucketSpent(expenseTxns, b.id, accounts, fxRates));
+    const g = by.get(acc.id) ?? { account: acc, need: 0, goals: [] };
+    g.need += bal; g.goals.push({ id: b.id, name: b.name, amount: Math.round(bal), isEmergency: !!b.is_emergency_fund });
+    by.set(acc.id, g);
+  });
+  return [...by.values()].map(g => {
+    const balanceTwd = Math.round(toTWD(g.account.balance || 0, g.account.currency || 'TWD', fxRates) || 0);
+    return { ...g, need: Math.round(g.need), balanceTwd, short: Math.max(0, Math.round(g.need) - balanceTwd) };
+  });
+}
+
+// 轉帳費用估算：同銀行互轉（帳戶設定 same_bank_free 不是 false）免費；跨行用
+// 帳戶設定的每月免費次數（free_transfers）扣掉本月已經轉出的跨行次數，用完後
+// 每筆收 transfer_fee。沒設定免費次數就回傳 unknown（不猜銀行規則）。
+export function estimateTransferFees(lines = [], { source, accounts = [], transferLogs = [], month }) {
+  const bankOf = id => accounts.find(a => a.id === id)?.bank_id ?? null;
+  const isCross = toId => !(source.bank_id && bankOf(toId) === source.bank_id);
+  const usedCross = transferLogs.filter(l => l.from_account_id === source.id && String(l.created_at || l.date || '').slice(0, 7) === month && isCross(l.to_account_id)).length;
+  let remaining = source.free_transfers != null ? source.free_transfers - usedCross : null;
+  return lines.map(l => {
+    if (!isCross(l.toId)) return { ...l, kind: source.same_bank_free === false ? 'fee' : 'same', fee: source.same_bank_free === false ? (source.transfer_fee || 0) : 0 };
+    if (remaining == null) return { ...l, kind: 'unknown', fee: 0, usedCross };
+    if (remaining > 0) { remaining--; return { ...l, kind: 'free', fee: 0, left: remaining }; }
+    return { ...l, kind: 'fee', fee: source.transfer_fee || 0 };
+  });
 }
