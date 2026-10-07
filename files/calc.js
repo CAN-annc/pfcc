@@ -661,8 +661,10 @@ export function calcBucketPlanContribution(bucket, income, baseFixed = 0) {
  *     ・呆帳沖銷（cat_bad_debt_writeoff）——沒有實際付出現金。
  */
 const OVERSPEND_EXCLUDED_EXPENSE = ['cat_dca', 'cat_bad_debt_writeoff'];
-export function calcOverspend(incomeTxns, expenseTxns, monthStr, accounts = [], fxRates = {}, excludeIncome = ['cat_receivable']) {
-  const income = calcMonthlyIncomeTotal(incomeTxns, monthStr, excludeIncome);
+export function calcOverspend(incomeTxns, expenseTxns, monthStr, accounts = [], fxRates = {}, excludeIncome = ['cat_receivable'], earmarked = 0) {
+  // earmarked：本月已經直接撥進存錢目標的獎金（v2.12.0）——那筆錢已經有用途，
+  // 不能拿來抵本月的支出。
+  const income = calcMonthlyIncomeTotal(incomeTxns, monthStr, excludeIncome) - (earmarked || 0);
   const spent = calcMonthlyExpenseTotal(expenseTxns.filter(t => !t.bucket_id && !OVERSPEND_EXCLUDED_EXPENSE.includes(t.category)), monthStr, accounts, fxRates);
   return { income: Math.round(income), spent: Math.round(spent), overspend: Math.max(0, Math.round(spent - income)) };
 }
@@ -1618,4 +1620,33 @@ export function calcIdleMoneyAlerts({ plan = null, spendable = null, essentials 
     if (age != null && age >= (r.due_date ? 1 : 90)) out.push({ key: `recv_${r.id}`, icon: '🤝', title: `應收款「${r.name}」還有 NT$ ${fmt((r.total_amount || 0) - (r.received_amount || 0))} 沒收回`, body: r.due_date ? `約定的日期已經過了 ${age} 天。` : `已經 ${age} 天。可以提醒對方，或決定不再追討。`, link: 'settings:recv' });
   });
   return out;
+}
+
+// ── 獎金／非經常性收入（v2.12.0）────────────────────────────────────────
+// 使用者在記收入時自己決定要不要把這筆當成「非經常性」（獎金、年終、三節、
+// 退稅…）：勾了就不算進每月計畫的基準與收入百分比提撥，避免獎金月份把計畫
+// 撐大、多出一大筆「未分配」。沒勾就跟一般收入一起算。
+export function regularIncomeTxns(incomeTxns = []) {
+  return incomeTxns.filter(t => !t.irregular);
+}
+
+// ── 達標試算（v2.12.0）───────────────────────────────────────────────────
+// 從目前金額開始，每月存 monthly、每滿 12 個月再加一次 yearlyBonus，年報酬率
+// ratePct（按月複利，0＝不含報酬）。回傳達標要幾個月（600 個月內達不到為
+// null），以及含／不含報酬兩條路徑（每 12 個月一個點，畫圖用）。
+export function calcGoalProjection({ start = 0, target = 0, monthly = 0, yearlyBonus = 0, ratePct = 0, maxMonths = 600 }) {
+  const r = (ratePct || 0) / 100 / 12;
+  const run = rate => {
+    let v = start, hit = v >= target ? 0 : null;
+    const path = [{ m: 0, v: Math.round(v) }];
+    for (let m = 1; m <= maxMonths; m++) {
+      v = v * (1 + rate) + monthly + (m % 12 === 0 ? yearlyBonus : 0);
+      if (hit == null && v >= target) hit = m;
+      if (m % 12 === 0) path.push({ m, v: Math.round(v) });
+    }
+    return { months: hit, path };
+  };
+  const withReturn = run(r);
+  const noReturn = r > 0 ? run(0) : withReturn;
+  return { months: withReturn.months, monthsNoReturn: noReturn.months, path: withReturn.path, pathNoReturn: noReturn.path };
 }

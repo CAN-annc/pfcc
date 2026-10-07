@@ -342,6 +342,55 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .mp-ef .mp-ef-draw .k{margin:0;font-size:12px;font-weight:600;color:var(--text)}
 .mp-ef .mp-ef-draw b{font-size:12.5px;color:var(--red);font-weight:700;font-variant-numeric:tabular-nums}
 .mp-ef .mp-ef-draw small{grid-column:1/-1;font-size:11px;color:var(--text-3);line-height:1.5}
+.pj-card{padding:16px 18px}
+.pj-head{margin:12px 0 10px}
+.pj-head .pj-big{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text)}
+.pj-head .pj-big.is-miss{font-size:16px;color:var(--amber)}
+.pj-head span{display:block;font-size:12px;color:var(--text-2);margin-top:2px;line-height:1.5}
+.pj-chart{position:relative;height:120px;margin-right:64px}
+.pj-chart svg{display:block;width:100%;height:100%;overflow:visible}
+.pj-line{fill:none;stroke-width:2;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.pj-main{stroke:var(--green)}
+.pj-noret{stroke:var(--text-3);stroke-dasharray:4 4}
+.pj-target{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:2 3;vector-effect:non-scaling-stroke}
+.pj-hit{fill:transparent;cursor:default}
+.pj-tlabel{position:absolute;left:100%;margin-left:6px;transform:translateY(-50%);font-size:10px;color:var(--text-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pj-x{position:relative;height:16px;margin:4px 64px 8px 0;font-size:10px;color:var(--text-3)}
+.pj-x span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.pj-x span:first-child{transform:none}
+.pj-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:var(--text-2);margin-bottom:12px}
+.pj-legend span{display:inline-flex;align-items:center;gap:6px}
+.pj-legend i{display:inline-block;width:16px;height:0;border-top:2px solid}
+.pj-sw-main{border-color:var(--green)!important}
+.pj-sw-noret{border-color:var(--text-3)!important;border-top-style:dashed!important}
+.pj-sw-target{border-color:var(--amber)!important;border-top-style:dotted!important}
+.pj-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pj-inputs label{display:flex;flex-direction:column;gap:4px;margin:0;font-weight:400}
+.pj-inputs span{font-size:11px;color:var(--text-3)}
+.pj-inputs input{width:100%;font-size:16px;font-variant-numeric:tabular-nums}
+.mp-payday{display:flex;align-items:center;gap:12px;padding:10px 12px;margin-bottom:6px;border-radius:9px;border:1px solid color-mix(in srgb,var(--blue) 35%,transparent);background:color-mix(in srgb,var(--blue) 7%,transparent)}
+.mp-payday span{flex:1;min-width:0;font-size:11.5px;color:var(--text-2);line-height:1.5}
+.mp-payday b{display:block;font-size:13px;color:var(--text)}
+.mp-payday .btn{flex-shrink:0}
+.bonus-box{margin:4px 0 14px;padding:12px;border-radius:10px;background:var(--surface-2)}
+.bonus-check{display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-weight:400;margin:0}
+.bonus-check input{margin-top:3px;flex-shrink:0;width:16px;height:16px;accent-color:var(--blue)}
+.bonus-check span{font-size:11.5px;color:var(--text-3);line-height:1.55}
+.modal .bonus-check b{display:block;font-size:13px;color:var(--text);font-weight:600;margin-bottom:1px}
+.pd-row input[type=number],.pj-inputs input{padding:8px 10px;border:1px solid var(--border-2);border-radius:8px;background:var(--card);color:var(--text);font-size:16px;font-family:inherit;outline:none;box-sizing:border-box}
+.pd-row input[type=number]:focus,.pj-inputs input:focus{border-color:var(--blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 18%,transparent)}
+#incomeBonusAlloc{margin-top:12px}
+#incomeBonusAlloc .modal-field{margin-bottom:0}
+.pd-sub{font-size:12.5px;color:var(--text-2);line-height:1.6;margin:-4px 0 12px}
+.pd-list{display:flex;flex-direction:column;border-top:1px solid var(--border)}
+.pd-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.pd-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0;accent-color:var(--blue)}
+.pd-row .pd-n{flex:1;min-width:0;font-size:13.5px;font-weight:500}
+.pd-row .pd-n small{display:block;font-size:11px;color:var(--text-3);font-weight:400;margin-top:1px}
+.pd-row input[type=number]{width:104px;text-align:right;font-variant-numeric:tabular-nums}
+.pd-total{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 4px;font-size:13px;color:var(--text-2)}
+.pd-total b{font-size:18px;color:var(--text);font-variant-numeric:tabular-nums}
+.pd-hint{font-size:11px;color:var(--text-3);margin:0 0 4px}
 .sp-sub{display:flex;flex-direction:column;gap:3px;margin:-2px 0 2px 10px;font-size:11px;opacity:.8}
 .sp-sub .sp-it{display:flex;align-items:center;gap:8px;min-height:26px}
 .sp-sub .sp-it>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1282,6 +1331,21 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <div class="modal-actions">
       <button class="btn btn-ghost" id="deleteModalCancel">取消</button>
       <button class="btn btn-danger" id="deleteModalConfirm">確認刪除</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 發薪日一鍵撥入（v2.12.0）── -->
+<div class="modal-overlay" id="paydayModal">
+  <div class="modal">
+    <h2 id="paydayTitle">發薪了，先存起來</h2>
+    <p class="pd-sub">照每月計畫，這個月還沒撥滿的存錢目標。先存，剩下的才是生活費。</p>
+    <div id="paydayList" class="pd-list"></div>
+    <div class="pd-total"><span>合計</span><b id="paydayTotal">NT$ 0</b></div>
+    <p class="pd-hint">撥入是把錢記給存錢目標，不會動帳戶餘額。</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="paydaySkip">這個月先不要</button>
+      <button class="btn btn-primary" id="paydaySave">全部撥入</button>
     </div>
   </div>
 </div>
@@ -2622,6 +2686,21 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
 
+    <!-- v2.12.0：獎金／非經常性收入——由使用者自己決定要不要跟每月收入分開 -->
+    <div id="incomeBonusField" class="bonus-box">
+      <label class="bonus-check"><input type="checkbox" id="incomeIrregular"><span><b>這是獎金或一次性收入</b>年終、三節、績效獎金、退稅等。勾選後不算進每月計畫，可以整筆放進存錢目標；不勾就跟每月收入一起算。</span></label>
+      <div id="incomeBonusAlloc" class="field-row" style="display:none">
+        <div class="modal-field">
+          <label>放進存錢目標</label>
+          <select id="incomeBonusBucket"></select>
+        </div>
+        <div class="modal-field">
+          <label>放進多少（TWD）</label>
+          <input type="number" id="incomeBonusAmount" inputmode="decimal" min="0" step="1" placeholder="0">
+        </div>
+      </div>
+    </div>
+
     <div class="modal-field">
       <label>備註（選填）</label>
       <input type="text" id="incomeNote" placeholder="">
@@ -2705,7 +2784,7 @@ import {
   calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent,
   runDataHealthChecks,
   classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
-  calcMonthlyPlan, calcBucketPlanContribution, calcOverspend, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
+  calcMonthlyPlan, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
 } from './calc.js';
 
@@ -2972,21 +3051,18 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.11.0';
+const APP_VERSION = 'v2.12.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-07';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '緊急預備金改用新規則：本月支出超過收入（超支）時，差額自動由緊急預備金支應，紀錄上寫明支出與收入各多少；收入入帳後自動縮小或消失',
-  '用「收入百分比」撥款的存錢目標：本月還沒有收入時，改用每月生活費計算，這筆錢由緊急預備金支應',
-  '首頁「可自由運用」的 30 天內要付：每一項新增「已付」按鈕，直接確認本期',
-  '確認本期新增「這期不用我付」：例如室友付了房租，標記本期已處理但不記支出；可以馬上復原，或在定期支出、分期付款、定期定額清單上撤銷',
-  '刪除應收款的收款紀錄時，從收入記帳產生的那筆收入一起刪除，帳戶餘額與已收金額同步還原',
-  '「存錢計畫」全部統一改稱「存錢目標」；舊的「設定預算」「收入分配法」頁面程式移除',
-  '修正：定期支出、分期付款確認時，支出類別預設會選到「呆帳沖銷」——改為「帳單／水電」，之前記錯的會自動改正',
-  '投資屬性：上市股多一個資料來源（原本查不到的，例如廣達），上櫃股產業名稱正名（例如「櫃電腦週邊」→「電腦及週邊設備」），查詢失敗的結果不再被快取，重新判定會真的重查',
+  '發薪日一鍵撥入：記一筆薪水後，列出本月還沒撥滿的存錢目標，按一次全部撥入（先存再花）；每月計畫的「存下來」也可以隨時一次撥入',
+  '獎金與一次性收入：記收入時可以自己決定要不要分開——勾選後不算進每月計畫，並可整筆放進存錢目標；不勾就跟每月收入一起算',
+  '每月計畫的固定支出：每一項都顯示佔收入（或每月生活費）的百分比',
+  '資產 › 趨勢新增「存到目標要多久」：輸入目標、每月存多少、每年獎金、年報酬率，算出大約哪一年達到，並同時畫出不含報酬的線',
+  '資產 › 趨勢的每月儲蓄新增今年累計與去年全年存了多少',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3766,7 +3842,7 @@ async function renderHome() {
   ]);
   const planSettings = (await getSetting(db, 'monthly_plan', null)) || {};
   const month = currentMonthStr();
-  const plan = calcMonthlyPlan({ income: calcMonthlyIncomeTotal(incomeTxns, month, INCOME_PERCENT_EXCLUDED_CATEGORIES), baseFixed: Number(planSettings.base_fixed) || 0,
+  const plan = calcMonthlyPlan({ income: calcMonthlyIncomeTotal(regularIncomeTxns(incomeTxns), month, INCOME_PERCENT_EXCLUDED_CATEGORIES), baseFixed: Number(planSettings.base_fixed) || 0,
     recurringExpenses, installments, dcaSchedules, buckets, livingBudget: resolveBudget(budgets, null, month), fxRates });
   const essentials = plan.fixed.total + plan.living.total;
   const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses, installments, dcaSchedules, buckets, allocations, expenseTxns,
@@ -8629,7 +8705,8 @@ async function syncAutoBucketContributions() {
     getSetting(db,'monthly_plan',null).catch(()=>null),
   ]);
   const monthStr = currentMonthStr();
-  const income = calcMonthlyIncomeTotal(incomeTxns, monthStr, INCOME_PERCENT_EXCLUDED_CATEGORIES);
+  // v2.12.0：使用者標成獎金／非經常性的收入不算進百分比提撥的基準。
+  const income = calcMonthlyIncomeTotal(regularIncomeTxns(incomeTxns), monthStr, INCOME_PERCENT_EXCLUDED_CATEGORIES);
   const baseFixed = planSettings?.base_fixed || 0;
   const efBucket = buckets.find(b => b.is_emergency_fund && b.status !== 'closed') || null;
   const today = new Date().toISOString().slice(0,10);
@@ -8690,7 +8767,9 @@ async function syncEmergencyFundShortfall() {
   const monthStr = currentMonthStr();
   const existing = allocations.find(a => a.auto_type === 'shortfall' && a.auto_month === monthStr);
   const emergencyBucket = buckets.find(b => b.is_emergency_fund && b.status !== 'closed');
-  const { income, spent, overspend } = calcOverspend(incomeTxns, expenseTxns, monthStr, accounts, fxRates, INCOME_PERCENT_EXCLUDED_CATEGORIES);
+  // v2.12.0：本月直接撥進存錢目標的獎金已有用途，不拿來抵支出。
+  const earmarked = allocations.filter(a => a.auto_type === 'bonus' && (a.date || '').slice(0, 7) === monthStr).reduce((s, a) => s + (a.amount || 0), 0);
+  const { income, spent, overspend } = calcOverspend(incomeTxns, expenseTxns, monthStr, accounts, fxRates, INCOME_PERCENT_EXCLUDED_CATEGORIES, earmarked);
   if (emergencyBucket && overspend > 0) {
     const row = {
       id: existing?.id || crypto.randomUUID(),
@@ -8727,6 +8806,63 @@ async function syncPlanAutoRows() {
 // 收入分配法（321、532…）不再是獨立的一套，只剩「比例參考」：把那個法則的
 // 建議比例跟你的計畫並排比較。
 // ════════════════════════════════════════════════════════════════════════════
+// ── 發薪日一鍵撥入（v2.12.0）────────────────────────────────────────────
+// 「先存再花」：記了一筆薪水之後，把每月計畫裡固定金額的存錢目標本月還沒撥
+// 滿的部分列出來，一次撥入。也可以從每月計畫的「存下來」手動打開。
+// 本月已撥＝本月日期、正數、不含獎金撥入（獎金是另外的錢，不算進每月結構）。
+function calcPaydayGaps(buckets, allocations, month = currentMonthStr()) {
+  return buckets.filter(b => b.status !== 'closed' && b.contribution_mode !== 'percent' && b.monthly_amount > 0)
+    .map(b => {
+      const done = allocations.filter(a => a.bucket_id === b.id && (a.date || '').slice(0, 7) === month && a.amount > 0 && a.auto_type !== 'bonus' && !a.auto)
+        .reduce((s, a) => s + a.amount, 0);
+      return { bucket: b, done, gap: Math.max(0, Math.round(b.monthly_amount - done)) };
+    })
+    .filter(x => x.gap > 0)
+    .sort((a, b) => (b.bucket.is_emergency_fund ? 1 : 0) - (a.bucket.is_emergency_fund ? 1 : 0));
+}
+async function openPaydayModal({ fromIncome = false } = {}) {
+  const month = currentMonthStr();
+  if (fromIncome && (await getSetting(db, 'payday_skip_month', null).catch(() => null)) === month) return;
+  const [buckets, allocations] = await Promise.all([getAll(db,'buckets').catch(()=>[]), getAll(db,'bucket_allocations').catch(()=>[])]);
+  const gaps = calcPaydayGaps(buckets, allocations, month);
+  if (!gaps.length) { if (!fromIncome) showToast('本月的存錢目標都已經撥滿了'); return; }
+  const modal = document.getElementById('paydayModal');
+  document.getElementById('paydayTitle').textContent = fromIncome ? '發薪了，先存起來' : '本月存下來';
+  document.getElementById('paydaySkip').style.display = fromIncome ? '' : 'none';
+  const list = document.getElementById('paydayList');
+  list.innerHTML = gaps.map((g, i) => `<label class="pd-row"><input type="checkbox" data-pd-on="${i}" checked>
+    <span class="pd-n">${g.bucket.is_emergency_fund ? '🚨 ' : ''}${escHtml(g.bucket.name)}<small>每月 NT$ ${fmt(g.bucket.monthly_amount)}${g.done > 0 ? `・本月已撥 ${fmt(g.done)}` : ''}</small></span>
+    <input type="number" inputmode="decimal" min="0" step="100" value="${g.gap}" data-pd-amt="${i}" aria-label="${escHtml(g.bucket.name)} 撥入金額"></label>`).join('');
+  const total = () => {
+    let t = 0;
+    gaps.forEach((g, i) => { if (list.querySelector(`[data-pd-on="${i}"]`).checked) t += parseFloat(list.querySelector(`[data-pd-amt="${i}"]`).value) || 0; });
+    document.getElementById('paydayTotal').textContent = `NT$ ${fmt(Math.round(t))}`;
+    document.getElementById('paydaySave').disabled = !(t > 0);
+    return t;
+  };
+  list.oninput = total; list.onchange = total; total();
+  document.getElementById('paydaySave').onclick = async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    let n = 0, sum = 0;
+    for (const [i, g] of gaps.entries()) {
+      const amt = parseFloat(list.querySelector(`[data-pd-amt="${i}"]`).value) || 0;
+      if (!list.querySelector(`[data-pd-on="${i}"]`).checked || !(amt > 0)) continue;
+      await putOne(db, 'bucket_allocations', { id: crypto.randomUUID(), bucket_id: g.bucket.id, amount: Math.round(amt), date: today, note: '每月撥入', created_at: new Date().toISOString() });
+      n++; sum += Math.round(amt);
+    }
+    modal.classList.remove('open');
+    if (n) showToast(`✓ 已撥入 ${n} 個存錢目標，共 NT$ ${fmt(sum)}`);
+    await refreshAfterIncomeSaved();
+  };
+  document.getElementById('paydaySkip').onclick = async () => {
+    await setSetting(db, 'payday_skip_month', month).catch(() => {});
+    modal.classList.remove('open');
+    showToast('這個月不再提醒；之後可以在「計畫 › 存下來」一次撥入');
+  };
+  modal.classList.add('open');
+}
+document.getElementById('paydayModal').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+
 function planMethodShares(jars) {
   const out = { spend: 0, save: 0, invest: 0 };
   (jars || []).forEach(j => {
@@ -8749,7 +8885,8 @@ async function renderMonthlyPlan() {
   const baseFixed = Number(settings.base_fixed) || 0;
   const emergencyMonths = Number(settings.emergency_months) || 6;
   const month = currentMonthStr();
-  const income = calcMonthlyIncomeTotal(incomeTxns, month, INCOME_PERCENT_EXCLUDED_CATEGORIES);
+  const income = calcMonthlyIncomeTotal(regularIncomeTxns(incomeTxns), month, INCOME_PERCENT_EXCLUDED_CATEGORIES);
+  const irregularIncome = calcMonthlyIncomeTotal(incomeTxns.filter(t => t.irregular), month, INCOME_PERCENT_EXCLUDED_CATEGORIES);
   const livingBudget = resolveBudget(budgets, null, month);
   const plan = calcMonthlyPlan({ income, baseFixed, recurringExpenses, installments, dcaSchedules, buckets, livingBudget, fxRates });
   const expenseCats = cats.filter(c => c.type === 'expense' && c.active !== false && !['cat_dca','cat_bad_debt_writeoff'].includes(c.id))
@@ -8782,7 +8919,7 @@ async function renderMonthlyPlan() {
   const denom = Math.max(plan.base, segs.reduce((s, [, v]) => s + v, 0)) || 1;
   hero.innerHTML = `
     <div class="mp-hero-top">
-      <div><div class="mp-k">本月可分配</div><div class="mp-big">${money(plan.base)}</div><div class="mp-src">${srcText}</div></div>
+      <div><div class="mp-k">本月可分配</div><div class="mp-big">${money(plan.base)}</div><div class="mp-src">${srcText}</div>${irregularIncome > 0 ? `<div class="mp-src">另有獎金／一次性收入 ${money(irregularIncome)}，不算進計畫</div>` : ''}</div>
       <button class="btn btn-ghost btn-sm" data-mp-base>每月生活費</button>
     </div>
     <div class="mp-bar">${segs.map(([k, v]) => v > 0 ? `<span style="flex:${v};background:${COLORS[k]}"></span>` : '').join('')}${plan.unassigned > 0 ? `<span style="flex:${plan.unassigned};background:repeating-linear-gradient(45deg,${COLORS.free}55 0 4px,transparent 4px 8px);border:1px dashed ${COLORS.free}"></span>` : ''}</div>
@@ -8819,7 +8956,7 @@ async function renderMonthlyPlan() {
   const fb = section('fixed', '🔁', '固定支出', plan.fixed.total, '從定期支出、訂閱、保險、分期自動帶入（每月約當金額）',
     [linkBtn('管理定期支出', 'recurring'), linkBtn('分期付款', 'installment')]);
   fb.innerHTML = plan.fixed.items.length
-    ? plan.fixed.items.map(i => row(escHtml(i.name), money(i.amount), FIXED_KIND[i.category] ?? '定期支出')).join('')
+    ? plan.fixed.items.map(i => row(escHtml(i.name), money(i.amount), `${FIXED_KIND[i.category] ?? '定期支出'}${plan.base > 0 ? `・佔${plan.baseSource === 'income' ? '收入' : '每月生活費'} ${(i.amount / plan.base * 100).toFixed(i.amount / plan.base < 0.1 ? 1 : 0)}%` : ''}`)).join('')
     : `<div class="mp-empty">還沒有定期支出。房租、電話費、保費等每月固定要付的，記在「定期支出」會自動出現在這裡。</div>`;
 
   // 2 存下來（緊急預備金優先）
@@ -8858,9 +8995,21 @@ async function renderMonthlyPlan() {
     }
   }
   sb.appendChild(efBox);
+  // v2.12.0：先存再花——本月還沒撥滿的固定金額目標，一次撥入
+  {
+    const gaps = calcPaydayGaps(buckets, allocations, month);
+    if (gaps.length) {
+      const bar = el('div'); bar.className = 'mp-payday';
+      const sum = gaps.reduce((t, g) => t + g.gap, 0);
+      bar.innerHTML = `<span><b>本月還有 NT$ ${fmt(sum)} 沒撥入</b>${gaps.length} 個存錢目標。發薪後先存，剩下的才是生活費。</span>`;
+      const go = el('button', 'btn btn-primary btn-sm'); go.textContent = '一次撥入';
+      go.addEventListener('click', () => openPaydayModal());
+      bar.appendChild(go); sb.appendChild(bar);
+    }
+  }
   plan.save.items.forEach(it => {
     const b = buckets.find(x => x.id === it.id);
-    const monthAlloc = allocations.filter(a => a.bucket_id === it.id && (a.date || '').slice(0, 7) === month && a.amount > 0).reduce((s, a) => s + a.amount, 0);
+    const monthAlloc = allocations.filter(a => a.bucket_id === it.id && (a.date || '').slice(0, 7) === month && a.amount > 0 && a.auto_type !== 'bonus').reduce((s, a) => s + a.amount, 0);
     const r = el('div'); r.className = 'mp-row mp-edit';
     r.innerHTML = `<div class="mp-row-l">${it.isEmergency ? '🚨 ' : ''}${escHtml(it.name)}<small>${it.mode === 'percent' ? (it.fromEf ? `本月還沒有收入：每月生活費的 ${it.percent}%，由緊急預備金支應` : `收入的 ${it.percent}%（自動撥入）`) : `本月已撥 ${money(monthAlloc)}`}</small></div>
       <div class="mp-row-r"><input type="number" inputmode="decimal" min="0" step="100" value="${it.mode === 'percent' ? '' : (b.monthly_amount ?? '')}" placeholder="${it.mode === 'percent' ? fmt(it.amount) : '每月'}" aria-label="${escHtml(it.name)} 每月金額"></div>`;
@@ -8987,7 +9136,7 @@ async function renderBuckets() {
     getAll(db,'accounts').catch(()=>[]),
   ]);
   const fxRates = await getFxRates(db);
-  const monthlyIncomeTotal = calcMonthlyIncomeTotal(incomeTxns, currentMonthStr(), INCOME_PERCENT_EXCLUDED_CATEGORIES);
+  const monthlyIncomeTotal = calcMonthlyIncomeTotal(regularIncomeTxns(incomeTxns), currentMonthStr(), INCOME_PERCENT_EXCLUDED_CATEGORIES);
 
   const toolbar = el('div');
   toolbar.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:4px';
@@ -10008,6 +10157,15 @@ async function reverseIncomeSideEffects(t) {
         ...recv, received_amount: newReceived,
         is_settled: !!recv.write_off || (newReceived >= recv.total_amount && recv.total_amount > 0),
       });
+    }
+  }
+  // v2.12.0：這筆收入當初直接撥進存錢目標的獎金，一起撤銷。
+  {
+    const linked = (await getAll(db, 'bucket_allocations').catch(() => [])).filter(a => a.income_txn_id === t.id);
+    if (linked.length) {
+      const tr = db.transaction(['bucket_allocations'], 'readwrite');
+      linked.forEach(a => tr.objectStore('bucket_allocations').delete(a.id));
+      await new Promise((res, rej) => { tr.oncomplete = res; tr.onerror = () => rej(tr.error); });
     }
   }
   if (t.dca_holding_id && t.dca_shares) {
@@ -13645,6 +13803,41 @@ async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null
   // 確認這三種情境（見 §廿六之 d／f）。
   wireAffectsToggle('incomeAffectsToggle', 'incomeAffectsThumb', txn ? (txn.affects_balance ?? true) : true);
 
+  // v2.12.0：獎金／一次性收入（使用者自己決定要不要跟每月收入分開）
+  {
+    const goals = (await getAll(db,'buckets').catch(()=>[])).filter(b => b.status !== 'closed')
+      .sort((a, b) => (b.is_emergency_fund ? 1 : 0) - (a.is_emergency_fund ? 1 : 0));
+    const irr = document.getElementById('incomeIrregular');
+    const allocBox = document.getElementById('incomeBonusAlloc');
+    const bSel = document.getElementById('incomeBonusBucket');
+    const bAmt = document.getElementById('incomeBonusAmount');
+    bSel.innerHTML = `<option value="">不放（留在帳戶裡）</option>` + goals.map(g => `<option value="${g.id}">${g.is_emergency_fund ? '🚨 ' : ''}${escHtml(g.name)}</option>`).join('');
+    irr.checked = !!txn?.irregular;
+    bSel.value = txn?.bonus_bucket_id ?? (goals.find(g => !g.is_emergency_fund)?.id ?? goals[0]?.id ?? '');
+    bAmt.value = txn?.bonus_amount ?? '';
+    bAmt.dataset.touched = txn?.bonus_amount != null ? '1' : '';
+    const twdAmount = () => {
+      const a = parseFloat(document.getElementById('incomeAmount').value) || 0;
+      const fxShown = document.getElementById('incomeFxField').style.display !== 'none';
+      return Math.round(a * (fxShown ? (parseFloat(document.getElementById('incomeFxRate').value) || 0) : 1));
+    };
+    const sync = () => {
+      allocBox.style.display = irr.checked ? '' : 'none';
+      if (irr.checked && !bAmt.dataset.touched) bAmt.value = twdAmount() || '';
+    };
+    irr.onchange = sync;
+    bAmt.oninput = () => { bAmt.dataset.touched = '1'; };
+    document.getElementById('incomeAmount').oninput = sync;
+    sync();
+    const refreshBonusVisibility = () => {
+      const t = catSelEl.options[catSelEl.selectedIndex]?.text ?? '';
+      document.getElementById('incomeBonusField').style.display = (t.includes('定期定額') || t.includes('應收款')) ? 'none' : '';
+    };
+    const prevCatChange = catSelEl.onchange;
+    catSelEl.onchange = () => { prevCatChange?.(); refreshBonusVisibility(); };
+    refreshBonusVisibility();
+  }
+
   document.getElementById('incomeModal').classList.add('open');
   document.getElementById('incomeDesc').focus();
 }
@@ -13667,6 +13860,7 @@ async function saveIncomeRecord(input) {
   const {
     editId = null, date, category, description = '', amount = 0, accId = null, note = '',
     fxRateTwd = null, affects = true, receivableId = null, dca = null, confirmDca = null,
+    irregular = false, bonus = null,
   } = input;
   if (!date) return { ok:false, error:'請選擇日期' };
 
@@ -13779,6 +13973,23 @@ async function saveIncomeRecord(input) {
     }
   }
 
+  // v2.12.0：獎金／一次性收入。舊的獎金撥入（編輯時）已在上面
+  // reverseIncomeSideEffects 刪掉，這裡依新值重建。撥入金額以台幣計、最多整筆。
+  let bonusAllocated = 0;
+  txn.irregular = !!irregular && !dca && !txn.receivable_id;
+  delete txn.bonus_bucket_id; delete txn.bonus_amount;
+  if (txn.irregular && bonus?.bucketId && bonus.amount > 0) {
+    bonusAllocated = Math.min(Math.round(bonus.amount), Math.round(txn.amount * rate));
+    if (bonusAllocated > 0) {
+      txn.bonus_bucket_id = bonus.bucketId; txn.bonus_amount = bonusAllocated;
+      await putOne(db, 'bucket_allocations', {
+        id: crypto.randomUUID(), bucket_id: bonus.bucketId, amount: bonusAllocated, date,
+        note: `獎金撥入${description ? '：' + description : ''}`, auto_type: 'bonus', income_txn_id: txn.id,
+        created_at: new Date().toISOString(),
+      });
+    }
+  }
+
   await putOne(db, 'income_txns', txn);
 
   if (dcaItem) await putOne(db,'dca_schedules',{...dcaItem, last_confirmed_date: confirmDca.occDate || date});
@@ -13788,7 +13999,7 @@ async function saveIncomeRecord(input) {
   await syncAutoBucketContributions().catch(e=>console.warn('[sync auto buckets]', e));
   await syncEmergencyFundShortfall().catch(e=>console.warn('[sync emergency fund]', e));
 
-  return { ok:true, txn, deferBalance, clampedFrom };
+  return { ok:true, txn, deferBalance, clampedFrom, bonusAllocated };
 }
 
 document.getElementById('incomeModalSave').addEventListener('click', async () => {
@@ -13821,6 +14032,11 @@ document.getElementById('incomeModalSave').addEventListener('click', async () =>
       shares:      parseFloat(document.getElementById('incomeDcaShares').value)||null,
     } : null,
     confirmDca: confirmDcaId ? { id: confirmDcaId, occDate: confirmOccDate || date } : null,
+    irregular: !isDca && !isRecv && document.getElementById('incomeIrregular').checked,
+    bonus: {
+      bucketId: document.getElementById('incomeBonusBucket').value || null,
+      amount: parseFloat(document.getElementById('incomeBonusAmount').value) || 0,
+    },
   });
   if (!res.ok) { showToast(res.error); return; }
   if (res.clampedFrom != null) {
@@ -13831,9 +14047,14 @@ document.getElementById('incomeModalSave').addEventListener('click', async () =>
   if (res.clampedFrom == null) {
     showToast(editId
       ? '收入記錄已更新'
-      : (res.deferBalance ? `✓ 收入已記錄（帳戶餘額將於 ${fmtDate(date)} 才變動）` : '✓ 收入已記錄'));
+      : (res.deferBalance ? `✓ 收入已記錄（帳戶餘額將於 ${fmtDate(date)} 才變動）` : '✓ 收入已記錄')
+        + (res.bonusAllocated ? `，已放進存錢目標 NT$ ${fmt(res.bonusAllocated)}` : ''));
   }
   await refreshAfterIncomeSaved();
+  // v2.12.0：記了一筆薪水（新增、不是獎金）→ 問要不要把本月該存的一次撥入
+  if (!editId && !res.txn.irregular && !isDca && !isRecv && res.txn.amount > 0 && (res.txn.category === 'cat_salary' || catText.includes('薪'))) {
+    await openPaydayModal({ fromIncome: true });
+  }
 });
 
 // 收入存檔後要留在原本的頁面／頁籤重繪（收入彈窗、統一「確認本期」彈窗共用）。
@@ -13953,7 +14174,7 @@ async function loadPlanContext() {
   const fxRates = await getFxRates(db).catch(()=>({}));
   const settings = (await getSetting(db, 'monthly_plan', null)) || {};
   const month = currentMonthStr();
-  const plan = calcMonthlyPlan({ income: calcMonthlyIncomeTotal(incomeTxns, month, INCOME_PERCENT_EXCLUDED_CATEGORIES), baseFixed: Number(settings.base_fixed) || 0,
+  const plan = calcMonthlyPlan({ income: calcMonthlyIncomeTotal(regularIncomeTxns(incomeTxns), month, INCOME_PERCENT_EXCLUDED_CATEGORIES), baseFixed: Number(settings.base_fixed) || 0,
     recurringExpenses, installments, dcaSchedules, buckets, livingBudget: resolveBudget(budgets, null, month), fxRates });
   return { plan, settings, essentials: plan.fixed.total + plan.living.total, buckets, allocations, dcaSchedules, incomeTxns, recurringExpenses, installments, fxRates };
 }
@@ -13997,6 +14218,15 @@ async function buildSavingsCard() {
   const fxRates = await getFxRates(db).catch(()=>({}));
   const series = calcMonthlySavingsSeries(incomeTxns, expenseTxns, lastNMonths(6), accounts, fxRates);
   const { plan } = await loadPlanContext();
+  // v2.12.0：一年存了多少（今年 1 月到現在、去年全年）
+  const yr = new Date().getFullYear();
+  const monthsOf = (y, upto = 12) => Array.from({ length: upto }, (_, i) => `${y}-${String(i + 1).padStart(2, '0')}`);
+  const sumSaved = ms => calcMonthlySavingsSeries(incomeTxns, expenseTxns, ms, accounts, fxRates).reduce((t, x) => t + x.saved, 0);
+  const thisYear = sumSaved(monthsOf(yr, new Date().getMonth() + 1));
+  const hasLastYear = incomeTxns.some(t => (t.date || '').startsWith(String(yr - 1))) || expenseTxns.some(t => (t.date || '').startsWith(String(yr - 1)));
+  const lastYear = hasLastYear ? sumSaved(monthsOf(yr - 1)) : null;
+  const bonusThisYear = incomeTxns.filter(t => t.irregular && (t.date || '').startsWith(String(yr)) && t.category !== 'cat_receivable').reduce((t, x) => t + resolveIncomeAmountTwd(x), 0);
+  const sMoney = v => `${v < 0 ? '−' : ''}NT$ ${fmt(Math.abs(Math.round(v)))}`;
   const target = plan.save.total + plan.invest.total;
   const card = el('div', 'card'); card.className = 'card sv-card';
   const maxAbs = Math.max(1, target, ...series.map(x => Math.abs(x.saved)));
@@ -14011,6 +14241,8 @@ async function buildSavingsCard() {
     <div class="sv-stats">
       <div><span>本月</span><b style="color:${cur.saved >= 0 ? 'var(--green)' : 'var(--red)'}">${cur.saved < 0 ? '−' : ''}NT$ ${fmt(Math.abs(cur.saved))}</b><em>${cur.rate != null ? `儲蓄率 ${Math.round(cur.rate)}%` : '本月還沒有收入'}</em></div>
       <div><span>近 6 個月平均</span><b>${avg < 0 ? '−' : ''}NT$ ${fmt(Math.abs(avg))}</b><em>${target > 0 ? `計畫每月存＋投資 NT$ ${fmt(target)}` : '還沒設定存下來／投資'}</em></div>
+      <div><span>${yr} 年累計（1–${new Date().getMonth() + 1} 月）</span><b style="color:${thisYear >= 0 ? 'var(--green)' : 'var(--red)'}">${sMoney(thisYear)}</b><em>${bonusThisYear > 0 ? `其中獎金收入 NT$ ${fmt(Math.round(bonusThisYear))}` : '收入－支出加總'}</em></div>
+      <div><span>${yr - 1} 年全年</span><b>${lastYear == null ? '—' : sMoney(lastYear)}</b><em>${lastYear == null ? '沒有去年的紀錄' : '收入－支出加總'}</em></div>
     </div>
     <div class="sv-chart" style="height:${H}px">
       ${target > 0 ? `<div class="sv-target" style="bottom:${H - zeroY + target * scale}px"><span>計畫 ${fmt(target)}</span></div>` : ''}
@@ -14023,6 +14255,76 @@ async function buildSavingsCard() {
     </div>
     <div class="sv-x">${series.map(x => `<span>${Number(x.month.slice(5))}月</span>`).join('')}</div>
     <div class="sv-table">${series.slice().reverse().map(x => `<div><span>${x.month.replace('-', '/')}</span><span>收 ${fmt(x.income)}</span><span>支 ${fmt(x.expense)}</span><b style="color:${x.saved >= 0 ? 'var(--green)' : 'var(--red)'}">${x.saved < 0 ? '−' : '+'}${fmt(Math.abs(x.saved))}</b></div>`).join('')}</div>`;
+  return card;
+}
+
+// ── 達標試算（v2.12.0）──────────────────────────────────────────────────
+// 「存到 100 萬要多久」：從目前總資產開始，每月存多少＋每年獎金存多少＋假設
+// 年報酬率。報酬率預設 0，填了也同時顯示「不含報酬」那條線——看得出哪部分
+// 靠存、哪部分靠市場（使用者看到的參考貼文把報酬估得偏樂觀）。
+const PROJ_MAX_MONTHS = 600;
+async function buildProjectionCard(currentTotal) {
+  const { plan, incomeTxns, allocations } = await loadPlanContext();
+  const saved = (await getSetting(db, 'goal_projection', null).catch(() => null)) || {};
+  const yearAgo = new Date(); yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+  const ya = yearAgo.toISOString().slice(0, 10);
+  const bonusDefault = Math.round(allocations.filter(a => a.auto_type === 'bonus' && (a.date || '') >= ya).reduce((t, a) => t + a.amount, 0));
+  const nextMillion = Math.max(1, Math.ceil((currentTotal + 1) / 1e6)) * 1e6;
+  const v = {
+    target: saved.target ?? nextMillion,
+    monthly: saved.monthly ?? Math.max(0, plan.save.total + plan.invest.total),
+    bonus: saved.bonus ?? bonusDefault,
+    rate: saved.rate ?? 0,
+  };
+  const card = el('div', 'card'); card.className = 'card pj-card';
+  const draw = () => {
+    const pj = calcGoalProjection({ start: currentTotal, target: v.target, monthly: v.monthly, yearlyBonus: v.bonus, ratePct: v.rate, maxMonths: PROJ_MAX_MONTHS });
+    const dur = m => m == null ? null : m === 0 ? '已經達到' : `${m >= 12 ? `${Math.floor(m / 12)} 年` : ''}${m % 12 ? ` ${m % 12} 個月` : ''}`.trim();
+    const when = m => { const d = new Date(); d.setMonth(d.getMonth() + m); return `${d.getFullYear()} 年 ${d.getMonth() + 1} 月`; };
+    const headline = pj.months == null
+      ? `<b class="pj-big is-miss">照這個速度 ${PROJ_MAX_MONTHS / 12} 年內到不了</b><span>提高每月存的金額，或把獎金也放進來試試。</span>`
+      : pj.months === 0 ? `<b class="pj-big">已經達到了</b><span>目前總資產已超過目標，可以把目標往上調。</span>`
+      : `<b class="pj-big">約 ${dur(pj.months)}</b><span>${when(pj.months)}左右達到 NT$ ${fmt(v.target)}${v.rate > 0 ? `・不含報酬：${pj.monthsNoReturn == null ? `${PROJ_MAX_MONTHS / 12} 年內到不了` : `約 ${dur(pj.monthsNoReturn)}`}` : ''}</span>`;
+    // 圖：每年一個點。橫軸到「較晚達標的那條線」再多一年（最多 40 年）。
+    const lastM = Math.min(480, Math.max(12, ...[pj.months, pj.monthsNoReturn].filter(x => x != null).map(x => Math.ceil(x / 12) * 12 + 12)));
+    const pts = path => path.filter(p => p.m <= lastM);
+    const A = pts(pj.path), B = v.rate > 0 ? pts(pj.pathNoReturn) : [];
+    const maxV = Math.max(v.target * 1.08, ...A.map(p => p.v), ...B.map(p => p.v), 1);
+    const W = 300, H = 120, x = m => (m / lastM) * W, y = val => H - (val / maxV) * H;
+    const line = ps => ps.map((p, i) => `${i ? 'L' : 'M'}${x(p.m).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
+    const ty = y(v.target);
+    const years = lastM / 12;
+    const tickEvery = years <= 6 ? 1 : years <= 15 ? 2 : 5;
+    const ticks = []; for (let k = 0; k <= years; k += tickEvery) ticks.push(k);
+    card.innerHTML = `
+      <div class="sv-head"><b>存到目標要多久</b><span>從目前總資產 NT$ ${fmt(Math.round(currentTotal))} 開始試算（只是估算，不會改任何資料）</span></div>
+      <div class="pj-head">${headline}</div>
+      <div class="pj-chart">
+        <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="達標試算曲線">
+          <line x1="0" x2="${W}" y1="${ty}" y2="${ty}" class="pj-target"/>
+          ${B.length ? `<path d="${line(B)}" class="pj-line pj-noret"/>` : ''}
+          <path d="${line(A)}" class="pj-line pj-main"/>
+          ${A.map(p => `<circle cx="${x(p.m)}" cy="${y(p.v)}" r="9" class="pj-hit"><title>第 ${p.m / 12} 年：約 NT$ ${fmt(p.v)}</title></circle>`).join('')}
+        </svg>
+        <span class="pj-tlabel" style="top:${(ty / H * 100).toFixed(1)}%">目標 ${fmt(v.target)}</span>
+      </div>
+      <div class="pj-x">${ticks.map(k => `<span style="left:${(k * 12 / lastM * 100).toFixed(1)}%">${k === 0 ? '現在' : `${k} 年`}</span>`).join('')}</div>
+      <div class="pj-legend"><span><i class="pj-sw-main"></i>${v.rate > 0 ? `含 ${v.rate}% 年報酬` : '每月存＋獎金'}</span>${B.length ? '<span><i class="pj-sw-noret"></i>不含報酬</span>' : ''}<span><i class="pj-sw-target"></i>目標</span></div>
+      <div class="pj-inputs">
+        <label><span>目標金額</span><input type="number" inputmode="decimal" min="0" step="10000" data-pj="target" value="${v.target}"></label>
+        <label><span>每月存＋投資</span><input type="number" inputmode="decimal" min="0" step="1000" data-pj="monthly" value="${v.monthly}"></label>
+        <label><span>每年獎金存下</span><input type="number" inputmode="decimal" min="0" step="1000" data-pj="bonus" value="${v.bonus}"></label>
+        <label><span>年報酬率 %</span><input type="number" inputmode="decimal" min="0" max="20" step="0.5" data-pj="rate" value="${v.rate}"></label>
+      </div>
+      <div class="gr-note">每月存＋投資預設帶入每月計畫的「存下來＋投資」，每年獎金預設帶入近一年放進存錢目標的獎金。投資報酬每年都會變動，建議用保守的數字，並對照「不含報酬」那條線。</div>`;
+    card.querySelectorAll('[data-pj]').forEach(inp => inp.addEventListener('change', async () => {
+      const n = parseFloat(inp.value);
+      v[inp.dataset.pj] = Number.isFinite(n) && n >= 0 ? (inp.dataset.pj === 'rate' ? Math.min(20, n) : Math.round(n)) : 0;
+      await setSetting(db, 'goal_projection', { ...v }).catch(() => {});
+      draw();
+    }));
+  };
+  draw();
   return card;
 }
 
@@ -14149,6 +14451,8 @@ async function renderTrend() {
 
   const svCard = await buildSavingsCard(); svCard.style.marginTop = '16px';
   content.appendChild(svCard);
+  const pjCard = await buildProjectionCard(snapshots[snapshots.length - 1].total_twd); pjCard.style.marginTop = '16px';
+  content.appendChild(pjCard);
 
   // ── 歷年股利（2026-09-24 新增，簡化版）────────────────────────────────────
   // 使用者原本想要的是完整的配息排程（每檔各自的除息日、待入帳狀態），討論
