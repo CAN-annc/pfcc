@@ -366,6 +366,20 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .mp-ef .mp-ef-draw small{grid-column:1/-1;font-size:11px;color:var(--text-3);line-height:1.5}
 .pj-card{padding:16px 18px}
 .pj-head{margin:12px 0 10px}
+.pj-mode{display:inline-flex;gap:2px;padding:3px;border-radius:9px;background:var(--surface-2);margin-top:12px}
+.pj-mode button{border:0;background:transparent;font:inherit;font-size:12px;color:var(--text-2);padding:6px 12px;border-radius:7px;cursor:pointer}
+.pj-mode button.on{background:var(--card);color:var(--text);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.pj-fire{margin-top:12px;padding:12px;border-radius:10px;background:var(--surface-2)}
+.pj-fire-eq{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12.5px;color:var(--text-2)}
+.pj-fire-eq b{color:var(--text);font-variant-numeric:tabular-nums}
+.pj-fire small{display:block;font-size:10.5px;color:var(--text-3);margin-top:4px}
+.pj-wr{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;font-size:12px;color:var(--text-2)}
+.pj-wr button{border:1px solid var(--border-2);background:var(--card);color:var(--text);font:inherit;font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer;font-variant-numeric:tabular-nums}
+.pj-wr button.on{border-color:var(--blue);background:color-mix(in srgb,var(--blue) 10%,var(--card));color:var(--blue);font-weight:600}
+.pj-wr label{display:inline-flex;align-items:center;gap:4px;margin:0;font-weight:400}
+.pj-wr input{width:64px;padding:5px 8px;border:1px solid var(--border-2);border-radius:8px;background:var(--card);color:var(--text);font-size:16px}
+.pj-explain{font-size:11px;color:var(--text-2);line-height:1.65;margin:10px 0 0}
+.pj-explain b{color:var(--text)}
 .pj-head .pj-big{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text)}
 .pj-head .pj-big.is-miss{font-size:16px;color:var(--amber)}
 .pj-head span{display:block;font-size:12px;color:var(--text-2);margin-top:2px;line-height:1.5}
@@ -2827,7 +2841,7 @@ import {
   calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent,
   runDataHealthChecks,
   classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
-  calcMonthlyPlan, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcAvgLivingSpend, calcRunway, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
+  calcMonthlyPlan, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcAvgLivingSpend, calcRunway, calcAnnualSpend, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
 } from './calc.js';
 
@@ -3094,15 +3108,14 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.14.0';
+const APP_VERSION = 'v2.15.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-08';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '每月計畫的生活預算與各類別預算：顯示近 3 個月平均實際花多少，可以一鍵用實際平均當預算',
-  '資產 › 總覽新增「如果沒有收入，可以撐多久」：只用緊急預備金、現金與活存、全部資產（含投資）三層各能撐多久',
+  '資產 › 趨勢的「存到目標要多久」新增「財務自由目標」：用近 12 個月的實際年支出 ÷ 提領率算出要存到多少，提領率可選 4%、6% 或自訂，附說明',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -14433,9 +14446,19 @@ async function buildProjectionCard(currentTotal) {
     monthly: saved.monthly ?? Math.max(0, plan.save.total + plan.invest.total),
     bonus: saved.bonus ?? bonusDefault,
     rate: saved.rate ?? 0,
+    mode: saved.mode ?? 'custom',   // custom｜fire（v2.15.0 財務自由目標）
+    wr: saved.wr ?? 4,              // 提領率 %，使用者自己選
   };
+  // v2.15.0：財務自由目標＝年支出 ÷ 提領率。年支出用近 12 個月的實際支出；
+  // 紀錄不到 3 個月時改用每月計畫的必要開銷 × 12。
+  const spend = calcAnnualSpend(state.expenseTxns || [], state.accounts || [], state.fxRates || {});
+  const annual = spend?.annual ?? Math.round((plan.fixed.total + plan.living.total) * 12);
+  const annualSrc = spend ? `近 ${spend.months} 個月平均每月 NT$ ${fmt(spend.monthly)} × 12` : '每月計畫的必要開銷 × 12';
   const card = el('div', 'card'); card.className = 'card pj-card';
+  const save = () => setSetting(db, 'goal_projection', { ...v }).catch(() => {});
   const draw = () => {
+    const fire = v.mode === 'fire';
+    if (fire) v.target = v.wr > 0 && annual > 0 ? Math.round(annual / (v.wr / 100)) : 0;
     const pj = calcGoalProjection({ start: currentTotal, target: v.target, monthly: v.monthly, yearlyBonus: v.bonus, ratePct: v.rate, maxMonths: PROJ_MAX_MONTHS });
     const dur = m => m == null ? null : m === 0 ? '已經達到' : `${m >= 12 ? `${Math.floor(m / 12)} 年` : ''}${m % 12 ? ` ${m % 12} 個月` : ''}`.trim();
     const when = m => { const d = new Date(); d.setMonth(d.getMonth() + m); return `${d.getFullYear()} 年 ${d.getMonth() + 1} 月`; };
@@ -14456,6 +14479,13 @@ async function buildProjectionCard(currentTotal) {
     const ticks = []; for (let k = 0; k <= years; k += tickEvery) ticks.push(k);
     card.innerHTML = `
       <div class="sv-head"><b>存到目標要多久</b><span>從目前總資產 NT$ ${fmt(Math.round(currentTotal))} 開始試算（只是估算，不會改任何資料）</span></div>
+      <div class="pj-mode" role="tablist"><button type="button" role="tab" data-pj-mode="custom" class="${fire ? '' : 'on'}" aria-selected="${!fire}">自訂目標</button><button type="button" role="tab" data-pj-mode="fire" class="${fire ? 'on' : ''}" aria-selected="${fire}">財務自由目標</button></div>
+      ${fire ? `<div class="pj-fire">
+        <div class="pj-fire-eq"><span>年支出 <b>NT$ ${fmt(annual)}</b></span><span>÷ 提領率 <b>${v.wr}%</b></span><span>＝ <b>NT$ ${fmt(v.target)}</b></span></div>
+        <small>年支出：${annualSrc}</small>
+        <div class="pj-wr"><span>提領率</span>${[4, 6].map(r => `<button type="button" data-pj-wr="${r}" class="${v.wr === r ? 'on' : ''}">${r}%</button>`).join('')}<label>其他 <input type="number" inputmode="decimal" min="1" max="10" step="0.5" data-pj-wr-in value="${[4, 6].includes(v.wr) ? '' : v.wr}" placeholder="%"></label></div>
+        <p class="pj-explain"><b>提領率</b>是退休後每年從投資資產裡拿出來花的比例。財務自由目標＝一年的生活支出 ÷ 提領率：存到這個金額，每年拿出這個比例就夠生活。<br><b>4%</b> 較保守：來自美國的退休研究，用過去股債市場資料回測，每年提領 4% 大多能撐過 30 年。<b>6%</b> 較樂觀：目標金額只要 4% 的三分之二，但遇到股市大跌的年份，本金容易被提得太快。</p>
+      </div>` : ''}
       <div class="pj-head">${headline}</div>
       <div class="pj-chart">
         <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="達標試算曲線">
@@ -14469,18 +14499,30 @@ async function buildProjectionCard(currentTotal) {
       <div class="pj-x">${ticks.map(k => `<span style="left:${(k * 12 / lastM * 100).toFixed(1)}%">${k === 0 ? '現在' : `${k} 年`}</span>`).join('')}</div>
       <div class="pj-legend"><span><i class="pj-sw-main"></i>${v.rate > 0 ? `含 ${v.rate}% 年報酬` : '每月存＋獎金'}</span>${B.length ? '<span><i class="pj-sw-noret"></i>不含報酬</span>' : ''}<span><i class="pj-sw-target"></i>目標</span></div>
       <div class="pj-inputs">
-        <label><span>目標金額</span><input type="number" inputmode="decimal" min="0" step="10000" data-pj="target" value="${v.target}"></label>
+        <label><span>目標金額${fire ? '（自動計算）' : ''}</span><input type="number" inputmode="decimal" min="0" step="10000" data-pj="target" value="${v.target}" ${fire ? 'readonly' : ''}></label>
         <label><span>每月存＋投資</span><input type="number" inputmode="decimal" min="0" step="1000" data-pj="monthly" value="${v.monthly}"></label>
         <label><span>每年獎金存下</span><input type="number" inputmode="decimal" min="0" step="1000" data-pj="bonus" value="${v.bonus}"></label>
         <label><span>年報酬率 %</span><input type="number" inputmode="decimal" min="0" max="20" step="0.5" data-pj="rate" value="${v.rate}"></label>
       </div>
       <div class="gr-note">每月存＋投資預設帶入每月計畫的「存下來＋投資」，每年獎金預設帶入近一年放進存錢目標的獎金。投資報酬每年都會變動，建議用保守的數字，並對照「不含報酬」那條線。</div>`;
     card.querySelectorAll('[data-pj]').forEach(inp => inp.addEventListener('change', async () => {
+      if (inp.readOnly) return;
       const n = parseFloat(inp.value);
       v[inp.dataset.pj] = Number.isFinite(n) && n >= 0 ? (inp.dataset.pj === 'rate' ? Math.min(20, n) : Math.round(n)) : 0;
-      await setSetting(db, 'goal_projection', { ...v }).catch(() => {});
-      draw();
+      await save(); draw();
     }));
+    card.querySelectorAll('[data-pj-mode]').forEach(b => b.addEventListener('click', async () => {
+      if (v.mode === b.dataset.pjMode) return;
+      if (v.mode === 'custom') v.customTarget = v.target;
+      v.mode = b.dataset.pjMode;
+      if (v.mode === 'custom' && v.customTarget) v.target = v.customTarget;
+      await save(); draw();
+    }));
+    card.querySelectorAll('[data-pj-wr]').forEach(b => b.addEventListener('click', async () => { v.wr = +b.dataset.pjWr; await save(); draw(); }));
+    card.querySelector('[data-pj-wr-in]')?.addEventListener('change', async e => {
+      const n = parseFloat(e.target.value);
+      if (n > 0) { v.wr = Math.min(10, Math.max(1, n)); await save(); draw(); }
+    });
   };
   draw();
   return card;

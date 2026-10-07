@@ -1725,3 +1725,20 @@ export function calcRunway({ efHave = 0, liquid = 0, total = 0, essentials = 0 }
   const m = v => Math.max(0, v) / essentials;
   return { essentials: Math.round(essentials), ef: m(efHave), liquid: m(liquid), total: m(total) };
 }
+
+// ── 年支出（財務自由試算用，v2.15.0）─────────────────────────────────────
+// 最近 12 個完整月份裡有支出紀錄的月份，全部支出（不含定期定額——那是買進
+// 資產；不含呆帳沖銷——沒有付出現金）的月平均 × 12。少於 3 個月回傳 null，
+// 由呼叫端改用每月計畫的必要開銷 × 12。
+export function calcAnnualSpend(expenseTxns = [], accounts = [], fxRates = {}, today = new Date()) {
+  const tx = expenseTxns.filter(t => !['cat_dca', 'cat_bad_debt_writeoff'].includes(t.category));
+  const months = [];
+  for (let i = 12; i >= 1; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
+    if (tx.some(t => (t.date || '').slice(0, 7) === ym)) months.push(ym);
+  }
+  if (months.length < 3) return null;
+  const avg = months.reduce((s, m) => s + calcMonthlyExpenseTotal(tx, m, accounts, fxRates), 0) / months.length;
+  return { months: months.length, monthly: Math.round(avg), annual: Math.round(avg * 12) };
+}
