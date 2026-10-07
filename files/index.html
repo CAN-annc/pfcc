@@ -233,6 +233,23 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hp-qt-title{font-size:13px;font-weight:600;color:var(--text-1)}
 .hp-qt-desc{font-size:11px;color:var(--text-3);margin-top:3px;line-height:1.5}
 .idle-card{padding:0;margin-top:16px;overflow:hidden}
+.rw-card{margin-top:16px;padding:14px 16px}
+.rw-head b{display:block;font-size:14px}
+.rw-head span{display:block;font-size:11px;color:var(--text-3);margin-top:2px}
+.rw-rows{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.rw-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12.5px;color:var(--text-2)}
+.rw-top b{font-size:15px;color:var(--text);font-variant-numeric:tabular-nums}
+.rw-bar{height:8px;border-radius:4px;background:var(--surface-2);margin:5px 0 3px;overflow:hidden}
+.rw-bar span{display:block;height:100%;border-radius:4px}
+.rw-ef{background:var(--green)}
+.rw-cash{background:var(--blue)}
+.rw-all{background:color-mix(in srgb,var(--blue) 45%,var(--surface-2))}
+.rw-row small{font-size:10.5px;color:var(--text-3)}
+.mp-avg{display:flex;align-items:center;gap:10px;margin:8px 0 2px;font-size:11.5px;color:var(--text-2)}
+.mp-avg span{flex:1;min-width:0;line-height:1.5}
+.mp-avg b{color:var(--text);font-variant-numeric:tabular-nums}
+.mp-avg .btn{flex-shrink:0}
+.mp-avg-btn{font-size:11px;padding:4px 8px;margin-right:6px;flex-shrink:0}
 .idle-head{padding:13px 16px 8px}
 .idle-head b{display:block;font-size:14px}
 .idle-head span{display:block;font-size:11px;color:var(--text-3);margin-top:2px}
@@ -2810,7 +2827,7 @@ import {
   calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent,
   runDataHealthChecks,
   classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
-  calcMonthlyPlan, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
+  calcMonthlyPlan, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcAvgLivingSpend, calcRunway, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
 } from './calc.js';
 
@@ -3077,18 +3094,15 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.13.0';
-const CHANGELOG_LAST_UPDATED = '2026-10-07';
+const APP_VERSION = 'v2.14.0';
+const CHANGELOG_LAST_UPDATED = '2026-10-08';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '緊急預備金可以指定存放帳戶：檢查那個帳戶的餘額撐不撐得住預備金，不夠時在首頁、每月計畫、可以留意的錢提醒差多少',
-  '從預備金的存放帳戶付錢時，會問這筆是不是動用預備金——是的話從預備金扣、不算生活預算',
-  '預備金的存放帳戶不再被提醒「久沒動」',
-  '依近幾個月的收入穩定度，建議預備金要存幾個月（穩定 3～6 個月、起伏較大 9～12 個月、很不穩定 12 個月以上），只當建議，可以一鍵套用',
-  '記獎金時，預備金還沒存滿就預設放進預備金',
+  '每月計畫的生活預算與各類別預算：顯示近 3 個月平均實際花多少，可以一鍵用實際平均當預算',
+  '資產 › 總覽新增「如果沒有收入，可以撐多久」：只用緊急預備金、現金與活存、全部資產（含投資）三層各能撐多久',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3844,6 +3858,38 @@ async function buildQuickAdd() {
 // 使用者：「如果收支有確實的計畫，就不會有閒置資金」——所以不設金額門檻，
 // 只抓計畫的漏洞（未分配）跟「用途對、但放錯地方」的錢，規則見 calc.js
 // calcIdleMoneyAlerts。沒有任何一項時整張卡片不出現。
+// ── 沒有收入可以撐多久（v2.14.0）──────────────────────────────────────────
+// 使用者：「緊急預備金可以撐多久、連投資一起又可以撐多久」。三層由近到遠：
+// 預備金 → 現金與活存（含預備金）→ 全部資產（含投資、定存，需要賣出或解約）。
+function fmtRunway(m) {
+  if (Math.round(m) >= 24) { const mm = Math.round(m), y = Math.floor(mm / 12), r = mm % 12; return r ? `${y} 年 ${r} 個月` : `${y} 年`; }
+  return `${m < 10 ? m.toFixed(1) : Math.round(m)} 個月`;
+}
+async function buildRunwayCard() {
+  const ctx = await loadPlanContext();
+  const { accounts, fxRates, cards, expenseTxns, netWorth } = state;
+  const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses: ctx.recurringExpenses, installments: ctx.installments, dcaSchedules: ctx.dcaSchedules,
+    buckets: ctx.buckets, allocations: ctx.allocations, expenseTxns, essentials: ctx.essentials, emergencyMonths: Number(ctx.settings.emergency_months) || 6 });
+  const card = el('div', 'card'); card.className = 'card rw-card';
+  const rw = calcRunway({ efHave: sp.ef.exists ? sp.ef.have : 0, liquid: sp.liquid, total: netWorth, essentials: ctx.essentials });
+  if (!rw) {
+    card.innerHTML = `<div class="rw-head"><b>如果沒有收入，可以撐多久</b><span>到「計畫」設定固定支出與生活預算後，就能算出來。</span></div>`;
+    return card;
+  }
+  const rows = [
+    { k: '只用緊急預備金', v: rw.ef, note: sp.ef.exists ? `NT$ ${fmt(sp.ef.have)}` : '還沒建立預備金', tone: 'ef' },
+    { k: '現金與活存', v: rw.liquid, note: `NT$ ${fmt(sp.liquid)}・含預備金`, tone: 'cash' },
+    { k: '全部資產', v: rw.total, note: `NT$ ${fmt(Math.round(netWorth))}・含投資、定存，需要賣出或解約`, tone: 'all' },
+  ];
+  const max = Math.max(1, ...rows.map(r => r.v));
+  card.innerHTML = `<div class="rw-head"><b>如果沒有收入，可以撐多久</b><span>以每月必要開銷 NT$ ${fmt(rw.essentials)}（固定支出＋生活預算）計算</span></div>
+    <div class="rw-rows">${rows.map(r => `<div class="rw-row">
+      <div class="rw-top"><span>${r.k}</span><b>${fmtRunway(r.v)}</b></div>
+      <div class="rw-bar"><span class="rw-${r.tone}" style="width:${Math.max(1.5, r.v / max * 100).toFixed(1)}%"></span></div>
+      <small>${r.note}</small></div>`).join('')}</div>`;
+  return card;
+}
+
 async function buildIdleMoneyCard() {
   const ctx = await loadPlanContext();
   const { accounts, fxRates, cards, deposits, receivables, expenseTxns } = state;
@@ -4032,6 +4078,8 @@ async function renderAssetOverview() {
   content.appendChild(wrap);
 
   // v2.10.0（重整藍圖第 5 步）：「可以留意的錢」——計畫沒安排到的錢、放錯地方的錢。
+  const runwayCard = await buildRunwayCard();
+  if (runwayCard) content.appendChild(runwayCard);
   const idleCard = await buildIdleMoneyCard();
   if (idleCard) content.appendChild(idleCard);
 
@@ -9110,6 +9158,8 @@ async function renderMonthlyPlan() {
 
   // 4 生活預算（＝本月總預算，今天還能花從這裡算）
   const lb = section('living', '🧺', '生活預算', plan.living.total, '吃飯、交通、購物等日常花費的上限；「今天還能花」從這裡算');
+  // v2.14.0：依實際花費建議（近 3 個完整月份的平均）
+  const avgSpend = calcAvgLivingSpend(expenseTxns, accounts, fxRates, 3);
   const lv = el('div'); lv.className = 'mp-living';
   const usedPct = plan.living.total > 0 ? Math.min(100, Math.round(livingSpent / plan.living.total * 100)) : 0;
   lv.innerHTML = `
@@ -9117,11 +9167,13 @@ async function renderMonthlyPlan() {
       <label>每月生活預算 <input type="number" inputmode="decimal" min="0" step="500" value="${livingBudget ?? ''}" placeholder="${plan.suggestedLiving ? fmt(plan.suggestedLiving) : '金額'}" data-mp-living></label>
       ${plan.suggestedLiving && livingBudget !== plan.suggestedLiving ? `<button class="btn btn-ghost btn-sm" data-mp-fill>用剩下的 ${money(plan.suggestedLiving)}</button>` : ''}
     </div>
+    ${avgSpend && avgSpend.total > 0 ? `<div class="mp-avg"><span>近 ${avgSpend.months} 個月平均實際花 <b>${money(avgSpend.total)}</b>${livingBudget != null ? (avgSpend.total > livingBudget ? `，比預算多 ${money(avgSpend.total - livingBudget)}` : avgSpend.total < livingBudget ? `，比預算少 ${money(livingBudget - avgSpend.total)}` : '，跟預算一樣') : ''}</span>${livingBudget !== avgSpend.total ? `<button type="button" class="btn btn-ghost btn-sm" data-mp-avg>用實際平均</button>` : ''}</div>` : ''}
     ${plan.living.set ? `<div class="mp-ef-bar ${livingSpent > plan.living.total ? 'is-over' : ''}"><span style="width:${usedPct}%"></span></div>
     <div class="mp-src">本月生活支出 ${money(livingSpent)}，${livingSpent > plan.living.total ? `已超出 ${money(livingSpent - plan.living.total)}` : `還剩 ${money(plan.living.total - livingSpent)}`}（不含固定支出與存錢目標專款的花費）</div>` : ''}`;
   const saveLiving = async v => { await saveBudgetRecord(null, { amount: v }); await syncEmergencyFundShortfall(); await rerender(); };
   lv.querySelector('[data-mp-living]').addEventListener('change', e => { const v = parseFloat(e.target.value); if (v > 0) saveLiving(v); });
   lv.querySelector('[data-mp-fill]')?.addEventListener('click', () => saveLiving(plan.suggestedLiving));
+  lv.querySelector('[data-mp-avg]')?.addEventListener('click', () => saveLiving(avgSpend.total));
   lb.appendChild(lv);
   const catHead = el('div'); catHead.className = 'mp-subhead';
   const catSet = expenseCats.map(c => resolveBudgetRecord(budgets, c.id, month)).filter(r => r && (r.allocation_mode || 'fixed') === 'fixed' && r.amount > 0);
@@ -9134,8 +9186,13 @@ async function renderMonthlyPlan() {
     const spent = livingByCat[c.id] || 0;
     const over = cur != null && spent > cur;
     const r = el('div'); r.className = 'mp-row mp-edit';
-    r.innerHTML = `<div class="mp-row-l">${c.icon ?? '·'} ${escHtml(c.label)}<small class="${over ? 'is-over' : ''}">本月 ${money(spent)}${cur != null ? (over ? `・超出 ${money(spent - cur)}` : `・剩 ${money(cur - spent)}`) : ''}</small></div>
-      <div class="mp-row-r"><input type="number" inputmode="decimal" min="0" step="100" value="${cur ?? ''}" placeholder="上限" aria-label="${escHtml(c.label)} 每月上限"></div>`;
+    const avgC = avgSpend?.byCat?.[c.id] || 0;
+    r.innerHTML = `<div class="mp-row-l">${c.icon ?? '·'} ${escHtml(c.label)}<small class="${over ? 'is-over' : ''}">本月 ${money(spent)}${cur != null ? (over ? `・超出 ${money(spent - cur)}` : `・剩 ${money(cur - spent)}`) : ''}${avgC > 0 ? `・平均 ${money(avgC)}` : ''}</small></div>
+      <div class="mp-row-r">${avgC > 0 && cur !== avgC ? `<button type="button" class="btn btn-ghost btn-sm mp-avg-btn" data-cat-avg title="用近 ${avgSpend.months} 個月平均 ${money(avgC)}">用平均</button>` : ''}<input type="number" inputmode="decimal" min="0" step="100" value="${cur ?? ''}" placeholder="${avgC > 0 ? fmt(avgC) : '上限'}" aria-label="${escHtml(c.label)} 每月上限"></div>`;
+    r.querySelector('[data-cat-avg]')?.addEventListener('click', async () => {
+      await saveBudgetRecord(c.id, { amount: avgC, percent: null, allocation_mode: 'fixed' });
+      await syncEmergencyFundShortfall(); await rerender();
+    });
     r.querySelector('input').addEventListener('change', async e => {
       const v = parseFloat(e.target.value);
       if (v > 0) await saveBudgetRecord(c.id, { amount: v, percent: null, allocation_mode: 'fixed' });

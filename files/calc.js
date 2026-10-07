@@ -1696,3 +1696,32 @@ export function calcIncomeStability(incomeTxns = [], today = new Date()) {
   if (zeros === 1 || cv >= 0.25) return { ...base, level: '起伏較大', range: '9～12 個月', min: 9, max: 12, suggest: 9 };
   return { ...base, level: '穩定', range: '3～6 個月', min: 3, max: 6, suggest: 6 };
 }
+
+// ── 依實際花費建議預算（v2.14.0）───────────────────────────────────────────
+// 「先記錄真實花費 → 再分析 → 再做預算」：最近 n 個完整月份（不含本月）的
+// 生活支出平均（只算 isLivingExpense，跟生活預算比較的口徑一致），以及各類別
+// 的平均。只計入有支出紀錄的月份；一個月都沒有時回傳 null。四捨五入到百位。
+export function calcAvgLivingSpend(expenseTxns = [], accounts = [], fxRates = {}, n = 3, today = new Date()) {
+  const months = [];
+  for (let i = n; i >= 1; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    months.push(`${d.getFullYear()}-${pad2(d.getMonth() + 1)}`);
+  }
+  const used = months.filter(m => expenseTxns.some(t => (t.date || '').slice(0, 7) === m));
+  if (!used.length) return null;
+  const r100 = v => Math.round(v / 100) * 100;
+  const total = used.reduce((s, m) => s + calcLivingSpent(expenseTxns, m, accounts, fxRates), 0) / used.length;
+  const byCat = {};
+  used.forEach(m => Object.entries(calcLivingSpentByCategory(expenseTxns, m, accounts, fxRates)).forEach(([k, v]) => { byCat[k] = (byCat[k] || 0) + v; }));
+  Object.keys(byCat).forEach(k => { byCat[k] = r100(byCat[k] / used.length); });
+  return { months: used.length, total: r100(total), byCat };
+}
+
+// ── 沒有收入可以撐多久（v2.14.0）──────────────────────────────────────────
+// 三層：只用緊急預備金／現金與活存（含預備金）／全部資產（含投資、定存，
+// 需要賣出或解約）。都用每月必要開銷（固定支出＋生活預算）來除。
+export function calcRunway({ efHave = 0, liquid = 0, total = 0, essentials = 0 }) {
+  if (!(essentials > 0)) return null;
+  const m = v => Math.max(0, v) / essentials;
+  return { essentials: Math.round(essentials), ef: m(efHave), liquid: m(liquid), total: m(total) };
+}
