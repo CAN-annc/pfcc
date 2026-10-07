@@ -57,6 +57,8 @@ const NAME_ALIASES = {
 export function canonicalIndustry(raw, market = 'TW') {
   let n = String(raw ?? '').replace(/\s+/g, '').trim();
   if (!n) return null;
+  // Yahoo 奇摩股市的上櫃股票產業前面會加「櫃」（例：櫃電腦週邊、櫃半導體）。
+  if (market === 'TW' && n.length > 2 && n.startsWith('櫃')) n = n.slice(1);
   if (TW_NAMES.has(n)) return n;
   if (n.endsWith('業') && TW_NAMES.has(n.slice(0, -1))) return n.slice(0, -1);
   if (market === 'GICS' && n === '金融') return '金融';
@@ -96,7 +98,11 @@ export default async function handler(req) {
   const diag = {};
   const results = await classifyItems(items, { fetch: globalThis.fetch, finnhubKey: process.env.FINNHUB_API_KEY, diag });
   // sources：每個資料來源的狀態與耗時，前端不用，是給除錯看的（不含任何使用者資料）。
-  return json({ fetched_at: new Date().toISOString(), results, sources: diag });
+  // v2.11.0：只有每一檔都完整判定時才讓 CDN 快取 6 小時。原本不管結果如何都
+  // 快取，某個來源剛好逾時，「查不到」的結果就會被快取 6 小時，前端按「重新
+  // 判定」拿到的還是同一份——持倉頁一直顯示「尚未取得資料」的原因之一。
+  const complete = Object.values(results).every(r => r?.industry?.mix?.length && r?.style?.key && !r.style.needsTwse);
+  return json({ fetched_at: new Date().toISOString(), results, sources: diag }, 200, complete);
 }
 
 // v2.7.3：實測（?probe=1）從 Vercel 連證交所的 openapi.twse.com.tw 會逾時、
@@ -178,7 +184,12 @@ async function classifyTwStock(code, src, fetch, timed) {
   const [op, ov, yhTW, zca] = await Promise.all([
     src.tpexProfile, src.tpexVal,
     timed(`yahoo_${code}`, () => getText(fetch, `https://tw.stock.yahoo.com/quote/${code}.TW/profile`).then(h => ({ sector: parseYahooSector(h), pe: parseYahooPe(h) }))),
-    timed(`moneydj_${code}`, () => getText(fetch, `https://www.moneydj.com/z/zc/zca/zca_${code}.djhtm`).then(parseMoneydjValuation)),
+    // v2.11.0：MoneyDJ 主站對部分代號（例：2382）會轉到會員登入頁，同一份資料
+    // 在券商的 MoneyDJ 鏡像站（富邦）可以直接讀——兩個同時查，取先成功的那個。
+    timed(`moneydj_${code}`, () => Promise.any([
+      getText(fetch, `https://www.moneydj.com/z/zc/zca/zca_${code}.djhtm`).then(parseMoneydjValuation).then(v => v ?? Promise.reject(new Error('empty'))),
+      getText(fetch, `https://fubon-ebrokerdj.fbs.com.tw/z/zc/zca/zca_${code}.djhtm`).then(parseMoneydjValuation).then(v => v ?? Promise.reject(new Error('empty'))),
+    ])),
   ]);
   const o = Array.isArray(op) ? op.find(x => String(x.SecuritiesCompanyCode ?? '').trim() === code) : null;
   let indName = null, indSource = null;
@@ -352,8 +363,8 @@ async function getText(fetch, url) {
   const cs = (res.headers.get('content-type') ?? '').match(/charset=([\w-]+)/i)?.[1]?.toLowerCase() ?? 'utf-8';
   try { return new TextDecoder(cs).decode(buf); } catch { return new TextDecoder('utf-8').decode(buf); }
 }
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, s-maxage=21600', ...CORS } });
+function json(data, status = 200, cacheable = false) {
+  return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': cacheable ? 'public, s-maxage=21600' : 'no-store', ...CORS } });
 }
 
 const PROBE_URLS = [

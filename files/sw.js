@@ -36,7 +36,7 @@
  * 伺服器要最新版本。
  */
 
-const CACHE_NAME  = 'pfcc-shell-v31'; // 2026-10-07：v2.10.0（成長率、每月儲蓄、旅行、快速記帳、閒置提醒、卡費歷史），index.html／calc.js 異動。
+const CACHE_NAME  = 'pfcc-shell-v32'; // 2026-10-07：v2.11.0（超支由緊急預備金支應、這期不用我付、舊頁面移除），index.html／calc.js／sw.js 異動。
 // （上一版 v15，2026-10-02：「新增收入」轉入帳戶／「應收款入帳」選擇帳戶新增「顯示外幣帳戶」勾選（預設只顯示台幣）＋「新增現金帳戶」快速新增捷徑，index.html 異動，版本號照約定往上跳一碼。）
 const SHELL_URLS  = ['/', '/index.html', '/db.js', '/market.js', '/calc.js', '/manifest.json'];
 
@@ -78,8 +78,11 @@ self.addEventListener('fetch', (e) => {
   }
 
   // External fonts / CDN → Stale While Revalidate
-  if (!url.origin.includes(self.location.origin)) {
-    e.respondWith(staleWhileRevalidate(request));
+  // v2.11.0：只限字型／CDN 這幾個靜態資源網域。原本所有跨網域請求都走這裡，
+  // 連瀏覽器直接查的證交所開放資料、匯率等「要即時」的資料也會先拿到上一次
+  // 的快取版本；其他跨網域請求現在完全不攔，交給瀏覽器照常處理。
+  if (url.origin !== self.location.origin) {
+    if (STATIC_CDN_HOSTS.includes(url.hostname)) e.respondWith(staleWhileRevalidate(request));
     return;
   }
 
@@ -112,10 +115,13 @@ self.addEventListener('fetch', (e) => {
   );
 });
 
+const STATIC_CDN_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com', 'cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'unpkg.com'];
 async function staleWhileRevalidate(request) {
   const cached = await caches.match(request);
   const fetchPromise = fetch(request).then(res => {
-    if (res.ok) caches.open(CACHE_NAME).then(c => c.put(request, res.clone()));
+    // 先複製再回傳——原本在非同步的 then 裡才 clone，頁面可能已經開始讀取
+    // 本體，clone 會失敗。
+    if (res.ok) { const copy = res.clone(); caches.open(CACHE_NAME).then(c => c.put(request, copy)); }
     return res;
   }).catch(() => cached);
   return cached ?? fetchPromise;

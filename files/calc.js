@@ -633,6 +633,40 @@ export function calcMonthlyIncomeTotal(incomeTxns, monthStr, excludeCategories =
  * Returns null when there isn't enough info to compute a number — callers
  * should treat that as "no contribution plan set", not zero.
  */
+/**
+ * v2.11.0：每月計畫用的提撥金額。跟 calcBucketMonthlyContribution 一樣，差在
+ * 「收入百分比」模式遇到本月還沒有收入時（使用者決定）：改用「每月生活費」
+ * （settings.monthly_plan.base_fixed）當百分比的基準，而且這筆錢標記為由緊急
+ * 預備金支應（fromEf）——沒有收入卻要存錢，錢只能從預備金來。緊急預備金自己
+ * 是收入百分比模式時，沒有收入的月份就是 0（不能自己撥給自己）。
+ */
+export function calcBucketPlanContribution(bucket, income, baseFixed = 0) {
+  if (bucket.contribution_mode === 'percent') {
+    const pct = bucket.income_percent || 0;
+    if (!(pct > 0)) return { amount: 0, fromEf: false, basis: null };
+    if (income > 0) return { amount: income * pct / 100, fromEf: false, basis: 'income' };
+    if (bucket.is_emergency_fund || !(baseFixed > 0)) return { amount: 0, fromEf: false, basis: null };
+    return { amount: baseFixed * pct / 100, fromEf: true, basis: 'fixed' };
+  }
+  return { amount: bucket.monthly_amount || 0, fromEf: false, basis: 'fixed_amount' };
+}
+
+/**
+ * v2.11.0：本月「超支」＝本月支出 > 本月收入的差額（使用者：「支出>收入＝超
+ * 支，動用的錢就一定是從緊急預備金來支出」）。
+ *   收入：不含應收款入帳（那是別人還錢，不是新的錢）。
+ *   支出：本月全部支出，但不含
+ *     ・歸屬某個存錢目標的花費（bucket_id）——那筆錢已經由該目標支應；
+ *     ・定期定額（cat_dca）——是買進資產，不是花掉；
+ *     ・呆帳沖銷（cat_bad_debt_writeoff）——沒有實際付出現金。
+ */
+const OVERSPEND_EXCLUDED_EXPENSE = ['cat_dca', 'cat_bad_debt_writeoff'];
+export function calcOverspend(incomeTxns, expenseTxns, monthStr, accounts = [], fxRates = {}, excludeIncome = ['cat_receivable']) {
+  const income = calcMonthlyIncomeTotal(incomeTxns, monthStr, excludeIncome);
+  const spent = calcMonthlyExpenseTotal(expenseTxns.filter(t => !t.bucket_id && !OVERSPEND_EXCLUDED_EXPENSE.includes(t.category)), monthStr, accounts, fxRates);
+  return { income: Math.round(income), spent: Math.round(spent), overspend: Math.max(0, Math.round(spent - income)) };
+}
+
 export function calcBucketMonthlyContribution(bucket, monthlyIncomeTotal) {
   if (bucket.contribution_mode === 'percent') {
     if (!bucket.income_percent) return null;
@@ -1385,7 +1419,7 @@ export function ccPeriodLabel(ym) { return `${Number(ym.slice(5, 7))} 月期`; }
 
 // ── 每月計畫（v2.8.0）──────────────────────────────────────────────────────
 // 使用者：「預算和收入分配做成兩套，彼此打架，讓我很困擾」。原本「設定預算」
-// 「收入分配法」「存錢計畫」三套各自回答「這個月能花多少」。合併成一條由上往
+// 「收入分配法」「存錢目標」三套各自回答「這個月能花多少」。合併成一條由上往
 // 下的計畫：本月可分配金額 → 固定支出 → 存下來 → 投資 → 生活預算（再細分到
 // 類別）→ 未分配。資料仍沿用原本的 store（recurring_expenses／installments／
 // buckets／dca_schedules／budgets），這裡只是把它們算成同一張表。
@@ -1416,10 +1450,11 @@ export function calcMonthlyPlan({ income = 0, baseFixed = 0, recurringExpenses =
     ...recurringExpenses.filter(r => !r.is_expired).map(r => ({ id: r.id, kind: 'recurring', name: r.name, category: r.category ?? 'general', amount: calcRecurringMonthlyEquivalent(r, fxRates) })),
     ...installments.filter(i => (i.paid_periods || 0) < i.total_periods).map(i => ({ id: i.id, kind: 'installment', name: i.name, category: i.is_insurance ? 'insurance' : 'installment', amount: i.per_amount ?? Math.round(i.total_amount / i.total_periods) })),
   ].filter(x => x.amount > 0).sort((a, b) => b.amount - a.amount);
-  const saveItems = buckets.filter(b => b.status !== 'closed').map(b => ({
-    id: b.id, name: b.name, isEmergency: !!b.is_emergency_fund, mode: b.contribution_mode === 'percent' ? 'percent' : 'fixed',
-    percent: b.income_percent ?? null, amount: Math.round(calcBucketMonthlyContribution(b, income) || 0),
-  })).sort((a, b) => (b.isEmergency - a.isEmergency) || (b.amount - a.amount));
+  const saveItems = buckets.filter(b => b.status !== 'closed').map(b => {
+    const c = calcBucketPlanContribution(b, income, baseFixed);
+    return { id: b.id, name: b.name, isEmergency: !!b.is_emergency_fund, mode: b.contribution_mode === 'percent' ? 'percent' : 'fixed',
+      percent: b.income_percent ?? null, amount: Math.round(c.amount || 0), fromEf: c.fromEf };
+  }).sort((a, b) => (b.isEmergency - a.isEmergency) || (b.amount - a.amount));
   const investItems = dcaSchedules.filter(d => !d.is_expired).map(d => ({ id: d.id, name: d.name, amount: calcRecurringMonthlyEquivalent(d, fxRates) })).filter(x => x.amount > 0);
   const sum = xs => xs.reduce((s, x) => s + x.amount, 0);
   const fixed = Math.round(sum(fixedItems)), save = Math.round(sum(saveItems)), invest = Math.round(sum(investItems));
@@ -1451,13 +1486,13 @@ export function calcSpendable({ accounts = [], fxRates = {}, cards = [], recurri
   const recById = Object.fromEntries(recurringExpenses.map(r => [r.id, r]));
   const upcoming = calcUpcomingReminders({ recurringExpenses, installments }, { windowDays })
     .filter(r => r.type === 'recurring' || r.type === 'installment')
-    .map(r => ({ label: r.label, days: r.daysUntil, amount: r.type === 'recurring' ? (toTWD(r.amount || 0, recById[r.id]?.currency || 'TWD', fxRates) || 0) : (r.amount || 0) }));
+    .map(r => ({ type: r.type, id: r.id, date: isoDateAfterDays(r.daysUntil), label: r.label, days: r.daysUntil, amount: r.type === 'recurring' ? (toTWD(r.amount || 0, recById[r.id]?.currency || 'TWD', fxRates) || 0) : (r.amount || 0) }));
   for (const d of dcaSchedules) {
     if (d.is_expired || d.freq !== 'monthly' || !d.billing_day) continue;
     const days = daysToMonthDay(d.billing_day);
     if (days == null || days > windowDays) continue;
     if (isoDateAfterDays(days) === d.last_confirmed_date) continue;
-    upcoming.push({ label: `${d.name} 定期定額`, days, amount: toTWD(d.amount || 0, d.currency || 'TWD', fxRates) || 0 });
+    upcoming.push({ type: 'dca', id: d.id, date: isoDateAfterDays(days), label: `${d.name} 定期定額`, days, amount: toTWD(d.amount || 0, d.currency || 'TWD', fxRates) || 0 });
   }
   upcoming.sort((a, b) => a.days - b.days);
   const upcomingTotal = upcoming.reduce((s, u) => s + u.amount, 0);

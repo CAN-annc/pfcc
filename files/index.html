@@ -337,9 +337,18 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .sp-row small{display:block;font-size:10.5px;opacity:.7;margin-top:1px}
 .sp-row b{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
 .sp-total{padding-top:6px;border-top:1px dashed rgba(255,255,255,.25);font-weight:700}
+.mp-ef .mp-ef-draws{display:flex;flex-direction:column;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed color-mix(in srgb,var(--text-3) 40%,transparent)}
+.mp-ef .mp-ef-draw{display:grid;grid-template-columns:1fr auto;column-gap:10px;row-gap:2px;align-items:baseline}
+.mp-ef .mp-ef-draw .k{margin:0;font-size:12px;font-weight:600;color:var(--text)}
+.mp-ef .mp-ef-draw b{font-size:12.5px;color:var(--red);font-weight:700;font-variant-numeric:tabular-nums}
+.mp-ef .mp-ef-draw small{grid-column:1/-1;font-size:11px;color:var(--text-3);line-height:1.5}
 .sp-sub{display:flex;flex-direction:column;gap:3px;margin:-2px 0 2px 10px;font-size:11px;opacity:.8}
-.sp-sub span{display:flex;justify-content:space-between;gap:8px}
+.sp-sub .sp-it{display:flex;align-items:center;gap:8px;min-height:26px}
+.sp-sub .sp-it>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sp-sub b{font-weight:500;font-variant-numeric:tabular-nums}
+.sp-paid{flex-shrink:0;border:1px solid currentColor;background:transparent;color:inherit;font:inherit;font-size:10px;font-weight:600;line-height:1;padding:4px 8px;border-radius:999px;cursor:pointer;opacity:.85}
+.sp-paid:hover,.sp-paid:focus-visible{opacity:1;background:rgba(255,255,255,.14)}
+.sp-more{opacity:.7}
 .sp-warn{margin-top:12px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,.12);font-size:11.5px;line-height:1.55}
 .sp-warn b{display:block;font-size:13px;margin-bottom:2px}
 .home-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -559,6 +568,13 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 /* ── Toast ── */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
+.toast.has-action{pointer-events:auto;display:flex;align-items:center;gap:12px;white-space:normal;max-width:calc(100vw - 32px)}
+.toast-act{background:none;border:0;color:#93C5FD;font:inherit;font-weight:700;padding:4px 2px;cursor:pointer;flex-shrink:0}
+.pc-skip{display:block;width:100%;margin-top:8px;padding:10px 12px;border:1px dashed var(--border);border-radius:10px;background:transparent;color:var(--text-2);font-size:12px;text-align:left;cursor:pointer;line-height:1.5}
+.pc-skip b{display:block;color:var(--text);font-size:13px}
+.pc-skip:hover{border-color:var(--text-3);background:var(--surface-2)}
+.skip-chip{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--text-2);background:var(--surface-2);padding:2px 4px 2px 8px;border-radius:999px;white-space:nowrap;flex-shrink:0}
+.skip-chip button{border:0;background:none;color:var(--blue,#2563EB);font-size:10px;font-weight:600;padding:2px 4px;cursor:pointer}
 
 /* ── Skeleton ── */
 .skeleton{background:linear-gradient(90deg,#E5E7EB 25%,#F3F4F6 50%,#E5E7EB 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px;display:inline-block}
@@ -1306,6 +1322,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <button class="btn btn-ghost" id="periodConfirmCancel">取消（這期先不處理）</button>
       <button class="btn btn-primary" id="periodConfirmSave">✓ 確認</button>
     </div>
+    <button type="button" class="pc-skip" id="periodConfirmSkip" style="display:none"><b>這期不用我付</b>例如室友付了、對方免收，或已經另外記過——標記本期已處理，不記支出</button>
     <div id="periodConfirmAltWrap" style="display:none;text-align:center;margin-top:10px">
       <button type="button" class="btn btn-ghost btn-sm" id="periodConfirmAlt" style="font-size:11px"></button>
     </div>
@@ -1664,7 +1681,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
      live from bucket_allocations, never a manually-typed number here. ── -->
 <div class="modal-overlay" id="bucketModal">
   <div class="modal">
-    <h2 id="bucketModalTitle">新增存錢計畫</h2>
+    <h2 id="bucketModalTitle">新增存錢目標</h2>
     <div class="modal-field">
       <label>名稱</label>
       <input type="text" id="bucketName" placeholder="例：旅遊基金、買房頭期款、緊急備用金">
@@ -1687,7 +1704,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <div class="modal-field" id="bucketPercentField" style="display:none">
       <label>月收入的百分比（%）</label>
       <input type="number" id="bucketIncomePercent" inputmode="decimal" placeholder="例：10" min="0" max="100" step="0.1">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">系統會自動依本月至今收入（薪水、利息、二手交易等，不含應收款）計算並自動提撥入本存錢計畫，每月即時更新</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">系統會依本月至今收入（薪水、利息、二手交易等，不含應收款）自動計算並提撥，每月即時更新。本月還沒有收入時，改用每月計畫的「每月生活費」計算，這筆錢由緊急預備金支應。</div>
       <div id="bucketPercentWarning" style="font-size:11px;color:var(--red);margin-top:4px;display:none"></div>
     </div>
     <div class="modal-field">
@@ -1703,7 +1720,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
         <input type="checkbox" id="bucketIsEmergencyFund">作為緊急預備金
       </label>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">每個月如果收入不夠支應每月計畫裡的類別預算，會自動從這個存錢目標扣一筆（虛擬），並在該筆紀錄註明原因。同時間只能有一個存錢計畫是緊急預備金，勾選這個會自動取消其他存錢計畫的勾選。</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">本月支出超過收入（超支）時，差額會自動從這個存錢目標扣一筆（虛擬），紀錄上會寫明支出與收入各多少。同時間只能有一個緊急預備金，勾選這個會自動取消其他存錢目標的勾選。</div>
     </div>
     <div class="modal-field">
       <label>備註（選填）</label>
@@ -1711,7 +1728,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     </div>
     <input type="hidden" id="bucketEditId">
     <div class="modal-actions" style="justify-content:space-between">
-      <button class="btn btn-ghost" id="bucketModalDelete" style="color:var(--red);display:none">刪除存錢計畫</button>
+      <button class="btn btn-ghost" id="bucketModalDelete" style="color:var(--red);display:none">刪除存錢目標</button>
       <div style="display:flex;gap:8px">
         <button class="btn btn-ghost" id="bucketModalCancel">取消</button>
         <button class="btn btn-primary" id="bucketModalSave">儲存</button>
@@ -1724,7 +1741,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
      See db.js v12 comment / roadmap doc for why. ── -->
 <div class="modal-overlay" id="bucketAllocModal">
   <div class="modal">
-    <h2>提撥到存錢計畫</h2>
+    <h2>提撥到存錢目標</h2>
     <div id="bucketAllocTargetLabel" style="font-size:13px;font-weight:600;margin-bottom:10px"></div>
     <div class="field-row">
       <div class="modal-field">
@@ -1736,7 +1753,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
         <input type="date" id="bucketAllocDate">
       </div>
     </div>
-    <div style="font-size:11px;color:var(--text-3);margin:-4px 0 10px">這筆只是把錢「記給」這個存錢計畫，不會扣任何帳戶餘額——實際花掉時才會真的影響帳戶。</div>
+    <div style="font-size:11px;color:var(--text-3);margin:-4px 0 10px">這筆只是把錢「記給」這個存錢目標，不會扣任何帳戶餘額——實際花掉時才會真的影響帳戶。</div>
     <div class="modal-field">
       <label>備註（選填）</label>
       <input type="text" id="bucketAllocNote" placeholder="">
@@ -2559,7 +2576,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <div class="modal-field" id="incomeFxField" style="display:none">
       <label>換算匯率（1 <span id="incomeFxCurrLabel">USD</span> = ? TWD）</label>
       <input type="number" id="incomeFxRate" inputmode="decimal" step="0.0001" min="0">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">已自動帶入目前的即時匯率，需要的話可以手動調整成實際匯率。這個匯率會跟著這筆交易存起來，之後計算本月收入／存錢計畫提撥時都用這個換算後的 TWD 金額，就算之後系統匯率再變動，也不會回頭影響這一筆。</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">已自動帶入目前的即時匯率，需要的話可以手動調整成實際匯率。這個匯率會跟著這筆交易存起來，之後計算本月收入／存錢目標提撥時都用這個換算後的 TWD 金額，就算之後系統匯率再變動，也不會回頭影響這一筆。</div>
     </div>
 
     <!-- DCA extra fields -->
@@ -2683,12 +2700,12 @@ import {
   resolveBudget, currentMonthStr, calcMonthlyExpenseTotal, calcMonthlyExpenseByCategory, calcAllocatedBudget,
   calcBucketAllocated, calcBucketSpent, calcProjectSpent, calcExpectedInterest,
   calcMonthlyIncomeTotal, calcBucketMonthlyContribution, calcMonthsToTarget, calcTotalIncomePercent,
-  resolveBudgetRecord, calcIncomeAllocationCascade, resolveIncomeAmountTwd, resolveExpenseAmountTwd,
+  resolveBudgetRecord, resolveIncomeAmountTwd, resolveExpenseAmountTwd,
   calcMonthCalendarItems, calcOtherAssets, calcDividendByYear, calcTodayAllowance, calcGoldAssets,
-  calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent, rebalanceJarPercents,
+  calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent,
   runDataHealthChecks,
   classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
-  calcMonthlyPlan, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
+  calcMonthlyPlan, calcBucketPlanContribution, calcOverspend, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
 } from './calc.js';
 
@@ -2955,19 +2972,21 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.10.0';
-const CHANGELOG_LAST_UPDATED = '2026-10-05';
+const APP_VERSION = 'v2.11.0';
+const CHANGELOG_LAST_UPDATED = '2026-10-07';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '資產 › 趨勢：新增本月、今年以來、所選期間的資產成長率，並把變化拆成「存進去的」與「投資、匯率與其他」，看得出資產變多是靠省下來還是靠市場',
-  '資產 › 趨勢：新增「每月實際存了多少」——近 6 個月收入減支出、儲蓄率，對照每月計畫的存下來＋投資',
-  '旅行模式：在存錢目標底下建立有日期的旅行，旅行期間首頁與紀錄頁顯示第幾天、已花多少、基金還剩多少，新增的支出自動歸到這趟旅行；每趟旅行列出各類別花了多少',
-  '首頁快速記帳：輸入金額後點類別就記好；最近常記的項目一點就記；付款方式記住上次的選擇；今天記的可以直接刪除',
-  '資產 › 總覽新增「可以留意的錢」：計畫還沒安排用途的錢、一年以上才用到的目標、過期沒處理的定存、久沒動的外幣與帳戶、逾期的應收款',
-  '信用卡新增完整繳款紀錄：依年份列出每一期繳款日、金額、扣款帳戶與年度合計',
+  '緊急預備金改用新規則：本月支出超過收入（超支）時，差額自動由緊急預備金支應，紀錄上寫明支出與收入各多少；收入入帳後自動縮小或消失',
+  '用「收入百分比」撥款的存錢目標：本月還沒有收入時，改用每月生活費計算，這筆錢由緊急預備金支應',
+  '首頁「可自由運用」的 30 天內要付：每一項新增「已付」按鈕，直接確認本期',
+  '確認本期新增「這期不用我付」：例如室友付了房租，標記本期已處理但不記支出；可以馬上復原，或在定期支出、分期付款、定期定額清單上撤銷',
+  '刪除應收款的收款紀錄時，從收入記帳產生的那筆收入一起刪除，帳戶餘額與已收金額同步還原',
+  '「存錢計畫」全部統一改稱「存錢目標」；舊的「設定預算」「收入分配法」頁面程式移除',
+  '修正：定期支出、分期付款確認時，支出類別預設會選到「呆帳沖銷」——改為「帳單／水電」，之前記錯的會自動改正',
+  '投資屬性：上市股多一個資料來源（原本查不到的，例如廣達），上櫃股產業名稱正名（例如「櫃電腦週邊」→「電腦及週邊設備」），查詢失敗的結果不再被快取，重新判定會真的重查',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3244,8 +3263,8 @@ async function init() {
   // Keep percent-mode Buckets' current-month auto-contribution in sync with
   // this month's income every time the app opens (covers income entries
   // added elsewhere, month rollover, etc.) — see syncAutoBucketContributions.
-  await syncAutoBucketContributions().catch(e=>console.warn('[sync auto buckets]', e));
-  await syncEmergencyFundShortfall().catch(e=>console.warn('[sync emergency fund]', e));
+  await fixMiscategorizedPeriodExpenses().catch(e=>console.warn('[fix cat]', e));
+  await syncPlanAutoRows();
   // §卅九補記：把「留到當天再生效」、排定日期已經到了的支出／收入紀錄，這次
   // 開啟 App 時補套用到帳戶／信用卡餘額——見 applyPendingBalanceEffects() 的
   // 說明。放在這裡（跟上面兩個 sync 函式同一個位置）而不是每次 loadData() 都
@@ -3381,7 +3400,7 @@ async function navigate(view) {
   // 是 topbar 顯示文字，側邊欄／底部導覽列上的連結文字（資產總覽、收支紀錄）
   // 完全不受影響（navigate() 這裡只處理 topbarTitle 這一個 span，跟 nav-item
   // 的連結文字是兩份獨立的字串，見側邊欄與底部導覽列的 HTML）。
-  const titles = { assets:'手元', plan:'計畫', wealth:'虎の子', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'記帳管理', report:'帳務報表', creditcard:'信用卡', recurring:'定期支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢計畫', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
+  const titles = { assets:'手元', plan:'計畫', wealth:'虎の子', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'記帳管理', report:'帳務報表', creditcard:'信用卡', recurring:'定期支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢目標', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
   document.getElementById('topbarTitle').textContent = titles[view] ?? view;
   document.getElementById('refreshBtn').style.display = (view === 'assets' || view === 'wealth') ? '' : 'none';
   if (view === 'assets')            await renderHome();
@@ -3403,7 +3422,7 @@ async function navigate(view) {
   else if (view === 'installment')  await renderInstallment();
   else if (view === 'goals')        await renderBuckets();
   else if (view === 'categories')   await renderCategories();
-  else if (view === 'budgetplan')   await renderBudgetPlan();
+  else if (view === 'budgetplan')   { await navigate('plan'); return; }
   else if (view === 'onboarding')   await renderOnboarding();
 }
 // 記帳管理（§十五之五）整合頁殼所用的容器覆寫鉤子：7 個子功能頁（信用卡／
@@ -3776,11 +3795,19 @@ async function renderHome() {
     <button type="button" class="sp-toggle" aria-expanded="${_homeSpendOpen}">${_homeSpendOpen ? '收起' : '怎麼算的'}</button>
     <div class="sp-rows" ${_homeSpendOpen ? '' : 'hidden'}>
       ${rows.map(([l, v, n], i) => `<div class="sp-row"><span>${l}${n ? `<small>${n}</small>` : ''}</span><b>${v < 0 ? '−' : ''}${money(Math.abs(v))}</b></div>`
-        + (i === 2 && sp.upcoming.length ? `<div class="sp-sub">${sp.upcoming.slice(0, 6).map(u => `<span>${escHtml(u.label)}・${u.days <= 0 ? '已到期' : u.days + ' 天後'}<b>${money(u.amount)}</b></span>`).join('')}</div>` : '')).join('')}
+        + (i === 2 && sp.upcoming.length ? `<div class="sp-sub">${sp.upcoming.slice(0, 8).map((u, k) => `<div class="sp-it"><span>${escHtml(u.label)}・${u.days <= 0 ? '已到期' : u.days + ' 天後'}</span><b>${money(u.amount)}</b>${['recurring','installment','dca'].includes(u.type) ? `<button type="button" class="sp-paid" data-sp-paid="${k}" aria-label="${escHtml(u.label)} 已付">已付</button>` : ''}</div>`).join('')}${sp.upcoming.length > 8 ? `<div class="sp-it sp-more"><span>還有 ${sp.upcoming.length - 8} 筆</span></div>` : ''}</div>` : '')).join('')}
       <div class="sp-row sp-total"><span>可自由運用</span><b>${money(sp.free)}</b></div>
     </div>
     ${efLine}`;
   hero.querySelector('.sp-toggle').addEventListener('click', () => { _homeSpendOpen = !_homeSpendOpen; renderHome(); });
+  // v2.11.0：已經付了（或這期不用付）卻還沒確認的項目，會被重複扣在「30 天內
+  // 要付」——直接在這裡按「已付」打開確認本期，彈窗裡也能選「這期不用我付」。
+  hero.querySelectorAll('[data-sp-paid]').forEach(b => b.addEventListener('click', async () => {
+    const u = sp.upcoming[+b.dataset.spPaid];
+    if (u.type === 'recurring') { const r = recurringExpenses.find(x => x.id === u.id); if (r) await openRecurringExpenseConfirm(r, u.date); }
+    else if (u.type === 'installment') { const it = installments.find(x => x.id === u.id); if (it) openConfirmInstModal(it, it.per_amount || Math.round(it.total_amount / it.total_periods), u.date); }
+    else if (u.type === 'dca') { const d = dcaSchedules.find(x => x.id === u.id); if (d) await openDcaConfirm(d, u.date); }
+  }));
   root.appendChild(hero);
 
   // 今天還能花＋總資產（兩格）
@@ -5300,7 +5327,7 @@ async function renderSettings() {
             openRecvPaymentModal(r, p);
           });
           pRow.querySelector('[data-del-payment]')?.addEventListener('click', () => {
-            openDeleteModal(`確定要刪除這筆 ${p.date} NT$ ${fmt(Math.abs(p.amount))} 的收款紀錄嗎？這會把已收金額扣回去${paidAcc?`，也會把「${paidAcc.name}」的帳戶餘額同步扣回去`:''}。`, async()=>{
+            openDeleteModal(`確定要刪除這筆 ${p.date} NT$ ${fmt(Math.abs(p.amount))} 的收款紀錄嗎？這會把已收金額扣回去${paidAcc?`，也會把「${paidAcc.name}」的帳戶餘額同步扣回去`:''}${p.income_txn_id?'；這筆是從收入記帳結清的，收支紀錄裡對應的那筆收入也會一起刪除':''}。`, async()=>{
               await deleteReceivablePayment(p);
               showToast('收款紀錄已刪除');await renderSettings();
             });
@@ -5809,6 +5836,9 @@ let _holdClass = null;            // { fetched_at, results: { 'TW:2330': {indust
 let _holdClassState = 'idle';     // idle | loading | error
 let _holdClassLastTry = 0;
 const HOLD_CLASS_MAX_AGE = 3 * 864e5;
+// v2.11.0：判定規則／資料來源有改時往上跳，舊快取一律重抓一次（例如上櫃產業
+// 「櫃電腦週邊」正名、MoneyDJ 鏡像站補上原本查不到的上市股）。
+const HOLD_CLASS_VER = 2;
 function holdingClassKey(h) { return `${(h.brokerage?.market ?? h.market ?? 'TW')}:${String(h.ticker).toUpperCase()}`; }
 async function loadHoldingClassCache() {
   if (_holdClass) return _holdClass;
@@ -5822,7 +5852,7 @@ function refreshHoldingClassIfNeeded(enriched, force = false) {
   const keys = [...new Set(enriched.map(holdingClassKey))];
   if (!keys.length) return;
   const cache = _holdClass ?? { results: {} };
-  const stale = !cache.fetched_at || (Date.now() - new Date(cache.fetched_at).getTime()) > HOLD_CLASS_MAX_AGE;
+  const stale = !cache.fetched_at || cache.v !== HOLD_CLASS_VER || (Date.now() - new Date(cache.fetched_at).getTime()) > HOLD_CLASS_MAX_AGE;
   // 有任何一檔還沒判定成功（或只有備援的不完整結果），也算需要重抓——不用等 3 天。
   const missing = keys.some(k => { const r = cache.results?.[k]; return !r || !r.industry?.mix?.length || !r.style?.key || r.style?.needsTwse; });
   if (!force && !stale && !missing) return;
@@ -5834,14 +5864,15 @@ function refreshHoldingClassIfNeeded(enriched, force = false) {
       // 同時進行——證交所擋雲端主機，但開放資料允許網頁跨網域讀取。
       const twListed = keys.filter(k => /^TW:(?!00)\d{4,6}$/.test(k));
       const [res, twseVal] = await Promise.all([
-        fetch(`/api/classify?items=${encodeURIComponent(keys.join(','))}`, { signal: AbortSignal.timeout(30000) }),
+        // 加時間參數：避免拿到 CDN／瀏覽器快取裡某次來源逾時的不完整結果。
+        fetch(`/api/classify?items=${encodeURIComponent(keys.join(','))}&t=${Date.now()}`, { signal: AbortSignal.timeout(30000), cache: 'no-store' }),
         twListed.length ? fetchTwseOpenData('exchangeReport/BWIBBU_ALL') : null,
       ]);
       if (!res.ok) throw new Error(res.status);
       const data = await res.json();
       await applyTwseOfficialData(data.results || {}, twListed, twseVal);
       // 單一來源暫時失敗時，不拿「查不到」蓋掉之前已經判定成功的結果。
-      const merged = { ...(cache.results || {}) };
+      const merged = cache.v === HOLD_CLASS_VER ? { ...(cache.results || {}) } : {};
       for (const [k, v] of Object.entries(data.results || {})) {
         const old = merged[k] || {};
         merged[k] = {
@@ -5850,7 +5881,7 @@ function refreshHoldingClassIfNeeded(enriched, force = false) {
           style: (v?.style?.key && !(v.style.needsTwse && old.style?.key && !old.style.needsTwse)) || !old.style?.key ? v?.style : old.style,
         };
       }
-      _holdClass = { fetched_at: data.fetched_at || new Date().toISOString(), results: merged };
+      _holdClass = { v: HOLD_CLASS_VER, fetched_at: data.fetched_at || new Date().toISOString(), results: merged };
       await setSetting(db, 'holding_class_cache', _holdClass).catch(() => {});
       _holdClassState = 'idle';
     } catch (e) {
@@ -5861,7 +5892,7 @@ function refreshHoldingClassIfNeeded(enriched, force = false) {
 }
 async function fetchTwseOpenData(path) {
   try {
-    const r = await fetch(`https://openapi.twse.com.tw/v1/${path}`, { signal: AbortSignal.timeout(20000) });
+    const r = await fetch(`https://openapi.twse.com.tw/v1/${path}`, { signal: AbortSignal.timeout(20000), cache: 'no-store' });
     return r.ok ? await r.json() : null;
   } catch (e) { console.warn('[twse]', path, e); return null; }
 }
@@ -7902,7 +7933,6 @@ document.getElementById('categoryModalSave').addEventListener('click',async()=>{
   // 一併涵蓋「從設定頁裡新增分類」跟「從 safety net 的獨立類別設定頁新增」
   // 兩種情境。
   if (currentView === 'plan') await renderPlanHub();
-  else if (currentView === 'txnmanage' && _txnManageActiveTab === 'budgetplan') await renderBudgetPlan();
   else await refreshCategoriesView();
 });
 // ════════════════════════════════════════════════════════════════════════════
@@ -7937,186 +7967,8 @@ async function saveBudgetRecord(categoryId, fields) {
   });
 }
 
-async function renderBudgetPlan() {
-  const [budgets, expenseTxns, cats, buckets, incomeTxns, accounts] = await Promise.all([
-    getAll(db,'budgets').catch(()=>[]),
-    getAll(db,'expense_txns').catch(()=>[]),
-    getAll(db,'txn_categories').catch(()=>[]),
-    getAll(db,'buckets').catch(()=>[]),
-    getAll(db,'income_txns').catch(()=>[]),
-    getAll(db,'accounts').catch(()=>[]),
-  ]);
-  const fxRates = await getFxRates(db);
-  const thisMonth  = currentMonthStr();
-  const expenseCats = cats.filter(c=>c.type==='expense'&&c.active!==false).sort((a,b)=>(a.sort_order??99)-(b.sort_order??99));
-  const spentByCat  = calcMonthlyExpenseByCategory(expenseTxns, thisMonth, accounts, fxRates);
-  const totalBudget = resolveBudget(budgets, null, thisMonth);
-  const totalSpent  = calcMonthlyExpenseTotal(expenseTxns, thisMonth, accounts, fxRates);
-  const allocated   = calcAllocatedBudget(budgets, expenseCats.map(c=>c.id), thisMonth);
+// v2.11.0：舊「設定預算」頁（renderBudgetPlan）已刪除，功能都在「每月計畫」。
 
-  const content = _activeContentContainer;
-  content.innerHTML = '';
-
-  // v2.4.1（使用者要求「收入分配只保留一個、入口只留一個」）：原本這裡有一張
-  // 「🌊 本月收入分配」試算卡，跟記帳管理裡的「收入分配法」重複，已移除——
-  // 依收入比例分配一律在「收入分配法」設定。「設定預算」只負責每個類別每月
-  // 最多花多少（固定金額）。緊急預備金的自動支應仍在背景依固定金額類別計算
-  // （見 syncEmergencyFundShortfall），不受影響。
-  const intro = el('div'); intro.style.cssText='font-size:12px;color:var(--text-3);margin-bottom:14px;line-height:1.6';
-  intro.textContent = `每筆預算都是「從這個月開始生效」的設定，不是每個月各自輸入：改了本月的預算，之前月份的紀錄不會跟著變動，之後每個月會自動延續這裡最新輸入的金額，想調整隨時可以再回來改。`;
-  content.appendChild(intro);
-
-  function buildBudgetRow({ icon, iconBg, label, spent, current, onSave, onDelete }) {
-    const pct = current > 0 ? Math.round((spent/current)*100) : 0;
-    const over = current != null && spent > current;
-    const barColor = over ? 'var(--red)' : (pct >= 80 ? 'var(--amber)' : 'var(--green, #16A34A)');
-    const row = el('div','card'); row.style.cssText='margin-bottom:10px;padding:14px 18px';
-    row.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span style="width:28px;height:28px;border-radius:7px;background:${iconBg};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${icon}</span>
-        <span style="font-size:13px;font-weight:600;flex:1;min-width:80px">${label}</span>
-        <span style="font-size:12px;color:var(--text-2);font-variant-numeric:tabular-nums">本月已花 NT$ ${fmt(spent)}</span>
-        <input type="number" class="budgetInput" inputmode="decimal" placeholder="未設定" min="0" step="1" value="${current ?? ''}"
-          style="width:110px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
-        <button class="btn btn-primary btn-sm budgetSaveBtn">儲存</button>
-        ${onDelete ? `<button class="btn btn-ghost btn-sm budgetDelBtn" style="color:var(--red)" title="刪除這個分類">刪除</button>` : ''}
-      </div>
-      ${current != null ? `
-      <div style="margin-top:10px;height:6px;border-radius:3px;background:var(--border);overflow:hidden">
-        <div style="height:100%;width:${Math.min(pct,100)}%;background:${barColor};border-radius:3px"></div>
-      </div>
-      <div style="margin-top:5px;font-size:11px;color:var(--text-3)">
-        ${over ? `已超出 NT$ ${fmt(spent-current)}` : `剩餘 NT$ ${fmt(current-spent)}（${pct}%）`}
-      </div>` : ''}`;
-    const input = row.querySelector('.budgetInput');
-    row.querySelector('.budgetSaveBtn').addEventListener('click', async () => {
-      const amt = parseFloat(input.value);
-      if (!amt || amt <= 0) { input.style.borderColor='var(--red)'; return; }
-      await onSave(amt);
-      showToast('✓ 預算已更新');
-      await renderBudgetPlan();
-    });
-    if (onDelete) {
-      row.querySelector('.budgetDelBtn').addEventListener('click', () => {
-        openDeleteModal(`確定要停用分類「${label}」嗎？已記帳的項目不受影響，類別名稱仍會保留顯示（灰階）；這個分類設定過的預算紀錄也會一併移除。`, async () => {
-          await onDelete();
-          showToast('分類已停用');
-          await renderBudgetPlan();
-        });
-      });
-    }
-    return row;
-  }
-
-  // Per-category row：v2.4.1 起只剩固定金額一種（見函式內說明）。
-  function buildCategoryBudgetRow(cat, rec) {
-    // v2.4.1：類別預算只剩「固定金額」一種。之前設成「剩餘金額的百分比／剩餘平分」
-    // 的舊設定不再生效（依收入比例分配已整合到「收入分配法」），畫面上會提示一次，
-    // 請使用者改填固定金額。
-    const legacyMode = rec?.allocation_mode && rec.allocation_mode !== 'fixed' ? rec.allocation_mode : null;
-    const spent = spentByCat[cat.id] || 0;
-    const current = legacyMode ? null : (rec?.amount ?? null);
-    const pct = current > 0 ? Math.round((spent/current)*100) : 0;
-    const over = current != null && spent > current;
-    const barColor = over ? 'var(--red)' : (pct >= 80 ? 'var(--amber)' : 'var(--green, #16A34A)');
-    const row = el('div','card'); row.style.cssText='margin-bottom:10px;padding:14px 18px';
-    row.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span style="width:28px;height:28px;border-radius:7px;background:${cat.color}18;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${cat.icon ?? '·'}</span>
-        <span style="font-size:13px;font-weight:600;flex:1;min-width:80px">${cat.label}</span>
-        <span style="font-size:12px;color:var(--text-2);font-variant-numeric:tabular-nums">本月已花 NT$ ${fmt(spent)}</span>
-        <input type="number" class="budgetAmountInput" inputmode="decimal" placeholder="每月上限" min="0" step="1" value="${current ?? ''}"
-          style="width:110px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
-        <button class="btn btn-primary btn-sm budgetSaveBtn">儲存</button>
-        <button class="btn btn-ghost btn-sm budgetDelBtn" style="color:var(--amber,#B45309)" title="停用這個分類">停用</button>
-      </div>
-      ${current != null ? `
-      <div style="margin-top:10px;height:6px;border-radius:3px;background:var(--border);overflow:hidden">
-        <div style="height:100%;width:${Math.min(pct,100)}%;background:${barColor};border-radius:3px"></div>
-      </div>
-      <div style="margin-top:5px;font-size:11px;color:var(--text-3)">
-        ${over ? `已超出 NT$ ${fmt(spent-current)}` : `剩餘 NT$ ${fmt(current-spent)}（${pct}%）`}
-      </div>` : ''}
-      ${legacyMode ? `<div style="margin-top:8px;font-size:11px;line-height:1.6;color:#92400E;background:var(--amber-bg,#FFFBEB);border-radius:6px;padding:6px 9px">原本設定為「${legacyMode==='percent' ? `剩餘金額的 ${rec.percent ?? 0}%` : '剩餘平分'}」——依收入比例分配已整合到「收入分配法」，這個設定不再生效；這裡請改填每月固定上限金額。</div>` : ''}`;
-
-    const amtInput = row.querySelector('.budgetAmountInput');
-    row.querySelector('.budgetSaveBtn').addEventListener('click', async () => {
-      const amt = parseFloat(amtInput.value);
-      if (!amt || amt <= 0) { amtInput.style.borderColor='var(--red)'; return; }
-      await saveBudgetRecord(cat.id, { amount: amt, percent: null, allocation_mode: 'fixed' });
-      showToast('✓ 預算已更新');
-      await syncEmergencyFundShortfall();
-      await renderBudgetPlan();
-    });
-    row.querySelector('.budgetDelBtn').addEventListener('click', () => {
-      openDeleteModal(`確定要停用分類「${cat.label}」嗎？已記帳的項目不受影響，歷史紀錄仍會顯示「${cat.label}」（灰階），只是之後不能再選用；這個分類設定過的預算紀錄會一併移除。可以到「設定」頁面隨時恢復。`, async () => {
-        const catBudgetIds = budgets.filter(b=>b.category_id===cat.id).map(b=>b.id);
-        const stores = catBudgetIds.length ? ['txn_categories','budgets'] : ['txn_categories'];
-        const t = db.transaction(stores,'readwrite');
-        t.objectStore('txn_categories').put({...cat, active:false});
-        catBudgetIds.forEach(id => t.objectStore('budgets').delete(id));
-        await new Promise((res,rej)=>{t.oncomplete=res;t.onerror=()=>rej(t.error)});
-        showToast('分類已停用');
-        await syncEmergencyFundShortfall();
-        await renderBudgetPlan();
-      });
-    });
-    return row;
-  }
-
-  // Total budget row (same store entry the 帳戶設定 quick-edit card and the
-  // wizard write — category_id: null).
-  content.appendChild(buildBudgetRow({
-    icon: '🎯', iconBg: 'var(--border)', label: '本月總預算',
-    spent: totalSpent, current: totalBudget,
-    onSave: (amt) => saveBudgetRecord(null, { amount: amt }),
-  }));
-
-  // Allocation check: does the sum of everything set below actually fit
-  // inside the total budget above? If total isn't set yet there's nothing
-  // to compare against, so this just reports the sum neutrally.
-  if (expenseCats.length > 0) {
-    const overAllocated = totalBudget != null && allocated > totalBudget;
-    const allocBanner = el('div');
-    allocBanner.style.cssText = `margin-bottom:16px;padding:10px 14px;border-radius:8px;font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;` +
-      (overAllocated ? 'background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA' : 'background:var(--bg-2,#F8FAFC);color:var(--text-2);border:1px solid var(--border)');
-    allocBanner.innerHTML = totalBudget != null
-      ? `<span>分類預算加總 NT$ ${fmt(allocated)} ／ 總預算 NT$ ${fmt(totalBudget)}</span>
-         <span style="font-weight:600">${overAllocated ? `⚠️ 超過總預算 NT$ ${fmt(allocated-totalBudget)}` : `尚有 NT$ ${fmt(totalBudget-allocated)} 可以分配`}</span>`
-      : `<span>分類預算加總 NT$ ${fmt(allocated)}</span><span>尚未設定總預算，無法比較</span>`;
-    content.appendChild(allocBanner);
-  }
-
-  // Section header for the per-category breakdown, with an inline "+ 新增
-  // 分類" button — this reuses the same 新增/編輯類別 modal 類別設定 uses
-  // (openCategoryModal), it's the one place category rows actually live;
-  // no need for a second, parallel "budget category" concept.
-  const secHead = el('div'); secHead.style.cssText='display:flex;align-items:center;justify-content:space-between;margin:18px 0 8px';
-  const secTitle = el('div'); secTitle.style.cssText='font-size:13px;font-weight:600'; secTitle.textContent = '分類預算';
-  const addCatBtn = el('button','btn btn-ghost btn-sm');
-  addCatBtn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> 新增分類`;
-  addCatBtn.addEventListener('click', () => openCategoryModal(null, 'expense'));
-  secHead.appendChild(secTitle); secHead.appendChild(addCatBtn);
-  content.appendChild(secHead);
-
-  if (expenseCats.length === 0) {
-    const hint = el('div','empty-state');
-    hint.innerHTML = `<p>尚無支出類別，點上面「新增分類」新增一個就能設定它的預算。</p>`;
-    content.appendChild(hint);
-  } else {
-    expenseCats.forEach(cat => {
-      const rec = resolveBudgetRecord(budgets, cat.id, thisMonth);
-      content.appendChild(buildCategoryBudgetRow(cat, rec));
-    });
-  }
-
-  const uncategorizedSpent = spentByCat['__uncategorized__'] || 0;
-  if (uncategorizedSpent > 0) {
-    const note = el('div'); note.style.cssText='font-size:11px;color:var(--text-3);margin-top:8px';
-    note.textContent = `另有 NT$ ${fmt(uncategorizedSpent)} 的支出沒有分類，不計入上面任何一筆分類預算的比較。`;
-    content.appendChild(note);
-  }
-}
 // ════════════════════════════════════════════════════════════════════════════
 // 應收款流水帳（receivable_payments）＋不再追討／呆帳沖銷 ── 見路線圖
 // §十五之六。received_amount 仍是應收款唯一權威的即時餘額，所有既有讀取路徑
@@ -8151,6 +8003,13 @@ async function addReceivablePayment(receivableId, date, amount, note = '', accou
 // 帳戶餘額會跟應收款脫勾——這是新增「收款紀錄可以自由選擇是否影響帳戶」
 // 之後才會發生的情況，過去流水帳從來不會直接連動帳戶，不需要這段。
 async function deleteReceivablePayment(payment) {
+  // v2.11.0（使用者決定：兩邊一起撤銷）：這筆收款是從「收入」結清應收款時
+  // 產生的（income_txn_id），就改成刪除那筆收入——deleteTxnRecord 會一次做完
+  // 帳戶餘額沖回、已收金額扣回、刪掉這筆收款紀錄，不會留下一筆孤兒收入。
+  if (payment.income_txn_id) {
+    const inc = await getOne(db, 'income_txns', payment.income_txn_id);
+    if (inc) { await deleteTxnRecord(inc, true); return; }
+  }
   const t = db.transaction(['receivable_payments'], 'readwrite');
   t.objectStore('receivable_payments').delete(payment.id);
   await new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
@@ -8763,116 +8622,85 @@ document.getElementById('importModalConfirm').addEventListener('click',async()=>
 // an income entry, and after saving a bucket. Does not touch fixed-mode
 // buckets (those stay purely manual via ＋提撥) or bucket status.
 async function syncAutoBucketContributions() {
-  const [buckets, incomeTxns, allocations] = await Promise.all([
+  const [buckets, incomeTxns, allocations, planSettings] = await Promise.all([
     getAll(db,'buckets').catch(()=>[]),
     getAll(db,'income_txns').catch(()=>[]),
     getAll(db,'bucket_allocations').catch(()=>[]),
+    getSetting(db,'monthly_plan',null).catch(()=>null),
   ]);
   const monthStr = currentMonthStr();
-  const monthlyIncomeTotal = calcMonthlyIncomeTotal(incomeTxns, monthStr, INCOME_PERCENT_EXCLUDED_CATEGORIES);
+  const income = calcMonthlyIncomeTotal(incomeTxns, monthStr, INCOME_PERCENT_EXCLUDED_CATEGORIES);
+  const baseFixed = planSettings?.base_fixed || 0;
+  const efBucket = buckets.find(b => b.is_emergency_fund && b.status !== 'closed') || null;
   const today = new Date().toISOString().slice(0,10);
-  const writes = [];
+  const writes = [], deletes = [];
   for (const bucket of buckets) {
-    if (bucket.status === 'closed') continue;
-    if (bucket.contribution_mode !== 'percent' || !(bucket.income_percent > 0)) continue;
-    const contribution = calcBucketMonthlyContribution(bucket, monthlyIncomeTotal);
-    const amount = Math.round(contribution || 0);
-    // auto_type distinguishes this "money coming IN" row from the
-    // shortfall-withdrawal rows syncEmergencyFundShortfall writes ("money
-    // going OUT") — the same Bucket/month can have one of each at once.
+    if (bucket.contribution_mode !== 'percent') continue;
+    const active = bucket.status !== 'closed' && bucket.income_percent > 0;
+    const c = active ? calcBucketPlanContribution(bucket, income, baseFixed) : { amount: 0, fromEf: false };
+    // v2.11.0：沒有收入的月份改用「每月生活費」× 百分比，而且由緊急預備金支應
+    // （使用者決定）。沒有指定緊急預備金時，照樣提撥，只是沒有對應的扣除。
+    const fromEf = c.fromEf && !!efBucket;
+    const amount = Math.round(c.amount || 0);
+    const note = c.fromEf
+      ? `自動提撥（本月還沒有收入：每月生活費 ${fmt(baseFixed)} 的 ${bucket.income_percent}%${fromEf ? '，由緊急預備金支應' : ''}）`
+      : `自動提撥（本月收入 ${bucket.income_percent}%）`;
+    // auto_type 'contribution' 是撥進來的錢；'ef_fund' 是緊急預備金撥出去的那
+    // 一半（同一筆錢的兩邊，金額相反，auto_for 指回被撥款的目標）。
     const existing = allocations.find(a => a.bucket_id === bucket.id && a.auto_month === monthStr && a.auto_type === 'contribution');
     if (existing) {
-      if (existing.amount !== amount) {
-        writes.push({...existing, amount, note: `自動提撥（本月收入 ${bucket.income_percent}%）`});
-      }
+      if (existing.amount !== amount || existing.note !== note) writes.push({...existing, amount, note});
     } else if (amount > 0) {
-      writes.push({
-        id: crypto.randomUUID(), bucket_id: bucket.id, amount,
-        date: today, note: `自動提撥（本月收入 ${bucket.income_percent}%）`,
-        auto: true, auto_type: 'contribution', auto_month: monthStr,
-        created_at: new Date().toISOString(),
-      });
+      writes.push({ id: crypto.randomUUID(), bucket_id: bucket.id, amount, date: today, note,
+        auto: true, auto_type: 'contribution', auto_month: monthStr, created_at: new Date().toISOString() });
     }
+    const efRow = allocations.find(a => a.auto_type === 'ef_fund' && a.auto_month === monthStr && a.auto_for === bucket.id);
+    if (fromEf && amount > 0) {
+      const row = { id: efRow?.id || crypto.randomUUID(), bucket_id: efBucket.id, amount: -amount,
+        date: efRow?.date || today, note: `本月還沒有收入，撥給「${bucket.name}」的 ${bucket.income_percent}% 由緊急預備金支應`,
+        auto: true, auto_type: 'ef_fund', auto_for: bucket.id, auto_month: monthStr, created_at: efRow?.created_at || new Date().toISOString() };
+      if (!efRow || efRow.amount !== row.amount || efRow.bucket_id !== row.bucket_id || efRow.note !== row.note) writes.push(row);
+    } else if (efRow) deletes.push(efRow.id);
   }
-  if (writes.length === 0) return;
+  if (!writes.length && !deletes.length) return;
   const t = db.transaction(['bucket_allocations'],'readwrite');
   const store = t.objectStore('bucket_allocations');
   writes.forEach(w => store.put(w));
+  deletes.forEach(id => store.delete(id));
   await new Promise((res,rej)=>{t.oncomplete=res;t.onerror=()=>rej(t.error)});
 }
 
-// Builds the categoryBudgets array calcIncomeAllocationCascade expects,
-// from the 'budgets' store's raw records — shared by syncEmergencyFundShortfall
-// and renderBudgetPlan() so the two never compute the cascade from
-// differently-shaped inputs. A category with no budgets row yet, or an old
-// pre-cascade row with no `allocation_mode`, is treated as 'fixed' mode
-// with whatever `amount` it has (or 0/none) — same as it always behaved.
-function buildCategoryBudgetsForCascade(budgets, expenseCats, monthStr) {
-  return expenseCats.map(c => {
-    const rec = resolveBudgetRecord(budgets, c.id, monthStr);
-    // v2.4.1：只有固定金額的類別預算才算數；舊的百分比／剩餘平分設定已不再生效
-    // （依收入比例分配改由「收入分配法」處理），一律視為沒有設定。
-    const isFixed = (rec?.allocation_mode || 'fixed') === 'fixed';
-    return { id: c.id, name: c.label, mode: 'fixed', amount: isFixed ? (rec?.amount || 0) : 0, percent: 0 };
-  });
-}
-
-// If the Bucket flagged `is_emergency_fund: true` isn't enough to make up
-// for fixed-mode category budgets exceeding what's left of this month's
-// income after Bucket contributions, this automatically records a
-// withdrawal against that Bucket (bucket_allocations, negative amount,
-// auto_type:'shortfall') — the same "auto, upsert one row per month"
-// pattern as syncAutoBucketContributions, but money leaving instead of
-// coming in. Per the user's own framing: 「本月收入不夠付這些固定支出，就是
-// 從緊急預備金扣除，緊急預備金的意義就是這種時候要使用，當月的每月收支結算
-// 就用負數呈現」— see calc.js's calcIncomeAllocationCascade for the math
-// behind `shortfall`/`netSettlement`. Called anywhere the cascade's inputs
-// can change: init, income save/delete, Bucket save/status-toggle, and
-// category-budget save/delete (see renderBudgetPlan).
+// v2.11.0（使用者決定，取代舊規則）：「如果支出>收入＝超支，動用的錢就一定
+// 是從緊急預備金來支出」。舊規則拿「收入」跟「類別預算」比，跟實際花多少無
+// 關；現在改成看本月實際的錢：本月至今支出（不含存錢目標支應的花費、定期定
+// 額、呆帳沖銷，見 calc.js calcOverspend）超過本月至今收入（不含應收款入帳）
+// 的差額，自動記一筆緊急預備金的扣除（bucket_allocations，負數，auto_type
+// 'shortfall'，每月一筆、隨時更新）。月中薪水還沒入帳時這筆會先出現，入帳後
+// 自動縮小或消失——它反映的是「到目前為止」的狀況。
+// 需要重算的時機：啟動、收入／支出新增修改刪除、存錢目標變動。
 async function syncEmergencyFundShortfall() {
-  const [buckets, incomeTxns, budgets, cats, allocations] = await Promise.all([
+  const [buckets, incomeTxns, expenseTxns, allocations, accounts, fxRates] = await Promise.all([
     getAll(db,'buckets').catch(()=>[]),
     getAll(db,'income_txns').catch(()=>[]),
-    getAll(db,'budgets').catch(()=>[]),
-    getAll(db,'txn_categories').catch(()=>[]),
+    getAll(db,'expense_txns').catch(()=>[]),
     getAll(db,'bucket_allocations').catch(()=>[]),
+    getAll(db,'accounts').catch(()=>[]),
+    getFxRates(db).catch(()=>({})),
   ]);
   const monthStr = currentMonthStr();
   const existing = allocations.find(a => a.auto_type === 'shortfall' && a.auto_month === monthStr);
   const emergencyBucket = buckets.find(b => b.is_emergency_fund && b.status !== 'closed');
-
-  if (!emergencyBucket) {
-    // No designated fund to draw from (never set, or the flag was moved/
-    // unchecked) — remove any stale shortfall row rather than leaving a
-    // withdrawal attributed to a Bucket that's no longer the reserve.
-    if (existing) {
-      const t = db.transaction(['bucket_allocations'],'readwrite');
-      t.objectStore('bucket_allocations').delete(existing.id);
-      await new Promise((res,rej)=>{t.oncomplete=res;t.onerror=()=>rej(t.error)});
-    }
-    return;
-  }
-
-  const monthlyIncomeTotal = calcMonthlyIncomeTotal(incomeTxns, monthStr, INCOME_PERCENT_EXCLUDED_CATEGORIES);
-  const activeBuckets = buckets.filter(b => b.status !== 'closed');
-  const bucketContributions = activeBuckets.map(b => ({
-    id: b.id, name: b.name, amount: calcBucketMonthlyContribution(b, monthlyIncomeTotal) || 0,
-  }));
-  const expenseCats = cats.filter(c=>c.type==='expense'&&c.active!==false);
-  const categoryBudgets = buildCategoryBudgetsForCascade(budgets, expenseCats, monthStr);
-  const cascade = calcIncomeAllocationCascade(monthlyIncomeTotal, bucketContributions, categoryBudgets);
-  const shortfall = Math.round(cascade.shortfall || 0);
-
-  if (shortfall > 0) {
+  const { income, spent, overspend } = calcOverspend(incomeTxns, expenseTxns, monthStr, accounts, fxRates, INCOME_PERCENT_EXCLUDED_CATEGORIES);
+  if (emergencyBucket && overspend > 0) {
     const row = {
       id: existing?.id || crypto.randomUUID(),
-      bucket_id: emergencyBucket.id, amount: -shortfall,
+      bucket_id: emergencyBucket.id, amount: -overspend,
       date: existing?.date || new Date().toISOString().slice(0,10),
-      note: '本月收入不足支應固定支出，自動由緊急預備金支應',
+      note: `本月超支：支出 ${fmt(spent)} > 收入 ${fmt(income)}，差額由緊急預備金支應`,
       auto: true, auto_type: 'shortfall', auto_month: monthStr,
       created_at: existing?.created_at || new Date().toISOString(),
     };
-    if (!existing || existing.amount !== row.amount || existing.bucket_id !== row.bucket_id) {
+    if (!existing || existing.amount !== row.amount || existing.bucket_id !== row.bucket_id || existing.note !== row.note) {
       await putOne(db,'bucket_allocations', row);
     }
   } else if (existing) {
@@ -8881,9 +8709,13 @@ async function syncEmergencyFundShortfall() {
     await new Promise((res,rej)=>{t.oncomplete=res;t.onerror=()=>rej(t.error)});
   }
 }
+async function syncPlanAutoRows() {
+  await syncAutoBucketContributions().catch(e=>console.warn('[sync auto buckets]', e));
+  await syncEmergencyFundShortfall().catch(e=>console.warn('[sync emergency fund]', e));
+}
 
 // ════════════════════════════════════════════════════════════════════════════
-// 每月計畫（v2.8.0）——取代「設定預算」「收入分配法」兩頁，並把「存錢計畫」
+// 每月計畫（v2.8.0）——取代「設定預算」「收入分配法」兩頁，並把「存錢目標」
 // 的每月金額拉進同一張表。計算見 calc.js calcMonthlyPlan()。
 // 結構（由上往下）：本月可分配 → 固定支出 → 存下來 → 投資 → 生活預算 → 未分配
 //   ・本月可分配：本月有收入用實際收入，沒有就用自訂的「每月生活費」。
@@ -8934,8 +8766,8 @@ async function renderMonthlyPlan() {
   // ── 一次性說明：三套整合成一套 ──────────────────────────────────────────
   if (!settings.intro_ack) {
     const intro = el('div'); intro.className = 'mp-intro';
-    intro.innerHTML = `<div><strong>設定預算、收入分配法、存錢計畫已整合成這一頁</strong>
-      <span>原本的資料都保留：「本月總預算」就是這裡的生活預算、類別預算原封不動，存錢計畫的每月金額出現在「存下來」，收入分配法變成下方的比例參考。請從上到下確認一次金額。</span></div>`;
+    intro.innerHTML = `<div><strong>設定預算、收入分配法已整合成這一頁</strong>
+      <span>原本的資料都保留：「本月總預算」就是這裡的生活預算、類別預算原封不動，存錢目標的每月金額出現在「存下來」，收入分配法變成下方的比例參考。請從上到下確認一次金額。</span></div>`;
     const ok = el('button', 'btn btn-primary btn-sm'); ok.textContent = '確認';
     ok.addEventListener('click', async () => { await setSetting(db, 'monthly_plan', { ...settings, intro_ack: true }); await rerender(); });
     intro.appendChild(ok);
@@ -9011,10 +8843,14 @@ async function renderMonthlyPlan() {
     const gap = Math.max(0, target - have);
     const monthsCovered = essentials > 0 ? have / essentials : null;
     const pctEF = target > 0 ? Math.min(100, Math.round(have / target * 100)) : 0;
+    // v2.11.0：本月自動從預備金拿出去的錢（超支、沒有收入時撥給其他目標）
+    const draws = allocations.filter(a => a.bucket_id === ef.id && a.auto_month === month && (a.auto_type === 'shortfall' || a.auto_type === 'ef_fund'));
+    const efDrawHtml = draws.length ? `<div class="mp-ef-draws">${draws.map(a => `<div class="mp-ef-draw"><span class="k">${a.auto_type === 'shortfall' ? '本月超支' : '沒有收入時代撥'}</span><b>−${money(Math.abs(a.amount))}</b><small>${escHtml(a.note || '')}</small></div>`).join('')}</div>` : '';
     efBox.innerHTML = `<div style="flex:1;min-width:0"><strong>🚨 緊急預備金 ${money(have)} ／ 目標 ${money(target)}</strong>
       <div class="mp-ef-bar"><span style="width:${pctEF}%"></span></div>
       <span>${monthsCovered != null ? `可以撐 ${monthsCovered.toFixed(1)} 個月必要開銷（目標 ${emergencyMonths} 個月）。` : ''}${gap > 0 ? `還差 ${money(gap)}${(plan.save.items.find(x => x.id === ef.id)?.amount || 0) > 0 ? `，照目前每月撥法約 ${Math.ceil(gap / plan.save.items.find(x => x.id === ef.id).amount)} 個月補足` : '，每月撥一點進來，或之後在首頁的「可動用資金」先把錢留給它'}。` : '已經存滿，之後每月可以少撥或不撥。'}</span>
-      ${!ef.target_amount && suggestedEF ? '' : ef.target_amount && suggestedEF && Math.abs(ef.target_amount - suggestedEF) / suggestedEF > 0.1 ? `<span>依目前的必要開銷，${emergencyMonths} 個月約 ${money(suggestedEF)}。</span>` : ''}</div>`;
+      ${!ef.target_amount && suggestedEF ? '' : ef.target_amount && suggestedEF && Math.abs(ef.target_amount - suggestedEF) / suggestedEF > 0.1 ? `<span>依目前的必要開銷，${emergencyMonths} 個月約 ${money(suggestedEF)}。</span>` : ''}
+      ${efDrawHtml}</div>`;
     if (suggestedEF && ef.target_amount !== suggestedEF) {
       const up = el('button', 'btn btn-ghost btn-sm'); up.textContent = ef.target_amount ? '更新目標' : '設定目標';
       up.addEventListener('click', async () => { await putOne(db, 'buckets', { ...ef, target_amount: suggestedEF }); showToast(`目標已設為 ${money(suggestedEF)}`); await rerender(); });
@@ -9026,7 +8862,7 @@ async function renderMonthlyPlan() {
     const b = buckets.find(x => x.id === it.id);
     const monthAlloc = allocations.filter(a => a.bucket_id === it.id && (a.date || '').slice(0, 7) === month && a.amount > 0).reduce((s, a) => s + a.amount, 0);
     const r = el('div'); r.className = 'mp-row mp-edit';
-    r.innerHTML = `<div class="mp-row-l">${it.isEmergency ? '🚨 ' : ''}${escHtml(it.name)}<small>${it.mode === 'percent' ? `收入的 ${it.percent}%（自動撥入）` : `本月已撥 ${money(monthAlloc)}`}</small></div>
+    r.innerHTML = `<div class="mp-row-l">${it.isEmergency ? '🚨 ' : ''}${escHtml(it.name)}<small>${it.mode === 'percent' ? (it.fromEf ? `本月還沒有收入：每月生活費的 ${it.percent}%，由緊急預備金支應` : `收入的 ${it.percent}%（自動撥入）`) : `本月已撥 ${money(monthAlloc)}`}</small></div>
       <div class="mp-row-r"><input type="number" inputmode="decimal" min="0" step="100" value="${it.mode === 'percent' ? '' : (b.monthly_amount ?? '')}" placeholder="${it.mode === 'percent' ? fmt(it.amount) : '每月'}" aria-label="${escHtml(it.name)} 每月金額"></div>`;
     const inp = r.querySelector('input');
     inp.addEventListener('change', async () => {
@@ -9123,6 +8959,7 @@ document.getElementById('planBaseSave').addEventListener('click', async () => {
   const v = parseFloat(document.getElementById('planBaseFixed').value);
   const m = parseInt(document.getElementById('planEmergencyMonths').value);
   await setSetting(db, 'monthly_plan', { ...s, base_fixed: v > 0 ? v : null, emergency_months: m > 0 ? Math.min(24, m) : 6 });
+  await syncPlanAutoRows();
   document.getElementById('planBaseModal').classList.remove('open');
   showToast('已更新');
   if (currentView === 'plan') await renderPlanHub(); else await renderMonthlyPlan();
@@ -9288,10 +9125,12 @@ async function renderBuckets() {
         // cover fixed-mode category budgets (see calcIncomeAllocationCascade
         // / syncEmergencyFundShortfall) — visually distinct from both a
         // manual 提撥 and an auto 'contribution' row.
-        if (a.auto && a.auto_type === 'shortfall') {
+        // v2.11.0：'shortfall' 改成「本月超支」；'ef_fund' 是沒有收入的月份撥
+        // 給收入百分比目標的錢（由緊急預備金支應）。
+        if (a.auto && (a.auto_type === 'shortfall' || a.auto_type === 'ef_fund')) {
           return {
-            date: a.date, sortKey: a.created_at||a.date, icon: '🚨',
-            label: `自動動用（本月收入不足）${a.note?'・'+a.note:''}`,
+            date: a.date, sortKey: a.created_at||a.date, icon: a.auto_type === 'shortfall' ? '🚨' : '↪️',
+            label: a.note || (a.auto_type === 'shortfall' ? '本月超支，自動由緊急預備金支應' : '由緊急預備金撥出'),
             amountLabel: `－NT$ ${fmt(Math.abs(a.amount))}`, color: 'var(--red)',
           };
         }
@@ -9355,7 +9194,7 @@ async function refreshBucketPercentWarning() {
   const otherTotal = calcTotalIncomePercent(buckets, editId);
   const total = otherTotal + pct;
   if (total > 100) {
-    warnEl.textContent = `⚠ 所有存錢計畫的月收入百分比合計 ${total.toFixed(1)}%，已超過 100%`;
+    warnEl.textContent = `⚠ 所有存錢目標的月收入百分比合計 ${total.toFixed(1)}%，已超過 100%`;
     warnEl.style.display = '';
   } else {
     warnEl.style.display = 'none';
@@ -9399,7 +9238,7 @@ document.getElementById('bucketModal').addEventListener('click',e=>{if(e.target=
 document.getElementById('bucketModalDelete')?.addEventListener('click',async()=>{
   const editId=document.getElementById('bucketEditId').value; if(!editId)return;
   document.getElementById('bucketModal').classList.remove('open');
-  openDeleteModal('確定要刪除這個存錢計畫嗎？底下的專案跟提撥紀錄會一併刪除；已經記錄過的花費本身不會被刪除，只是不再顯示歸屬。',async()=>{
+  openDeleteModal('確定要刪除這個存錢目標嗎？底下的專案跟提撥紀錄會一併刪除；已經記錄過的花費本身不會被刪除，只是不再顯示歸屬。',async()=>{
     const [allocs, projs] = await Promise.all([
       getAll(db,'bucket_allocations').catch(()=>[]),
       getAll(db,'projects').catch(()=>[]),
@@ -9533,56 +9372,11 @@ document.getElementById('projectModalSave').addEventListener('click',async()=>{
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// INCOME ALLOCATION VIEW（收入分配法，2026-10-01 新增）
+// 收入分配法則（321／532／631／168／4321／六個錢包法＋2 組自訂）
 // ════════════════════════════════════════════════════════════════════════════
-// 這個功能提供 321／532／631／168／4321／六個錢包法 6 種常見財務規劃法則，
-// 外加 2 組自訂模式，讓使用者把每個月的收入依比例分配到幾個「錢罐」。
-//
-// 關鍵設計決定（畫面稿階段已跟使用者討論並對照過真實架構，不是另一套平行
-// 的資料系統）：
-//   1. 錢罐分兩種類型：
-//      - type:'pool'（專款儲蓄）→ 連結既有的一個 Bucket（資金池）。這裡的
-//        「比例」寫進 bucket.income_percent／contribution_mode:'percent'，
-//        跟「資金池」頁籤本來就有的自動提撥機制（syncAutoBucketContributions）
-//        完全共用，不另外存一份金額。Bucket 底下原有的 Projects（專案）維持
-//        原樣——Projects 本來就沒有獨立的預算/百分比欄位（能花多少＝父
-//        Bucket 即時剩餘餘額），所以這裡不會有「專款裡面又分子專款」這種
-//        巢狀第二層比例設定。
-//      - type:'category'（類別監控）→ 連結一個「類別群組」（見下方
-//        settings.category_groups），純粹是「這幾個支出類別加總 vs 這張卡片
-//        的比例上限」的監控用途，跟「設定預算」頁每個類別各自獨立的
-//        allocation_mode／固定金額設定完全並存、互不覆蓋。
-//   2. 「類別群組」是這次新增、跨法則共用的具名類別集合
-//      （{id,label,categoryIds}），存在 settings.category_groups（單一一份
-//      陣列，不屬於任何一個法則）。同一個群組可以被好幾張卡片／好幾種法則
-//      同時引用；在任何一張卡片編輯群組內容，其他引用到它的地方會一起同步
-//      ——這是刻意的設計，不是 bug。
-//   3. 8 種法則各自的錢罐設定（比例、連結哪個 bucket/group、是否鎖定……）
-//      存在 settings.income_allocation_presets[methodKey]，首次切換到某個
-//      法則時才從下面的靜態預設 INCOME_ALLOCATION_METHODS 複製一份進去
-//      （ensureIncomeAllocationPresets）——之後使用者的調整都是改這份
-//      複製，不會動到靜態預設本身。
-//   4. 「切換法則」只是改變畫面上目前在看哪一組預設（不寫入任何東西）；
-//      只有按下「套用本月設定到資金池」才會：(a) 把 settings.
-//      income_allocation_method 設成目前這個法則的 key，(b) 把每個已連結
-//      resource 的「專款儲蓄」錢罐比例寫回對應 bucket 的 income_percent。
-//      「類別監控」錢罐純粹用來看、不會被套用（它本來就不是提撥動作）。
-//      因此切換法則、或甚至刪掉某個法則底下的某張卡片，都絕對不會刪除任何
-//      Bucket／Project／類別群組——這些是獨立存在的真實資料，錢罐只是
-//      「指到」它們的一條連結，解除連結＝不再顯示，資料本身原封不動。
-//   5. 「風險規避／保險」類的錢罐（631／4321／自訂模式）有 linkedInsurance
-//      旗標，滑動比例時這張卡片不能被壓低於目前實際的「每月約當保費」
-//      （calcInsuranceMonthlyEquivalent，彙整記帳管理›保險頁的定期支出＋
-//      分期付款兩邊資料）換算成的百分比門檻，取代畫面稿階段寫死的
-//      NT$3500——這樣調整比例的時候不會不小心把比保費本身更低的錢罐金額
-//      設定出來。
-//   6. 全部用 settings 的 key-value 存，沒有新增 IndexedDB store、也沒有
-//      bump DB_VERSION——跟 App 既有的主題色／密碼鎖等功能同一種「輕量
-//      設定值」做法。
-//
-// 拖動比例滑桿用的 rebalanceJarPercents()（見 calc.js）是畫面稿階段已經
-// 用多組案例驗證過正確性的「有下限的迭代式比例分配」演算法，這裡原封不動
-// 複用，不是重寫一份新的。
+// v2.11.0：獨立的「收入分配法」頁已刪除（v2.8.0 起併入每月計畫）。這份常數
+// 只剩每月計畫「比例參考」用（planMethodShares），使用者自訂過的比例仍讀
+// settings.income_allocation_presets。
 
 const INCOME_ALLOCATION_METHODS = {
   '321':  { label:'321 法則', tagline:'保險、生活、儲蓄退休都顧到', jars:[
@@ -9632,538 +9426,6 @@ const INCOME_ALLOCATION_METHODS = {
 };
 const INCOME_ALLOCATION_ALL_KEYS = ['321','532','631','168','4321','jars6','custom1','custom2'];
 const INCOME_ALLOCATION_CUSTOM_KEYS = ['custom1','custom2'];
-const INCOME_ALLOCATION_JAR_PALETTE = ['#2F6FED','#0E7A52','#7A4FE0','#96600E','#A8457A','#0F7A96','#C23A3A','#5B6472'];
-
-// 類別群組的預設種子——跟上面法則預設的 groupId 對得起來，讓使用者第一次
-// 打開這個功能、還沒自己建立任何群組時，常用法則就已經有合理可用的類別
-// 監控分組，不用從零開始設定。categoryIds 用真實「記帳管理›設定預算」的
-// 類別 id（跟 db.js 的 DEFAULT_CATEGORIES 一致）；真正建立時會再用使用者
-// 目前實際存在的類別清單過濾一次，避免種進已經不存在的類別 id。
-const INCOME_ALLOCATION_GROUP_SEED_DEFS = [
-  { id:'grp_all',       label:'所有支出類別',
-    catIds:['cat_food','cat_transport','cat_shopping','cat_bill','cat_invest_out','cat_medical','cat_entertain','cat_other_out','cat_bad_debt_writeoff'] },
-  { id:'grp_need_532',  label:'必要支出類別',     catIds:['cat_transport','cat_bill','cat_medical','cat_other_out'] },
-  { id:'grp_fun_532',   label:'樂活消費類別',     catIds:['cat_food','cat_shopping','cat_entertain'] },
-  { id:'grp_life_4321', label:'生活開銷類別',     catIds:['cat_food','cat_transport','cat_shopping','cat_medical','cat_entertain','cat_other_out'] },
-  { id:'grp_nec_jars6', label:'NEC 必要生活類別', catIds:['cat_food','cat_transport','cat_bill','cat_medical','cat_other_out'] },
-];
-// 投資、呆帳沖銷這兩類預期本來就不會被任何「類別監控」群組涵蓋——它們的
-// 花費是透過資金池機制對應到「專款儲蓄」錢罐，邏輯上不走類別監控這條路徑。
-const INCOME_ALLOCATION_EXPECTED_UNCOVERED = ['cat_invest_out','cat_bad_debt_writeoff'];
-
-function buildIncomeAllocationSeedGroups(expenseCats) {
-  const existingIds = new Set(expenseCats.map(c=>c.id));
-  return INCOME_ALLOCATION_GROUP_SEED_DEFS
-    .map(g => ({ id:g.id, label:g.label, categoryIds:g.catIds.filter(id=>existingIds.has(id)) }))
-    .filter(g => g.categoryIds.length > 0);
-}
-
-// 這幾個是純畫面瀏覽狀態（目前在看哪個法則、哪個群組正在編輯內容），不寫進
-// settings——跟 _txnManageActiveTab 同一種「模組層級變數」做法，重新整理
-// 頁面就重置，不需要持久化。每張錢罐卡片是否展開改用共用的
-// isExpanded(`incomeAllocJar:${jar.key}`)（見 §四十八的 _expandedRegistry）。
-let _incomeAllocActiveMethod = null;
-let _incomeAllocEditingGroupFor = null;
-
-async function ensureIncomeAllocationPresets(methodKey) {
-  const presets = (await getSetting(db, 'income_allocation_presets', {})) || {};
-  if (presets[methodKey]) return presets;
-  const seeded = { ...presets, [methodKey]: { jars: INCOME_ALLOCATION_METHODS[methodKey].jars.map(j=>({...j})) } };
-  await setSetting(db, 'income_allocation_presets', seeded);
-  return seeded;
-}
-async function saveIncomeAllocationJars(methodKey, jars) {
-  const presets = (await getSetting(db, 'income_allocation_presets', {})) || {};
-  await setSetting(db, 'income_allocation_presets', { ...presets, [methodKey]: { jars } });
-}
-async function saveCategoryGroups(groups) {
-  await setSetting(db, 'category_groups', groups);
-}
-
-// 新增一個自訂錢罐／刪除一個自訂錢罐，共用同一套「跟既有項目等比例借 10%／
-// 刪除後把 % 等比例還給剩下項目」邏輯，照搬畫面稿階段驗證過的寫法。
-function addIncomeAllocationJar(jars, type) {
-  if (jars.length >= 8) return jars;
-  const usedColors = jars.map(j=>j.color);
-  const color = INCOME_ALLOCATION_JAR_PALETTE.find(c=>!usedColors.includes(c)) || INCOME_ALLOCATION_JAR_PALETTE[jars.length % INCOME_ALLOCATION_JAR_PALETTE.length];
-  const extra = type === 'pool'
-    ? { key:`jar_${Date.now()}`, label:'新存錢計畫錢罐', type:'pool', color, bucketId:null }
-    : { key:`jar_${Date.now()}`, label:'新類別錢罐',   type:'category', color, groupId:null };
-  const amount = 10;
-  const total = jars.reduce((s,j)=>s+j.percent,0);
-  const scale = total>0 ? (100-amount)/total : 0;
-  let next = jars.map(j=>({...j, percent: Math.round(j.percent*scale)}));
-  const sum = next.reduce((s,j)=>s+j.percent,0);
-  if (next.length) next[next.length-1].percent += (100-amount) - sum;
-  next.push({ percent: amount, ...extra });
-  return next;
-}
-function removeIncomeAllocationJar(jars, key) {
-  const removed = jars.find(j=>j.key===key);
-  if (!removed || jars.length <= 2) return jars;
-  const rest = jars.filter(j=>j.key!==key);
-  const restTotal = rest.reduce((s,j)=>s+j.percent,0);
-  let next = rest.map(j=>({...j, percent: restTotal>0 ? Math.round(j.percent + removed.percent*(j.percent/restTotal)) : Math.round(100/rest.length)}));
-  const sum = next.reduce((s,j)=>s+j.percent,0);
-  if (next.length) next[next.length-1].percent += 100 - sum;
-  return next;
-}
-
-async function handleIncomeAllocationSlide(jars, idx, rawVal, monthlyIncomeTotal, insuranceFloor) {
-  if (jars[idx].locked) return;
-  const withFloors = jars.map(j => ({
-    ...j,
-    minPercent: j.linkedInsurance && monthlyIncomeTotal > 0 ? (insuranceFloor / monthlyIncomeTotal) * 100 : 0,
-  }));
-  const next = rebalanceJarPercents(withFloors, idx, rawVal).map(j => { const { minPercent, ...rest } = j; return rest; });
-  await saveIncomeAllocationJars(_incomeAllocActiveMethod, next);
-  await renderIncomeAllocation();
-}
-
-async function applyIncomeAllocationToBuckets() {
-  const method = _incomeAllocActiveMethod;
-  const presets = (await getSetting(db, 'income_allocation_presets', {})) || {};
-  const jars = presets[method]?.jars || [];
-  const total = jars.reduce((s,j)=>s+j.percent,0);
-  if (total !== 100) { showToast('目前分配總和不是 100%，請先調整到剛好 100% 再套用'); return; }
-  const poolJars = jars.filter(j => j.type === 'pool' && j.bucketId);
-  if (poolJars.length === 0) { showToast('目前沒有任何「專款儲蓄」錢罐已連結存錢計畫，沒有東西可以套用'); return; }
-  for (const j of poolJars) {
-    const bucket = await getOne(db, 'buckets', j.bucketId);
-    if (!bucket) continue;
-    await putOne(db, 'buckets', { ...bucket, contribution_mode:'percent', income_percent: j.percent });
-  }
-  await setSetting(db, 'income_allocation_method', method);
-  await syncAutoBucketContributions();
-  await syncEmergencyFundShortfall();
-  const skipped = jars.filter(j => j.type==='pool' && !j.bucketId).length;
-  showToast(`✓ 已套用到 ${poolJars.length} 個存錢計畫${skipped>0?`（另有 ${skipped} 個錢罐尚未連結存錢計畫，已略過）`:''}`);
-  await renderIncomeAllocation();
-}
-
-async function renderIncomeAllocation() {
-  const content = _activeContentContainer;
-  content.innerHTML = '';
-
-  const [buckets, incomeTxns, expenseTxns, accounts, recurringExpenses, installments, txnCats] = await Promise.all([
-    getAll(db,'buckets').catch(()=>[]),
-    getAll(db,'income_txns').catch(()=>[]),
-    getAll(db,'expense_txns').catch(()=>[]),
-    getAll(db,'accounts').catch(()=>[]),
-    getAll(db,'recurring_expenses').catch(()=>[]),
-    getAll(db,'installments').catch(()=>[]),
-    getAll(db,'txn_categories').catch(()=>[]),
-  ]);
-  const fxRates = await getFxRates(db).catch(()=>({}));
-  const monthStr = currentMonthStr();
-  const monthlyIncomeTotal = calcMonthlyIncomeTotal(incomeTxns, monthStr, INCOME_PERCENT_EXCLUDED_CATEGORIES);
-  const expenseCats = txnCats.filter(c=>c.type==='expense'&&c.active!==false).sort((a,b)=>(a.sort_order??99)-(b.sort_order??99));
-  const insuranceFloor = calcInsuranceMonthlyEquivalent(recurringExpenses, installments, fxRates);
-  const activeBuckets = buckets.filter(b=>b.status!=='closed');
-
-  const activeMethodKey = await getSetting(db, 'income_allocation_method', null);
-  if (!_incomeAllocActiveMethod) _incomeAllocActiveMethod = activeMethodKey || '321';
-  const method = _incomeAllocActiveMethod;
-  const isCustom = INCOME_ALLOCATION_CUSTOM_KEYS.includes(method);
-
-  const presets = await ensureIncomeAllocationPresets(method);
-  const jars = presets[method].jars;
-  const total = jars.reduce((s,j)=>s+j.percent,0);
-  const totalOk = total === 100;
-
-  let categoryGroups = await getSetting(db, 'category_groups', null);
-  if (categoryGroups == null) {
-    categoryGroups = buildIncomeAllocationSeedGroups(expenseCats);
-    await saveCategoryGroups(categoryGroups);
-  }
-
-  // ── 說明文字 ──────────────────────────────────────────────────────────
-  const intro = el('div');
-  intro.style.cssText = 'font-size:12px;color:var(--text-3);margin-bottom:14px;line-height:1.6';
-  intro.textContent = '挑一種財務規劃法則，拖動下面每個錢罐的比例滑桿（總和要等於 100%），「專款儲蓄」錢罐連結既有的存錢計畫，「類別監控」錢罐連結一組類別群組，調整好之後按最下面「套用」把比例寫回對應的存錢計畫。切換法則、或刪掉某張卡片都不會刪除任何存錢計畫、專案或類別群組，只是改變目前顯示哪一組設定。';
-  content.appendChild(intro);
-
-  // ── 本月收入（唯讀，跟「設定預算」頁的收入分配卡用同一套算法） ──────────
-  const incomeCard = el('div','card');
-  incomeCard.style.cssText = 'margin-bottom:14px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap';
-  incomeCard.innerHTML = `
-    <div>
-      <div style="font-size:12px;color:var(--text-2);font-weight:600">本月收入（來自記帳管理）</div>
-      <div style="font-size:11px;color:var(--text-3);margin-top:2px">薪水、利息、二手交易等，不含應收款</div>
-    </div>
-    <div style="font-size:20px;font-weight:800;flex-shrink:0">${monthlyIncomeTotal>0?('NT$ '+fmt(monthlyIncomeTotal)):'尚無紀錄'}</div>`;
-  content.appendChild(incomeCard);
-
-  // ── 法則選擇格（4×2，簡約呈現；文案只在選到的那個法則下方顯示一次） ──────
-  const grid = el('div');
-  grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:8px';
-  INCOME_ALLOCATION_ALL_KEYS.forEach(k => {
-    const def = INCOME_ALLOCATION_METHODS[k];
-    const viewing = method === k;
-    const applied = activeMethodKey === k;
-    const cell = el('div');
-    cell.style.cssText = `position:relative;text-align:center;padding:10px 4px;border-radius:12px;cursor:pointer;font-size:11.5px;font-weight:800;line-height:1.3;border:1.5px solid ${viewing?'transparent':'var(--border)'};background:${viewing?'var(--blue)':'#fff'};color:${viewing?'#fff':'var(--text-1)'}`;
-    cell.innerHTML = `${applied?'<span style="position:absolute;top:-6px;right:-4px;font-size:13px" title="目前套用中">✅</span>':''}${def.label}`;
-    cell.addEventListener('click', () => {
-      if (_incomeAllocActiveMethod === k) return;
-      _incomeAllocActiveMethod = k;
-      clearExpandedPrefix('incomeAllocJar:');
-      _incomeAllocEditingGroupFor = null;
-      renderIncomeAllocation();
-    });
-    grid.appendChild(cell);
-  });
-  content.appendChild(grid);
-
-  const tagline = el('div');
-  tagline.style.cssText = 'font-size:12px;color:var(--text-3);text-align:center;margin:10px 0 16px';
-  tagline.textContent = INCOME_ALLOCATION_METHODS[method].tagline;
-  content.appendChild(tagline);
-
-  // ── 總和狀態條 ────────────────────────────────────────────────────────
-  const totalBar = el('div','card');
-  totalBar.style.cssText = 'margin-bottom:14px;padding:12px 18px';
-  let acc = 0;
-  const segs = jars.map(j => { const seg = `<div style="width:${Math.max(j.percent,0)}%;background:${j.color}"></div>`; acc += j.percent; return seg; }).join('');
-  totalBar.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <span style="font-size:12px;color:var(--text-2);font-weight:600">分配總和</span>
-      <span style="font-size:14px;font-weight:800;color:${totalOk?'var(--text-1)':'var(--amber)'}">${totalOk?'100%':(total>100?`超額 ${total-100}%`:`尚餘 ${100-total}%`)}</span>
-    </div>
-    <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--border)">${segs}</div>`;
-  content.appendChild(totalBar);
-
-  // ── 每個錢罐卡片 ──────────────────────────────────────────────────────
-  jars.forEach((jar, idx) => {
-    const expanded = isExpanded(`incomeAllocJar:${jar.key}`);
-    const floor = jar.linkedInsurance && monthlyIncomeTotal > 0 ? Math.ceil((insuranceFloor / monthlyIncomeTotal) * 100) : 0;
-
-    const card = el('div','card'); card.style.cssText = 'margin-bottom:12px';
-    const header = el('div');
-    header.style.cssText = 'padding:14px 18px;display:flex;align-items:center;gap:10px';
-    header.innerHTML = `
-      <span style="width:30px;height:30px;border-radius:9px;background:${jar.color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0">${jar.type==='pool'?'🧳':'🏷️'}</span>
-      <div style="flex:1;min-width:0" data-label-slot></div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:15px;font-weight:800" data-jar-pct>${jar.percent}%</div>
-        <div style="font-size:11px;color:var(--text-3)" data-jar-amt>${monthlyIncomeTotal>0?('NT$ '+fmt(Math.round(monthlyIncomeTotal*jar.percent/100))):'—'}</div>
-      </div>`;
-    card.appendChild(header);
-
-    const labelSlot = header.querySelector('[data-label-slot]');
-    if (isCustom) {
-      const labelInput = el('input'); labelInput.type='text';
-      labelInput.style.cssText = 'font-size:14px;font-weight:700;border:none;border-bottom:1px dashed var(--border);background:transparent;padding:2px 0;width:100%;outline:none';
-      labelInput.value = jar.label;
-      labelInput.addEventListener('change', async () => {
-        const name = labelInput.value.trim() || jar.label;
-        const next = jars.map(j => j.key===jar.key ? {...j, label:name} : j);
-        await saveIncomeAllocationJars(method, next);
-        await renderIncomeAllocation();
-      });
-      labelSlot.appendChild(labelInput);
-      const typeNote = el('div'); typeNote.style.cssText='font-size:11px;color:var(--text-3);margin-top:2px';
-      typeNote.textContent = jar.type==='pool' ? '專款儲蓄（存錢計畫）' : '類別監控（類別群組）';
-      labelSlot.appendChild(typeNote);
-    } else {
-      labelSlot.innerHTML = `<div style="font-size:14px;font-weight:700">${jar.label}</div><div style="font-size:11px;color:var(--text-3);margin-top:2px">${jar.type==='pool'?'專款儲蓄（存錢計畫）':'類別監控（類別群組）'}</div>`;
-    }
-
-    const sliderWrap = el('div'); sliderWrap.style.cssText = 'padding:0 18px 10px';
-    sliderWrap.innerHTML = `<input type="range" min="${floor}" max="100" step="1" value="${jar.percent}" ${jar.locked?'disabled':''} style="width:100%;accent-color:${jar.color};opacity:${jar.locked?0.45:1};cursor:${jar.locked?'not-allowed':'pointer'}">`;
-    const slider = sliderWrap.querySelector('input');
-    slider.addEventListener('input', () => {
-      header.querySelector('[data-jar-pct]').textContent = `${slider.value}%`;
-      header.querySelector('[data-jar-amt]').textContent = monthlyIncomeTotal>0 ? `NT$ ${fmt(Math.round(monthlyIncomeTotal*slider.value/100))}` : '—';
-    });
-    slider.addEventListener('change', () => handleIncomeAllocationSlide(jars, idx, slider.value, monthlyIncomeTotal, insuranceFloor));
-    card.appendChild(sliderWrap);
-
-    if (jar.linkedInsurance && insuranceFloor > 0) {
-      const floorNote = el('div');
-      floorNote.style.cssText = 'margin:0 18px 10px;padding:8px 10px;border-radius:7px;background:#FBEAEA;border:1px solid #F3C9C9;color:#B91C1C;font-size:11px;line-height:1.6';
-      floorNote.textContent = `🔗 已連結「記帳管理›保險」：每月約當保費 NT$ ${fmt(Math.round(insuranceFloor))}，這張卡片的比例不會被調低到低於這個金額對應的百分比。`;
-      card.appendChild(floorNote);
-    }
-
-    const btnRow = el('div'); btnRow.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px';
-    const lockBtn = el('button','btn btn-ghost btn-sm');
-    lockBtn.textContent = jar.locked ? '🔒 已鎖定（點擊解鎖）' : '🔓 鎖定此比例';
-    lockBtn.addEventListener('click', async () => {
-      const next = jars.map(j => j.key===jar.key ? {...j, locked:!j.locked} : j);
-      await saveIncomeAllocationJars(method, next);
-      await renderIncomeAllocation();
-    });
-    const expandBtn = el('button','btn btn-ghost btn-sm');
-    expandBtn.innerHTML = `${expanded?'收起':jar.type==='pool'?'連結存錢計畫':'連結類別群組'} <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;transform:${expanded?'rotate(180deg)':'rotate(0deg)'}"><path d="M6 9l6 6 6-6"/></svg>`;
-    expandBtn.addEventListener('click', () => {
-      toggleExpanded(`incomeAllocJar:${jar.key}`, !expanded);
-      renderIncomeAllocation();
-    });
-    btnRow.append(lockBtn, expandBtn);
-    if (isCustom) {
-      const removeBtn = el('button','btn btn-ghost btn-sm'); removeBtn.style.color='var(--red)';
-      removeBtn.textContent = '刪除這個錢罐';
-      removeBtn.disabled = jars.length <= 2;
-      removeBtn.addEventListener('click', () => {
-        openDeleteModal('確定要刪除這個錢罐嗎？連結的存錢計畫／類別群組本身不會被刪除，只是這張卡片消失，剩下的比例會自動等比例補滿 100%。', async () => {
-          const next = removeIncomeAllocationJar(jars, jar.key);
-          await saveIncomeAllocationJars(method, next);
-          toggleExpanded(`incomeAllocJar:${jar.key}`, false);
-          await renderIncomeAllocation();
-        });
-      });
-      btnRow.appendChild(removeBtn);
-    }
-    card.appendChild(btnRow);
-
-    if (expanded) {
-      const body = el('div'); body.style.cssText = 'border-top:1px solid var(--border);padding:14px 18px';
-      if (jar.type === 'pool') {
-        buildIncomeAllocationPoolBody(body, jar, jars, method, activeBuckets);
-      } else {
-        buildIncomeAllocationGroupBody(body, jar, jars, method, categoryGroups, expenseCats);
-      }
-      card.appendChild(body);
-    }
-
-    content.appendChild(card);
-  });
-
-  // ── 自訂模式：新增錢罐 ────────────────────────────────────────────────
-  if (isCustom && jars.length < 8) {
-    const addRow = el('div'); addRow.style.cssText = 'display:flex;gap:8px;margin-bottom:16px';
-    const addPool = el('button','btn btn-ghost btn-sm'); addPool.style.flex='1';
-    addPool.textContent = '＋ 新增專款儲蓄錢罐';
-    addPool.addEventListener('click', async () => {
-      const next = addIncomeAllocationJar(jars, 'pool');
-      await saveIncomeAllocationJars(method, next);
-      await renderIncomeAllocation();
-    });
-    const addCat = el('button','btn btn-ghost btn-sm'); addCat.style.flex='1';
-    addCat.textContent = '＋ 新增類別監控錢罐';
-    addCat.addEventListener('click', async () => {
-      const next = addIncomeAllocationJar(jars, 'category');
-      await saveIncomeAllocationJars(method, next);
-      await renderIncomeAllocation();
-    });
-    addRow.append(addPool, addCat);
-    content.appendChild(addRow);
-  }
-
-  // ── 類別涵蓋狀況提示（透過 groupId 查群組內容來算） ───────────────────
-  const catCoverCount = {};
-  jars.filter(j => j.type==='category' && j.groupId).forEach(j => {
-    const g = categoryGroups.find(gg=>gg.id===j.groupId);
-    if (!g) return;
-    g.categoryIds.forEach(id => { catCoverCount[id] = (catCoverCount[id]||0) + 1; });
-  });
-  const uncoveredCats = expenseCats.filter(c => !catCoverCount[c.id]);
-  const unexpectedUncovered = uncoveredCats.filter(c => !INCOME_ALLOCATION_EXPECTED_UNCOVERED.includes(c.id));
-  const overlapCats = expenseCats.filter(c => (catCoverCount[c.id]||0) > 1);
-
-  if (unexpectedUncovered.length > 0) {
-    const note = el('div'); note.style.cssText = 'margin-bottom:10px;padding:10px 14px;border-radius:9px;background:#FDF3E2;border:1px solid #F5DFA6;color:#96600E;font-size:11.5px;line-height:1.6';
-    note.innerHTML = `<span style="font-weight:700">尚未被任何卡片涵蓋的類別：</span>${unexpectedUncovered.map(c=>c.label).join('、')}——這幾類的花費不會被任何「類別監控」錢罐計入，可以到展開的類別群組裡把它們勾進去。`;
-    content.appendChild(note);
-  }
-  if (overlapCats.length > 0) {
-    const note = el('div'); note.style.cssText = 'margin-bottom:10px;padding:10px 14px;border-radius:9px;background:#FBEAEA;border:1px solid #F3C9C9;color:#B91C1C;font-size:11.5px;line-height:1.6';
-    note.innerHTML = `<span style="font-weight:700">⚠️ 重複涵蓋的類別：</span>${overlapCats.map(c=>c.label).join('、')}——同一筆花費的金額會同時被算進好幾張卡片的監控上限，可能讓每張卡片看起來都比實際更接近超支。`;
-    content.appendChild(note);
-  }
-
-  // ── 套用 CTA ──────────────────────────────────────────────────────────
-  const ctaWrap = el('div'); ctaWrap.style.cssText = 'margin-top:4px';
-  const ctaBtn = el('button','btn btn-primary'); ctaBtn.style.cssText = `width:100%;padding:13px;font-size:14px;${totalOk?'':'opacity:.5;pointer-events:none'}`;
-  ctaBtn.textContent = activeMethodKey===method ? '套用本月設定到存錢計畫（更新）' : '套用本月設定到存錢計畫';
-  ctaBtn.addEventListener('click', () => applyIncomeAllocationToBuckets());
-  ctaWrap.appendChild(ctaBtn);
-  const ctaHint = el('div'); ctaHint.style.cssText = 'text-align:center;font-size:11px;color:var(--text-3);margin-top:6px';
-  ctaHint.textContent = totalOk ? '只會更新已連結存錢計畫的「專款儲蓄」錢罐；「類別監控」錢罐純粹用來看，不會被套用。' : '請先把分配總和調整到剛好 100%，才能套用。';
-  ctaWrap.appendChild(ctaHint);
-  content.appendChild(ctaWrap);
-}
-
-// 「專款儲蓄」錢罐的展開內容：連結／解除連結一個既有的資金池（Bucket）。
-// 刻意不在這裡提供「直接新增資金池」——openBucketModal 存檔後會呼叫
-// renderBuckets()，若在這個頁籤底下呼叫會把 _activeContentContainer
-// 畫面整個換成資金池列表，等於把使用者由收入分配法頁面導離，體驗上更適合
-// 的作法是請使用者先到「資金池」頁籤新增好、再回來這裡連結，所以下面提供
-// 的是一顆「前往資金池新增」的捷徑按鈕，而不是在這裡嵌一個新增表單。
-function buildIncomeAllocationPoolBody(body, jar, jars, method, activeBuckets) {
-  const usedBucketIds = jars.filter(j=>j.type==='pool'&&j.bucketId&&j.key!==jar.key).map(j=>j.bucketId);
-  const linkedBucket = jar.bucketId ? activeBuckets.find(b=>b.id===jar.bucketId) : null;
-
-  if (jar.bucketId && !linkedBucket) {
-    body.innerHTML = `<div style="font-size:12px;color:var(--text-3);margin-bottom:10px">⚠️ 連結的存錢計畫已不存在或已結束，請重新連結一個。</div>`;
-  }
-
-  if (linkedBucket) {
-    const info = el('div');
-    const pctNote = linkedBucket.contribution_mode==='percent' && linkedBucket.income_percent!=null
-      ? `目前存錢計畫設定為收入的 ${linkedBucket.income_percent}%${linkedBucket.income_percent!==jar.percent?`（這張卡片目前是 ${jar.percent}%，按下方「套用」會把存錢計畫更新成 ${jar.percent}%）`:'（跟這張卡片一致）'}`
-      : `存錢計畫目前不是用「收入百分比」自動提撥模式，按下方「套用」會把它改成${jar.percent}%`;
-    info.innerHTML = `
-      <div style="font-size:13px;font-weight:700">🧳 ${linkedBucket.name}</div>
-      <div style="font-size:11.5px;color:var(--text-3);margin-top:4px;line-height:1.6">${pctNote}</div>`;
-    body.appendChild(info);
-    const btnRow = el('div'); btnRow.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-top:10px';
-    const gotoBtn = el('button','btn btn-ghost btn-sm'); gotoBtn.textContent='前往「存錢計畫」查看明細';
-    gotoBtn.addEventListener('click', () => { _txnManageActiveTab = 'goals'; renderTxnManage(); });
-    const unlinkBtn = el('button','btn btn-ghost btn-sm'); unlinkBtn.style.color='var(--red)'; unlinkBtn.textContent='解除連結';
-    unlinkBtn.addEventListener('click', async () => {
-      const next = jars.map(j => j.key===jar.key ? {...j, bucketId:null} : j);
-      await saveIncomeAllocationJars(method, next);
-      await renderIncomeAllocation();
-    });
-    btnRow.append(gotoBtn, unlinkBtn);
-    body.appendChild(btnRow);
-    return;
-  }
-
-  const pickable = activeBuckets.filter(b => !usedBucketIds.includes(b.id));
-  if (pickable.length === 0) {
-    const empty = el('div'); empty.style.cssText='font-size:12px;color:var(--text-3);margin-bottom:10px';
-    empty.textContent = activeBuckets.length===0 ? '目前還沒有建立任何存錢計畫。' : '目前所有存錢計畫都已連結到這個法則的其他錢罐了。';
-    body.appendChild(empty);
-  } else {
-    const pickerLabel = el('div'); pickerLabel.style.cssText='font-size:12px;color:var(--text-2);font-weight:600;margin-bottom:6px';
-    pickerLabel.textContent = '選擇要連結的存錢計畫：';
-    body.appendChild(pickerLabel);
-    const select = el('select');
-    select.style.cssText = 'width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:7px;font-size:14px;background:var(--card)';
-    select.innerHTML = `<option value="">── 請選擇 ──</option>` + pickable.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
-    select.addEventListener('change', async () => {
-      if (!select.value) return;
-      const next = jars.map(j => j.key===jar.key ? {...j, bucketId:select.value} : j);
-      await saveIncomeAllocationJars(method, next);
-      await renderIncomeAllocation();
-    });
-    body.appendChild(select);
-  }
-  const gotoRow = el('div'); gotoRow.style.cssText='margin-top:10px';
-  const gotoBtn = el('button','btn btn-ghost btn-sm'); gotoBtn.textContent='前往「存錢計畫」新增';
-  gotoBtn.addEventListener('click', () => { _txnManageActiveTab = 'goals'; renderTxnManage(); });
-  gotoRow.appendChild(gotoBtn);
-  body.appendChild(gotoRow);
-}
-
-// 「類別監控」錢罐的展開內容：連結／建立／編輯一個類別群組。群組本身是
-// settings.category_groups 裡跨法則共用的一份清單，在這裡編輯內容（改名、
-// 勾選/取消類別）會立刻影響所有引用到同一個群組的其他卡片／其他法則。
-function buildIncomeAllocationGroupBody(body, jar, jars, method, categoryGroups, expenseCats) {
-  const group = jar.groupId ? categoryGroups.find(g=>g.id===jar.groupId) : null;
-  const editing = _incomeAllocEditingGroupFor === jar.key;
-
-  async function setGroupId(groupId) {
-    const next = jars.map(j => j.key===jar.key ? {...j, groupId} : j);
-    await saveIncomeAllocationJars(method, next);
-  }
-
-  if (!group) {
-    const pickerLabel = el('div'); pickerLabel.style.cssText='font-size:12px;color:var(--text-2);font-weight:600;margin-bottom:6px';
-    pickerLabel.textContent = '尚未連結類別群組：';
-    body.appendChild(pickerLabel);
-    if (categoryGroups.length > 0) {
-      const list = el('div'); list.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px';
-      categoryGroups.forEach(g => {
-        const chip = el('button','btn btn-ghost btn-sm');
-        chip.textContent = g.label;
-        chip.addEventListener('click', async () => { await setGroupId(g.id); await renderIncomeAllocation(); });
-        list.appendChild(chip);
-      });
-      body.appendChild(list);
-    }
-    const createBtn = el('button','btn btn-primary btn-sm'); createBtn.textContent='➕ 建立新的類別群組';
-    createBtn.addEventListener('click', async () => {
-      const id = `grp_custom_${Date.now()}`;
-      const newGroup = { id, label:'新類別群組', categoryIds:[] };
-      await saveCategoryGroups([...categoryGroups, newGroup]);
-      await setGroupId(id);
-      _incomeAllocEditingGroupFor = jar.key;
-      await renderIncomeAllocation();
-    });
-    body.appendChild(createBtn);
-    return;
-  }
-
-  if (!editing) {
-    const head = el('div'); head.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px';
-    head.innerHTML = `<div style="font-size:13px;font-weight:700">🏷️ ${group.label}</div>`;
-    const editBtn = el('button','btn btn-ghost btn-sm'); editBtn.textContent='✏️ 編輯內容';
-    editBtn.addEventListener('click', () => { _incomeAllocEditingGroupFor = jar.key; renderIncomeAllocation(); });
-    head.appendChild(editBtn);
-    body.appendChild(head);
-
-    const chips = el('div'); chips.style.cssText='display:flex;flex-wrap:wrap;gap:6px';
-    const members = expenseCats.filter(c=>group.categoryIds.includes(c.id));
-    if (members.length === 0) {
-      chips.innerHTML = `<span style="font-size:11.5px;color:var(--text-3)">這個群組目前還沒有勾選任何類別。</span>`;
-    } else {
-      members.forEach(c => {
-        const chip = el('span');
-        chip.style.cssText = `padding:5px 11px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid ${jar.color};background:${jar.color}1A;color:${jar.color}`;
-        chip.textContent = `${c.icon??'·'} ${c.label}`;
-        chips.appendChild(chip);
-      });
-    }
-    body.appendChild(chips);
-
-    const btnRow = el('div'); btnRow.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-top:12px';
-    const unlinkBtn = el('button','btn btn-ghost btn-sm'); unlinkBtn.style.color='var(--red)'; unlinkBtn.textContent='解除連結';
-    unlinkBtn.addEventListener('click', async () => {
-      await setGroupId(null);
-      if (_incomeAllocEditingGroupFor === jar.key) _incomeAllocEditingGroupFor = null;
-      await renderIncomeAllocation();
-    });
-    btnRow.appendChild(unlinkBtn);
-    body.appendChild(btnRow);
-    return;
-  }
-
-  // ── 編輯模式：改名＋勾選/取消涵蓋的類別（改的是群組本身，跨卡片同步） ──
-  const warnNote = el('div'); warnNote.style.cssText='font-size:11px;color:var(--text-3);margin-bottom:8px;line-height:1.6';
-  warnNote.textContent = '這個群組如果同時被其他卡片或其他法則引用，這裡的修改會一起同步到那些地方。';
-  body.appendChild(warnNote);
-
-  const nameRow = el('div'); nameRow.style.cssText='margin-bottom:10px';
-  const nameInput = el('input'); nameInput.type='text';
-  nameInput.style.cssText = 'width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:7px;font-size:14px;font-weight:600';
-  nameInput.value = group.label;
-  nameInput.addEventListener('change', async () => {
-    const label = nameInput.value.trim() || group.label;
-    const groups = categoryGroups.map(g => g.id===group.id ? {...g, label} : g);
-    await saveCategoryGroups(groups);
-    await renderIncomeAllocation();
-  });
-  nameRow.appendChild(nameInput);
-  body.appendChild(nameRow);
-
-  const chipsWrap = el('div'); chipsWrap.style.cssText='display:flex;flex-wrap:wrap;gap:6px';
-  expenseCats.forEach(c => {
-    const checked = group.categoryIds.includes(c.id);
-    const chip = el('button','btn-sm'); chip.type='button';
-    chip.style.cssText = `padding:6px 11px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid ${checked?jar.color:'var(--border)'};background:${checked?jar.color+'1A':'#fff'};color:${checked?jar.color:'var(--text-2)'}`;
-    chip.textContent = `${c.icon??'·'} ${c.label}`;
-    chip.addEventListener('click', async () => {
-      const groups = categoryGroups.map(g => g.id===group.id
-        ? { ...g, categoryIds: checked ? g.categoryIds.filter(id=>id!==c.id) : [...g.categoryIds, c.id] }
-        : g);
-      await saveCategoryGroups(groups);
-      await renderIncomeAllocation();
-    });
-    chipsWrap.appendChild(chip);
-  });
-  body.appendChild(chipsWrap);
-
-  const doneRow = el('div'); doneRow.style.cssText='margin-top:12px';
-  const doneBtn = el('button','btn btn-primary btn-sm'); doneBtn.textContent='完成編輯';
-  doneBtn.addEventListener('click', () => { _incomeAllocEditingGroupFor = null; renderIncomeAllocation(); });
-  doneRow.appendChild(doneBtn);
-  body.appendChild(doneRow);
-}
-
 // ════════════════════════════════════════════════════════════════════════════
 // INSTALLMENT VIEW
 // ════════════════════════════════════════════════════════════════════════════
@@ -10251,6 +9513,7 @@ async function renderInstallment() {
           </div>
         </div>
         <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+          ${skipChipHtml('installments', item)}
           ${isDue?`<button class="btn btn-primary btn-sm" data-confirm-inst="${item.id}">✓ 確認本期付款</button>`:''}
           <button class="btn btn-ghost btn-sm" data-edit-inst="${item.id}">編輯</button>
         </div>
@@ -10261,6 +9524,7 @@ async function renderInstallment() {
     // thisYM＋due_day 組出來，不是「今天」。
     const occDate = `${thisYM}-${String(item.due_day).padStart(2,'0')}`;
     card.querySelector(`[data-confirm-inst]`)?.addEventListener('click', () => openConfirmInstModal(item, perAmt, occDate));
+    bindSkipChips(card);
     return card;
   }
 
@@ -10337,6 +9601,7 @@ function openPeriodConfirmModal(ctx) {
   } else {
     altWrap.style.display = 'none';
   }
+  document.getElementById('periodConfirmSkip').style.display = ctx.onSkip ? '' : 'none';
   ctx.onOpen?.(modal);
   modal.classList.add('open');
 }
@@ -10351,6 +9616,78 @@ document.getElementById('periodConfirmAlt').addEventListener('click', () => {
   closePeriodConfirmModal();
   ctx?.onAlt?.();
 });
+document.getElementById('periodConfirmSkip').addEventListener('click', async () => {
+  const ctx = _periodConfirmCtx;
+  if (!ctx?.onSkip || _periodConfirmBusy) return;
+  _periodConfirmBusy = true;
+  try { const ok = await ctx.onSkip(); if (ok !== false) closePeriodConfirmModal(); }
+  catch (e) { console.error('[period skip]', e); showToast('存檔失敗，請再試一次'); }
+  finally { _periodConfirmBusy = false; }
+});
+
+// ── v2.11.0：「確認了，但不是我付的」────────────────────────────────────
+// 使用者的例子：房租 5000，這期室友付了，我不用付——這一期要算「已處理」
+// （不再出現在待付、不再從可自由運用扣掉），但不能記任何支出。做法：把排程
+// 的確認標記往前推（定期支出／定期定額：last_confirmed_date；分期：
+// last_paid_ym＋已付期數＋1），同時在 skipped_periods 留一筆紀錄（含確認之前
+// 的值），之後可以撤銷——撤銷只在「目前的確認標記還是這一期」時才做，避免
+// 把之後又確認過的新一期誤清掉（跟刪除支出時的 reversePeriodConfirmIfNeeded
+// 同一個原則）。
+const SKIP_LABELS = { recurring_expenses: '定期支出', installments: '分期付款', dca_schedules: '定期定額' };
+function currentSkip(store, item) {
+  const last = item?.skipped_periods?.at?.(-1);
+  if (!last) return null;
+  const still = store === 'installments' ? item.last_paid_ym === last.ym : item.last_confirmed_date === last.occ;
+  return still ? last : null;
+}
+async function skipPeriod(store, id, occ) {
+  const item = await getOne(db, store, id);
+  if (!item) return false;
+  const isInst = store === 'installments', ym = occ.slice(0, 7);
+  if (isInst ? item.last_paid_ym === ym : item.last_confirmed_date === occ) { showToast('這一期已經確認過了'); return false; }
+  const rec = { occ, ym, at: new Date().toISOString(),
+    prev_confirmed_date: item.last_confirmed_date ?? null, prev_paid_ym: item.last_paid_ym ?? null, prev_paid_periods: item.paid_periods ?? null };
+  const skipped_periods = [...(item.skipped_periods || []), rec].slice(-24);
+  await putOne(db, store, isInst
+    ? { ...item, last_paid_ym: ym, paid_periods: (item.paid_periods || 0) + 1, skipped_periods }
+    : { ...item, last_confirmed_date: occ, skipped_periods });
+  return true;
+}
+async function undoSkipPeriod(store, id) {
+  const item = await getOne(db, store, id);
+  const last = currentSkip(store, item);
+  if (!last) { showToast('這一期之後又確認過，沒有東西可以撤銷'); return false; }
+  const isInst = store === 'installments';
+  await putOne(db, store, {
+    ...item, skipped_periods: item.skipped_periods.slice(0, -1),
+    ...(isInst ? { last_paid_ym: last.prev_paid_ym, paid_periods: last.prev_paid_periods ?? Math.max(0, (item.paid_periods || 1) - 1) }
+               : { last_confirmed_date: last.prev_confirmed_date }),
+  });
+  return true;
+}
+// 確認彈窗共用的 onSkip：標記、提示（可直接復原）、重畫目前頁面
+function makeSkipHandler(store, item, occ, name) {
+  return async () => {
+    if (!(await skipPeriod(store, item.id, occ))) return false;
+    showToast(`✓ 「${name}」${fmtDate(occ)} 這期已處理，沒有記支出`, {
+      label: '復原', onClick: async () => { if (await undoSkipPeriod(store, item.id)) { showToast('已復原，這期恢復成待確認'); await refreshAfterExpenseSaved(); } },
+    });
+    await refreshAfterExpenseSaved();
+  };
+}
+// 清單上的小標籤：最近一次確認是「不用我付」時顯示，附撤銷
+function skipChipHtml(store, item) {
+  const sk = currentSkip(store, item);
+  return sk ? `<span class="skip-chip">✓ ${fmtDate(sk.occ)} 不用我付<button type="button" data-undo-skip="${store}:${item.id}">撤銷</button></span>` : '';
+}
+function bindSkipChips(root) {
+  root.querySelectorAll('[data-undo-skip]').forEach(b => b.addEventListener('click', async e => {
+    e.stopPropagation();
+    const [store, id] = b.dataset.undoSkip.split(':');
+    if (await undoSkipPeriod(store, id)) { showToast('已撤銷，這期恢復成待確認'); await refreshAfterExpenseSaved(); }
+  }));
+}
+
 document.getElementById('periodConfirmSave').addEventListener('click', async () => {
   const ctx = _periodConfirmCtx;
   if (!ctx || _periodConfirmBusy) return;
@@ -10371,11 +9708,23 @@ document.getElementById('periodConfirmSave').addEventListener('click', async () 
 
 // 預設支出分類（分期付款、定期支出快速確認用）：先找標記為預設的，找不到就用
 // 第一個啟用中的支出分類。
+// v2.11.0 修正：is_default 其實是「內建分類」的標記（每個內建分類都有），
+// 原本照 id 排序找第一個，結果挑到「呆帳沖銷」——定期支出／分期確認時預設
+// 選到它。改成：帳單／水電 → 其他支出 → 依排序第一個非系統分類。
 async function getDefaultExpenseCategoryId() {
-  const allCats = await getAll(db,'txn_categories').catch(()=>[]);
-  return (allCats.find(c=>c.type==='expense'&&c.is_default&&c.active!==false)
-    || allCats.find(c=>c.type==='expense'&&c.active!==false)
+  const allCats = (await getAll(db,'txn_categories').catch(()=>[]))
+    .filter(c=>c.type==='expense'&&c.active!==false&&!SYSTEM_CATEGORY_IDS.includes(c.id));
+  return (allCats.find(c=>c.id==='cat_bill') || allCats.find(c=>c.id==='cat_other_out')
+    || allCats.sort((a,b)=>(a.sort_order??99)-(b.sort_order??99))[0]
     || { id:'cat_other_out' }).id;
+}
+// 一次性修正上面那個問題造成的舊資料：定期支出／分期確認產生、卻被歸到
+// 「呆帳沖銷」的支出，改回「帳單／水電」（真正的呆帳沖銷不會帶 rec_id／inst_id）。
+async function fixMiscategorizedPeriodExpenses() {
+  if (await getSetting(db, 'fix_v2110_badcat', false).catch(() => false)) return;
+  const bad = (await getAll(db,'expense_txns').catch(()=>[])).filter(t => t.category === 'cat_bad_debt_writeoff' && (t.rec_id || t.inst_id));
+  for (const t of bad) await putOne(db, 'expense_txns', { ...t, category: 'cat_bill' });
+  await setSetting(db, 'fix_v2110_badcat', true).catch(() => {});
 }
 function payMethodLabel(payType, accId, ccId) {
   if ((payType === 'account' || payType === 'cash') && accId) {
@@ -10417,8 +9766,9 @@ function openConfirmInstModal(item, defaultAmt, occurrenceDate) {
       if (!res.ok) { showToast(res.error); return false; }
       if (inst) await putOne(db,'installments',{...inst, paid_periods: periodNo, last_paid_ym: occYM});
       showToast(`✓ 第 ${periodNo} 期已記帳（${fmtDate(occurrenceDate)}）${res.deferBalance?'，帳戶／信用卡餘額將於當天才變動':''}`);
-      if (currentView === 'calendar') await renderCalendar(); else await renderInstallment();
+      await refreshAfterExpenseSaved();
     },
+    onSkip: makeSkipHandler('installments', item, occurrenceDate, item.name),
   });
 }
 
@@ -10438,7 +9788,7 @@ async function openRecurringExpenseConfirm(item, occDate) {
   const fxRates = await getFxRates(db).catch(()=>({}));
   const prefillAmt = itemCurr === payCurr ? item.amount : convertAmt(item.amount, itemCurr, payCurr, fxRates);
   const cats = (await getAll(db,'txn_categories').catch(()=>[]))
-    .filter(c=>c.type==='expense'&&c.active!==false)
+    .filter(c=>c.type==='expense'&&c.active!==false&&!SYSTEM_CATEGORY_IDS.includes(c.id))
     .sort((a,b)=>(a.sort_order??99)-(b.sort_order??99));
   const defCat = await getDefaultExpenseCategoryId();
   openPeriodConfirmModal({
@@ -10450,7 +9800,7 @@ async function openRecurringExpenseConfirm(item, occDate) {
     isConfirmed: item.last_confirmed_date === occ,
     extraHtml: `<div class="modal-field"><label>支出類別</label><select id="periodConfirmCategory">${
       cats.map(c=>`<option value="${c.id}" ${c.id===defCat?'selected':''}>${c.icon??''} ${c.label}</option>`).join('')}</select></div>`,
-    altLabel: '改用完整記帳視窗（可改付款方式、歸屬存錢計畫等）',
+    altLabel: '改用完整記帳視窗（可改付款方式、歸屬存錢目標等）',
     onAlt: () => openExpenseModal(null, {
       description: item.name, amount: item.amount, pay_type: item.pay_type,
       account_id: item.account_id, cc_id: item.cc_id, date: occ,
@@ -10470,12 +9820,13 @@ async function openRecurringExpenseConfirm(item, occDate) {
       showToast(`✓ 「${item.name}」本期已記帳（${fmtDate(occ)}）${res.deferBalance?'，帳戶／信用卡餘額將於當天才變動':''}`);
       await refreshAfterExpenseSaved();
     },
+    onSkip: makeSkipHandler('recurring_expenses', item, occ, item.name),
   });
 }
 
 // ── 定期定額 ───────────────────────────────────────────────────────────────
 // 金額＝實際扣款金額，另外填「取得股數」（成交後才知道）。收入紀錄本身金額
-// 記 0（這筆是買股票，不是收入，避免灌高本月收入／存錢計畫的百分比提撥），
+// 記 0（這筆是買股票，不是收入，避免灌高本月收入／存錢目標的百分比提撥），
 // 扣款金額記在 dca_spent，跟原本從收入彈窗確認、收入金額留空時的結果一致。
 async function openDcaConfirm(item, occDate) {
   await loadData();
@@ -10520,6 +9871,7 @@ async function openDcaConfirm(item, occDate) {
       showToast(`✓ 「${label}」本期已記錄（${fmtDate(occ)}）${res.deferBalance?'，帳戶餘額將於當天才變動':''}`);
       await refreshAfterIncomeSaved();
     },
+    onSkip: makeSkipHandler('dca_schedules', item, occ, label),
   });
 }
 
@@ -10675,10 +10027,8 @@ async function deleteTxnRecord(t, isIncome) {
   const tr = db.transaction([store], 'readwrite');
   tr.objectStore(store).delete(t.id);
   await new Promise((res, rej) => { tr.oncomplete = res; tr.onerror = () => rej(tr.error); });
-  if (isIncome) {
-    await syncAutoBucketContributions().catch(e => console.warn('[sync auto buckets]', e));
-    await syncEmergencyFundShortfall().catch(e => console.warn('[sync emergency fund]', e));
-  }
+  // v2.11.0：支出也會影響「本月超支」→ 緊急預備金扣除，所以收支都要重算。
+  await syncPlanAutoRows();
 }
 
 // §四十三之三（2026-10-03）：刪除一筆「確認本期」產生的收支紀錄時，把對應排程
@@ -10988,14 +10338,16 @@ async function renderRecurring() {
           ${payStr?`<span>${payStr}</span>`:''}
           ${endLabel?`<span>${endLabel}</span>`:''}
           ${item.note?`<span>${item.note}</span>`:''}
+          ${skipChipHtml('recurring_expenses', item)}
         </div>
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div style="font-weight:600;color:var(--red)">${fmtCurrency(item.amount, item.currency||'TWD')}</div>
         <div style="font-size:10px;color:var(--text-3)">${freqLabel[item.freq]??item.freq}</div>
       </div>
-      ${(!isExpiredItem && nextCharge && nextCharge===item.last_confirmed_date)?'<span style="font-size:10px;color:var(--green);flex-shrink:0;white-space:nowrap">✓ 本期已確認</span>':''}
-      ${isExpiredItem?'':`<button class="btn btn-primary btn-sm" style="font-size:11px" data-confirm-rec="${item.id}">確認本期</button>`}
+      ${(!isExpiredItem && nextCharge && nextCharge===item.last_confirmed_date)
+        ? (currentSkip('recurring_expenses', item) ? '' : '<span style="font-size:10px;color:var(--green);flex-shrink:0;white-space:nowrap">✓ 本期已確認</span>')
+        : isExpiredItem ? '' : `<button class="btn btn-primary btn-sm" style="font-size:11px;white-space:nowrap;flex-shrink:0" data-confirm-rec="${item.id}">確認本期</button>`}
       <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-rec="${item.id}">編輯</button>`;
     row.querySelector(`[data-edit-rec]`).addEventListener('click', () => openRecurringModal(item));
     // §卅六（2026-09-29，使用者回報「確認本期存下來的日期變成按確認那天，不
@@ -11007,6 +10359,7 @@ async function renderRecurring() {
     // 期已確認」（見 openExpenseModal() 與其存檔 handler 旁的完整說明）。
     // §四十三之二：改用統一的「確認本期」彈窗（見 openRecurringExpenseConfirm）。
     row.querySelector(`[data-confirm-rec]`)?.addEventListener('click', () => openRecurringExpenseConfirm(item, nextCharge ?? item.next_date ?? undefined));
+    bindSkipChips(row);
     return row;
   }
 
@@ -11793,13 +11146,14 @@ async function renderDcaSchedules() {
         </div>
         <div style="color:var(--text-3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
           <span>${dayLabel(item)}</span>
+          ${skipChipHtml('dca_schedules', item)}
           ${item.note?`<span>${item.note}</span>`:''}
         </div>
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div style="font-weight:600">${fmtCurrency(item.amount, item.currency||'TWD')}</div>
       </div>
-      ${isExpiredItem?'':`<button class="btn btn-primary btn-sm" style="font-size:11px" data-confirm-dca="${item.id}">確認本期</button>`}
+      ${isExpiredItem?'':`<button class="btn btn-primary btn-sm" style="font-size:11px;white-space:nowrap;flex-shrink:0" data-confirm-dca="${item.id}">確認本期</button>`}
       <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-dca="${item.id}">編輯</button>`;
     row.querySelector(`[data-edit-dca]`).addEventListener('click', () => openDcaScheduleModal(item));
     // §卅六：這一頁（定期定額排程頁本身，非月曆）原本也沒有帶日期，一樣改用
@@ -11810,6 +11164,7 @@ async function renderDcaSchedules() {
     // （見 openIncomeModal() 與其存檔 handler 旁的完整說明）。
     // §四十三之二：改用統一的「確認本期」彈窗（見 openDcaConfirm）。
     row.querySelector(`[data-confirm-dca]`)?.addEventListener('click', () => openDcaConfirm(item, computeNextChargeDate(item) ?? item.next_date ?? undefined));
+    bindSkipChips(row);
     return row;
   }
 
@@ -14035,6 +13390,7 @@ async function saveExpenseRecord(input) {
 
   if (recItem) await putOne(db,'recurring_expenses',{...recItem, last_confirmed_date: confirmRecurring.occDate || date});
 
+  await syncPlanAutoRows();
   return { ok:true, txn, deferBalance, autoTopupAmountApplied };
 }
 
@@ -14088,6 +13444,7 @@ async function refreshAfterExpenseSaved() {
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'goals') await renderBuckets();
   else if (currentView === 'txnmanage' && (_txnManageActiveTab === 'recurring' || _txnManageActiveTab === 'subscriptions')) await renderRecurring();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'installment') await renderInstallment();
+  else if (currentView === 'txnmanage' && _txnManageActiveTab === 'dcaschedule') await renderDcaSchedules();
   else if (currentView === 'installment') await renderInstallment();
   else await renderCalendar();
 }
@@ -15243,10 +14600,20 @@ function fmtShortTime(iso) {
   return `${M}/${D} ${h}:${m}`;
 }
 
-function showToast(msg) {
+let _toastTimer = null;
+function showToast(msg, action = null) {
   const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
+  clearTimeout(_toastTimer);
+  t.classList.toggle('has-action', !!action);
+  if (action) {
+    t.innerHTML = '';
+    const span = document.createElement('span'); span.textContent = msg;
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'toast-act'; btn.textContent = action.label;
+    btn.addEventListener('click', async () => { t.classList.remove('show'); await action.onClick(); });
+    t.append(span, btn);
+  } else t.textContent=msg;
+  t.classList.add('show');
+  _toastTimer = setTimeout(()=>t.classList.remove('show'), action ? 6000 : 2800);
 }
 
 // Mobile menu
