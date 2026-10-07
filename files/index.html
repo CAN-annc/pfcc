@@ -232,6 +232,100 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hp-qt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
 .hp-qt-title{font-size:13px;font-weight:600;color:var(--text-1)}
 .hp-qt-desc{font-size:11px;color:var(--text-3);margin-top:3px;line-height:1.5}
+.idle-card{padding:0;margin-top:16px;overflow:hidden}
+.idle-head{padding:13px 16px 8px}
+.idle-head b{display:block;font-size:14px}
+.idle-head span{display:block;font-size:11px;color:var(--text-3);margin-top:2px}
+.idle-row{all:unset;box-sizing:border-box;display:flex;align-items:flex-start;gap:10px;width:100%;padding:11px 16px;border-top:1px solid var(--border);cursor:pointer}
+.idle-row:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.idle-ico{font-size:17px;line-height:1.2}
+.idle-txt{flex:1;min-width:0}
+.idle-txt b{display:block;font-size:12.5px;font-weight:600;color:var(--text-1);line-height:1.45}
+.idle-txt small{display:block;font-size:11px;color:var(--text-2);margin-top:2px;line-height:1.5}
+.idle-go{color:var(--text-3);font-size:16px}
+.cc-all-btn{font:inherit;font-size:11px;font-weight:600;border:none;background:none;color:var(--blue);cursor:pointer;padding:0 0 0 6px}
+.cch{max-height:60vh;overflow:auto}
+.cch-year+.cch-year{margin-top:12px}
+.cch-yhead{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--border-2)}
+.cch-yhead b{font-size:13px}
+.cch-yhead span{font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums}
+.cch-row{display:grid;grid-template-columns:56px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+.cch-per{font-weight:600}
+.cch-date small{display:block;font-size:10.5px;color:var(--text-3)}
+.cch-row b{font-variant-numeric:tabular-nums}
+.trip-banner{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;margin-bottom:12px;border-radius:12px;cursor:pointer;background:color-mix(in srgb,#0891B2 12%,var(--card));border:1px solid color-mix(in srgb,#0891B2 35%,var(--border))}
+.home2 .trip-banner{margin-bottom:0}
+.trip-ico{font-size:20px}
+.trip-main{flex:1;min-width:0}
+.trip-main b{display:block;font-size:13.5px;color:var(--text-1)}
+.trip-main small{display:block;font-size:11.5px;color:var(--text-2);margin-top:2px}
+.trip-go{font-size:18px;color:var(--text-3)}
+.trip-note{font-size:11px;color:#0E7490;margin-top:5px;line-height:1.5}
+.trip-badge{font-size:10px;padding:1px 7px;border-radius:99px;background:color-mix(in srgb,#0891B2 15%,var(--card));color:#0E7490;font-weight:600}
+.proj-cats{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.proj-cat{display:grid;grid-template-columns:88px 1fr auto 32px;gap:8px;align-items:center;font-size:11.5px;color:var(--text-2)}
+.proj-cat i{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;display:block}
+.proj-cat em{display:block;height:100%;background:#0891B2;border-radius:3px}
+.proj-cat b{font-weight:600;color:var(--text-1);font-variant-numeric:tabular-nums}
+.proj-cat small{color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
+.qa{padding:14px 16px}
+.qa-row{display:flex;gap:8px}
+.qa-amt{display:flex;align-items:center;gap:6px;flex:0 0 46%;padding:0 10px;border:1px solid var(--border-2);border-radius:10px;background:var(--card)}
+.qa-amt span{font-size:12px;color:var(--text-3)}
+.qa-amt input{border:none;outline:none;background:transparent;font-size:20px;font-weight:700;width:100%;min-width:0;padding:8px 0;font-variant-numeric:tabular-nums;color:var(--text-1)}
+.qa-amt input.is-err{color:var(--red)}
+.qa-desc{flex:1;min-width:0;border:1px solid var(--border-2);border-radius:10px;padding:0 10px;font-size:16px;background:var(--card);color:var(--text-1)}
+.qa-label{font-size:10.5px;font-weight:600;color:var(--text-3);margin:12px 0 6px;letter-spacing:.03em}
+.qa-chips{display:flex;flex-wrap:wrap;gap:6px}
+.qa-chip{font:inherit;font-size:12.5px;padding:7px 11px;border-radius:999px;border:1px solid var(--border-2);background:var(--card);color:var(--text-1);cursor:pointer}
+.qa-chip:active{transform:scale(.96)}
+.qa-chip.is-freq{background:color-mix(in srgb,var(--blue) 8%,var(--card));border-color:color-mix(in srgb,var(--blue) 30%,var(--border-2))}
+.qa-chip b{font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-2)}
+.qa-foot{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);flex-wrap:wrap}
+.qa-foot label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-3);flex:1;min-width:0}
+.qa-pay{flex:1;min-width:0;font-size:13px;padding:6px 8px;border:1px solid var(--border-2);border-radius:8px;background:var(--card);color:var(--text-1)}
+.qa-trip{font-size:11px;color:#0E7490;margin-top:8px}
+.qa-today{margin-top:6px}
+.qa-today-row{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:4px 0;border-top:1px solid var(--border)}
+.qa-today-row span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qa-today-row b{font-weight:600;font-variant-numeric:tabular-nums}
+.gr-card{padding:16px 18px}
+.gr-k{font-size:11px;color:var(--text-3)}
+.gr-big{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.gr-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.gr-tile{display:flex;flex-direction:column;gap:2px;padding:9px 10px;border-radius:9px;background:var(--surface-2);min-width:0}
+.gr-tile span{font-size:11px;color:var(--text-3)}
+.gr-tile b{font-size:16px;font-variant-numeric:tabular-nums}
+.gr-tile em{font-style:normal;font-size:10.5px;color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gr-tile small{font-size:9.5px;color:var(--text-3)}
+.gr-split{padding-top:10px;border-top:1px dashed var(--border)}
+.gr-split-k{font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:8px}
+.gr-split-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;background:var(--surface-2)}
+.gr-split-bar span{min-width:2px}
+.gr-split-rows{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.gr-split-rows div{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2)}
+.gr-split-rows i{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.gr-split-rows b{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--text-1)}
+.gr-note{font-size:10.5px;color:var(--text-3);margin-top:8px;line-height:1.5}
+.sv-card{padding:16px 18px}
+.sv-head b{display:block;font-size:14px}
+.sv-head span{display:block;font-size:11px;color:var(--text-3);margin-top:2px}
+.sv-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 14px}
+.sv-stats div{display:flex;flex-direction:column;gap:2px;padding:9px 10px;border-radius:9px;background:var(--surface-2)}
+.sv-stats span{font-size:11px;color:var(--text-3)}
+.sv-stats b{font-size:16px;font-variant-numeric:tabular-nums}
+.sv-stats em{font-style:normal;font-size:10.5px;color:var(--text-2)}
+.sv-chart{position:relative;display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:0 2px}
+.sv-col{position:relative;height:100%}
+.sv-bar{position:absolute;left:18%;right:18%;border-radius:4px 4px 0 0;background:var(--green)}
+.sv-bar.neg{background:var(--red);border-radius:0 0 4px 4px}
+.sv-zero{position:absolute;left:0;right:0;height:1px;background:var(--border-2)}
+.sv-target{position:absolute;left:0;right:0;border-top:1.5px dashed color-mix(in srgb,var(--text-3) 70%,transparent);z-index:1}
+.sv-target span{position:absolute;right:0;top:-15px;font-size:9.5px;color:var(--text-3);background:var(--card);padding:0 3px}
+.sv-x{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:4px 2px 10px;font-size:10.5px;color:var(--text-3);text-align:center}
+.sv-table{display:flex;flex-direction:column;border-top:1px solid var(--border)}
+.sv-table div{display:grid;grid-template-columns:60px 1fr 1fr 90px;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11.5px;color:var(--text-2);font-variant-numeric:tabular-nums}
+.sv-table b{text-align:right}
 .seg{display:flex;gap:4px;padding:4px;margin-bottom:14px;border-radius:11px;background:var(--surface-2);border:1px solid var(--border)}
 .seg-btn{flex:1;font:inherit;font-size:13px;font-weight:600;padding:8px 6px;border:none;border-radius:8px;background:transparent;color:var(--text-2);cursor:pointer}
 .seg-btn.on{background:var(--card);color:var(--text-1);box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -2183,6 +2277,15 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
   </div>
 </div>
 
+<!-- ── 信用卡繳款紀錄（v2.10.0）── -->
+<div class="modal-overlay" id="ccHistModal">
+  <div class="modal">
+    <h2 id="ccHistTitle">繳款紀錄</h2>
+    <div id="ccHistBody" class="cch"></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="ccHistClose">關閉</button></div>
+  </div>
+</div>
+
 <!-- ── Credit card payment modal（v2.7.4）── -->
 <div class="modal-overlay" id="ccPayModal">
   <div class="modal">
@@ -2360,7 +2463,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <div style="font-size:11px;color:var(--text-3);margin-top:4px">已自動帶入目前的即時匯率，需要的話可以手動調整成實際匯率。這個匯率會跟著這筆交易存起來，之後計算本月支出／預算時都用這個換算後的 TWD 金額，就算之後系統匯率再變動，也不會回頭影響這一筆。</div>
     </div>
     <div class="modal-field">
-      <label>歸屬存錢計畫（選填）</label>
+      <label>歸屬存錢目標（選填）</label>
       <select id="expenseBucket"></select>
     </div>
     <div class="modal-field" id="expenseProjectField" style="display:none">
@@ -2586,6 +2689,7 @@ import {
   runDataHealthChecks,
   classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
   calcMonthlyPlan, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
+  calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
 } from './calc.js';
 
 let db, state = {}, currentView = 'assets';
@@ -2851,18 +2955,19 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.9.0';
+const APP_VERSION = 'v2.10.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-05';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '底部導覽列改成「首頁／紀錄／計畫／資產／更多」：每一格回答一個問題——現在能用多少、實際發生什麼、錢怎麼分、錢在哪裡',
-  '首頁新增「可自由運用」：現金與活存扣掉信用卡待繳、30 天內要付的、緊急預備金（含還沒存到的缺口）、其他存錢目標，剩下的才是真正能自由用的錢；點「怎麼算的」看每一層',
-  '緊急預備金不足時，缺口會先保留並在首頁提醒還差多少，不會讓你以為手上錢很多',
-  '首頁同時顯示今天還能花、總資產、快速記帳與近期到期提醒',
-  '「計畫」分頁：每月計畫｜存錢目標；「資產」分頁：總覽｜持倉｜趨勢',
+  '資產 › 趨勢：新增本月、今年以來、所選期間的資產成長率，並把變化拆成「存進去的」與「投資、匯率與其他」，看得出資產變多是靠省下來還是靠市場',
+  '資產 › 趨勢：新增「每月實際存了多少」——近 6 個月收入減支出、儲蓄率，對照每月計畫的存下來＋投資',
+  '旅行模式：在存錢目標底下建立有日期的旅行，旅行期間首頁與紀錄頁顯示第幾天、已花多少、基金還剩多少，新增的支出自動歸到這趟旅行；每趟旅行列出各類別花了多少',
+  '首頁快速記帳：輸入金額後點類別就記好；最近常記的項目一點就記；付款方式記住上次的選擇；今天記的可以直接刪除',
+  '資產 › 總覽新增「可以留意的錢」：計畫還沒安排用途的錢、一年以上才用到的目標、過期沒處理的定存、久沒動的外幣與帳戶、逾期的應收款',
+  '信用卡新增完整繳款紀錄：依年份列出每一期繳款日、金額、扣款帳戶與年度合計',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3518,6 +3623,119 @@ async function renderWealthHub() {
   else await renderAssetOverview();
 }
 
+
+// ── 旅行（v2.10.0，重整藍圖第 4 步）──────────────────────────────────────
+// 旅行＝存錢目標（例如旅遊基金）底下、有開始／結束日期的專案。旅行期間：
+// 首頁與紀錄頁頂端顯示旅行中橫幅（第幾天、已花多少、基金還剩多少），新增的
+// 支出自動歸到這趟旅行。能玩多少＝那個存錢目標的剩餘金額。
+async function buildTripBanner() {
+  const projects = await getAll(db,'projects').catch(()=>[]);
+  const trip = findActiveTrip(projects);
+  if (!trip) return null;
+  const [buckets, allocations, expenseTxns, accounts] = await Promise.all([getAll(db,'buckets').catch(()=>[]), getAll(db,'bucket_allocations').catch(()=>[]), getAll(db,'expense_txns').catch(()=>[]), getAll(db,'accounts').catch(()=>[])]);
+  const fxRates = await getFxRates(db).catch(()=>({}));
+  const bucket = buckets.find(b => b.id === trip.bucket_id);
+  const spent = calcProjectSpent(expenseTxns, trip.id, accounts, fxRates);
+  const left = bucket ? calcBucketAllocated(allocations, bucket.id) - calcBucketSpent(expenseTxns, bucket.id, accounts, fxRates) : null;
+  const d0 = new Date(trip.start_date + 'T00:00:00'), now = new Date(); now.setHours(0,0,0,0);
+  const dayN = Math.floor((now - d0) / 86400000) + 1;
+  const total = trip.end_date ? Math.floor((new Date(trip.end_date + 'T00:00:00') - d0) / 86400000) + 1 : null;
+  const b = el('button'); b.type = 'button'; b.className = 'trip-banner';
+  b.innerHTML = `<span class="trip-ico">✈️</span><span class="trip-main"><b>旅行中：${escHtml(trip.name)}</b><small>第 ${dayN}${total ? ` / ${total}` : ''} 天・已花 NT$ ${fmt(spent)}${left != null ? `・${escHtml(bucket.name)}還剩 NT$ ${fmt(left)}` : ''}</small></span><span class="trip-go">›</span>`;
+  b.addEventListener('click', () => { _planTab = 'goals'; navigate('plan'); });
+  return b;
+}
+
+
+async function buildQuickAdd() {
+  const [cats, expenseTxns, cards, projects] = await Promise.all([getAll(db,'txn_categories').catch(()=>[]), getAll(db,'expense_txns').catch(()=>[]), getAll(db,'credit_cards').catch(()=>[]), getAll(db,'projects').catch(()=>[])]);
+  const accounts = state.accounts || [];
+  const bankMap = Object.fromEntries((state.banks || []).map(b => [b.id, b]));
+  const expCats = cats.filter(c => c.type === 'expense' && c.active !== false && !['cat_dca','cat_bad_debt_writeoff'].includes(c.id));
+  const since = new Date(); since.setDate(since.getDate() - 90); const sinceStr = isoDate(since);
+  const useCount = {}; expenseTxns.filter(t => t.date >= sinceStr).forEach(t => { useCount[t.category] = (useCount[t.category] || 0) + 1; });
+  const topCats = [...expCats].sort((a, b) => (useCount[b.id] || 0) - (useCount[a.id] || 0) || (a.sort_order ?? 99) - (b.sort_order ?? 99)).slice(0, 8);
+  const frequent = calcFrequentExpenses(expenseTxns, 4);
+  const catById = Object.fromEntries(cats.map(c => [c.id, c]));
+  const payOptions = [
+    ...accounts.filter(a => a.show_in_menu !== false && (!a.currency || a.currency === 'TWD')).map(a => ({ v: `acc:${a.id}`, label: `${bankMap[a.bank_id] ? bankMap[a.bank_id].name + ' ' : ''}${a.name}`, payType: a.bank_id ? 'account' : 'cash', accId: a.id })),
+    ...cards.map(c => ({ v: `cc:${c.id}`, label: `💳 ${c.name}`, payType: 'cc', ccId: c.id })),
+  ];
+  const lastTxn = [...expenseTxns].filter(t => t.pay_type).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))[0];
+  const saved = await getSetting(db, 'quick_pay', null).catch(() => null);
+  const lastV = lastTxn ? (lastTxn.pay_type === 'cc' ? `cc:${lastTxn.cc_id}` : `acc:${lastTxn.account_id}`) : null;
+  let payV = [saved, lastV, payOptions[0]?.v].find(v => v && payOptions.some(o => o.v === v)) ?? '';
+  const trip = findActiveTrip(projects);
+  const today = isoDate(new Date());
+  const todays = expenseTxns.filter(t => t.date === today).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || '')).slice(0, 4);
+
+  const box = el('div', 'card'); box.className = 'card qa';
+  box.innerHTML = `
+    <div class="qa-row">
+      <label class="qa-amt"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="1" placeholder="金額" aria-label="金額"></label>
+      <input class="qa-desc" type="text" placeholder="說明（選填）" aria-label="說明">
+    </div>
+    ${frequent.length ? `<div class="qa-label">常用（點一下就記）</div><div class="qa-chips">${frequent.map((f, i) => `<button type="button" class="qa-chip is-freq" data-qa-freq="${i}">${escHtml(f.description)} <b>${fmt(f.amount)}</b></button>`).join('')}</div>` : ''}
+    <div class="qa-label">輸入金額後點類別</div>
+    <div class="qa-chips">${topCats.map(c => `<button type="button" class="qa-chip" data-qa-cat="${c.id}">${c.icon ?? ''} ${escHtml(c.label)}</button>`).join('')}</div>
+    <div class="qa-foot">
+      <label>付款 <select class="qa-pay" aria-label="付款方式">${payOptions.map(o => `<option value="${o.v}">${escHtml(o.label)}</option>`).join('')}</select></label>
+      <button type="button" class="btn btn-ghost btn-sm" data-qa-full>完整表單</button>
+      <button type="button" class="btn btn-ghost btn-sm" data-qa-income>＋ 收入</button>
+    </div>
+    ${trip ? `<div class="qa-trip">✈️ 旅行中，會自動歸到「${escHtml(trip.name)}」</div>` : ''}
+    ${todays.length ? `<div class="qa-today"><div class="qa-label">今天記了</div>${todays.map(t => `<div class="qa-today-row"><span>${catById[t.category]?.icon ?? '·'} ${escHtml(t.description || catById[t.category]?.label || '支出')}</span><b>NT$ ${fmt(t.amount)}</b><button type="button" class="btn btn-ghost btn-sm" data-qa-del="${t.id}">刪除</button></div>`).join('')}</div>` : ''}`;
+  const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc'), paySel = box.querySelector('.qa-pay');
+  paySel.value = payV;
+  paySel.addEventListener('change', () => setSetting(db, 'quick_pay', paySel.value).catch(() => {}));
+  async function quickSave(category, amount, description) {
+    if (!(amount > 0)) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); return; }
+    const o = payOptions.find(x => x.v === paySel.value);
+    const res = await saveExpenseRecord({ date: today, category, description: description || '', amount,
+      payType: o?.payType ?? null, accId: o?.accId ?? null, ccId: o?.ccId ?? null,
+      bucketId: trip?.bucket_id ?? null, projectId: trip?.id ?? null, affects: true });
+    if (!res.ok) { showToast(res.error); return; }
+    showToast(`✓ 已記 ${catById[category]?.label ?? ''} NT$ ${fmt(amount)}`);
+    await renderAssets();
+  }
+  box.querySelectorAll('[data-qa-cat]').forEach(b => b.addEventListener('click', () => quickSave(b.dataset.qaCat, parseFloat(amtIn.value), descIn.value.trim())));
+  box.querySelectorAll('[data-qa-freq]').forEach(b => b.addEventListener('click', () => { const f = frequent[+b.dataset.qaFreq]; quickSave(f.category, f.amount, f.description); }));
+  box.querySelector('[data-qa-full]').addEventListener('click', () => {
+    const o = payOptions.find(x => x.v === paySel.value);
+    openExpenseModal(null, { amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), pay_type: o?.payType, account_id: o?.accId, cc_id: o?.ccId });
+  });
+  box.querySelector('[data-qa-income]').addEventListener('click', () => openIncomeModal(null));
+  box.querySelectorAll('[data-qa-del]').forEach(b => b.addEventListener('click', () => {
+    const t = todays.find(x => x.id === b.dataset.qaDel);
+    openDeleteModal(`刪除「${t.description || '這筆支出'}」NT$ ${fmt(t.amount)}？帳戶／信用卡餘額會一起還原。`, async () => { await deleteTxnRecord(t, false); showToast('已刪除'); await renderAssets(); });
+  }));
+  return box;
+}
+
+
+// ── 閒置資金提醒（v2.10.0，重整藍圖第 5 步）────────────────────────────────
+// 使用者：「如果收支有確實的計畫，就不會有閒置資金」——所以不設金額門檻，
+// 只抓計畫的漏洞（未分配）跟「用途對、但放錯地方」的錢，規則見 calc.js
+// calcIdleMoneyAlerts。沒有任何一項時整張卡片不出現。
+async function buildIdleMoneyCard() {
+  const ctx = await loadPlanContext();
+  const { accounts, fxRates, cards, deposits, receivables, expenseTxns } = state;
+  const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses: ctx.recurringExpenses, installments: ctx.installments, dcaSchedules: ctx.dcaSchedules,
+    buckets: ctx.buckets, allocations: ctx.allocations, expenseTxns, essentials: ctx.essentials, emergencyMonths: Number(ctx.settings.emergency_months) || 6 });
+  const alerts = calcIdleMoneyAlerts({ plan: ctx.plan, spendable: sp, essentials: ctx.essentials, buckets: ctx.buckets, allocations: ctx.allocations,
+    expenseTxns, accounts, fxRates, deposits: deposits || [], receivables: receivables || [] });
+  if (!alerts.length) return null;
+  const card = el('div', 'card'); card.className = 'card idle-card';
+  card.innerHTML = `<div class="idle-head"><b>可以留意的錢</b><span>${alerts.length} 項・沒有用途或放錯地方的錢</span></div>` +
+    alerts.map((a, i) => `<button type="button" class="idle-row" data-idle="${i}"><span class="idle-ico">${a.icon}</span><span class="idle-txt"><b>${escHtml(a.title)}</b><small>${escHtml(a.body)}</small></span><span class="idle-go">›</span></button>`).join('');
+  card.querySelectorAll('[data-idle]').forEach(b => b.addEventListener('click', () => {
+    const link = alerts[+b.dataset.idle].link;
+    if (link === 'plan' || link === 'goals') { _planTab = link; navigate('plan'); }
+    else if (link.startsWith('settings:')) { _accManageActiveSection = link.split(':')[1]; navigate('settings'); }
+  }));
+  return card;
+}
+
 // ── 首頁 ────────────────────────────────────────────────────────────────────
 let _homeSpendOpen = false;
 async function renderHome() {
@@ -3583,14 +3801,12 @@ async function renderHome() {
   duo.querySelector('[data-go="wealth"]').addEventListener('click', () => { _wealthTab = 'overview'; navigate('wealth'); });
   root.appendChild(duo);
 
-  // 快速記帳
-  const quick = el('div'); quick.className = 'home-quick';
-  const qe = el('button', 'btn btn-primary'); qe.innerHTML = '＋ 記一筆支出';
-  qe.addEventListener('click', () => openExpenseModal(null));
-  const qi = el('button', 'btn btn-ghost'); qi.innerHTML = '＋ 收入';
-  qi.addEventListener('click', () => openIncomeModal(null));
-  quick.append(qe, qi);
-  root.appendChild(quick);
+  // 旅行中
+  const tripBanner = await buildTripBanner(); if (tripBanner) root.insertBefore(tripBanner, root.firstChild);
+
+  // 快速記帳（v2.10.0）：輸入金額 → 點類別就存；常用項目一點就存。付款方式
+  // 記住上次選的。完整欄位（日期、外幣、備註…）按「完整表單」。
+  root.appendChild(await buildQuickAdd());
 
   // 近期提醒（5 天內，含逾期）
   const typeIcon = { deposit:'🏦', creditcard:'💳', recurring:'🔁', installment:'🧾', recurringincome:'💵' };
@@ -3676,6 +3892,10 @@ async function renderAssetOverview() {
     ${fxRates.is_stale?'<span class="stale-badge" style="margin-left:4px">匯率可能過時</span>':''}`;
   wrap.appendChild(bar);
   content.appendChild(wrap);
+
+  // v2.10.0（重整藍圖第 5 步）：「可以留意的錢」——計畫沒安排到的錢、放錯地方的錢。
+  const idleCard = await buildIdleMoneyCard();
+  if (idleCard) content.appendChild(idleCard);
 
   // 2026-09-20（見路線圖§十五之五）：甜甜圈圖／最近記錄／本月預算三張卡片
   // 已從資產總覽移除——使用者指出首頁應該只呈現「資產」資訊，收支類的視覺化
@@ -8954,7 +9174,7 @@ async function renderBuckets() {
   // Active buckets first, closed ones pushed to the bottom.
   const sorted = [...buckets].sort((a,b)=>(a.status==='closed'?1:0)-(b.status==='closed'?1:0));
 
-  sorted.forEach(bucket => {
+  for (const bucket of sorted) {
     const allocated = calcBucketAllocated(allocations, bucket.id);
     const spent = calcBucketSpent(expenseTxns, bucket.id, accounts, fxRates);
     const remaining = allocated - spent;
@@ -9006,7 +9226,7 @@ async function renderBuckets() {
     allocBtn.addEventListener('click', () => openBucketAllocModal(bucket));
     const spendBtn = el('button','btn btn-ghost btn-sm'); spendBtn.textContent = '＋ 記一筆花費';
     spendBtn.addEventListener('click', () => openExpenseModal(null, { bucket_id: bucket.id }));
-    const projBtn = el('button','btn btn-ghost btn-sm'); projBtn.textContent = '＋ 新增專案';
+    const projBtn = el('button','btn btn-ghost btn-sm'); projBtn.textContent = '＋ 新增旅行／專案';
     projBtn.addEventListener('click', () => openProjectModal(bucket));
     const editBtn = el('button','btn btn-ghost btn-sm'); editBtn.textContent = '編輯';
     editBtn.addEventListener('click', () => openBucketModal(bucket));
@@ -9026,8 +9246,12 @@ async function renderBuckets() {
       const projHead = el('div'); projHead.style.cssText='font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px';
       projHead.textContent = '專案';
       body.appendChild(projHead);
-      bucketProjects.forEach(p => {
+      const allCatsForProj = await getAll(db,'txn_categories').catch(()=>[]);
+      const catLabel = Object.fromEntries(allCatsForProj.map(c => [c.id, `${c.icon ?? ''} ${c.label}`]));
+      const activeTripNow = findActiveTrip(projects);
+      for (const p of bucketProjects) {
         const pSpent = calcProjectSpent(expenseTxns, p.id, accounts, fxRates);
+        const byCat = calcProjectByCategory(expenseTxns, p.id, accounts, fxRates);
         const pRow = el('div');
         pRow.style.cssText = 'border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:var(--bg-2,#FAFBFC)';
         const dateRange = [p.start_date?fmtDate(p.start_date):null, p.end_date?fmtDate(p.end_date):null].filter(Boolean).join(' 〜 ');
@@ -9043,8 +9267,16 @@ async function renderBuckets() {
           </div>`;
         pRow.querySelector('[data-proj-spend]').addEventListener('click', () => openExpenseModal(null, { bucket_id: bucket.id, project_id: p.id }));
         pRow.querySelector('[data-proj-edit]').addEventListener('click', () => openProjectModal(bucket, p));
+        // v2.10.0：旅行／專案在各類別花了多少（使用者：「出去玩的話我在各類別花了多少錢」）。
+        if (activeTripNow?.id === p.id) pRow.querySelector('span').insertAdjacentHTML('beforeend', '　<span class="trip-badge">✈️ 旅行中</span>');
+        if (byCat.length) {
+          const maxC = byCat[0].amount || 1;
+          const bc = el('div'); bc.className = 'proj-cats';
+          bc.innerHTML = byCat.map(c => `<div class="proj-cat"><span>${escHtml(catLabel[c.category] ?? '未分類')}</span><i><em style="width:${Math.max(3, c.amount / maxC * 100)}%"></em></i><b>NT$ ${fmt(c.amount)}</b><small>${pSpent ? Math.round(c.amount / pSpent * 100) : 0}%</small></div>`).join('');
+          pRow.appendChild(bc);
+        }
         body.appendChild(pRow);
-      });
+      }
     }
 
     // Recent ledger: allocations + spend, newest first, capped to 6 rows —
@@ -9103,7 +9335,7 @@ async function renderBuckets() {
     });
 
     content.appendChild(card);
-  });
+  }
 }
 
 // ── Bucket modal ─────────────────────────────────────────────────────────────
@@ -11897,6 +12129,7 @@ async function renderCalendar() {
   const page = beginPageRender();
   const content = page.content;
   await loadData();
+  const calTrip = await buildTripBanner(); if (calTrip) content.appendChild(calTrip);
 
   // ── 今天還能花（2026-09-24 新增）── 本月預算 - 本月至今已花費，除以本月剩
   // 餘天數（見 calc.js calcTodayAllowance）。沒有設定本月預算時
@@ -12924,7 +13157,7 @@ async function renderCreditCard() {
       </div>` : ''}
       ${recent.length ? `
       <div class="cc-history">
-        <div class="cc-history-title">最近繳款</div>
+        <div class="cc-history-title">最近繳款${(card.payments || []).length > 3 ? ` <button type="button" class="cc-all-btn" data-cc-all="${card.id}">全部 ${(card.payments || []).length} 筆 ›</button>` : ''}</div>
         ${recent.map(p => `<div class="cc-history-row"><span>${p.period ? ccPeriodLabel(p.period) : ''}</span><span>${md(p.date)} 繳</span><strong>NT$ ${fmt(p.amount)}</strong><button class="btn btn-ghost btn-sm" data-undo-pay="${p.id}">復原</button></div>`).join('')}
       </div>` : ''}
       <div style="border-top:1px solid var(--border);padding:10px 18px;display:flex;gap:8px;justify-content:flex-end">
@@ -12933,6 +13166,7 @@ async function renderCreditCard() {
       </div>`;
 
     cardEl.querySelector('[data-pay-overdue]')?.addEventListener('click', () => openCcPayModal(card, { ym: st.overdue.ym }));
+    cardEl.querySelector('[data-cc-all]')?.addEventListener('click', () => openCcHistory(card, accMap, bankMap));
     cardEl.querySelectorAll('[data-undo-pay]').forEach(btn => btn.addEventListener('click', () => {
       const p = recent.find(x => x.id === btn.dataset.undoPay);
       openDeleteModal(`復原 ${md(p.date)} 這筆 NT$ ${fmt(p.amount)} 的繳款？\n${p.account_id ? '扣款帳戶會加回這筆金額，' : ''}信用卡待繳會加回，期別回到記錄前的狀態。`, () => undoCcPayment(card.id, p.id));
@@ -13096,6 +13330,25 @@ document.getElementById('ccPaySave').addEventListener('click', async () => {
   else if (currentView === 'assets' || currentView === 'wealth') await renderAssets();
   else await renderCreditCard();
 });
+
+// v2.10.0：信用卡繳款歷史（使用者：「要知道、紀錄每一期繳了多少卡費，看得到歷史紀錄」）。
+// 依年份分組，每期一列：期別、實際繳款日、金額、扣款帳戶；每年小計。
+function openCcHistory(card, accMap, bankMap) {
+  const pays = [...(card.payments || [])].sort((a, b) => (b.period || b.date).localeCompare(a.period || a.date) || b.date.localeCompare(a.date));
+  const byYear = {};
+  pays.forEach(p => { const y = (p.period || p.date).slice(0, 4); (byYear[y] ??= []).push(p); });
+  const accName = id => { const a = accMap[id]; if (!a) return '不扣帳戶（只標記）'; const b = bankMap[a.bank_id]; return `${b ? b.name + ' ' : ''}${a.name}`; };
+  document.getElementById('ccHistTitle').textContent = `${card.name}・繳款紀錄`;
+  document.getElementById('ccHistBody').innerHTML = Object.keys(byYear).sort().reverse().map(y => {
+    const rows = byYear[y]; const sum = rows.reduce((s, p) => s + (p.amount || 0), 0);
+    return `<div class="cch-year"><div class="cch-yhead"><b>${y} 年</b><span>${rows.length} 筆・合計 NT$ ${fmt(sum)}</span></div>` +
+      rows.map(p => `<div class="cch-row"><span class="cch-per">${p.period ? ccPeriodLabel(p.period) : '—'}</span><span class="cch-date">${Number(p.date.slice(5,7))}/${Number(p.date.slice(8,10))} 繳<small>${escHtml(accName(p.account_id))}</small></span><b>NT$ ${fmt(p.amount)}</b></div>`).join('') + `</div>`;
+  }).join('') || '<div class="mp-empty">還沒有繳款紀錄。</div>';
+  document.getElementById('ccHistModal').classList.add('open');
+}
+document.getElementById('ccHistClose').addEventListener('click', () => document.getElementById('ccHistModal').classList.remove('open'));
+document.getElementById('ccHistModal').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+
 // 復原一筆繳款：帳戶加回、刪掉那筆帳戶變動紀錄、信用卡待繳加回、期別回到記錄前。
 async function undoCcPayment(cardId, paymentId) {
   const card = await getOne(db, 'credit_cards', cardId);
@@ -13589,8 +13842,14 @@ async function openExpenseModal(txn=null, prefill=null) {
   const bucketSel = document.getElementById('expenseBucket');
   bucketSel.innerHTML = `<option value="">— 不歸屬 —</option>` +
     activeBuckets.map(b=>`<option value="${b.id}">🧳 ${b.name}</option>`).join('');
-  const initialBucketId  = txn ? (txn.bucket_id  ?? '') : (prefill?.bucket_id  ?? '');
-  const initialProjectId = txn ? (txn.project_id ?? '') : (prefill?.project_id ?? '');
+  // v2.10.0 旅行模式：旅行期間新增的支出，自動歸到那趟旅行（使用者可以改回「不歸屬」）。
+  const activeTrip = !txn && !prefill?.bucket_id ? findActiveTrip(allProjects) : null;
+  const initialBucketId  = txn ? (txn.bucket_id  ?? '') : (prefill?.bucket_id  ?? activeTrip?.bucket_id ?? '');
+  const initialProjectId = txn ? (txn.project_id ?? '') : (prefill?.project_id ?? activeTrip?.id ?? '');
+  let tripNote = document.getElementById('expenseTripNote');
+  if (!tripNote) { tripNote = el('div'); tripNote.id = 'expenseTripNote'; tripNote.className = 'trip-note'; bucketSel.closest('.modal-field').appendChild(tripNote); }
+  tripNote.textContent = activeTrip ? `✈️ 旅行中：已自動歸到「${activeTrip.name}」，不是這趟的花費改成「不歸屬」即可。` : '';
+  tripNote.style.display = activeTrip ? '' : 'none';
   bucketSel.value = initialBucketId;
 
   function refreshExpenseProjectOptions(selectedProjectId) {
@@ -13600,7 +13859,7 @@ async function openExpenseModal(txn=null, prefill=null) {
     if (!bId) { field.style.display='none'; projSel.innerHTML=''; return; }
     const projs = allProjects.filter(p=>p.bucket_id===bId && p.status!=='closed');
     field.style.display = 'block';
-    projSel.innerHTML = `<option value="">— 不指定專案，直接算在存錢計畫 —</option>` +
+    projSel.innerHTML = `<option value="">— 不指定旅行／專案，直接算在存錢目標 —</option>` +
       projs.map(p=>`<option value="${p.id}">📁 ${p.name}</option>`).join('');
     projSel.value = selectedProjectId ?? '';
   }
@@ -13825,6 +14084,7 @@ document.getElementById('expenseModalSave').addEventListener('click', async () =
 async function refreshAfterExpenseSaved() {
   if (currentView === 'report') await renderReport();
   else if (currentView === 'plan') await renderPlanHub();
+  else if (currentView === 'assets' || currentView === 'wealth') await renderAssets();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'goals') await renderBuckets();
   else if (currentView === 'txnmanage' && (_txnManageActiveTab === 'recurring' || _txnManageActiveTab === 'subscriptions')) await renderRecurring();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'installment') await renderInstallment();
@@ -14226,6 +14486,7 @@ async function refreshAfterIncomeSaved() {
   if (currentView === 'report') await renderReport();
   else if (currentView === 'settings') await renderSettings();
   else if (currentView === 'assets' || currentView === 'wealth') await renderAssets();
+  else if (currentView === 'plan') await renderPlanHub();
   else if (currentView === 'txnmanage' && _txnManageActiveTab === 'dcaschedule') await renderDcaSchedules();
   else await renderCalendar();
 }
@@ -14324,6 +14585,90 @@ function describeSnapshotFailure(result) {
 // a single-file app with no new dependency.
 // ════════════════════════════════════════════════════════════════════════════
 let _trendRangeDays = null; // null = 全部；survives re-render via module scope
+
+// ── 共用：目前的每月計畫（首頁、趨勢、閒置提醒都要用）─────────────────────
+async function loadPlanContext() {
+  const [buckets, allocations, dcaSchedules, budgets, incomeTxns, recurringExpenses, installments] = await Promise.all([
+    getAll(db,'buckets').catch(()=>[]), getAll(db,'bucket_allocations').catch(()=>[]), getAll(db,'dca_schedules').catch(()=>[]),
+    getAll(db,'budgets').catch(()=>[]), getAll(db,'income_txns').catch(()=>[]),
+    getAll(db,'recurring_expenses').catch(()=>[]), getAll(db,'installments').catch(()=>[]),
+  ]);
+  const fxRates = await getFxRates(db).catch(()=>({}));
+  const settings = (await getSetting(db, 'monthly_plan', null)) || {};
+  const month = currentMonthStr();
+  const plan = calcMonthlyPlan({ income: calcMonthlyIncomeTotal(incomeTxns, month, INCOME_PERCENT_EXCLUDED_CATEGORIES), baseFixed: Number(settings.base_fixed) || 0,
+    recurringExpenses, installments, dcaSchedules, buckets, livingBudget: resolveBudget(budgets, null, month), fxRates });
+  return { plan, settings, essentials: plan.fixed.total + plan.living.total, buckets, allocations, dcaSchedules, incomeTxns, recurringExpenses, installments, fxRates };
+}
+
+// ── 資產成長（v2.10.0，重整藍圖第 3 步）──────────────────────────────────
+// 「本月／今年以來／所選期間」三個成長數字，並把所選期間的變化拆成「存進去
+// 的」（期間收入－支出）跟「投資、匯率與其他」，回答「資產變多是靠省下來，
+// 還是靠市場」。
+function buildGrowthCard(snapshots, incomeTxns, expenseTxns, accounts, fxRates, rangeFrom) {
+  const now = new Date();
+  const monthStart = `${currentMonthStr()}-01`;
+  const yearStart = `${now.getFullYear()}-01-01`;
+  const g = from => calcGrowthBreakdown(snapshots, incomeTxns, expenseTxns, from, accounts, fxRates);
+  const gm = g(monthStart), gy = g(yearStart), gr = g(rangeFrom || snapshots[0].date);
+  const sign = v => v > 0 ? '+' : v < 0 ? '−' : '';
+  const money = v => `${sign(v)}NT$ ${fmt(Math.abs(Math.round(v)))}`;
+  const pct = x => x?.pct == null ? '' : `${x.pct >= 0 ? '+' : '−'}${Math.abs(x.pct).toFixed(1)}%`;
+  const tile = (label, x) => `<div class="gr-tile"><span>${label}</span><b style="color:${(x?.change ?? 0) >= 0 ? 'var(--green)' : 'var(--red)'}">${x ? pct(x) || '—' : '—'}</b><em>${x ? money(x.change) : '尚無資料'}</em>${x?.partial ? `<small>從 ${fmtDate(x.startDate)} 起算</small>` : ''}</div>`;
+  const card = el('div', 'card'); card.className = 'card gr-card';
+  const last = snapshots[snapshots.length - 1];
+  const tot = Math.abs(gr.saved) + Math.abs(gr.other) || 1;
+  card.innerHTML = `
+    <div class="gr-top"><div><span class="gr-k">目前總資產</span><div class="gr-big">NT$ ${fmt(last.total_twd)}</div></div></div>
+    <div class="gr-tiles">${tile('本月', gm)}${tile('今年以來', gy)}${tile('所選期間', gr)}</div>
+    <div class="gr-split">
+      <div class="gr-split-k">所選期間的變化從哪裡來（${fmtDate(gr.startDate)} 起）</div>
+      <div class="gr-split-bar"><span style="flex:${Math.abs(gr.saved)};background:${gr.saved >= 0 ? 'var(--green)' : 'var(--red)'}"></span><span style="flex:${Math.abs(gr.other)};background:${gr.other >= 0 ? 'var(--blue)' : 'color-mix(in srgb,var(--red) 55%,transparent)'}"></span></div>
+      <div class="gr-split-rows">
+        <div><i style="background:${gr.saved >= 0 ? 'var(--green)' : 'var(--red)'}"></i>存進去的（收入－支出）<b>${money(gr.saved)}</b></div>
+        <div><i style="background:${gr.other >= 0 ? 'var(--blue)' : 'color-mix(in srgb,var(--red) 55%,transparent)'}"></i>投資、匯率與其他<b>${money(gr.other)}</b></div>
+      </div>
+      <div class="gr-note">「其他」包含股價與匯率變動、手動調整餘額，以及沒有設成影響帳戶餘額的紀錄。</div>
+    </div>`;
+  return card;
+}
+
+// ── 每月實際存了多少（v2.10.0）─────────────────────────────────────────
+async function buildSavingsCard() {
+  const [incomeTxns, expenseTxns] = await Promise.all([getAll(db,'income_txns').catch(()=>[]), getAll(db,'expense_txns').catch(()=>[])]);
+  const accounts = state.accounts ?? await getAll(db,'accounts').catch(()=>[]);
+  const fxRates = await getFxRates(db).catch(()=>({}));
+  const series = calcMonthlySavingsSeries(incomeTxns, expenseTxns, lastNMonths(6), accounts, fxRates);
+  const { plan } = await loadPlanContext();
+  const target = plan.save.total + plan.invest.total;
+  const card = el('div', 'card'); card.className = 'card sv-card';
+  const maxAbs = Math.max(1, target, ...series.map(x => Math.abs(x.saved)));
+  const hasNeg = series.some(x => x.saved < 0);
+  const H = 120, zeroY = hasNeg ? H / 2 : H;
+  const scale = hasNeg ? (H / 2) / maxAbs : H / maxAbs;
+  const cur = series[series.length - 1];
+  const done = series.filter(x => x.income || x.expense);
+  const avg = done.length ? Math.round(done.reduce((s, x) => s + x.saved, 0) / done.length) : 0;
+  card.innerHTML = `
+    <div class="sv-head"><b>每月實際存了多少</b><span>收入（不含應收款入帳）－全部支出</span></div>
+    <div class="sv-stats">
+      <div><span>本月</span><b style="color:${cur.saved >= 0 ? 'var(--green)' : 'var(--red)'}">${cur.saved < 0 ? '−' : ''}NT$ ${fmt(Math.abs(cur.saved))}</b><em>${cur.rate != null ? `儲蓄率 ${Math.round(cur.rate)}%` : '本月還沒有收入'}</em></div>
+      <div><span>近 6 個月平均</span><b>${avg < 0 ? '−' : ''}NT$ ${fmt(Math.abs(avg))}</b><em>${target > 0 ? `計畫每月存＋投資 NT$ ${fmt(target)}` : '還沒設定存下來／投資'}</em></div>
+    </div>
+    <div class="sv-chart" style="height:${H}px">
+      ${target > 0 ? `<div class="sv-target" style="bottom:${H - zeroY + target * scale}px"><span>計畫 ${fmt(target)}</span></div>` : ''}
+      <div class="sv-zero" style="bottom:${H - zeroY}px"></div>
+      ${series.map(x => {
+        const h = Math.max(2, Math.abs(x.saved) * scale);
+        const pos = x.saved >= 0 ? `bottom:${H - zeroY}px;height:${h}px` : `top:${zeroY}px;height:${h}px`;
+        return `<div class="sv-col" title="${x.month}：收入 ${fmt(x.income)}、支出 ${fmt(x.expense)}、存 ${fmt(x.saved)}"><span class="sv-bar ${x.saved < 0 ? 'neg' : ''}" style="${pos}"></span></div>`;
+      }).join('')}
+    </div>
+    <div class="sv-x">${series.map(x => `<span>${Number(x.month.slice(5))}月</span>`).join('')}</div>
+    <div class="sv-table">${series.slice().reverse().map(x => `<div><span>${x.month.replace('-', '/')}</span><span>收 ${fmt(x.income)}</span><span>支 ${fmt(x.expense)}</span><b style="color:${x.saved >= 0 ? 'var(--green)' : 'var(--red)'}">${x.saved < 0 ? '−' : '+'}${fmt(Math.abs(x.saved))}</b></div>`).join('')}</div>`;
+  return card;
+}
+
 async function renderTrend() {
   const content = _activeContentContainer || document.getElementById('content');
   content.innerHTML = '';
@@ -14363,6 +14708,7 @@ async function renderTrend() {
     });
     card.querySelector('.empty-state').appendChild(retryBtn);
     content.appendChild(card);
+    const svEmpty = await buildSavingsCard(); svEmpty.style.marginTop = '16px'; content.appendChild(svEmpty);
     return;
   }
 
@@ -14380,21 +14726,12 @@ async function renderTrend() {
   });
   content.appendChild(toolbar);
 
-  const first = points[0], last = points[points.length-1];
-  const diff = last.total_twd - first.total_twd;
-  const diffPct = first.total_twd ? (diff/first.total_twd*100) : 0;
-
-  const summaryCard = el('div','card'); summaryCard.style.cssText='padding:18px;margin-bottom:16px;display:flex;gap:28px;flex-wrap:wrap';
-  summaryCard.innerHTML = `
-    <div>
-      <div style="font-size:11px;color:var(--text-3)">目前總資產</div>
-      <div style="font-size:20px;font-weight:700">NT$ ${fmt(last.total_twd)}</div>
-    </div>
-    <div>
-      <div style="font-size:11px;color:var(--text-3)">${fmtDate(first.date)} 至今</div>
-      <div style="font-size:16px;font-weight:600;color:${diff>=0?'var(--green)':'var(--red)'}">${diff>=0?'+':''}NT$ ${fmt(diff)}（${diff>=0?'+':''}${diffPct.toFixed(1)}%）</div>
-    </div>`;
-  content.appendChild(summaryCard);
+  const [trendInc, trendExp] = await Promise.all([getAll(db,'income_txns').catch(()=>[]), getAll(db,'expense_txns').catch(()=>[])]);
+  const trendAcc = await getAll(db,'accounts').catch(()=>[]);
+  const trendFx = await getFxRates(db).catch(()=>({}));
+  const growthCard = buildGrowthCard(snapshots, trendInc, trendExp, trendAcc, trendFx, cutoff || points[0].date);
+  growthCard.style.marginBottom = '16px';
+  content.appendChild(growthCard);
 
   // ── Inline SVG line chart: total_twd across the selected range ──────────
   const W = 760, H = 240, padL = 60, padR = 16, padT = 16, padB = 28;
@@ -14452,6 +14789,9 @@ async function renderTrend() {
   });
   hint.appendChild(updateBtn);
   content.appendChild(hint);
+
+  const svCard = await buildSavingsCard(); svCard.style.marginTop = '16px';
+  content.appendChild(svCard);
 
   // ── 歷年股利（2026-09-24 新增，簡化版）────────────────────────────────────
   // 使用者原本想要的是完整的配息排程（每檔各自的除息日、待入帳狀態），討論

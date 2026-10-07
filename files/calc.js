@@ -1479,3 +1479,108 @@ export function calcSpendable({ accounts = [], fxRates = {}, cards = [], recurri
     beforeReserve: Math.round(liquid - cardsDue - upcomingTotal - goalsTotal),
   };
 }
+
+// ── 每月實際儲蓄與資產成長（v2.10.0，重整藍圖第 3 步）──────────────────────
+// 每月實際存了多少＝當月收入（不含應收款入帳——那不是新的錢）－當月全部支出
+// （含固定支出；應收款入帳排除與每月計畫一致）。
+export function calcMonthlySavingsSeries(incomeTxns, expenseTxns, months, accounts = [], fxRates = {}, excludeIncome = ['cat_receivable']) {
+  return months.map(m => {
+    const income = calcMonthlyIncomeTotal(incomeTxns, m, excludeIncome);
+    const expense = calcMonthlyExpenseTotal(expenseTxns, m, accounts, fxRates);
+    const saved = income - expense;
+    return { month: m, income: Math.round(income), expense: Math.round(expense), saved: Math.round(saved), rate: income > 0 ? saved / income * 100 : null };
+  });
+}
+export function lastNMonths(n, from = new Date()) {
+  const out = [];
+  for (let i = n - 1; i >= 0; i--) { const d = new Date(from.getFullYear(), from.getMonth() - i, 1); out.push(`${d.getFullYear()}-${pad2(d.getMonth() + 1)}`); }
+  return out;
+}
+// 某一段期間總資產的變化，拆成「存進去的」（期間收入－支出）與「其他」
+// （投資損益、匯率、手動調整、沒有同步到帳戶的紀錄等）。期間起點用「起始
+// 日前最後一筆快照」，沒有的話用期間內第一筆快照（並回傳實際起點日期）。
+export function calcGrowthBreakdown(snapshots, incomeTxns, expenseTxns, fromDate, accounts = [], fxRates = {}, excludeIncome = ['cat_receivable']) {
+  const sorted = [...snapshots].sort((a, b) => a.date.localeCompare(b.date));
+  if (!sorted.length) return null;
+  const end = sorted[sorted.length - 1];
+  const before = sorted.filter(s => s.date < fromDate);
+  const start = before.length ? before[before.length - 1] : sorted.find(s => s.date >= fromDate);
+  if (!start || start === end && sorted.length === 1) return { startDate: start?.date ?? null, startValue: start?.total_twd ?? null, endValue: end.total_twd, change: 0, pct: 0, saved: 0, other: 0, partial: true };
+  const inRange = d => d > start.date && d <= end.date;
+  const income = incomeTxns.filter(t => t.date && inRange(t.date) && !excludeIncome.includes(t.category)).reduce((s, t) => s + resolveIncomeAmountTwd(t), 0);
+  const expense = expenseTxns.filter(t => t.date && inRange(t.date)).reduce((s, t) => s + resolveExpenseAmountTwd(t, accounts, fxRates), 0);
+  const change = end.total_twd - start.total_twd;
+  const saved = income - expense;
+  return {
+    startDate: start.date, endDate: end.date, startValue: Math.round(start.total_twd), endValue: Math.round(end.total_twd),
+    change: Math.round(change), pct: start.total_twd ? change / start.total_twd * 100 : null,
+    saved: Math.round(saved), other: Math.round(change - saved), partial: start.date >= fromDate,
+  };
+}
+
+// ── 旅行（v2.10.0，第 4 步）──────────────────────────────────────────────
+// 進行中的旅行＝存錢目標底下、沒有結束、今天落在開始～結束日期之間的專案
+// （沒填結束日就只看開始日當天起 30 天內）。旅行期間新增支出自動歸到這趟。
+export function findActiveTrip(projects = [], today = new Date()) {
+  const t = `${today.getFullYear()}-${pad2(today.getMonth() + 1)}-${pad2(today.getDate())}`;
+  return projects.filter(p => p.status !== 'closed' && p.start_date && p.start_date <= t)
+    .filter(p => {
+      if (p.end_date) return t <= p.end_date;
+      const s = new Date(p.start_date + 'T00:00:00'); s.setDate(s.getDate() + 30);
+      return t <= `${s.getFullYear()}-${pad2(s.getMonth() + 1)}-${pad2(s.getDate())}`;
+    })
+    .sort((a, b) => b.start_date.localeCompare(a.start_date))[0] ?? null;
+}
+export function calcProjectByCategory(expenseTxns, projectId, accounts = [], fxRates = {}) {
+  const map = {};
+  expenseTxns.filter(t => t.project_id === projectId).forEach(t => { map[t.category || '__none__'] = (map[t.category || '__none__'] || 0) + resolveExpenseAmountTwd(t, accounts, fxRates); });
+  return Object.entries(map).map(([category, amount]) => ({ category, amount: Math.round(amount) })).sort((a, b) => b.amount - a.amount);
+}
+
+// 常用記帳項目：最近 90 天出現 2 次以上的「說明＋類別」，取金額眾數。
+export function calcFrequentExpenses(expenseTxns, limit = 4, today = new Date()) {
+  const since = new Date(today); since.setDate(since.getDate() - 90);
+  const s = `${since.getFullYear()}-${pad2(since.getMonth() + 1)}-${pad2(since.getDate())}`;
+  const groups = {};
+  expenseTxns.filter(t => t.date >= s && t.description && !t.rec_id && !t.inst_id).forEach(t => {
+    const k = `${t.description.trim()}|${t.category}`;
+    (groups[k] ??= { description: t.description.trim(), category: t.category, n: 0, amounts: {} });
+    groups[k].n++; groups[k].amounts[t.amount] = (groups[k].amounts[t.amount] || 0) + 1;
+  });
+  return Object.values(groups).filter(g => g.n >= 2).sort((a, b) => b.n - a.n).slice(0, limit)
+    .map(g => ({ description: g.description, category: g.category, count: g.n, amount: Number(Object.entries(g.amounts).sort((a, b) => b[1] - a[1])[0][0]) }));
+}
+
+// ── 閒置資金提醒（v2.10.0，第 5 步）─────────────────────────────────────
+// 使用者：「有確實的計畫就不會有閒置資金」。所以這裡不設金額門檻，只抓兩種：
+// 計畫本身的漏洞（未分配）、以及用途對了但放錯地方的錢。
+export function calcIdleMoneyAlerts({ plan = null, spendable = null, essentials = 0, buckets = [], allocations = [], expenseTxns = [],
+  accounts = [], fxRates = {}, deposits = [], receivables = [], today = new Date() }) {
+  const t = `${today.getFullYear()}-${pad2(today.getMonth() + 1)}-${pad2(today.getDate())}`;
+  const daysSince = iso => iso ? Math.floor((new Date(t) - new Date(String(iso).slice(0, 10))) / 86400000) : null;
+  const out = [];
+  if (plan && plan.unassigned > 0 && plan.base > 0) out.push({ key: 'unassigned', icon: '🧭', title: `每月計畫還有 NT$ ${fmt(plan.unassigned)} 沒有安排用途`, body: '每個月都有這筆錢沒有去處，久了就會變成閒置資金。放進存下來、投資或生活預算。', link: 'plan' });
+  if (spendable && essentials > 0 && spendable.free > essentials * 3) out.push({ key: 'free', icon: '💤', title: `可自由運用 NT$ ${fmt(spendable.free)}，超過 3 個月的必要開銷`, body: '預備金和各個目標都保留之後還有這麼多，可以替它安排一個存錢目標或投資。', link: 'plan' });
+  const yearOut = new Date(today); yearOut.setFullYear(yearOut.getFullYear() + 1);
+  const yo = `${yearOut.getFullYear()}-${pad2(yearOut.getMonth() + 1)}`;
+  buckets.filter(b => b.status !== 'closed' && !b.is_emergency_fund && b.target_date && b.target_date.slice(0, 7) >= yo).forEach(b => {
+    const bal = calcBucketAllocated(allocations, b.id) - calcBucketSpent(expenseTxns, b.id, accounts, fxRates);
+    if (bal > 0) out.push({ key: `long_${b.id}`, icon: '⏳', title: `「${b.name}」的 NT$ ${fmt(bal)} 一年以上才會用到`, body: '目前跟活存放在一起。用不到的這段時間，可以考慮放定存或其他低風險的地方。', link: 'goals' });
+  });
+  deposits.filter(d => (d.status ?? 'active') === 'active' && d.maturity_date && d.maturity_date < t).forEach(d => {
+    out.push({ key: `dep_${d.id}`, icon: '🏦', title: `定存「${d.label ?? '定存'}」${daysSince(d.maturity_date)} 天前就到期了`, body: '到期後還沒處理（入帳或續存），錢可能只領活存利息。', link: 'settings:dep' });
+  });
+  accounts.filter(a => a.include_in_total !== false && a.currency && a.currency !== 'TWD' && (a.balance || 0) > 0).forEach(a => {
+    const idle = daysSince(a.updated_at || a.created_at);
+    if (idle != null && idle >= 90) out.push({ key: `fx_${a.id}`, icon: '💱', title: `外幣「${a.name}」${a.currency} ${fmt(a.balance, { currency: a.currency })} 已經 ${idle} 天沒有動`, body: `約 NT$ ${fmt(toTWD(a.balance, a.currency, fxRates))}。如果沒有要用的計畫，可以考慮外幣定存或換回台幣。`, link: 'settings:bank' });
+  });
+  accounts.filter(a => a.include_in_total !== false && (!a.currency || a.currency === 'TWD') && (a.balance || 0) > 0).forEach(a => {
+    const idle = daysSince(a.updated_at || a.created_at);
+    if (idle != null && idle >= 180) out.push({ key: `acc_${a.id}`, icon: '🗃️', title: `帳戶「${a.name}」NT$ ${fmt(a.balance)} 已經 ${idle} 天沒有異動`, body: '是不是忘了這筆錢？確認一下餘額，或把它併到主要帳戶。', link: 'settings:bank' });
+  });
+  receivables.filter(r => !r.is_settled && !r.write_off && (r.total_amount || 0) > (r.received_amount || 0)).forEach(r => {
+    const age = daysSince(r.due_date || r.created_at);
+    if (age != null && age >= (r.due_date ? 1 : 90)) out.push({ key: `recv_${r.id}`, icon: '🤝', title: `應收款「${r.name}」還有 NT$ ${fmt((r.total_amount || 0) - (r.received_amount || 0))} 沒收回`, body: r.due_date ? `約定的日期已經過了 ${age} 天。` : `已經 ${age} 天。可以提醒對方，或決定不再追討。`, link: 'settings:recv' });
+  });
+  return out;
+}
