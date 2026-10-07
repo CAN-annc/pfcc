@@ -337,6 +337,11 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .sp-row small{display:block;font-size:10.5px;opacity:.7;margin-top:1px}
 .sp-row b{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
 .sp-total{padding-top:6px;border-top:1px dashed rgba(255,255,255,.25);font-weight:700}
+.mp-ef .mp-ef-note{display:block;margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--card);font-size:11.5px;line-height:1.55;color:var(--text-2)}
+.mp-ef .mp-ef-note b{display:block;font-size:12px;color:var(--text);margin-bottom:1px}
+.mp-ef .mp-ef-note.is-warn{background:color-mix(in srgb,var(--red) 8%,var(--card));box-shadow:inset 3px 0 0 var(--red)}
+.mp-ef .mp-ef-note.is-warn b{color:var(--red)}
+.mp-ef .mp-ef-link{display:inline;margin-left:6px;padding:0;border:0;background:none;color:var(--blue);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .mp-ef .mp-ef-draws{display:flex;flex-direction:column;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed color-mix(in srgb,var(--text-3) 40%,transparent)}
 .mp-ef .mp-ef-draw{display:grid;grid-template-columns:1fr auto;column-gap:10px;row-gap:2px;align-items:baseline}
 .mp-ef .mp-ef-draw .k{margin:0;font-size:12px;font-weight:600;color:var(--text)}
@@ -368,6 +373,9 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .pj-inputs label{display:flex;flex-direction:column;gap:4px;margin:0;font-weight:400}
 .pj-inputs span{font-size:11px;color:var(--text-3)}
 .pj-inputs input{width:100%;font-size:16px;font-variant-numeric:tabular-nums}
+#efUseModal{z-index:250}
+.mp-ef.has-detail{flex-wrap:wrap}
+.mp-ef.has-detail>.btn{margin-left:auto}
 .mp-payday{display:flex;align-items:center;gap:12px;padding:10px 12px;margin-bottom:6px;border-radius:9px;border:1px solid color-mix(in srgb,var(--blue) 35%,transparent);background:color-mix(in srgb,var(--blue) 7%,transparent)}
 .mp-payday span{flex:1;min-width:0;font-size:11.5px;color:var(--text-2);line-height:1.5}
 .mp-payday b{display:block;font-size:13px;color:var(--text)}
@@ -1335,6 +1343,19 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
   </div>
 </div>
 
+<!-- ── 從緊急預備金存放帳戶付款時詢問（v2.13.0）── -->
+<div class="modal-overlay" id="efUseModal">
+  <div class="modal">
+    <h2>這筆是從預備金的帳戶付的</h2>
+    <p id="efUseMsg" class="pd-sub"></p>
+    <button type="button" class="pc-skip" id="efUseYes"><b>是，算動用緊急預備金</b>這筆從預備金扣掉，不算進生活預算</button>
+    <button type="button" class="pc-skip" id="efUseNo"><b>不是，只是剛好從這個帳戶付</b>當成一般支出，預備金不變</button>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn btn-ghost" id="efUseCancel">取消，先不記</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── 發薪日一鍵撥入（v2.12.0）── -->
 <div class="modal-overlay" id="paydayModal">
   <div class="modal">
@@ -1785,6 +1806,11 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
         <input type="checkbox" id="bucketIsEmergencyFund">作為緊急預備金
       </label>
       <div style="font-size:11px;color:var(--text-3);margin-top:4px">本月支出超過收入（超支）時，差額會自動從這個存錢目標扣一筆（虛擬），紀錄上會寫明支出與收入各多少。同時間只能有一個緊急預備金，勾選這個會自動取消其他存錢目標的勾選。</div>
+      <div id="bucketStoreField" style="display:none;margin-top:10px">
+        <label for="bucketStoreAccount">存放帳戶</label>
+        <select id="bucketStoreAccount"></select>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">預備金實際放在哪個帳戶（建議跟生活費分開、隨時領得到的活存）。指定後會檢查這個帳戶的餘額夠不夠、從這個帳戶付錢時會問要不要算動用預備金，也不會被提醒「久沒動」。</div>
+      </div>
     </div>
     <div class="modal-field">
       <label>備註（選填）</label>
@@ -2784,7 +2810,7 @@ import {
   calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent,
   runDataHealthChecks,
   classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
-  calcMonthlyPlan, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
+  calcMonthlyPlan, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
 } from './calc.js';
 
@@ -3051,18 +3077,18 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.12.0';
+const APP_VERSION = 'v2.13.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-07';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '發薪日一鍵撥入：記一筆薪水後，列出本月還沒撥滿的存錢目標，按一次全部撥入（先存再花）；每月計畫的「存下來」也可以隨時一次撥入',
-  '獎金與一次性收入：記收入時可以自己決定要不要分開——勾選後不算進每月計畫，並可整筆放進存錢目標；不勾就跟每月收入一起算',
-  '每月計畫的固定支出：每一項都顯示佔收入（或每月生活費）的百分比',
-  '資產 › 趨勢新增「存到目標要多久」：輸入目標、每月存多少、每年獎金、年報酬率，算出大約哪一年達到，並同時畫出不含報酬的線',
-  '資產 › 趨勢的每月儲蓄新增今年累計與去年全年存了多少',
+  '緊急預備金可以指定存放帳戶：檢查那個帳戶的餘額撐不撐得住預備金，不夠時在首頁、每月計畫、可以留意的錢提醒差多少',
+  '從預備金的存放帳戶付錢時，會問這筆是不是動用預備金——是的話從預備金扣、不算生活預算',
+  '預備金的存放帳戶不再被提醒「久沒動」',
+  '依近幾個月的收入穩定度，建議預備金要存幾個月（穩定 3～6 個月、起伏較大 9～12 個月、很不穩定 12 個月以上），只當建議，可以一鍵套用',
+  '記獎金時，預備金還沒存滿就預設放進預備金',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3786,9 +3812,15 @@ async function buildQuickAdd() {
   async function quickSave(category, amount, description) {
     if (!(amount > 0)) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); return; }
     const o = payOptions.find(x => x.v === paySel.value);
+    let bucketId = trip?.bucket_id ?? null, projectId = trip?.id ?? null;
+    if (!bucketId && o?.accId) {
+      const pick = await askEfAccountUse(o.accId, amount);
+      if (!pick) return;
+      bucketId = pick.bucketId;
+    }
     const res = await saveExpenseRecord({ date: today, category, description: description || '', amount,
       payType: o?.payType ?? null, accId: o?.accId ?? null, ccId: o?.ccId ?? null,
-      bucketId: trip?.bucket_id ?? null, projectId: trip?.id ?? null, affects: true });
+      bucketId, projectId, affects: true });
     if (!res.ok) { showToast(res.error); return; }
     showToast(`✓ 已記 ${catById[category]?.label ?? ''} NT$ ${fmt(amount)}`);
     await renderAssets();
@@ -3817,8 +3849,9 @@ async function buildIdleMoneyCard() {
   const { accounts, fxRates, cards, deposits, receivables, expenseTxns } = state;
   const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses: ctx.recurringExpenses, installments: ctx.installments, dcaSchedules: ctx.dcaSchedules,
     buckets: ctx.buckets, allocations: ctx.allocations, expenseTxns, essentials: ctx.essentials, emergencyMonths: Number(ctx.settings.emergency_months) || 6 });
+  const efStorage = calcEfStorage({ efBucket: ctx.buckets.find(b => b.is_emergency_fund && b.status !== 'closed'), allocations: ctx.allocations, expenseTxns, accounts, fxRates });
   const alerts = calcIdleMoneyAlerts({ plan: ctx.plan, spendable: sp, essentials: ctx.essentials, buckets: ctx.buckets, allocations: ctx.allocations,
-    expenseTxns, accounts, fxRates, deposits: deposits || [], receivables: receivables || [] });
+    expenseTxns, accounts, fxRates, deposits: deposits || [], receivables: receivables || [], efStorage });
   if (!alerts.length) return null;
   const card = el('div', 'card'); card.className = 'card idle-card';
   card.innerHTML = `<div class="idle-head"><b>可以留意的錢</b><span>${alerts.length} 項・沒有用途或放錯地方的錢</span></div>` +
@@ -3854,6 +3887,8 @@ async function renderHome() {
 
   // 可動用資金
   const hero = el('div'); hero.className = 'networth-card sp-hero';
+  const efSt = calcEfStorage({ efBucket: buckets.find(b => b.is_emergency_fund && b.status !== 'closed'), allocations, expenseTxns, accounts, fxRates });
+  const efStoreLine = efSt?.short > 0 ? `<div class="sp-warn"><b>預備金有 ${money(efSt.short)} 沒有現金撐著</b>存放帳戶「${escHtml(efSt.account.name)}」只有 ${money(efSt.balanceTwd)}，比預備金帳面上的 ${money(efSt.have)} 少。</div>` : '';
   const efLine = sp.ef.gap > 0
     ? `<div class="sp-warn"><b>緊急預備金還差 ${money(sp.ef.gap)}</b>${sp.ef.exists ? `目前 ${money(sp.ef.have)}${sp.ef.months != null ? `，可撐 ${sp.ef.months.toFixed(1)} 個月` : ''}。` : '還沒建立，先依必要開銷保留建議金額。'}缺口先保留，所以可自由運用變少${sp.free === 0 ? '到 0' : ''}。</div>`
     : '';
@@ -3874,7 +3909,7 @@ async function renderHome() {
         + (i === 2 && sp.upcoming.length ? `<div class="sp-sub">${sp.upcoming.slice(0, 8).map((u, k) => `<div class="sp-it"><span>${escHtml(u.label)}・${u.days <= 0 ? '已到期' : u.days + ' 天後'}</span><b>${money(u.amount)}</b>${['recurring','installment','dca'].includes(u.type) ? `<button type="button" class="sp-paid" data-sp-paid="${k}" aria-label="${escHtml(u.label)} 已付">已付</button>` : ''}</div>`).join('')}${sp.upcoming.length > 8 ? `<div class="sp-it sp-more"><span>還有 ${sp.upcoming.length - 8} 筆</span></div>` : ''}</div>` : '')).join('')}
       <div class="sp-row sp-total"><span>可自由運用</span><b>${money(sp.free)}</b></div>
     </div>
-    ${efLine}`;
+    ${efLine}${efStoreLine}`;
   hero.querySelector('.sp-toggle').addEventListener('click', () => { _homeSpendOpen = !_homeSpendOpen; renderHome(); });
   // v2.11.0：已經付了（或這期不用付）卻還沒確認的項目，會被重複扣在「30 天內
   // 要付」——直接在這裡按「已付」打開確認本期，彈窗裡也能選「這期不用我付」。
@@ -8806,6 +8841,29 @@ async function syncPlanAutoRows() {
 // 收入分配法（321、532…）不再是獨立的一套，只剩「比例參考」：把那個法則的
 // 建議比例跟你的計畫並排比較。
 // ════════════════════════════════════════════════════════════════════════════
+// ── 從緊急預備金的存放帳戶付錢（v2.13.0）────────────────────────────────
+// 使用者決定：預備金指定了存放帳戶後，從那個帳戶付一筆（沒有歸屬任何存錢
+// 目標的）支出時先問一句——是動用預備金，就把這筆歸到預備金（從預備金扣、
+// 不算生活預算、也不再算超支）；只是剛好從這個帳戶付，就照一般支出記。
+// 回傳 { bucketId } 或 null（取消）；不是預備金帳戶時直接回傳 { bucketId: null }。
+async function askEfAccountUse(accId, amount) {
+  if (!accId) return { bucketId: null };
+  const ef = (await getAll(db,'buckets').catch(()=>[])).find(b => b.is_emergency_fund && b.status !== 'closed' && b.store_account_id === accId);
+  if (!ef) return { bucketId: null };
+  const acc = (state.accounts || []).find(a => a.id === accId) || await getOne(db, 'accounts', accId);
+  const modal = document.getElementById('efUseModal');
+  const cur = acc?.currency && acc.currency !== 'TWD' ? `${acc.currency} ` : 'NT$ ';
+  document.getElementById('efUseMsg').textContent = `「${acc?.name ?? '這個帳戶'}」是緊急預備金的存放帳戶。這筆${amount > 0 ? ` ${cur}${fmt(amount)} ` : ''}是緊急狀況要動用預備金，還是只是剛好從這個帳戶付？`;
+  return await new Promise(resolve => {
+    const done = v => { modal.classList.remove('open'); resolve(v); };
+    document.getElementById('efUseYes').onclick = () => done({ bucketId: ef.id, ef: true });
+    document.getElementById('efUseNo').onclick = () => done({ bucketId: null });
+    document.getElementById('efUseCancel').onclick = () => done(null);
+    modal.onclick = e => { if (e.target === modal) done(null); };
+    modal.classList.add('open');
+  });
+}
+
 // ── 發薪日一鍵撥入（v2.12.0）────────────────────────────────────────────
 // 「先存再花」：記了一筆薪水之後，把每月計畫裡固定金額的存錢目標本月還沒撥
 // 滿的部分列出來，一次撥入。也可以從每月計畫的「存下來」手動打開。
@@ -8982,8 +9040,20 @@ async function renderMonthlyPlan() {
     const pctEF = target > 0 ? Math.min(100, Math.round(have / target * 100)) : 0;
     // v2.11.0：本月自動從預備金拿出去的錢（超支、沒有收入時撥給其他目標）
     const draws = allocations.filter(a => a.bucket_id === ef.id && a.auto_month === month && (a.auto_type === 'shortfall' || a.auto_type === 'ef_fund'));
-    const efDrawHtml = draws.length ? `<div class="mp-ef-draws">${draws.map(a => `<div class="mp-ef-draw"><span class="k">${a.auto_type === 'shortfall' ? '本月超支' : '沒有收入時代撥'}</span><b>−${money(Math.abs(a.amount))}</b><small>${escHtml(a.note || '')}</small></div>`).join('')}</div>` : '';
-    efBox.innerHTML = `<div style="flex:1;min-width:0"><strong>🚨 緊急預備金 ${money(have)} ／ 目標 ${money(target)}</strong>
+    // v2.13.0：存放帳戶、收入穩定度建議月數
+    const st = calcEfStorage({ efBucket: ef, allocations, expenseTxns, accounts, fxRates });
+    const storeHtml = st
+      ? `<div class="mp-ef-note ${st.short > 0 ? 'is-warn' : ''}">${st.short > 0
+          ? `<b>存放帳戶「${escHtml(st.account.name)}」只有 ${money(st.balanceTwd)}，少 ${money(st.short)}</b>帳面上的預備金有一部分沒有現金撐著，把差額轉進這個帳戶，要用時才拿得出來。`
+          : `<b>存放在「${escHtml(st.account.name)}」</b>帳戶餘額 ${money(st.balanceTwd)}，撐得住目前的預備金。`}</div>`
+      : `<div class="mp-ef-note"><b>還沒指定存放帳戶</b>指定一個跟生活費分開的帳戶，App 會幫你檢查錢是不是真的在那裡。<button type="button" class="mp-ef-link" data-ef-store>指定</button></div>`;
+    const stab = calcIncomeStability(incomeTxns);
+    const stabHtml = stab
+      ? `<div class="mp-ef-note"><b>依你近 ${stab.n} 個月的收入：${stab.level}，建議存 ${stab.range}</b>${stab.zeros ? `其中 ${stab.zeros} 個月沒有收入。` : (stab.cv < 0.05 ? '每月收入幾乎固定。' : `每月收入的起伏約 ${Math.round(stab.cv * 100)}%。`)}收入越不穩定，預備金要越多。${emergencyMonths < stab.min || emergencyMonths > stab.max ? `<button type="button" class="mp-ef-link" data-ef-months="${stab.suggest}">改成 ${stab.suggest} 個月</button>` : ''}</div>`
+      : '';
+    const efDrawHtml = storeHtml + stabHtml + (draws.length ? `<div class="mp-ef-draws">${draws.map(a => `<div class="mp-ef-draw"><span class="k">${a.auto_type === 'shortfall' ? '本月超支' : '沒有收入時代撥'}</span><b>−${money(Math.abs(a.amount))}</b><small>${escHtml(a.note || '')}</small></div>`).join('')}</div>` : '');
+    efBox.classList.add('has-detail');
+    efBox.innerHTML = `<div style="flex:1 1 100%;min-width:0"><strong>🚨 緊急預備金 ${money(have)} ／ 目標 ${money(target)}</strong>
       <div class="mp-ef-bar"><span style="width:${pctEF}%"></span></div>
       <span>${monthsCovered != null ? `可以撐 ${monthsCovered.toFixed(1)} 個月必要開銷（目標 ${emergencyMonths} 個月）。` : ''}${gap > 0 ? `還差 ${money(gap)}${(plan.save.items.find(x => x.id === ef.id)?.amount || 0) > 0 ? `，照目前每月撥法約 ${Math.ceil(gap / plan.save.items.find(x => x.id === ef.id).amount)} 個月補足` : '，每月撥一點進來，或之後在首頁的「可動用資金」先把錢留給它'}。` : '已經存滿，之後每月可以少撥或不撥。'}</span>
       ${!ef.target_amount && suggestedEF ? '' : ef.target_amount && suggestedEF && Math.abs(ef.target_amount - suggestedEF) / suggestedEF > 0.1 ? `<span>依目前的必要開銷，${emergencyMonths} 個月約 ${money(suggestedEF)}。</span>` : ''}
@@ -8994,6 +9064,12 @@ async function renderMonthlyPlan() {
       efBox.appendChild(up);
     }
   }
+  efBox.querySelector('[data-ef-store]')?.addEventListener('click', () => openBucketModal(ef));
+  efBox.querySelector('[data-ef-months]')?.addEventListener('click', async e => {
+    const m = +e.currentTarget.dataset.efMonths;
+    await setSetting(db, 'monthly_plan', { ...settings, emergency_months: m });
+    showToast(`預備金目標改成 ${m} 個月必要開銷`); await rerender();
+  });
   sb.appendChild(efBox);
   // v2.12.0：先存再花——本月還沒撥滿的固定金額目標，一次撥入
   {
@@ -9376,6 +9452,18 @@ async function openBucketModal(bucket=null) {
   document.getElementById('bucketDateDay').value   = gd.d;
   document.getElementById('bucketNote').value = bucket?.note??'';
   document.getElementById('bucketIsEmergencyFund').checked = !!bucket?.is_emergency_fund;
+  // v2.13.0：緊急預備金的存放帳戶
+  {
+    const accs = (state.accounts?.length ? state.accounts : await getAll(db,'accounts').catch(()=>[])).filter(a => a.include_in_total !== false);
+    const banks = state.banks?.length ? state.banks : await getAll(db,'banks').catch(()=>[]);
+    const bankName = id => banks.find(b => b.id === id)?.name;
+    const sel = document.getElementById('bucketStoreAccount');
+    sel.innerHTML = `<option value="">還沒指定</option>` + accs.map(a => `<option value="${a.id}">${bankName(a.bank_id) ? escHtml(bankName(a.bank_id)) + ' · ' : ''}${escHtml(a.name)}（${a.currency || 'TWD'}）</option>`).join('');
+    sel.value = bucket?.store_account_id ?? '';
+    const cb = document.getElementById('bucketIsEmergencyFund');
+    const sync = () => { document.getElementById('bucketStoreField').style.display = cb.checked ? '' : 'none'; };
+    cb.onchange = sync; sync();
+  }
   document.getElementById('bucketModalDelete').style.display = bucket?'inline-flex':'none';
   document.getElementById('bucketModal').classList.add('open');
   document.getElementById('bucketName').focus();
@@ -9440,6 +9528,7 @@ document.getElementById('bucketModalSave').addEventListener('click',async()=>{
     target_date: targetDate,
     note:document.getElementById('bucketNote').value.trim(),
     is_emergency_fund: isEmergencyFund,
+    store_account_id: isEmergencyFund ? (document.getElementById('bucketStoreAccount').value || null) : null,
     status: existing?.status ?? 'active',
     created_at: existing?.created_at ?? new Date().toISOString(),
   });
@@ -13564,6 +13653,13 @@ document.getElementById('expenseModalSave').addEventListener('click', async () =
   const confirmRecId = document.getElementById('expenseConfirmRecId').value;
   const confirmOccDate = document.getElementById('expenseConfirmOccDate').value;
   const date = document.getElementById('expenseDate').value;
+  let bucketIdSel = document.getElementById('expenseBucket').value || null;
+  let projectIdSel = document.getElementById('expenseProject').value || null;
+  if (!editId && !bucketIdSel && !confirmRecId && accId) {
+    const pick = await askEfAccountUse(accId, parseFloat(document.getElementById('expenseAmount').value) || 0);
+    if (!pick) return;
+    if (pick.bucketId) { bucketIdSel = pick.bucketId; projectIdSel = null; }
+  }
 
   const res = await saveExpenseRecord({
     editId: editId || null,
@@ -13573,8 +13669,8 @@ document.getElementById('expenseModalSave').addEventListener('click', async () =
     amount: parseFloat(document.getElementById('expenseAmount').value)||0,
     note: document.getElementById('expenseNote').value.trim(),
     payType: payType || null, accId, ccId,
-    bucketId: document.getElementById('expenseBucket').value || null,
-    projectId: document.getElementById('expenseProject').value || null,
+    bucketId: bucketIdSel,
+    projectId: projectIdSel,
     fxRateTwd: fxFieldShown ? (parseFloat(document.getElementById('expenseFxRate').value) || 0) : null,
     affects: document.getElementById('expenseAffectsToggle').dataset.on === '1',
     confirmRecurring: confirmRecId ? { id: confirmRecId, occDate: confirmOccDate || date } : null,
@@ -13813,7 +13909,12 @@ async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null
     const bAmt = document.getElementById('incomeBonusAmount');
     bSel.innerHTML = `<option value="">不放（留在帳戶裡）</option>` + goals.map(g => `<option value="${g.id}">${g.is_emergency_fund ? '🚨 ' : ''}${escHtml(g.name)}</option>`).join('');
     irr.checked = !!txn?.irregular;
-    bSel.value = txn?.bonus_bucket_id ?? (goals.find(g => !g.is_emergency_fund)?.id ?? goals[0]?.id ?? '');
+    // v2.13.0：緊急預備金還沒存滿（或沒設目標）時，獎金預設放預備金。
+    const allocsNow = await getAll(db,'bucket_allocations').catch(()=>[]);
+    const efG = goals.find(g => g.is_emergency_fund);
+    const efHave = efG ? calcBucketAllocated(allocsNow, efG.id) - calcBucketSpent(state.expenseTxns || [], efG.id, accounts, fxRates) : 0;
+    const efNeeds = efG && (!efG.target_amount || efHave < efG.target_amount);
+    bSel.value = txn?.bonus_bucket_id ?? (efNeeds ? efG.id : (goals.find(g => !g.is_emergency_fund)?.id ?? goals[0]?.id ?? ''));
     bAmt.value = txn?.bonus_amount ?? '';
     bAmt.dataset.touched = txn?.bonus_amount != null ? '1' : '';
     const twdAmount = () => {

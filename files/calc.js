@@ -1592,10 +1592,14 @@ export function calcFrequentExpenses(expenseTxns, limit = 4, today = new Date())
 // 使用者：「有確實的計畫就不會有閒置資金」。所以這裡不設金額門檻，只抓兩種：
 // 計畫本身的漏洞（未分配）、以及用途對了但放錯地方的錢。
 export function calcIdleMoneyAlerts({ plan = null, spendable = null, essentials = 0, buckets = [], allocations = [], expenseTxns = [],
-  accounts = [], fxRates = {}, deposits = [], receivables = [], today = new Date() }) {
+  accounts = [], fxRates = {}, deposits = [], receivables = [], today = new Date(), efStorage = null }) {
   const t = `${today.getFullYear()}-${pad2(today.getMonth() + 1)}-${pad2(today.getDate())}`;
   const daysSince = iso => iso ? Math.floor((new Date(t) - new Date(String(iso).slice(0, 10))) / 86400000) : null;
   const out = [];
+  // v2.13.0：緊急預備金的存放帳戶本來就應該不動——不列入「久沒動」；餘額
+  // 不夠撐住預備金帳面金額時，第一個提醒。
+  const efAccId = efStorage?.account?.id ?? null;
+  if (efStorage?.short > 0) out.push({ key: 'ef_short', icon: '🚨', title: `緊急預備金有 NT$ ${fmt(efStorage.short)} 沒有現金撐著`, body: `預備金記了 NT$ ${fmt(efStorage.have)}，但存放帳戶「${efStorage.account.name}」只有 NT$ ${fmt(efStorage.balanceTwd)}。把差額轉進這個帳戶，真的要用時才拿得出來。`, link: 'plan' });
   if (plan && plan.unassigned > 0 && plan.base > 0) out.push({ key: 'unassigned', icon: '🧭', title: `每月計畫還有 NT$ ${fmt(plan.unassigned)} 沒有安排用途`, body: '每個月都有這筆錢沒有去處，久了就會變成閒置資金。放進存下來、投資或生活預算。', link: 'plan' });
   if (spendable && essentials > 0 && spendable.free > essentials * 3) out.push({ key: 'free', icon: '💤', title: `可自由運用 NT$ ${fmt(spendable.free)}，超過 3 個月的必要開銷`, body: '預備金和各個目標都保留之後還有這麼多，可以替它安排一個存錢目標或投資。', link: 'plan' });
   const yearOut = new Date(today); yearOut.setFullYear(yearOut.getFullYear() + 1);
@@ -1607,11 +1611,11 @@ export function calcIdleMoneyAlerts({ plan = null, spendable = null, essentials 
   deposits.filter(d => (d.status ?? 'active') === 'active' && d.maturity_date && d.maturity_date < t).forEach(d => {
     out.push({ key: `dep_${d.id}`, icon: '🏦', title: `定存「${d.label ?? '定存'}」${daysSince(d.maturity_date)} 天前就到期了`, body: '到期後還沒處理（入帳或續存），錢可能只領活存利息。', link: 'settings:dep' });
   });
-  accounts.filter(a => a.include_in_total !== false && a.currency && a.currency !== 'TWD' && (a.balance || 0) > 0).forEach(a => {
+  accounts.filter(a => a.id !== efAccId && a.include_in_total !== false && a.currency && a.currency !== 'TWD' && (a.balance || 0) > 0).forEach(a => {
     const idle = daysSince(a.updated_at || a.created_at);
     if (idle != null && idle >= 90) out.push({ key: `fx_${a.id}`, icon: '💱', title: `外幣「${a.name}」${a.currency} ${fmt(a.balance, { currency: a.currency })} 已經 ${idle} 天沒有動`, body: `約 NT$ ${fmt(toTWD(a.balance, a.currency, fxRates))}。如果沒有要用的計畫，可以考慮外幣定存或換回台幣。`, link: 'settings:bank' });
   });
-  accounts.filter(a => a.include_in_total !== false && (!a.currency || a.currency === 'TWD') && (a.balance || 0) > 0).forEach(a => {
+  accounts.filter(a => a.id !== efAccId && a.include_in_total !== false && (!a.currency || a.currency === 'TWD') && (a.balance || 0) > 0).forEach(a => {
     const idle = daysSince(a.updated_at || a.created_at);
     if (idle != null && idle >= 180) out.push({ key: `acc_${a.id}`, icon: '🗃️', title: `帳戶「${a.name}」NT$ ${fmt(a.balance)} 已經 ${idle} 天沒有異動`, body: '是不是忘了這筆錢？確認一下餘額，或把它併到主要帳戶。', link: 'settings:bank' });
   });
@@ -1649,4 +1653,46 @@ export function calcGoalProjection({ start = 0, target = 0, monthly = 0, yearlyB
   const withReturn = run(r);
   const noReturn = r > 0 ? run(0) : withReturn;
   return { months: withReturn.months, monthsNoReturn: noReturn.months, path: withReturn.path, pathNoReturn: noReturn.path };
+}
+
+// ── 緊急預備金存放帳戶（v2.13.0）──────────────────────────────────────────
+// 預備金在 App 裡是虛擬分帳；指定一個實際存放的帳戶後，比對那個帳戶的餘額
+// （外幣折台幣）夠不夠撐住預備金目前的帳面金額。short＞0 表示帳面上有、
+// 實際拿不出來的部分（例如錢其實在股票或別的帳戶）。
+export function calcEfStorage({ efBucket = null, allocations = [], expenseTxns = [], accounts = [], fxRates = {} }) {
+  if (!efBucket?.store_account_id) return null;
+  const account = accounts.find(a => a.id === efBucket.store_account_id);
+  if (!account) return null;
+  const have = Math.max(0, Math.round(calcBucketAllocated(allocations, efBucket.id) - calcBucketSpent(expenseTxns, efBucket.id, accounts, fxRates)));
+  const balanceTwd = Math.round(toTWD(account.balance || 0, account.currency || 'TWD', fxRates) || 0);
+  return { account, have, balanceTwd, short: Math.max(0, have - balanceTwd) };
+}
+
+// ── 收入穩定度 → 預備金建議月數（v2.13.0）─────────────────────────────────
+// 看最近（最多）12 個完整月份的經常性收入（不含應收款入帳、獎金／一次性
+// 收入、定期定額）：從第一筆收入的月份算起不到 4 個月就不給建議。
+//   沒有收入的月份 ≥ 2，或變異係數（標準差÷平均）≥ 0.5 → 很不穩定，12 個月以上
+//   沒有收入的月份 1 個，或變異係數 ≥ 0.25       → 起伏較大，9～12 個月
+//   其他                                        → 穩定，3～6 個月
+// 只是建議，不會改使用者設定的月數。
+export function calcIncomeStability(incomeTxns = [], today = new Date()) {
+  const reg = incomeTxns.filter(t => !t.irregular && t.date && !['cat_receivable', 'cat_dca'].includes(t.category) && resolveIncomeAmountTwd(t) > 0);
+  if (!reg.length) return null;
+  const firstYm = reg.map(t => t.date.slice(0, 7)).sort()[0];
+  const months = [];
+  for (let i = 12; i >= 1; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
+    if (ym >= firstYm) months.push(ym);
+  }
+  if (months.length < 4) return null;
+  const totals = months.map(m => calcMonthlyIncomeTotal(reg, m));
+  const mean = totals.reduce((a, b) => a + b, 0) / totals.length;
+  if (!(mean > 0)) return null;
+  const sd = Math.sqrt(totals.reduce((a, v) => a + (v - mean) ** 2, 0) / totals.length);
+  const cv = sd / mean, zeros = totals.filter(v => v <= 0).length;
+  const base = { n: months.length, cv, zeros, mean: Math.round(mean) };
+  if (zeros >= 2 || cv >= 0.5) return { ...base, level: '很不穩定', range: '12 個月以上', min: 12, max: 24, suggest: 12 };
+  if (zeros === 1 || cv >= 0.25) return { ...base, level: '起伏較大', range: '9～12 個月', min: 9, max: 12, suggest: 9 };
+  return { ...base, level: '穩定', range: '3～6 個月', min: 3, max: 6, suggest: 6 };
 }
