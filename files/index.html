@@ -288,6 +288,29 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .proj-cat em{display:block;height:100%;background:#0891B2;border-radius:3px}
 .proj-cat b{font-weight:600;color:var(--text-1);font-variant-numeric:tabular-nums}
 .proj-cat small{color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
+.qa-fab{position:fixed;right:20px;bottom:24px;z-index:140;display:inline-flex;align-items:center;gap:6px;height:48px;padding:0 18px 0 14px;border:none;border-radius:999px;background:var(--blue);color:#fff;font:inherit;font-size:14px;font-weight:600;letter-spacing:.02em;cursor:pointer;box-shadow:0 8px 20px -6px color-mix(in srgb,var(--blue) 60%,transparent),0 2px 6px rgba(0,0,0,.12);transition:transform .15s ease}
+.qa-fab span{font-size:20px;font-weight:400;line-height:1}
+.qa-fab:active{transform:scale(.96)}
+.qa-fab:focus-visible{outline:2px solid var(--text-1);outline-offset:3px}
+.qa-fab[hidden]{display:none}
+.qa-sheet-bg{position:fixed;inset:0;z-index:190;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background .2s ease}
+.qa-sheet-bg.open{background:rgba(0,0,0,.42)}
+.qa-sheet{width:min(460px,92vw);max-height:88dvh;overflow-y:auto;background:var(--card);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.25);transform:translateY(12px);opacity:0;transition:transform .22s ease,opacity .22s ease}
+.qa-sheet-bg.open .qa-sheet{transform:none;opacity:1}
+.qa-sheet .qa{border:none;box-shadow:none;margin:0;padding-top:4px}
+.qa-sheet-grip{display:none}
+.qa-sheet-head{display:flex;align-items:baseline;gap:8px;padding:16px 16px 8px}
+.qa-sheet-head b{font-size:16px;color:var(--text-1)}
+.qa-sheet-head span{font-size:12px;color:var(--text-3);flex:1}
+.qa-sheet-x{border:none;background:var(--surface-2);color:var(--text-2);width:32px;height:32px;border-radius:50%;font-size:13px;cursor:pointer;flex-shrink:0;align-self:center}
+@media(max-width:768px){
+  .qa-fab{right:16px;bottom:calc(72px + env(safe-area-inset-bottom))}
+  .content{padding-bottom:calc(140px + env(safe-area-inset-bottom))}
+  .qa-sheet-bg{align-items:flex-end}
+  .qa-sheet{width:100%;max-height:86dvh;border-radius:18px 18px 0 0;padding-bottom:env(safe-area-inset-bottom);transform:translateY(100%);opacity:1}
+  .qa-sheet-grip{display:block;width:36px;height:4px;border-radius:2px;background:var(--border-2);margin:8px auto 0}
+  .qa-sheet-head{padding-top:10px}
+}
 .qa{padding:14px 16px}
 .qa-row{display:flex;gap:8px}
 .qa-amt{display:flex;align-items:center;gap:6px;flex:0 0 46%;padding:0 10px;border:1px solid var(--border-2);border-radius:10px;background:var(--card)}
@@ -428,7 +451,6 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .sp-b.warn{background:color-mix(in srgb,var(--amber) 15%,transparent);color:var(--amber)}
 .sp-curwarn{color:var(--amber)!important}
 .cal-acts{display:flex;gap:6px;margin-left:auto;flex-shrink:0}
-.cal-skip{font-size:11px;padding:5px 9px;color:var(--text-2);white-space:nowrap}
 .cal-skipped{display:flex;align-items:center;gap:10px;padding:10px 18px;border-top:1px solid var(--border);font-size:13px}
 .cal-skipped span{flex:1;min-width:0}
 .cal-skipped em{font-style:normal;font-size:11px;color:var(--text-3)}
@@ -476,6 +498,17 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .pd-total{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 4px;font-size:13px;color:var(--text-2)}
 .pd-total b{font-size:18px;color:var(--text-1);font-variant-numeric:tabular-nums}
 .pd-hint{font-size:11px;color:var(--text-3);margin:0 0 4px}
+.sp-due{list-style:none;margin:-2px 0 4px 10px;padding:0;display:flex;flex-direction:column;gap:2px;font-size:11px;opacity:.82}
+.sp-due li{display:flex;align-items:baseline;gap:8px;min-height:20px}
+.sp-due li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-due li em{font-style:normal;opacity:.75;font-variant-numeric:tabular-nums}
+.sp-due li b{font-weight:500;font-variant-numeric:tabular-nums;min-width:72px;text-align:right}
+.sp-due li.late em{opacity:1;font-weight:700}
+.sp-late{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;padding:9px 11px 9px 13px;border-radius:9px;background:rgba(255,255,255,.12);box-shadow:inset 3px 0 0 var(--red);font-size:11.5px;line-height:1.55;cursor:pointer}
+.sp-late span{flex:1;min-width:0}
+.sp-late b{display:block;font-size:13px;margin-bottom:2px}
+.sp-late i{font-style:normal;font-size:18px;opacity:.7}
+.sp-late:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 .sp-warn{margin-top:12px;padding:9px 11px 9px 13px;border-radius:9px;background:rgba(255,255,255,.12);box-shadow:inset 3px 0 0 var(--amber);font-size:11.5px;line-height:1.55;color:inherit}
 .sp-warn b{display:block;font-size:13px;margin-bottom:2px}
 .home-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -486,27 +519,6 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .home-mini-s{font-size:10.5px;color:var(--text-3);line-height:1.4}
 .home-quick{display:grid;grid-template-columns:2fr 1fr;gap:10px}
 .home-quick .btn{justify-content:center;padding:11px;font-size:14px}
-.mdue{padding:0}
-.mdue-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:14px 16px 10px}
-.mdue-head b{font-size:13.5px;font-weight:600;color:var(--text-1)}
-.mdue-head span{font-size:11.5px;color:var(--text-3);font-variant-numeric:tabular-nums}
-.mdue-head span em{font-style:normal;font-size:14px;font-weight:700;color:var(--text-1);margin-left:4px}
-.mdue-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--border);min-height:48px;box-sizing:border-box}
-.mdue-ico{width:28px;height:28px;flex-shrink:0;display:grid;place-items:center;border-radius:8px;background:var(--surface-2);font-size:13px}
-.mdue-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
-.mdue-txt b{font-size:13px;font-weight:500;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mdue-txt small{font-size:11px;color:var(--text-3)}
-.mdue-txt small.late{color:var(--red);font-weight:600}
-.mdue-txt small.soon{color:var(--amber);font-weight:600}
-.mdue-amt{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-1);white-space:nowrap}
-.mdue-btn{flex-shrink:0;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font:inherit;font-size:11.5px;font-weight:600;padding:6px 10px;border-radius:999px;cursor:pointer;min-height:30px}
-.mdue-btn:hover,.mdue-btn:focus-visible{border-color:var(--blue);color:var(--blue)}
-.mdue-empty{padding:2px 16px 14px;font-size:12px;color:var(--text-3)}
-.mdue-more{all:unset;display:block;box-sizing:border-box;width:100%;padding:10px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--blue);cursor:pointer;text-align:center}
-.mdue-other{padding:10px 16px 12px;border-top:1px dashed var(--border);display:flex;flex-direction:column;gap:4px}
-.mdue-other>span{font-size:11px;color:var(--text-3)}
-.mdue-other div{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--text-2)}
-.mdue-other div b{font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
 .mp{display:flex;flex-direction:column;gap:12px}
 .mp-intro{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;background:color-mix(in srgb,var(--blue) 8%,var(--card));border:1px solid color-mix(in srgb,var(--blue) 25%,var(--border))}
 .mp-intro strong{display:block;font-size:13px}
@@ -1553,7 +1565,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <button class="btn btn-ghost" id="periodConfirmCancel">取消（這期先不處理）</button>
       <button class="btn btn-primary" id="periodConfirmSave">✓ 確認</button>
     </div>
-    <button type="button" class="pc-skip" id="periodConfirmSkip" style="display:none"><b>這期不用我付</b>例如室友付了、對方免收，或已經另外記過——標記本期已處理，不記支出</button>
+    <button type="button" class="pc-skip" id="periodConfirmSkip" style="display:none"><b>略過本期</b></button>
     <div id="periodConfirmAltWrap" style="display:none;text-align:center;margin-top:10px">
       <button type="button" class="btn btn-ghost btn-sm" id="periodConfirmAlt" style="font-size:11px"></button>
     </div>
@@ -3242,8 +3254,10 @@ const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '可自由運用只扣「這個月」還沒付的定期支出、分期、定期定額（含日期已過還沒確認的），下個月的不再提前算進來',
-  '首頁「本月還要付」合併成一張卡片：每筆可直接按「已付」，本月要繳的卡費可直接「記錄繳款」；定存到期、預計入帳放在「其他提醒」',
+  '記帳改成每一頁右下角的「＋記帳」，從底部彈出快速記帳；在紀錄頁先選某一天，就記在那一天。首頁只留狀態',
+  '可自由運用只扣「這個月」還沒確認的定期支出、分期、定期定額，下個月的不再提前算進來；明細在「怎麼算的」裡',
+  '首頁不再列待付清單和「已付」按鈕；本月日期已過還沒確認的才提醒，點一下到紀錄頁那一天處理',
+  '略過一期統一叫「略過本期」，放在「確認本期」裡面；紀錄頁每筆排程只留一顆按鈕',
   '資產、計畫頁上方的分頁列捲動時會停在頂端，長頁面也能隨時切到「持倉」',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
@@ -3660,6 +3674,7 @@ async function navigate(view) {
   // 的連結文字是兩份獨立的字串，見側邊欄與底部導覽列的 HTML）。
   const titles = { assets:'手元', plan:'計畫', wealth:'虎の子', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'記帳管理', report:'帳務報表', creditcard:'信用卡', recurring:'定期支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢目標', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
   document.getElementById('topbarTitle').textContent = titles[view] ?? view;
+  syncQaFab();
   document.getElementById('refreshBtn').style.display = (view === 'assets' || view === 'wealth') ? '' : 'none';
   if (view === 'assets')            await renderHome();
   else if (view === 'plan')         await renderPlanHub();
@@ -3934,7 +3949,7 @@ async function buildTripBanner() {
 }
 
 
-async function buildQuickAdd() {
+async function buildQuickAdd({ date = null, onDone = null } = {}) {
   const [cats, expenseTxns, cards, projects] = await Promise.all([getAll(db,'txn_categories').catch(()=>[]), getAll(db,'expense_txns').catch(()=>[]), getAll(db,'credit_cards').catch(()=>[]), getAll(db,'projects').catch(()=>[])]);
   const accounts = state.accounts || [];
   const bankMap = Object.fromEntries((state.banks || []).map(b => [b.id, b]));
@@ -3953,7 +3968,9 @@ async function buildQuickAdd() {
   const lastV = lastTxn ? (lastTxn.pay_type === 'cc' ? `cc:${lastTxn.cc_id}` : `acc:${lastTxn.account_id}`) : null;
   let payV = [saved, lastV, payOptions[0]?.v].find(v => v && payOptions.some(o => o.v === v)) ?? '';
   const trip = findActiveTrip(projects);
-  const today = isoDate(new Date());
+  const realToday = isoDate(new Date());
+  const today = date || realToday; // v2.19.0：從紀錄頁選了某一天再按「＋記帳」，記在那一天
+  const dayLabel = today === realToday ? '今天' : `${Number(today.slice(5, 7))}/${Number(today.slice(8))}`;
   const todays = expenseTxns.filter(t => t.date === today).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || '')).slice(0, 4);
 
   const box = el('div', 'card'); box.className = 'card qa';
@@ -3971,7 +3988,7 @@ async function buildQuickAdd() {
       <button type="button" class="btn btn-ghost btn-sm" data-qa-income>＋ 收入</button>
     </div>
     ${trip ? `<div class="qa-trip">✈️ 旅行中，會自動歸到「${escHtml(trip.name)}」</div>` : ''}
-    ${todays.length ? `<div class="qa-today"><div class="qa-label">今天記了</div>${todays.map(t => `<div class="qa-today-row"><span>${catById[t.category]?.icon ?? '·'} ${escHtml(t.description || catById[t.category]?.label || '支出')}</span><b>NT$ ${fmt(t.amount)}</b><button type="button" class="btn btn-ghost btn-sm" data-qa-del="${t.id}">刪除</button></div>`).join('')}</div>` : ''}`;
+    ${todays.length ? `<div class="qa-today"><div class="qa-label">${dayLabel}記了</div>${todays.map(t => `<div class="qa-today-row"><span>${catById[t.category]?.icon ?? '·'} ${escHtml(t.description || catById[t.category]?.label || '支出')}</span><b>NT$ ${fmt(t.amount)}</b><button type="button" class="btn btn-ghost btn-sm" data-qa-del="${t.id}">刪除</button></div>`).join('')}</div>` : ''}`;
   const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc'), paySel = box.querySelector('.qa-pay');
   paySel.value = payV;
   paySel.addEventListener('change', () => setSetting(db, 'quick_pay', paySel.value).catch(() => {}));
@@ -3988,23 +4005,60 @@ async function buildQuickAdd() {
       payType: o?.payType ?? null, accId: o?.accId ?? null, ccId: o?.ccId ?? null,
       bucketId, projectId, affects: true });
     if (!res.ok) { showToast(res.error); return; }
-    showToast(`✓ 已記 ${catById[category]?.label ?? ''} NT$ ${fmt(amount)}`);
+    showToast(`✓ 已記 ${catById[category]?.label ?? ''} NT$ ${fmt(amount)}${today === realToday ? '' : `（${dayLabel}）`}`);
+    onDone?.();
     await renderAssets();
   }
   box.querySelectorAll('[data-qa-cat]').forEach(b => b.addEventListener('click', () => quickSave(b.dataset.qaCat, parseFloat(amtIn.value), descIn.value.trim())));
   box.querySelectorAll('[data-qa-freq]').forEach(b => b.addEventListener('click', () => { const f = frequent[+b.dataset.qaFreq]; quickSave(f.category, f.amount, f.description); }));
   box.querySelector('[data-qa-full]').addEventListener('click', () => {
     const o = payOptions.find(x => x.v === paySel.value);
-    openExpenseModal(null, { amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), pay_type: o?.payType, account_id: o?.accId, cc_id: o?.ccId });
+    onDone?.();
+    openExpenseModal(null, { date: today, amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), pay_type: o?.payType, account_id: o?.accId, cc_id: o?.ccId });
   });
-  box.querySelector('[data-qa-income]').addEventListener('click', () => openIncomeModal(null));
+  box.querySelector('[data-qa-income]').addEventListener('click', () => { onDone?.(); openIncomeModal(null, null, null, { date: today }); });
   box.querySelectorAll('[data-qa-del]').forEach(b => b.addEventListener('click', () => {
     const t = todays.find(x => x.id === b.dataset.qaDel);
+    onDone?.();
     openDeleteModal(`刪除「${t.description || '這筆支出'}」NT$ ${fmt(t.amount)}？帳戶／信用卡餘額會一起還原。`, async () => { await deleteTxnRecord(t, false); showToast('已刪除'); await renderAssets(); });
   }));
   return box;
 }
 
+
+// ── ＋記帳（v2.19.0，使用者決定）────────────────────────────────────────
+// 首頁只放狀態；記帳改成每一頁右下角同一顆「＋記帳」，從底部彈出快速記帳。
+// 仍然只有一個入口（不會回到 v2.17.0 以前兩處記帳互相打架）。在紀錄頁選了
+// 某一天，就記在那一天。
+const QA_FAB_HIDDEN = new Set(['onboarding']);
+function syncQaFab() {
+  let fab = document.getElementById('qaFab');
+  if (!fab) {
+    fab = el('button'); fab.id = 'qaFab'; fab.type = 'button'; fab.className = 'qa-fab';
+    fab.setAttribute('aria-label', '記一筆'); fab.innerHTML = '<span aria-hidden="true">＋</span>記帳';
+    fab.addEventListener('click', openQuickSheet);
+    document.body.appendChild(fab);
+  }
+  fab.hidden = QA_FAB_HIDDEN.has(currentView);
+}
+async function openQuickSheet() {
+  closeQuickSheet();
+  const date = currentView === 'calendar' && _calendarSelectedDate ? _calendarSelectedDate : null;
+  const bg = el('div'); bg.className = 'qa-sheet-bg'; bg.id = 'qaSheet';
+  const panel = el('div'); panel.className = 'qa-sheet';
+  panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-label', '記一筆');
+  const md = date ? `${Number(date.slice(5, 7))}/${Number(date.slice(8))}（${WEEKDAY_LABELS[new Date(date + 'T00:00:00').getDay()]}）` : '今天';
+  panel.innerHTML = `<div class="qa-sheet-grip" aria-hidden="true"></div><div class="qa-sheet-head"><b>記一筆</b><span>${md}</span><button type="button" class="qa-sheet-x" aria-label="關閉">✕</button></div>`;
+  panel.appendChild(await buildQuickAdd({ date, onDone: closeQuickSheet }));
+  bg.appendChild(panel);
+  bg.addEventListener('click', e => { if (e.target === bg) closeQuickSheet(); });
+  panel.querySelector('.qa-sheet-x').addEventListener('click', closeQuickSheet);
+  document.body.appendChild(bg);
+  requestAnimationFrame(() => bg.classList.add('open'));
+  panel.querySelector('.qa-amt input')?.focus({ preventScroll: true });
+}
+function closeQuickSheet() { document.getElementById('qaSheet')?.remove(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('qaSheet')) closeQuickSheet(); });
 
 // ── 閒置資金提醒（v2.10.0，重整藍圖第 5 步）────────────────────────────────
 // 使用者：「如果收支有確實的計畫，就不會有閒置資金」——所以不設金額門檻，
@@ -4143,44 +4197,6 @@ async function openTopupModal(toAcc, amount) {
   modal.classList.add('open');
 }
 
-let _monthDueAll = false;
-function buildMonthDueCard({ sp, cards, recurringExpenses, installments, dcaSchedules, reminders, money }) {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const ym = currentMonthStr();
-  const md = d => `${Number(d.slice(5, 7))}/${Number(d.slice(8))}`;
-  const rows = sp.upcoming.map((u, k) => ({ ...u, ico: u.type === 'installment' ? '🧾' : u.type === 'dca' ? '📈' : '🔁', act: 'paid', k }));
-  for (const c of cards || []) {
-    if (!((c.current_balance || 0) > 0)) continue;
-    const st = ccPeriodStatus(c), t = st.overdue ?? st.upcoming;
-    if (!t?.due || t.due.slice(0, 7) > ym) continue;
-    const days = Math.round((new Date(t.due + 'T00:00:00') - today) / 86400000);
-    rows.push({ type: 'creditcard', id: c.id, date: t.due, days, label: `${c.name} ${ccPeriodLabel(t.ym)}卡費`, amount: Math.round(c.current_balance), ico: '💳', act: 'cc', ym: t.ym });
-  }
-  rows.sort((a, b) => a.date.localeCompare(b.date));
-  const total = rows.reduce((s, r) => s + r.amount, 0);
-  const when = r => r.days < 0 ? [`${md(r.date)}・已過 ${-r.days} 天，還沒確認`, 'late'] : r.days === 0 ? ['今天', 'soon'] : [`${md(r.date)}・${r.days} 天後`, r.days <= 3 ? 'soon' : ''];
-  const LIMIT = 6, shown = _monthDueAll ? rows : rows.slice(0, LIMIT);
-  const other = (reminders || []).filter(r => r.type === 'deposit' || r.type === 'recurringincome');
-  const card = el('div'); card.className = 'card mdue';
-  card.innerHTML = `<div class="mdue-head"><b>${Number(ym.slice(5))} 月還要付</b><span>${rows.length ? `${rows.length} 筆<em>${money(total)}</em>` : ''}</span></div>`
-    + (rows.length ? shown.map((r, i) => { const [w, cls] = when(r); return `<div class="mdue-row"><span class="mdue-ico" aria-hidden="true">${r.ico}</span>
-        <span class="mdue-txt"><b>${escHtml(r.label)}</b><small class="${cls}">${w}</small></span>
-        <span class="mdue-amt">${money(r.amount)}</span>
-        <button type="button" class="mdue-btn" data-mdue="${i}" aria-label="${escHtml(r.label)} ${r.act === 'cc' ? '記錄繳款' : '已付'}">${r.act === 'cc' ? '記錄繳款' : '已付'}</button></div>`; }).join('')
-      : `<div class="mdue-empty">這個月要付的都處理完了。</div>`)
-    + (rows.length > LIMIT ? `<button type="button" class="mdue-more">${_monthDueAll ? '收起' : `顯示全部 ${rows.length} 筆`}</button>` : '')
-    + (other.length ? `<div class="mdue-other"><span>其他提醒</span>${other.map(r => `<div><span>${r.type === 'deposit' ? '🏦' : '💵'} ${escHtml(r.label)}・${r.daysUntil < 0 ? `已到期 ${-r.daysUntil} 天` : r.daysUntil === 0 ? '今天' : `${r.daysUntil} 天後`}</span>${r.amount != null ? `<b>${r.type === 'recurringincome' ? '+' : ''}${money(r.amount)}</b>` : ''}</div>`).join('')}</div>` : '');
-  card.querySelector('.mdue-more')?.addEventListener('click', () => { _monthDueAll = !_monthDueAll; renderHome(); });
-  card.querySelectorAll('[data-mdue]').forEach(b => b.addEventListener('click', async () => {
-    const r = shown[+b.dataset.mdue];
-    if (r.type === 'recurring') { const x = recurringExpenses.find(v => v.id === r.id); if (x) await openRecurringExpenseConfirm(x, r.date); }
-    else if (r.type === 'installment') { const it = installments.find(v => v.id === r.id); if (it) openConfirmInstModal(it, it.per_amount || Math.round(it.total_amount / it.total_periods), r.date); }
-    else if (r.type === 'dca') { const d = dcaSchedules.find(v => v.id === r.id); if (d) await openDcaConfirm(d, r.date); }
-    else if (r.type === 'creditcard') { const c = cards.find(v => v.id === r.id); if (c) openCcPayModal(c, { ym: r.ym }); }
-  }));
-  return card;
-}
-
 let _homeSpendOpen = false;
 async function renderHome() {
   await loadData();
@@ -4208,10 +4224,14 @@ async function renderHome() {
   const efLine = sp.ef.gap > 0
     ? `<div class="sp-warn"><b>緊急預備金還差 ${money(sp.ef.gap)}</b>${sp.ef.exists ? `目前 ${money(sp.ef.have)}${sp.ef.months != null ? `，可撐 ${sp.ef.months.toFixed(1)} 個月` : ''}。` : '還沒建立，先依必要開銷保留建議金額。'}缺口先保留，所以可自由運用變少${sp.free === 0 ? '到 0' : ''}。</div>`
     : '';
+  // v2.19.0：首頁不再列待付清單（使用者：「已付」不需要出現）。日期已過、還沒
+  // 確認的才提醒，點了到紀錄頁那一天處理（確認本期／略過本期）。
+  const late = sp.upcoming.filter(u => u.days < 0);
+  const lateLine = late.length ? `<button type="button" class="sp-late"><span><b>${late.length} 筆本月排程日期已過，還沒確認</b>${escHtml(late.slice(0, 2).map(u => u.label).join('、'))}${late.length > 2 ? ' 等' : ''}・沒確認前仍從可自由運用扣掉</span><i aria-hidden="true">›</i></button>` : '';
   const rows = [
     ['現金與活存', sp.liquid, ''],
     ['信用卡待繳', -sp.cardsDue, ''],
-    ['本月還要付', -sp.upcomingTotal, sp.upcoming.length ? `${sp.upcoming.length} 筆・明細在下方` : '本月都付完了'],
+    ['本月還要付', -sp.upcomingTotal, sp.upcoming.length ? `${sp.upcoming.length} 筆還沒確認` : '本月都處理完了'],
     [`緊急預備金${sp.ef.gap > 0 ? '（含缺口）' : ''}`, -sp.ef.protect, sp.ef.target ? `目標 ${money(sp.ef.target)}` : '尚未設定'],
     ['其他存錢目標', -sp.goalsTotal, sp.goals.length ? `${sp.goals.length} 個` : ''],
   ];
@@ -4221,10 +4241,12 @@ async function renderHome() {
     ${sp.shortfall > 0 ? `<div class="home-hero-sub">必付與保留的錢比手上多 ${money(sp.shortfall)}</div>` : ''}
     <button type="button" class="sp-toggle" aria-expanded="${_homeSpendOpen}">${_homeSpendOpen ? '收起' : '怎麼算的'}</button>
     <div class="sp-rows" ${_homeSpendOpen ? '' : 'hidden'}>
-      ${rows.map(([l, v, n]) => `<div class="sp-row"><span>${l}${n ? `<small>${n}</small>` : ''}</span><b>${v < 0 ? '−' : ''}${money(Math.abs(v))}</b></div>`).join('')}
+      ${rows.map(([l, v, n], i) => `<div class="sp-row"><span>${l}${n ? `<small>${n}</small>` : ''}</span><b>${v < 0 ? '−' : ''}${money(Math.abs(v))}</b></div>`
+        + (i === 2 && sp.upcoming.length ? `<ul class="sp-due">${sp.upcoming.map(u => `<li${u.days < 0 ? ' class="late"' : ''}><span>${escHtml(u.label)}</span><em>${Number(u.date.slice(5, 7))}/${Number(u.date.slice(8))}${u.days < 0 ? ' 未確認' : ''}</em><b>${money(u.amount)}</b></li>`).join('')}</ul>` : '')).join('')}
       <div class="sp-row sp-total"><span>可自由運用</span><b>${money(sp.free)}</b></div>
     </div>
-    ${efLine}${efStoreLine}`;
+    ${lateLine}${efLine}${efStoreLine}`;
+  hero.querySelector('.sp-late')?.addEventListener('click', () => { _calendarSelectedDate = late[0].date; _calendarYear = null; navigate('calendar'); });
   hero.querySelector('.sp-toggle').addEventListener('click', () => { _homeSpendOpen = !_homeSpendOpen; renderHome(); });
   root.appendChild(hero);
   const fundAlert = await buildDcaFundAlert(); if (fundAlert) root.appendChild(fundAlert);
@@ -4249,15 +4271,6 @@ async function renderHome() {
 
   // 旅行中
   const tripBanner = await buildTripBanner(); if (tripBanner) root.insertBefore(tripBanner, root.firstChild);
-
-  // 本月還要付（v2.19.0）：原本「可自由運用」裡的 30 天清單和「近期到期／即將
-  // 繳款」卡片重複，而且 30 天會把下個月的房租也算進來。合併成一張：只列這個
-  // 月還沒付的定期支出／分期／定期定額（含已過日期還沒確認的）、這個月要繳的
-  // 卡費；定存到期、預計入帳這類不是要付的錢，放在最下面「其他提醒」。
-  root.appendChild(buildMonthDueCard({ sp, cards, recurringExpenses, installments, dcaSchedules, reminders, money }));
-
-  // 快速記帳（v2.10.0）：輸入金額 → 點類別就存；常用項目一點就存。
-  root.appendChild(await buildQuickAdd());
 
   // v2.18.0：要採取行動的卡片集中在首頁
   const runwayCard = await buildRunwayCard();
@@ -10385,11 +10398,13 @@ const SKIP_STORE_BY_TYPE = { recurring: 'recurring_expenses', installment: 'inst
 const SKIP_LABELS = { recurring_expenses: '定期支出', installments: '分期付款', dca_schedules: '定期定額', recurring_transfers: '定期轉帳' };
 // v2.17.0：依類型說明「這期沒有發生」——使用者的例子：房租由室友付了、定期定額
 // 因為帳戶餘額不足沒有扣到款。都是「刪掉這一期」，不留下任何紀錄（不是記 0 元）。
+// v2.19.0（使用者：不需要「這期不用我付」這種字眼，確認本期點進去出現「略過
+// 本期」就好）：四種排程統一叫「略過本期」，說明只講結果。
 const SKIP_TEXT = {
-  recurring_expenses: { btn: '這期不用付', title: '這期不用我付', desc: '例如室友付了、對方免收，或已經另外記過。這一期會從提醒中移除，不會留下任何紀錄（不是記一筆 0 元）。', done: '沒有記任何支出' },
-  installments:       { btn: '這期不用付', title: '這期不用我付', desc: '例如已經另外記過。這一期算已付、從提醒中移除，不會留下任何紀錄。', done: '沒有記任何支出' },
-  dca_schedules:      { btn: '這期沒扣款', title: '這期沒有扣款', desc: '例如帳戶餘額不足、券商沒扣到款。這一期會從提醒中移除，不會留下任何紀錄、也不會增加股數。', done: '沒有記任何扣款' },
-  recurring_transfers:{ btn: '這期沒轉', title: '這期沒有轉', desc: '這一期會從提醒中移除，不會留下任何轉帳紀錄、帳戶餘額不變。', done: '沒有記任何轉帳' },
+  recurring_expenses: { title: '略過本期', desc: '這期不記支出，也不從帳戶扣錢。例如別人付了、這期免收。' },
+  installments:       { title: '略過本期', desc: '這期算已處理，不記支出，也不從帳戶扣錢。' },
+  dca_schedules:      { title: '略過本期', desc: '這期不記扣款，也不增加股數。例如帳戶餘額不足沒扣到。' },
+  recurring_transfers:{ title: '略過本期', desc: '這期不記轉帳，兩邊帳戶餘額不變。' },
 };
 function currentSkip(store, item) {
   const last = item?.skipped_periods?.at?.(-1);
@@ -10426,7 +10441,7 @@ async function undoSkipPeriod(store, id) {
 function makeSkipHandler(store, item, occ, name) {
   const fn = async () => {
     if (!(await skipPeriod(store, item.id, occ))) return false;
-    showToast(`✓ 「${name}」${fmtDate(occ)} 這期已略過，${(SKIP_TEXT[store] || SKIP_TEXT.recurring_expenses).done}`, {
+    showToast(`✓ 已略過「${name}」${fmtDate(occ)} 這一期`, {
       label: '復原', onClick: async () => { if (await undoSkipPeriod(store, item.id)) { showToast('已復原，這期恢復成待確認'); await refreshAfterExpenseSaved(); } },
     });
     await refreshAfterExpenseSaved();
@@ -10437,7 +10452,7 @@ function makeSkipHandler(store, item, occ, name) {
 // 清單上的小標籤：最近一次確認是「不用我付」時顯示，附撤銷
 function skipChipHtml(store, item) {
   const sk = currentSkip(store, item);
-  return sk ? `<span class="skip-chip">✓ ${fmtDate(sk.occ)} ${(SKIP_TEXT[store] || SKIP_TEXT.recurring_expenses).title}<button type="button" data-undo-skip="${store}:${item.id}">撤銷</button></span>` : '';
+  return sk ? `<span class="skip-chip">✓ ${fmtDate(sk.occ)} 已略過<button type="button" data-undo-skip="${store}:${item.id}">撤銷</button></span>` : '';
 }
 function bindSkipChips(root) {
   root.querySelectorAll('[data-undo-skip]').forEach(b => b.addEventListener('click', async e => {
@@ -12483,18 +12498,7 @@ async function renderCalendar() {
           ${it.amountLabel?`<span style="font-size:12px;color:${amtColor};font-variant-numeric:tabular-nums">${it.amountLabel}</span>`:''}`;
         const actionBtn = buildActionButton(it);
         const acts = el('div'); acts.className = 'cal-acts';
-        // v2.17.0：這期沒有發生（室友付了房租、定期定額沒扣到款）→ 直接略過，
-        // 不必打開確認視窗、也不會記一筆 0 元。
-        const skipStore = SKIP_STORE_BY_TYPE[it.type];
-        const skipItem = skipStore && ({ recurring_expenses: recurringExpenses, installments, dca_schedules: dcaSchedules, recurring_transfers: recurringTransfers }[skipStore] || []).find(x => x.id === it.refId);
-        if (skipItem) {
-          const sb = el('button', 'btn btn-ghost btn-sm cal-skip');
-          sb.type = 'button'; sb.textContent = SKIP_TEXT[skipStore].btn;
-          sb.title = SKIP_TEXT[skipStore].desc;
-          const nm = it.type === 'dca' ? it.label : (skipItem.name || it.label);
-          sb.addEventListener('click', () => makeSkipHandler(skipStore, skipItem, it.date, nm)());
-          acts.appendChild(sb);
-        }
+        // v2.19.0：略過本期改成在「確認本期」裡面（使用者決定），這裡只留一顆按鈕。
         if (actionBtn) acts.appendChild(actionBtn);
         if (acts.children.length) row.appendChild(acts);
         card.appendChild(row);
@@ -12508,8 +12512,8 @@ async function renderCalendar() {
     });
     if (skippedHere.length) {
       const card = el('div','card'); card.style.borderRadius = '16px';
-      card.innerHTML = `<div style="padding:11px 18px;font-size:12px;font-weight:600;color:var(--text-2);border-bottom:1px solid var(--border)">${fmtDate(_calendarSelectedDate)}・已略過的排程</div>` +
-        skippedHere.map(({ store, x }) => `<div class="cal-skipped"><span>${escHtml(x.name || SKIP_LABELS[store])}</span><em>${SKIP_TEXT[store].title}・沒有留下紀錄</em><button type="button" class="btn btn-ghost btn-sm" data-undo-skip="${store}:${x.id}">復原</button></div>`).join('');
+      card.innerHTML = `<div style="padding:11px 18px;font-size:12px;font-weight:600;color:var(--text-2);border-bottom:1px solid var(--border)">${fmtDate(_calendarSelectedDate)}・略過的排程</div>` +
+        skippedHere.map(({ store, x }) => `<div class="cal-skipped"><span>${escHtml(x.name || SKIP_LABELS[store])}</span><em>已略過</em><button type="button" class="btn btn-ghost btn-sm" data-undo-skip="${store}:${x.id}">復原</button></div>`).join('');
       bindSkipChips(card);
       content.appendChild(card);
     }
