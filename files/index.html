@@ -690,6 +690,11 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .modal-field label{font-size:12px;color:var(--text-2);display:block;margin-bottom:5px;font-weight:500}
 .modal-field input,.modal-field select{width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:7px;font-size:14px;outline:none;transition:border-color .15s;background:var(--card)}
 .modal-field input:focus,.modal-field select:focus{border-color:var(--blue)}
+/* v2.19.0：勾選框不要被拉滿整列；iOS 日期欄位文字不要變藍色 */
+.modal-field input[type=checkbox],.modal-field input[type=radio]{width:18px;height:18px;padding:0;flex-shrink:0;margin:0;accent-color:var(--blue)}
+.modal-field .pb-mode input{margin:3px 0 0}
+.modal-field .chk-line{display:flex;align-items:center;gap:8px;font-weight:500;color:var(--text-1);font-size:14px;cursor:pointer}
+.modal-field input[type=date]{color:var(--text-1);-webkit-text-fill-color:var(--text-1);text-align:left;min-height:40px}
 /* v2.7.4：iOS Safari 的日期欄位有自己的最小寬度、文字置中，會撐出彈窗右緣
    （使用者回報「日期的表格超出範圍」）。去掉原生外觀、限制寬度、靠左對齊。 */
 .modal-field input,.modal-field select{box-sizing:border-box;min-width:0;max-width:100%}
@@ -748,7 +753,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
   .networth-breakdown{flex-direction:column;gap:12px}
   .networth-item:not(:last-child){border-right:none;padding-right:0;margin-right:0;border-bottom:1px solid var(--navy-light);padding-bottom:12px}
   .networth-amount{font-size:30px}
-  .field-row{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr;gap:0}
   .acc-orig-num{min-width:56px}
   .acc-twd{min-width:56px}
 
@@ -2108,10 +2113,8 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
          勾這個，「記帳管理」的「保險」子頁會一併列出這筆、金額也會算進
          calcInsuranceMonthlyEquivalent()，連動到收入分配法錢罐的下限。 -->
     <div class="modal-field">
-      <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
-        <input type="checkbox" id="instIsInsurance">屬於保險
-      </label>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">勾選後這筆分期會一併算進「記帳管理 › 保險」的每月約當保費，供收入分配法的錢罐連動使用。</div>
+      <label class="chk-line"><input type="checkbox" id="instIsInsurance">屬於保險</label>
+      <div style="font-size:11px;color:var(--text-3);margin-top:6px">勾選後這筆分期也會列在「記帳管理 › 保險」，並算進每月保費。</div>
     </div>
     <div class="modal-field">
       <label>備註（選填）</label>
@@ -2980,7 +2983,7 @@ import {
   calcCategoryGroupSpent, calcInsuranceMonthlyEquivalent,
   runDataHealthChecks,
   classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
-  calcMonthlyPlan, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcAvgLivingSpend, calcRunway, calcAnnualSpend, calcPassiveIncome, passiveCategoryIds, DEFAULT_PASSIVE_CATEGORIES, calcBufferBase, calcStorageChecks, estimateTransferFees, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
+  calcMonthlyPlan, calcRecurringMonthlyEquivalent, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcAvgLivingSpend, calcRunway, calcAnnualSpend, calcPassiveIncome, passiveCategoryIds, DEFAULT_PASSIVE_CATEGORIES, calcBufferBase, calcStorageChecks, estimateTransferFees, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
 } from './calc.js';
 
@@ -3257,7 +3260,10 @@ const CHANGELOG_DONE = [
   '記帳改成每一頁右下角的「＋記帳」，從底部彈出快速記帳；在紀錄頁先選某一天，就記在那一天。首頁只留狀態',
   '可自由運用只扣「這個月」還沒確認的定期支出、分期、定期定額，下個月的不再提前算進來；明細在「怎麼算的」裡',
   '首頁不再列待付清單和「已付」按鈕；本月日期已過還沒確認的才提醒，點一下到紀錄頁那一天處理',
-  '略過一期統一叫「略過本期」，放在「確認本期」裡面；紀錄頁每筆排程只留一顆按鈕',
+  '略過一期統一叫「略過本期」，放在「確認本期」裡面；紀錄頁每筆排程只留一顆按鈕。分期付款不能略過',
+  '定期支出、定期定額清單：拿掉「已略過 撤銷」標籤，本月處理過的顯示「✓ 本月已確認／已略過」；金額與按鈕對齊',
+  '定期定額頁頂端加上每月／每年扣款合計',
+  '分期與保險改成「已繳 9／12 期・下一期 10/12」；分期編輯視窗「屬於保險」勾選框、日期欄位顏色、信用卡選單修正',
   '資產、計畫頁上方的分頁列捲動時會停在頂端，長頁面也能隨時切到「持倉」',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
@@ -10262,7 +10268,7 @@ async function renderInstallment() {
         </div>
         <div style="margin-top:12px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:12px">
-            <span style="color:var(--text-2)">已付 <strong>${item.paid_periods}</strong> 期 / 共 ${item.total_periods} 期</span>
+            <span style="color:var(--text-2)">已繳 <strong>${item.paid_periods}</strong>／${item.total_periods} 期${instNextLabel(item) ? '・' + instNextLabel(item) : ''}</span>
             <span style="color:var(--text-3)">剩 ${remaining} 期（NT$ ${fmt(remaining * perAmt)}）</span>
           </div>
           <div style="height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden">
@@ -10270,7 +10276,6 @@ async function renderInstallment() {
           </div>
         </div>
         <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
-          ${skipChipHtml('installments', item)}
           ${isDue?`<button class="btn btn-primary btn-sm" data-confirm-inst="${item.id}">✓ 確認本期付款</button>`:''}
           <button class="btn btn-ghost btn-sm" data-edit-inst="${item.id}">編輯</button>
         </div>
@@ -10394,7 +10399,8 @@ document.getElementById('periodConfirmSkip').addEventListener('click', async () 
 // 的值），之後可以撤銷——撤銷只在「目前的確認標記還是這一期」時才做，避免
 // 把之後又確認過的新一期誤清掉（跟刪除支出時的 reversePeriodConfirmIfNeeded
 // 同一個原則）。
-const SKIP_STORE_BY_TYPE = { recurring: 'recurring_expenses', installment: 'installments', dca: 'dca_schedules', transfer: 'recurring_transfers' };
+// v2.19.0（使用者：分期付款不可能略過）：分期不能略過；舊資料略過過的仍可在紀錄頁復原。
+const SKIP_STORE_BY_TYPE = { recurring: 'recurring_expenses', dca: 'dca_schedules', transfer: 'recurring_transfers' };
 const SKIP_LABELS = { recurring_expenses: '定期支出', installments: '分期付款', dca_schedules: '定期定額', recurring_transfers: '定期轉帳' };
 // v2.17.0：依類型說明「這期沒有發生」——使用者的例子：房租由室友付了、定期定額
 // 因為帳戶餘額不足沒有扣到款。都是「刪掉這一期」，不留下任何紀錄（不是記 0 元）。
@@ -10448,11 +10454,6 @@ function makeSkipHandler(store, item, occ, name) {
   };
   fn.store = store;
   return fn;
-}
-// 清單上的小標籤：最近一次確認是「不用我付」時顯示，附撤銷
-function skipChipHtml(store, item) {
-  const sk = currentSkip(store, item);
-  return sk ? `<span class="skip-chip">✓ ${fmtDate(sk.occ)} 已略過<button type="button" data-undo-skip="${store}:${item.id}">撤銷</button></span>` : '';
 }
 function bindSkipChips(root) {
   root.querySelectorAll('[data-undo-skip]').forEach(b => b.addEventListener('click', async e => {
@@ -10542,7 +10543,6 @@ function openConfirmInstModal(item, defaultAmt, occurrenceDate) {
       showToast(`✓ 第 ${periodNo} 期已記帳（${fmtDate(occurrenceDate)}）${res.deferBalance?'，帳戶／信用卡餘額將於當天才變動':''}`);
       await refreshAfterExpenseSaved();
     },
-    onSkip: makeSkipHandler('installments', item, occurrenceDate, item.name),
   });
 }
 
@@ -10840,6 +10840,30 @@ async function reversePeriodConfirmIfNeeded(t, isIncome) {
 }
 
 // ── Installment modal ──────────────────────────────────────────────────────────
+// v2.19.0（使用者：保險已付期數的顯示很奇怪）：原本寫「第 9／12 期」，看起來
+// 像正在繳第 9 期；其實是已經繳了 9 期。改成「已繳 9／12 期・下一期 10/12」。
+// v2.19.0：這個月那一期已經確認或略過了 → 清單上不再顯示「確認本期」，改顯示狀態
+// （原本只比對「下次扣款日」，略過 10/5 之後下次變 11/5，按鈕又冒出來）。
+function monthOccHandled(item) {
+  if (!item || item.freq !== 'monthly' || !item.billing_day || !item.last_confirmed_date) return null;
+  const t = new Date(), y = t.getFullYear(), m = t.getMonth() + 1;
+  const occ = `${y}-${String(m).padStart(2,'0')}-${String(Math.min(item.billing_day, new Date(y, m, 0).getDate())).padStart(2,'0')}`;
+  if (item.last_confirmed_date < occ) return null;
+  const last = item.skipped_periods?.at?.(-1);
+  return last && last.occ === item.last_confirmed_date ? '本月已略過' : '本月已確認';
+}
+const ROW_STATUS = t => `<span style="font-size:11px;color:var(--green);flex-shrink:0;white-space:nowrap;width:76px;text-align:center">✓ ${t}</span>`;
+function instNextLabel(item) {
+  const paid = item.paid_periods || 0;
+  if (paid >= item.total_periods) return '已繳完';
+  if (!item.due_day) return '';
+  const t = new Date(); t.setHours(0,0,0,0);
+  const ym = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
+  let y = t.getFullYear(), m = t.getMonth() + 1;
+  if (item.last_paid_ym && item.last_paid_ym >= ym) { m += 1; if (m > 12) { m = 1; y += 1; } }
+  const d = Math.min(item.due_day, new Date(y, m, 0).getDate());
+  return `下一期 ${m}/${d}`;
+}
 async function openInstallmentModal(item=null) {
   await loadData();
   const { accounts, banks } = state;
@@ -10867,8 +10891,8 @@ async function openInstallmentModal(item=null) {
   }).join('');
   document.getElementById('instAcc').value = item?.account_id??'';
 
-  document.getElementById('instCc').innerHTML = cards.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  document.getElementById('instCc').value = item?.cc_id??'';
+  document.getElementById('instCc').innerHTML = `<option value="">── 選擇信用卡 ──</option>` + cards.map(c=>`<option value="${c.id}">${escHtml(c.name)}</option>`).join('');
+  document.getElementById('instCc').value = cards.some(c => c.id === item?.cc_id) ? item.cc_id : '';
 
   payTypeSel.onchange = () => {
     const pt = payTypeSel.value;
@@ -11111,7 +11135,7 @@ async function renderRecurring() {
     row.style.cssText=`display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 18px;border-top:1px solid var(--border);font-size:12px${isExpiredItem?';opacity:.5':''}`;
     row.innerHTML = `
       <span style="width:8px;height:8px;border-radius:50%;background:${dotColor};flex-shrink:0"></span>
-      <div style="flex:1">
+      <div style="flex:1;min-width:0">
         <div style="font-weight:500;font-size:13px;display:flex;align-items:center;gap:6px">
           ${item.name}
           ${isExpiredItem?'<span style="font-size:10px;background:#F3F4F6;color:#6B7280;padding:1px 6px;border-radius:4px">已結束</span>':''}
@@ -11122,17 +11146,16 @@ async function renderRecurring() {
           ${payStr?`<span>${payStr}</span>`:''}
           ${endLabel?`<span>${endLabel}</span>`:''}
           ${item.note?`<span>${item.note}</span>`:''}
-          ${skipChipHtml('recurring_expenses', item)}
         </div>
       </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-weight:600;color:var(--red)">${fmtCurrency(item.amount, item.currency||'TWD')}</div>
+      <div style="text-align:right;flex-shrink:0;min-width:72px">
+        <div style="font-weight:600;color:var(--red);white-space:nowrap">${fmtCurrency(item.amount, item.currency||'TWD')}</div>
         <div style="font-size:10px;color:var(--text-3)">${freqLabel[item.freq]??item.freq}</div>
       </div>
-      ${(!isExpiredItem && nextCharge && nextCharge===item.last_confirmed_date)
-        ? (currentSkip('recurring_expenses', item) ? '' : '<span style="font-size:10px;color:var(--green);flex-shrink:0;white-space:nowrap">✓ 本期已確認</span>')
-        : isExpiredItem ? '' : `<button class="btn btn-primary btn-sm" style="font-size:11px;white-space:nowrap;flex-shrink:0" data-confirm-rec="${item.id}">確認本期</button>`}
-      <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-rec="${item.id}">編輯</button>`;
+      ${(!isExpiredItem && (monthOccHandled(item) || (nextCharge && nextCharge===item.last_confirmed_date)))
+        ? ROW_STATUS(monthOccHandled(item) || (currentSkip('recurring_expenses', item) ? '已略過' : '本期已確認'))
+        : isExpiredItem ? '' : `<button class="btn btn-primary btn-sm" style="font-size:11px;white-space:nowrap;flex-shrink:0;width:76px" data-confirm-rec="${item.id}">確認本期</button>`}
+      <button class="btn btn-ghost btn-sm" style="font-size:11px;white-space:nowrap;flex-shrink:0" data-edit-rec="${item.id}">編輯</button>`;
     row.querySelector(`[data-edit-rec]`).addEventListener('click', () => openRecurringModal(item));
     // §卅六（2026-09-29，使用者回報「確認本期存下來的日期變成按確認那天，不
     // 是原本到期那天」修正）：原本沒有帶 date，openExpenseModal 就會用
@@ -11230,14 +11253,14 @@ async function renderRecurring() {
         const row = el('div');
         row.style.cssText=`display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 18px;border-top:1px solid var(--border);font-size:12px${done?';opacity:.5':''}`;
         row.innerHTML = `
-          <div style="flex:1">
+          <div style="flex:1;min-width:0">
             <div style="font-weight:500;font-size:13px">${item.name}${done?'　<span style="font-size:10px;background:#F3F4F6;color:#6B7280;padding:1px 6px;border-radius:4px">已繳完</span>':''}</div>
-            <div style="color:var(--text-3);margin-top:2px">第 ${item.paid_periods||0}／${item.total_periods} 期${item.note?'・'+item.note:''}</div>
+            <div style="color:var(--text-3);margin-top:2px">${done ? `已繳完 ${item.total_periods} 期` : `已繳 ${item.paid_periods||0}／${item.total_periods} 期${instNextLabel(item) ? '・' + instNextLabel(item) : ''}`}${item.note?'・'+escHtml(item.note):''}</div>
           </div>
           <div style="text-align:right;flex-shrink:0">
             <div style="font-weight:600;color:var(--red)">NT$ ${fmt(perAmt)}／期</div>
           </div>
-          <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-inst="${item.id}">編輯</button>`;
+          <button class="btn btn-ghost btn-sm" style="font-size:11px;white-space:nowrap;flex-shrink:0" data-edit-inst="${item.id}">編輯</button>`;
         row.querySelector('[data-edit-inst]').addEventListener('click', () => openInstallmentModal(item));
         body.appendChild(row);
       });
@@ -11901,6 +11924,19 @@ async function renderDcaSchedules() {
   toolbar.appendChild(addBtn);
   content.appendChild(toolbar);
 
+  // v2.19.0（使用者：定期定額也是每個月都要付出去的錢）：比照定期支出頁，
+  // 頂端列出每月／每年扣款合計；每月計畫裡算在「投資」，一樣先從收入扣掉。
+  if (items.length > 0) {
+    const fx = state.fxRates || {};
+    const monthly = items.reduce((t, i) => t + calcRecurringMonthlyEquivalent(i, fx), 0);
+    const statsRow = el('div'); statsRow.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 6px';
+    statsRow.innerHTML = [['📅 每月扣款', monthly], ['🗓️ 每年扣款', monthly * 12]].map(([l, v]) => `<div class="card" style="padding:14px 16px"><div style="font-size:11px;color:var(--text-3);margin-bottom:4px">${l}</div><div style="font-size:18px;font-weight:700;color:var(--red)">NT$ ${fmt(Math.round(v))}</div></div>`).join('');
+    content.appendChild(statsRow);
+    const note = el('div'); note.style.cssText='font-size:11px;color:var(--text-3);margin-bottom:14px';
+    note.textContent = '每月計畫裡算在「投資」，跟固定支出一樣，先從每月收入扣掉；也會算進首頁的「本月還要付」。';
+    content.appendChild(note);
+  }
+
   if (items.length === 0 && expired.length === 0) {
     const empty = el('div','card');
     empty.style.cssText='padding:48px;text-align:center;color:var(--text-3);font-size:13px';
@@ -11923,22 +11959,21 @@ async function renderDcaSchedules() {
     const row = el('div');
     row.style.cssText=`display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 18px;border-top:1px solid var(--border);font-size:12px${isExpiredItem?';opacity:.5':''}`;
     row.innerHTML = `
-      <div style="flex:1">
+      <div style="flex:1;min-width:0">
         <div style="font-weight:500;font-size:13px;display:flex;align-items:center;gap:6px">
           ${holdingLabel(item)}
           ${isExpiredItem?'<span style="font-size:10px;background:#F3F4F6;color:#6B7280;padding:1px 6px;border-radius:4px">已結束</span>':''}
         </div>
         <div style="color:var(--text-3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
           <span>${dayLabel(item)}</span>
-          ${skipChipHtml('dca_schedules', item)}
           ${item.note?`<span>${item.note}</span>`:''}
         </div>
       </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-weight:600">${fmtCurrency(item.amount, item.currency||'TWD')}</div>
+      <div style="text-align:right;flex-shrink:0;min-width:72px">
+        <div style="font-weight:600;white-space:nowrap">${fmtCurrency(item.amount, item.currency||'TWD')}</div>
       </div>
-      ${isExpiredItem?'':`<button class="btn btn-primary btn-sm" style="font-size:11px;white-space:nowrap;flex-shrink:0" data-confirm-dca="${item.id}">確認本期</button>`}
-      <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-dca="${item.id}">編輯</button>`;
+      ${isExpiredItem?'':(monthOccHandled(item) ? ROW_STATUS(monthOccHandled(item)) : `<button class="btn btn-primary btn-sm" style="font-size:11px;white-space:nowrap;flex-shrink:0;width:76px" data-confirm-dca="${item.id}">確認本期</button>`)}
+      <button class="btn btn-ghost btn-sm" style="font-size:11px;white-space:nowrap;flex-shrink:0" data-edit-dca="${item.id}">編輯</button>`;
     row.querySelector(`[data-edit-dca]`).addEventListener('click', () => openDcaScheduleModal(item));
     // §卅六：這一頁（定期定額排程頁本身，非月曆）原本也沒有帶日期，一樣改用
     // 頂層的 computeNextChargeDate() 算「下次扣款日」，custom 週期算不出來時
