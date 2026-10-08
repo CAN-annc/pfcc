@@ -417,29 +417,57 @@ export async function seedIfNeeded(db) {
 // (with a different, more complete expense list) while this export sat
 // unused — the two had drifted apart. Consolidated here 2026-09-16;
 // index.html now imports this instead of keeping its own copy.
+// v2.21.0（使用者決定）：主分類／子分類。parent_id 指向主分類（主分類本身是
+// null）；group:'save' 是「存下來的」（投資、儲蓄險——錢沒有花掉，只是換地方
+// 放，不算消費）；irregular_default 是預設算「一次性收入」（不進每月計畫基準）。
+// 舊版就有的分類沿用原本的 id（舊紀錄不用改），見 index.html migrateCategoryTreeV1。
+const _PC = {cat_food:'#EA580C', cat_housing:'#0F766E', cat_transport:'#0369A1', cat_shopping:'#DB2777', cat_daily:'#65A30D', cat_digital:'#4F46E5', cat_entertain:'#D97706', cat_edu:'#7C3AED', cat_medical:'#DC2626', cat_insurance:'#0891B2', cat_social:'#BE185D', cat_tax:'#57534E', cat_other_out:'#6B7280', cat_saving:'#15803D', cat_inc_active:'#059669', cat_inc_invest:'#0369A1', cat_other_in:'#6B7280'};
+const _sub = (parent, type, list, startOrder = 1) => list.map(([id, label, icon, extra], i) =>
+  ({ id, type, label, icon, color: _PC[parent] || '#6B7280', sort_order: startOrder + i, is_default: true, parent_id: parent, ...(extra || {}) }));
 export const DEFAULT_CATEGORIES = [
-  { id:'cat_salary',     type:'income',  label:'薪資 / 獎金',  icon:'💼', color:'#059669', sort_order:1, is_default:true },
-  { id:'cat_div_tw',     type:'income',  label:'股利（台股）', icon:'🏦', color:'#0369A1', sort_order:2, is_default:true },
-  { id:'cat_div_us',     type:'income',  label:'股息（美股）', icon:'🌐', color:'#7C3AED', sort_order:3, is_default:true },
-  { id:'cat_dca',        type:'income',  label:'定期定額成交', icon:'🔄', color:'#D97706', sort_order:4, is_default:true },
-  { id:'cat_fee_rebate', type:'income',  label:'手續費退回',   icon:'↩️', color:'#0891B2', sort_order:5, is_default:true },
-  { id:'cat_receivable', type:'income',  label:'應收款入帳',   icon:'✓',  color:'#16803C', sort_order:6, is_default:true },
-  { id:'cat_interest',   type:'income',  label:'利息收入',     icon:'🏧', color:'#475569', sort_order:7, is_default:true },
-  { id:'cat_other_in',   type:'income',  label:'其他收入',     icon:'＋', color:'#6B7280', sort_order:8, is_default:true },
-  { id:'cat_realized',   type:'income',  label:'投資已實現損益', icon:'💹', color:'#0F766E', sort_order:9, is_default:true },
-  { id:'cat_food',       type:'expense', label:'餐飲',         icon:'🍽️', color:'#EA580C', sort_order:1, is_default:true },
-  { id:'cat_transport',  type:'expense', label:'交通',         icon:'🚌', color:'#0369A1', sort_order:2, is_default:true },
-  { id:'cat_shopping',   type:'expense', label:'購物',         icon:'🛍️', color:'#DB2777', sort_order:3, is_default:true },
-  { id:'cat_bill',       type:'expense', label:'帳單 / 水電',  icon:'📄', color:'#475569', sort_order:4, is_default:true },
-  { id:'cat_invest_out', type:'expense', label:'投資',         icon:'📈', color:'#7C3AED', sort_order:5, is_default:true },
-  { id:'cat_medical',    type:'expense', label:'醫療',         icon:'🏥', color:'#DC2626', sort_order:6, is_default:true },
-  { id:'cat_entertain',  type:'expense', label:'娛樂',         icon:'🎬', color:'#D97706', sort_order:7, is_default:true },
-  { id:'cat_other_out',  type:'expense', label:'其他支出',     icon:'➖', color:'#6B7280', sort_order:8, is_default:true },
-  // 應收款「不再追討」時自動沖銷用——見 index.html 的 ensureBadDebtCategory()，
-  // 該函式會在既有使用者（categories 表已經 seed 過、不會再跑
-  // seedCategoriesIfNeeded）身上以相同 id 補建這筆分類。
-  { id:'cat_bad_debt_writeoff', type:'expense', label:'呆帳沖銷', icon:'🗑️', color:'#991B1B', sort_order:9, is_default:true },
+  // ── 支出：主分類 ──
+  { id:'cat_food',       type:'expense', label:'飲食',     icon:'🍽️', color:'#EA580C', sort_order:1,  is_default:true, parent_id:null },
+  { id:'cat_housing',    type:'expense', label:'居住',     icon:'🏠', color:'#0F766E', sort_order:2,  is_default:true, parent_id:null },
+  { id:'cat_transport',  type:'expense', label:'交通',     icon:'🚌', color:'#0369A1', sort_order:3,  is_default:true, parent_id:null },
+  { id:'cat_shopping',   type:'expense', label:'購物',     icon:'🛍️', color:'#DB2777', sort_order:4,  is_default:true, parent_id:null },
+  { id:'cat_daily',      type:'expense', label:'生活用品', icon:'🧴', color:'#65A30D', sort_order:5,  is_default:true, parent_id:null },
+  { id:'cat_digital',    type:'expense', label:'數位',     icon:'📱', color:'#4F46E5', sort_order:6,  is_default:true, parent_id:null },
+  { id:'cat_entertain',  type:'expense', label:'娛樂',     icon:'🎬', color:'#D97706', sort_order:7,  is_default:true, parent_id:null },
+  { id:'cat_edu',        type:'expense', label:'教育',     icon:'📚', color:'#7C3AED', sort_order:8,  is_default:true, parent_id:null },
+  { id:'cat_medical',    type:'expense', label:'醫療保健', icon:'🏥', color:'#DC2626', sort_order:9,  is_default:true, parent_id:null },
+  { id:'cat_insurance',  type:'expense', label:'保險',     icon:'🛡️', color:'#0891B2', sort_order:10, is_default:true, parent_id:null },
+  { id:'cat_social',     type:'expense', label:'人情',     icon:'🎁', color:'#BE185D', sort_order:11, is_default:true, parent_id:null },
+  { id:'cat_tax',        type:'expense', label:'稅費',     icon:'🧾', color:'#57534E', sort_order:12, is_default:true, parent_id:null },
+  { id:'cat_other_out',  type:'expense', label:'其他',     icon:'➖', color:'#6B7280', sort_order:13, is_default:true, parent_id:null },
+  { id:'cat_saving',     type:'expense', label:'存下來的', icon:'🏦', color:'#15803D', sort_order:14, is_default:true, parent_id:null, group:'save' },
+  // ── 支出：子分類 ──
+  ..._sub('cat_food', 'expense', [['cat_food_breakfast','早餐','🥐'],['cat_food_lunch','午餐','🍱'],['cat_food_dinner','晚餐','🍲'],['cat_food_supper','宵夜','🌙'],['cat_food_snack','點心','🍰'],['cat_food_drink','飲料','🧋'],['cat_food_party','聚餐','🍻'],['cat_food_grocery','買菜','🥬']]),
+  ..._sub('cat_housing', 'expense', [['cat_house_rent','房租／房貸','🔑'],['cat_bill','水電瓦斯','💡'],['cat_house_mgmt','管理費','🏢'],['cat_house_net','網路','🌐'],['cat_house_repair','修繕','🔧']]),
+  ..._sub('cat_transport', 'expense', [['cat_tr_hsr','高鐵','🚄'],['cat_tr_tra','台鐵','🚆'],['cat_tr_mrt','捷運','🚇'],['cat_tr_bus','公車','🚌'],['cat_tr_taxi','計程車','🚕'],['cat_tr_fuel','加油','⛽'],['cat_tr_park','停車','🅿️'],['cat_tr_service','汽機車保養','🛠️']]),
+  ..._sub('cat_shopping', 'expense', [['cat_shop_clothes','服飾','👕'],['cat_shop_makeup','化妝品','💄'],['cat_shop_skin','保養品','🧴'],['cat_shop_3c','3C 家電','💻']]),
+  ..._sub('cat_daily', 'expense', [['cat_daily_clean','清潔用品','🧽'],['cat_daily_hygiene','衛生用品','🧻']]),
+  ..._sub('cat_digital', 'expense', [['cat_dig_phone','電信費','📶'],['cat_dig_app','App 訂閱','📲'],['cat_dig_stream','影音串流','📺']]),
+  ..._sub('cat_entertain', 'expense', [['cat_ent_movie','電影','🎞️'],['cat_ent_ktv','唱歌','🎤'],['cat_ent_travel','旅遊','✈️'],['cat_ent_hobby','興趣','🎨']]),
+  ..._sub('cat_edu', 'expense', [['cat_edu_course','課程','🎓'],['cat_edu_book','書籍','📖'],['cat_edu_gym','健身','🏋️']]),
+  ..._sub('cat_medical', 'expense', [['cat_med_clinic','看診','🩺'],['cat_med_drug','藥品','💊'],['cat_med_supp','保健食品','🫙']]),
+  ..._sub('cat_insurance', 'expense', [['cat_ins_health','健康險','❤️'],['cat_ins_accident','意外險','🩹'],['cat_ins_vehicle','汽機車險','🚗']]),
+  ..._sub('cat_social', 'expense', [['cat_soc_envelope','紅白包','🧧'],['cat_soc_gift','禮物','🎁']]),
+  ..._sub('cat_tax', 'expense', [['cat_tax_income','所得稅','🧾'],['cat_tax_license','牌照稅','🚘'],['cat_tax_fuel','燃料稅','⛽'],['cat_tax_land','地價稅','🗺️'],['cat_tax_house','房屋稅','🏠']]),
+  ..._sub('cat_other_out', 'expense', [['cat_bad_debt_writeoff','呆帳沖銷','🗑️']]),
+  ..._sub('cat_saving', 'expense', [['cat_invest_out','投資','📈',{ group:'save' }],['cat_savings_ins','儲蓄險','🏦',{ group:'save' }]]),
+  // ── 收入 ──
+  { id:'cat_inc_active', type:'income', label:'主動收入',   icon:'💼', color:'#059669', sort_order:1, is_default:true, parent_id:null },
+  { id:'cat_inc_invest', type:'income', label:'投資與被動', icon:'📈', color:'#0369A1', sort_order:2, is_default:true, parent_id:null },
+  { id:'cat_other_in',   type:'income', label:'其他',       icon:'＋', color:'#6B7280', sort_order:3, is_default:true, parent_id:null },
+  ..._sub('cat_inc_active', 'income', [['cat_salary','薪資','💼'],['cat_bonus','獎金','🎉',{ irregular_default:true }],['cat_inc_freelance','兼職接案','🧑‍💻'],['cat_inc_commission','佣金','🤝']]),
+  ..._sub('cat_inc_invest', 'income', [['cat_interest','利息','🏧'],['cat_div_tw','股利（台股）','🏦'],['cat_div_us','股息（美股）','🌐'],['cat_inc_rent','租金','🏘️',{ passive:true }],['cat_realized','已實現損益','💹',{ irregular_default:true }],['cat_dca','定期定額成交','🔄']]),
+  ..._sub('cat_other_in', 'income', [['cat_inc_refund','退稅補助','🏛️',{ irregular_default:true }],['cat_inc_gift','紅包贈與','🧧',{ irregular_default:true }],['cat_inc_secondhand','二手變賣','♻️',{ irregular_default:true }],['cat_inc_lottery','發票中獎','🎫',{ irregular_default:true }],['cat_fee_rebate','手續費退回','↩️'],['cat_receivable','應收款入帳','✓']]),
 ];
+// 舊版預設分類的名稱——使用者沒改過名才換成新名稱（改過的保留）。
+export const LEGACY_CATEGORY_LABELS = {
+  cat_food:'餐飲', cat_medical:'醫療', cat_bill:'帳單 / 水電', cat_other_out:'其他支出',
+  cat_salary:'薪資 / 獎金', cat_interest:'利息收入', cat_other_in:'其他收入', cat_realized:'投資已實現損益',
+};
 
 // Seed default categories — called once when txn_categories is empty
 export async function seedCategoriesIfNeeded(db) {

@@ -208,12 +208,20 @@ export function calcInvestmentAssets(holdings, brokerages, prices, fxRates) {
 // 2026-09-24 新增。跟現金／定存／投資不同，這兩種資產完全沒有可以自動查詢
 // 的市價來源，`current_value` 就是使用者自己輸入、自己更新的數字，這裡純粹
 // 是分組加總換算成台幣，沒有任何估算或推算邏輯。
+// v2.21.0：儲蓄險保單——繳保費會自動累加「累積已繳」(paid_total)；算總資產用哪個
+// 數字由使用者在每張保單選（value_mode）：'auto'（預設）＝填了現在價值（解約金）
+// 就用現在價值、還沒填就用累積已繳；'value'＝一律用現在價值。
+export function policyEffectiveValue(a) {
+  if (a?.type !== 'insurance') return a?.current_value ?? 0;
+  if (a.value_mode === 'value') return a.current_value ?? 0;
+  return (a.current_value > 0) ? a.current_value : (a.paid_total || 0);
+}
 export function calcOtherAssets(otherAssets, fxRates) {
   let totalTWD = 0;
   const enriched = (otherAssets ?? []).map(a => {
-    const valueTWD = toTWD(a.current_value ?? 0, a.currency ?? 'TWD', fxRates);
+    const valueTWD = toTWD(policyEffectiveValue(a), a.currency ?? 'TWD', fxRates);
     totalTWD += valueTWD;
-    return { ...a, valueTWD };
+    return { ...a, valueTWD, effectiveValue: policyEffectiveValue(a) };
   });
   const byType = { insurance: [], realestate: [] };
   enriched.forEach(a => { (byType[a.type] ??= []).push(a); });
@@ -380,6 +388,30 @@ export function resolveExpenseAmountTwd(txn, accounts = [], fxRates = {}) {
   const acc = txn.account_id ? accounts.find(a => a.id === txn.account_id) : null;
   if (acc && acc.currency !== 'TWD') return toTWD(txn.amount || 0, acc.currency, fxRates);
   return txn.amount || 0;
+}
+
+// ── 主／子分類（v2.21.0）──────────────────────────────────────────────────
+// index.html 每次讀分類後呼叫 setCategoryTree(cats)，讓下面這些計算知道：
+//   ・子分類屬於哪個主分類（預算、報表、平均花費都彙總到主分類）；
+//   ・哪些是「存下來的」（group:'save'，例如投資、儲蓄險）——錢沒有花掉，只是
+//     換地方放，不算消費、不算生活支出、不算超支。
+let _catParent = {};
+let _saveCats = new Set(['cat_saving', 'cat_invest_out', 'cat_savings_ins']);
+export function setCategoryTree(cats = []) {
+  _catParent = {};
+  const byId = Object.fromEntries(cats.map(c => [c.id, c]));
+  cats.forEach(c => { if (c.parent_id && byId[c.parent_id]) _catParent[c.id] = c.parent_id; });
+  _saveCats = new Set(cats.filter(c => c.group === 'save' || byId[c.parent_id]?.group === 'save').map(c => c.id));
+}
+export function mainCategoryOf(id) { return (id && _catParent[id]) || id; }
+export function isSavingCategory(id) { return !!id && _saveCats.has(id); }
+// 依主分類排好的樹：[{ main, subs:[...] }]（只回傳 type 符合的）
+export function buildCategoryTree(cats = [], type = null, { includeInactive = true } = {}) {
+  const ok = c => (!type || c.type === type) && (includeInactive || c.active !== false);
+  const ord = (a, b) => (a.sort_order ?? 99) - (b.sort_order ?? 99) || String(a.label).localeCompare(String(b.label));
+  const ids = new Set(cats.map(c => c.id));
+  const mains = cats.filter(c => ok(c) && (!c.parent_id || !ids.has(c.parent_id))).sort(ord);
+  return mains.map(m => ({ main: m, subs: cats.filter(c => ok(c) && c.parent_id === m.id).sort(ord) }));
 }
 
 /**
@@ -665,7 +697,7 @@ export function calcOverspend(incomeTxns, expenseTxns, monthStr, accounts = [], 
   // earmarked：本月已經直接撥進存錢目標的獎金（v2.12.0）——那筆錢已經有用途，
   // 不能拿來抵本月的支出。
   const income = calcMonthlyIncomeTotal(incomeTxns, monthStr, excludeIncome) - (earmarked || 0);
-  const spent = calcMonthlyExpenseTotal(expenseTxns.filter(t => !t.bucket_id && !OVERSPEND_EXCLUDED_EXPENSE.includes(t.category)), monthStr, accounts, fxRates);
+  const spent = calcMonthlyExpenseTotal(expenseTxns.filter(t => !t.bucket_id && !OVERSPEND_EXCLUDED_EXPENSE.includes(t.category) && !isSavingCategory(t.category)), monthStr, accounts, fxRates);
   return { income: Math.round(income), spent: Math.round(spent), overspend: Math.max(0, Math.round(spent - income)) };
 }
 
@@ -1430,13 +1462,52 @@ export function ccPeriodLabel(ym) { return `${Number(ym.slice(5, 7))} 月期`; }
 // 支出（例如旅遊基金裡的花費）、不含系統類別的支出——生活預算只跟這部分比。
 const NON_LIVING_CATEGORIES = ['cat_dca', 'cat_bad_debt_writeoff'];
 export function isLivingExpense(t) {
-  return !t.rec_id && !t.inst_id && !t.bucket_id && !NON_LIVING_CATEGORIES.includes(t.category);
+  return !t.rec_id && !t.inst_id && !t.bucket_id && !NON_LIVING_CATEGORIES.includes(t.category) && !isSavingCategory(t.category);
 }
+// 年繳（或一年以上一次）的定期支出——年度支出預存的對象。
+export function isAnnualItem(r) {
+  return r.freq === 'yearly' || (r.freq === 'custom' && (r.custom_months || 0) >= 12);
+}
+export function calcAnnualReserveTarget(recurringExpenses = [], fxRates = {}) {
+  return Math.round(recurringExpenses.filter(r => !r.is_expired && isAnnualItem(r))
+    .reduce((t, r) => t + toTWD(r.amount || 0, r.currency || 'TWD', fxRates) * (r.freq === 'custom' ? 12 / r.custom_months : 1), 0));
+}
+
+// ── 錢的去向（v2.21.0，使用者決定：收入 → 花掉＋存下來＋剩下）──────────────
+// 花掉＝消費支出（不含「存下來的」分類、呆帳沖銷；含從存錢目標支應的花費）。
+// 存下來＝撥進存錢目標（扣掉從目標拿出來花的）＋投資（定期定額扣款、存下來的
+//         分類）＋新存的定存（扣掉到期領回的）。都從既有資料算，不用另外記。
+// 剩下＝收入－花掉－存下來（還沒安排用途的錢；負數表示動用了以前的存款）。
+export function calcMoneyFlow({ incomeTxns = [], expenseTxns = [], allocations = [], deposits = [], from, to, accounts = [], fxRates = {} }) {
+  const inR = d => !!d && d >= from && d <= to;
+  const income = incomeTxns.filter(t => inR(t.date) && !['cat_receivable', 'cat_dca'].includes(t.category) && !t.dca_spent)
+    .reduce((s, t) => s + resolveIncomeAmountTwd(t), 0);
+  const exp = expenseTxns.filter(t => inR(t.date) && t.category !== 'cat_bad_debt_writeoff');
+  const amt = t => resolveExpenseAmountTwd(t, accounts, fxRates);
+  const spent = exp.filter(t => !isSavingCategory(t.category)).reduce((s, t) => s + amt(t), 0);
+  const allocR = allocations.filter(a => inR(a.date));
+  const goalIn = allocR.filter(a => a.amount > 0).reduce((s, a) => s + a.amount, 0);
+  // 動用＝從目標拿出來花的支出＋自動扣除（例如超支由緊急預備金支應，負數的撥入）
+  const goalUsed = exp.filter(t => t.bucket_id).reduce((s, t) => s + amt(t), 0) - allocR.filter(a => a.amount < 0).reduce((s, a) => s + a.amount, 0);
+  const invest = exp.filter(t => isSavingCategory(t.category) && !t.bucket_id).reduce((s, t) => s + amt(t), 0)
+    + incomeTxns.filter(t => inR(t.date) && t.dca_spent).reduce((s, t) => s + (t.dca_spent || 0) * (t.fx_rate_twd || 1), 0);
+  const depIn = deposits.filter(d => inR(d.start_date)).reduce((s, d) => s + (toTWD(d.principal || 0, d.currency || 'TWD', fxRates) || 0), 0);
+  const depOut = deposits.filter(d => d.status === 'matured' && inR(d.maturity_date)).reduce((s, d) => s + (toTWD(d.principal || 0, d.currency || 'TWD', fxRates) || 0), 0);
+  const goals = goalIn - goalUsed, deposit = depIn - depOut;
+  const saved = goals + invest + deposit;
+  return { income: Math.round(income), spent: Math.round(spent), saved: Math.round(saved), left: Math.round(income - spent - saved),
+    parts: { goals: Math.round(goals), goalIn: Math.round(goalIn), goalUsed: Math.round(goalUsed), invest: Math.round(invest), deposit: Math.round(deposit) } };
+}
+
 export function calcLivingSpent(expenseTxns, monthStr, accounts = [], fxRates = {}) {
   return calcMonthlyExpenseTotal(expenseTxns.filter(isLivingExpense), monthStr, accounts, fxRates);
 }
+// v2.21.0：預算只設在主分類——子分類的花費彙總到主分類。
 export function calcLivingSpentByCategory(expenseTxns, monthStr, accounts = [], fxRates = {}) {
-  return calcMonthlyExpenseByCategory(expenseTxns.filter(isLivingExpense), monthStr, accounts, fxRates);
+  const raw = calcMonthlyExpenseByCategory(expenseTxns.filter(isLivingExpense), monthStr, accounts, fxRates);
+  const out = {};
+  Object.entries(raw).forEach(([k, v]) => { const m = mainCategoryOf(k); out[m] = (out[m] || 0) + v; });
+  return out;
 }
 
 /**
@@ -1446,10 +1517,13 @@ export function calcLivingSpentByCategory(expenseTxns, monthStr, accounts = [], 
  */
 export function calcMonthlyPlan({ income = 0, baseFixed = 0, recurringExpenses = [], installments = [],
   dcaSchedules = [], buckets = [], livingBudget = null, fxRates = {} }) {
+  // v2.21.0：有「年度支出預存」存錢目標時，年繳項目改由它每月預存（列在存下來），
+  // 不再 ÷12 算進固定支出，避免重複。
+  const annualReserve = buckets.some(b => b.is_annual_reserve && b.status !== 'closed');
   const base = income > 0 ? income : (baseFixed || 0);
   const baseSource = income > 0 ? 'income' : (baseFixed > 0 ? 'fixed' : 'none');
   const fixedItems = [
-    ...recurringExpenses.filter(r => !r.is_expired).map(r => ({ id: r.id, kind: 'recurring', name: r.name, category: r.category ?? 'general', amount: calcRecurringMonthlyEquivalent(r, fxRates) })),
+    ...recurringExpenses.filter(r => !r.is_expired && !(annualReserve && isAnnualItem(r))).map(r => ({ id: r.id, kind: 'recurring', name: r.name, category: r.category ?? 'general', amount: calcRecurringMonthlyEquivalent(r, fxRates) })),
     ...installments.filter(i => (i.paid_periods || 0) < i.total_periods).map(i => ({ id: i.id, kind: 'installment', name: i.name, category: i.is_insurance ? 'insurance' : 'installment', amount: i.per_amount ?? Math.round(i.total_amount / i.total_periods) })),
   ].filter(x => x.amount > 0).sort((a, b) => b.amount - a.amount);
   const saveItems = buckets.filter(b => b.status !== 'closed' && !b.is_income_buffer).map(b => {
@@ -1548,7 +1622,8 @@ export function calcSpendable({ accounts = [], fxRates = {}, cards = [], recurri
 export function calcMonthlySavingsSeries(incomeTxns, expenseTxns, months, accounts = [], fxRates = {}, excludeIncome = ['cat_receivable']) {
   return months.map(m => {
     const income = calcMonthlyIncomeTotal(incomeTxns, m, excludeIncome);
-    const expense = calcMonthlyExpenseTotal(expenseTxns, m, accounts, fxRates);
+    // v2.21.0：「存下來的」分類（投資、儲蓄險）不是花掉，算在存下來那邊。
+    const expense = calcMonthlyExpenseTotal(expenseTxns.filter(t => !isSavingCategory(t.category)), m, accounts, fxRates);
     const saved = income - expense;
     return { month: m, income: Math.round(income), expense: Math.round(expense), saved: Math.round(saved), rate: income > 0 ? saved / income * 100 : null };
   });
@@ -1773,7 +1848,7 @@ export function calcRunway({ efHave = 0, liquid = 0, total = 0, essentials = 0, 
 // 資產；不含呆帳沖銷——沒有付出現金）的月平均 × 12。少於 3 個月回傳 null，
 // 由呼叫端改用每月計畫的必要開銷 × 12。
 export function calcAnnualSpend(expenseTxns = [], accounts = [], fxRates = {}, today = new Date()) {
-  const tx = expenseTxns.filter(t => !['cat_dca', 'cat_bad_debt_writeoff'].includes(t.category));
+  const tx = expenseTxns.filter(t => !['cat_dca', 'cat_bad_debt_writeoff'].includes(t.category) && !isSavingCategory(t.category));
   const months = [];
   for (let i = 12; i >= 1; i--) {
     const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
