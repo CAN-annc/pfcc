@@ -430,6 +430,17 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .cal-skipped{display:flex;align-items:center;gap:10px;padding:10px 18px;border-top:1px solid var(--border);font-size:13px}
 .cal-skipped span{flex:1;min-width:0}
 .cal-skipped em{font-style:normal;font-size:11px;color:var(--text-3)}
+.fund-alert{padding:4px 0;border:1px solid color-mix(in srgb,var(--amber) 45%,var(--border));background:color-mix(in srgb,var(--amber) 7%,var(--card))}
+.fa-row{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.fa-row+.fa-row{border-top:1px solid var(--border)}
+.fa-ico{flex-shrink:0;font-size:16px}
+.fa-txt{flex:1;min-width:0}
+.fa-txt b{display:block;font-size:12.5px;line-height:1.5;color:var(--text-1);font-variant-numeric:tabular-nums}
+.fa-txt small{display:block;font-size:11px;color:var(--text-3);margin-top:1px}
+.fa-row .btn{flex-shrink:0}
+.wealth-sec-head{margin:28px 2px 12px;padding-top:18px;border-top:1px solid var(--border)}
+.wealth-sec-head b{display:block;font-size:16px;color:var(--text-1)}
+.wealth-sec-head span{display:block;font-size:11.5px;color:var(--text-3);margin-top:2px}
 .pb-modes{display:flex;flex-direction:column;gap:8px}
 .modal-field .pb-mode{display:flex;color:var(--text-3);font-size:11.5px}
 .modal-field .pb-mode input{width:auto;padding:0;border:0;margin:3px 0 0;flex:0 0 auto}
@@ -1442,6 +1453,24 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <button type="button" class="pc-skip" id="efUseNo"><b>不是，只是剛好從這個帳戶付</b>當成一般支出，預備金不變</button>
     <div class="modal-actions" style="margin-top:12px">
       <button class="btn btn-ghost" id="efUseCancel">取消，先不記</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 扣款前轉帳補足（v2.18.0）── -->
+<div class="modal-overlay" id="topupModal">
+  <div class="modal">
+    <h2>轉帳補足</h2>
+    <p class="pd-sub" id="topupTo"></p>
+    <div class="modal-field"><label>從哪個帳戶轉出</label><select id="topupFrom"></select></div>
+    <div class="field-row">
+      <div class="modal-field"><label>金額</label><input type="number" id="topupAmount" inputmode="decimal" min="0" step="1"></div>
+      <div class="modal-field"><label>手續費</label><input type="number" id="topupFee" inputmode="decimal" min="0" step="1"><div id="topupFeeNote" style="font-size:11px;color:var(--text-3);margin-top:4px"></div></div>
+    </div>
+    <p class="pd-hint">在銀行 App 轉完再按記錄，兩邊帳戶餘額會一起更新。</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="topupCancel">取消</button>
+      <button class="btn btn-primary" id="topupSave">記錄轉帳</button>
     </div>
   </div>
 </div>
@@ -3198,16 +3227,16 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.17.0';
+const APP_VERSION = 'v2.18.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-08';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '記帳入口統一在首頁：紀錄頁拿掉「＋收入」「＋支出」，只負責看、改、刪；要補記過去的日期，用首頁快速記帳的「完整表單」改日期',
-  '修正首頁「緊急預備金還差…」變成橘色、看不清楚',
-  '紀錄頁的排程提醒每一項多一個「這期不用付／這期沒扣款／這期沒轉」：沒有發生的那一期直接略過，不會留下 0 元紀錄；略過的會列在當天下方，可以復原。定期轉帳也可以略過',
+  '定期定額扣款前 3 天檢查扣款帳戶：餘額不夠時首頁提醒「幾號哪個帳戶要扣多少、帳戶只有多少、還差多少」，按「轉帳補足」直接記一筆轉帳',
+  '首頁放「要採取行動的」：「如果沒有收入，可以撐多久」與「可以留意的錢」移到首頁',
+  '資產頁放「累積的狀況」：總覽與趨勢合成一頁往下捲（資產分布 → 成長與趨勢），持倉維持獨立分頁',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3600,7 +3629,7 @@ function closeMoreSheet() {
 async function navigate(view) {
   // v2.9.0：持倉、趨勢收進「資產」，存錢目標收進「計畫」。
   if (view === 'holdings') { _wealthTab = 'holdings'; view = 'wealth'; }
-  else if (view === 'trend') { _wealthTab = 'trend'; view = 'wealth'; }
+  else if (view === 'trend') { _wealthTab = 'overview'; view = 'wealth'; }
   else if (view === 'goals') { _planTab = 'goals'; view = 'plan'; }
   currentView = view;
   // Reset the "which container do the 7 記帳管理 sub-pages render into" hook
@@ -3850,17 +3879,27 @@ async function renderPlanHub() {
   _activeContentContainer = sub;
   if (_planTab === 'goals') await renderBuckets(); else await renderMonthlyPlan();
 }
+// v2.18.0（使用者決定）：首頁放「要採取行動的」，資產頁放「累積的狀況」——
+// 原本的總覽＋趨勢合成一頁往下捲（資產有多少、放在哪、怎麼成長），持倉維持
+// 獨立分頁。「可以撐多久」「可以留意的錢」搬到首頁。
+let _trendContainer = null;
 async function renderWealthHub() {
   const root = document.getElementById('content');
-  const tabs = [{ key: 'overview', label: '總覽' }, ...(_holdingsEnabled ? [{ key: 'holdings', label: '持倉' }] : []), { key: 'trend', label: '趨勢' }];
+  if (_wealthTab === 'trend') _wealthTab = 'overview';
+  const tabs = [{ key: 'overview', label: '資產' }, ...(_holdingsEnabled ? [{ key: 'holdings', label: '持倉' }] : [])];
   if (!tabs.some(t => t.key === _wealthTab)) _wealthTab = 'overview';
   root.innerHTML = '';
-  root.appendChild(buildSegBar(tabs, _wealthTab, k => { _wealthTab = k; renderWealthHub(); window.scrollTo(0, 0); }));
+  if (tabs.length > 1) root.appendChild(buildSegBar(tabs, _wealthTab, k => { _wealthTab = k; renderWealthHub(); window.scrollTo(0, 0); }));
   const sub = el('div'); root.appendChild(sub);
   _activeContentContainer = sub;
-  if (_wealthTab === 'holdings') await renderHoldings();
-  else if (_wealthTab === 'trend') await renderTrend();
-  else await renderAssetOverview();
+  _trendContainer = null;
+  if (_wealthTab === 'holdings') { await renderHoldings(); return; }
+  await renderAssetOverview();
+  const head = el('div'); head.className = 'wealth-sec-head'; head.innerHTML = '<b>成長與趨勢</b><span>資產怎麼變化、每月存了多少、什麼時候達標</span>';
+  root.appendChild(head);
+  const trendBox = el('div'); root.appendChild(trendBox);
+  _trendContainer = trendBox;
+  await renderTrend();
 }
 
 
@@ -4022,6 +4061,80 @@ async function buildIdleMoneyCard() {
 }
 
 // ── 首頁 ────────────────────────────────────────────────────────────────────
+// ── 扣款前三天檢查帳戶餘額（v2.18.0，使用者決定）──────────────────────────
+// App 連不到銀行，不知道有沒有扣到款；能做的是事前提醒。每一筆定期定額各自
+// 判斷（不把未來要扣的錢加總）：下次扣款日在 3 天內、這一期還沒確認、扣款帳戶
+// 的餘額比這筆金額少 → 首頁提醒差多少，旁邊「轉帳補足」。
+function calcDcaFundShortfalls(dcaSchedules = [], accounts = [], fxRates = {}) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const out = [];
+  for (const d of dcaSchedules) {
+    if (d.is_expired || !d.account_id || !(d.amount > 0)) continue;
+    const date = computeNextChargeDate(d);
+    if (!date || date === d.last_confirmed_date) continue;
+    const days = Math.round((new Date(date + 'T00:00:00') - today) / 86400000);
+    if (days < 0 || days > 3) continue;
+    const acc = accounts.find(a => a.id === d.account_id);
+    if (!acc) continue;
+    const accCur = acc.currency || 'TWD', dCur = d.currency || accCur;
+    const need = dCur === accCur ? d.amount : convertAmt(d.amount, dCur, accCur, fxRates);
+    const short = +(need - (acc.balance || 0)).toFixed(2);
+    if (short > 0) out.push({ d, acc, date, days, need, short, cur: accCur });
+  }
+  return out.sort((a, b) => a.days - b.days);
+}
+async function buildDcaFundAlert() {
+  const dcaSchedules = await getAll(db,'dca_schedules').catch(()=>[]);
+  const rows = calcDcaFundShortfalls(dcaSchedules, state.accounts || [], state.fxRates || {});
+  if (!rows.length) return null;
+  const amt = (v, cur) => cur === 'TWD' ? `NT$ ${fmt(Math.ceil(v))}` : `${cur} ${fmt(v, { currency: cur })}`;
+  const box = el('div'); box.className = 'card fund-alert';
+  box.innerHTML = rows.map((r, i) => `<div class="fa-row"><span class="fa-ico">⚠️</span><div class="fa-txt">
+      <b>${Number(r.date.slice(5, 7))}/${Number(r.date.slice(8))} ${escHtml(r.acc.name)}要扣 ${amt(r.need, r.cur)}，帳戶只有 ${amt(r.acc.balance || 0, r.cur)}，還差 ${amt(r.short, r.cur)}</b>
+      <small>${escHtml(r.d.name || '')} 定期定額・${r.days === 0 ? '今天扣款' : `${r.days} 天後扣款`}</small></div>
+      <button type="button" class="btn btn-primary btn-sm" data-fa="${i}">轉帳補足</button></div>`).join('');
+  box.querySelectorAll('[data-fa]').forEach(b => b.addEventListener('click', () => { const r = rows[+b.dataset.fa]; openTopupModal(r.acc, Math.ceil(r.short)); }));
+  return box;
+}
+// 轉帳補足：從另一個帳戶轉進來（同幣別），手續費依轉出帳戶的分流設定估算。
+async function openTopupModal(toAcc, amount) {
+  const accounts = (await getAll(db,'accounts').catch(()=>[])).filter(a => a.id !== toAcc.id && (a.currency || 'TWD') === (toAcc.currency || 'TWD') && a.account_type !== 'transit_card');
+  if (!accounts.length) { showToast('沒有同幣別的其他帳戶可以轉入'); return; }
+  const banks = await getAll(db,'banks').catch(()=>[]);
+  const logs = await getAll(db,'transfer_logs').catch(()=>[]);
+  const label = a => `${banks.find(b => b.id === a.bank_id)?.name ? banks.find(b => b.id === a.bank_id).name + ' · ' : ''}${a.name}`;
+  const modal = document.getElementById('topupModal');
+  document.getElementById('topupTo').textContent = `轉入：${label(toAcc)}`;
+  const sel = document.getElementById('topupFrom');
+  const sorted = [...accounts].sort((a, b) => (b.role === 'income') - (a.role === 'income') || (b.balance || 0) - (a.balance || 0));
+  sel.innerHTML = sorted.map(a => `<option value="${a.id}">${escHtml(label(a))}（餘額 ${fmt(a.balance || 0)}）</option>`).join('');
+  document.getElementById('topupAmount').value = amount;
+  const feeIn = document.getElementById('topupFee');
+  const est = () => {
+    const src = accounts.find(a => a.id === sel.value);
+    const [l] = estimateTransferFees([{ toId: toAcc.id, amount }], { source: src, accounts: [...accounts, toAcc], transferLogs: logs, month: currentMonthStr() });
+    feeIn.value = l.fee || 0;
+    document.getElementById('topupFeeNote').textContent = l.kind === 'same' ? '同行互轉免費' : l.kind === 'free' ? `免費，本月還剩 ${l.left} 次` : l.kind === 'fee' ? '已超過免費次數' : '這個帳戶沒有設定免費次數，有手續費請自己填';
+  };
+  sel.onchange = est; est();
+  document.getElementById('topupCancel').onclick = () => modal.classList.remove('open');
+  modal.onclick = e => { if (e.target === modal) modal.classList.remove('open'); };
+  document.getElementById('topupSave').onclick = async () => {
+    const amt = parseFloat(document.getElementById('topupAmount').value) || 0, fee = parseFloat(feeIn.value) || 0;
+    if (!(amt > 0)) { showToast('請輸入金額'); return; }
+    const from = await getOne(db,'accounts', sel.value), to = await getOne(db,'accounts', toAcc.id);
+    const now = new Date().toISOString();
+    await putOne(db,'accounts',{ ...from, balance: +(from.balance - amt - fee).toFixed(6), updated_at: now });
+    await putOne(db,'accounts',{ ...to, balance: +(to.balance + amt).toFixed(6), updated_at: now });
+    await putOne(db,'transfer_logs',{ id: crypto.randomUUID(), created_at: now, from_account_id: from.id, from_account_name: from.name, from_currency: from.currency, from_amount: amt,
+      to_account_id: to.id, to_account_name: to.name, to_currency: to.currency, to_amount: amt, fx_rate: null, fee: fee || null, note: '扣款前補足' });
+    modal.classList.remove('open');
+    showToast(`✓ 已記錄轉入 ${to.name} NT$ ${fmt(amt)}`);
+    await renderAssets();
+  };
+  modal.classList.add('open');
+}
+
 let _homeSpendOpen = false;
 async function renderHome() {
   await loadData();
@@ -4077,6 +4190,7 @@ async function renderHome() {
     else if (u.type === 'dca') { const d = dcaSchedules.find(x => x.id === u.id); if (d) await openDcaConfirm(d, u.date); }
   }));
   root.appendChild(hero);
+  const fundAlert = await buildDcaFundAlert(); if (fundAlert) root.appendChild(fundAlert);
 
   // 今天還能花＋總資產（兩格）
   const duo = el('div'); duo.className = 'home-duo';
@@ -4113,6 +4227,12 @@ async function renderHome() {
       return `<div class="home-rem-row"><span>${typeIcon[r.type] ?? '📌'}</span><span class="home-rem-l">${escHtml(r.label)}</span>${r.amount != null ? `<span class="home-rem-a" style="color:${inc ? 'var(--green)' : 'var(--text-2)'}">${inc ? '+' : ''}NT$ ${fmt(r.amount)}</span>` : ''}<span class="home-rem-d" style="color:${c}">${fmtDaysLabel(r.daysUntil)}</span></div>`;
     }).join('') : `<div class="home-rem-empty">5 天內沒有要到期或繳款的項目。</div>`);
   root.appendChild(rem);
+
+  // v2.18.0：要採取行動的卡片集中在首頁
+  const runwayCard = await buildRunwayCard();
+  if (runwayCard) root.appendChild(runwayCard);
+  const idleCard = await buildIdleMoneyCard();
+  if (idleCard) root.appendChild(idleCard);
 
   content.appendChild(root);
 }
@@ -4189,10 +4309,7 @@ async function renderAssetOverview() {
   content.appendChild(wrap);
 
   // v2.10.0（重整藍圖第 5 步）：「可以留意的錢」——計畫沒安排到的錢、放錯地方的錢。
-  const runwayCard = await buildRunwayCard();
-  if (runwayCard) content.appendChild(runwayCard);
-  const idleCard = await buildIdleMoneyCard();
-  if (idleCard) content.appendChild(idleCard);
+  // v2.18.0：「可以撐多久」「可以留意的錢」搬到首頁（要採取行動的放首頁）。
 
   // 2026-09-20（見路線圖§十五之五）：甜甜圈圖／最近記錄／本月預算三張卡片
   // 已從資產總覽移除——使用者指出首頁應該只呈現「資產」資訊，收支類的視覺化
@@ -14854,7 +14971,7 @@ async function buildProjectionCard(currentTotal) {
 }
 
 async function renderTrend() {
-  const content = _activeContentContainer || document.getElementById('content');
+  const content = _trendContainer || _activeContentContainer || document.getElementById('content');
   content.innerHTML = '';
 
   const snapshots = (await getAll(db,'asset_snapshots').catch(()=>[])).sort((a,b)=>a.date.localeCompare(b.date));
