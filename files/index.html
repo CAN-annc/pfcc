@@ -121,7 +121,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .topbar{min-height:var(--header-h);background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:env(safe-area-inset-top) 24px 0;gap:12px;position:sticky;top:0;z-index:50}
 .topbar-title{font-size:15px;font-weight:600;flex:1}
 .topbar-right{display:flex;align-items:center;gap:8px}
-.content{padding:24px;display:flex;flex-direction:column;gap:16px;max-width:1100px;min-width:0}
+.content{padding:24px 24px 100px;display:flex;flex-direction:column;gap:16px;max-width:1100px;min-width:0}
 
 /* ── Collapsible card ── */
 .card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
@@ -209,6 +209,13 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hold-num small{font-size:10px;font-weight:400;color:var(--text-3)}
 .hold-num span{font-size:11px;color:var(--text-2)}
 .hold-num span.is-missing{color:var(--text-3);font-style:italic}
+.cal-sched-head{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;padding:12px 18px;font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer}
+.cal-sched-head span{flex:1}
+.cal-sched-head em{font-style:normal;font-size:11px;font-weight:600;color:var(--text-1);background:var(--surface-2);padding:2px 8px;border-radius:999px}
+.cal-sched-head svg{color:var(--text-3);transition:transform .15s}
+.cal-sched-head[aria-expanded=true]{border-bottom:1px solid var(--border)}
+.cal-sched-head[aria-expanded=true] svg{transform:rotate(90deg)}
+.cal-sched-head:focus-visible{outline:2px solid var(--blue);outline-offset:-2px;border-radius:12px}
 .cat-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .cat-pair select{width:100%;min-width:0}
 .cat-pair select:disabled{opacity:.55}
@@ -442,6 +449,7 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .seg-btn{flex:1;font:inherit;font-size:13px;font-weight:600;padding:8px 6px;border:none;border-radius:8px;background:transparent;color:var(--text-2);cursor:pointer}
 .seg-btn.on{background:var(--card);color:var(--text-1);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .home2{display:flex;flex-direction:column;gap:12px}
+.home2>.seg{margin-bottom:2px}
 .sp-hero{position:relative}
 .sp-toggle{margin-top:10px;font:inherit;font-size:12px;padding:5px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:inherit;cursor:pointer}
 .sp-rows{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18);display:flex;flex-direction:column;gap:6px}
@@ -805,7 +813,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
   .sidebar{transform:translateX(-220px);width:220px}
   .sidebar.open{transform:translateX(0)}
   .main{margin-left:0}
-  .content{padding:16px 16px calc(84px + env(safe-area-inset-bottom))}
+  .content{padding:16px 16px calc(150px + env(safe-area-inset-bottom))}
   /* §廿三之五：手機版改用底部導覽列，原本開左側抽屜的漢堡圖示隱藏（功能
      移到底部導覽列最右邊的「更多」）——menuBtn 本身與 sidebar.open 的既有
      JS 邏輯都保留不動（safety net），這裡只是用 !important 蓋掉 checkMobile()
@@ -1141,7 +1149,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <a class="nav-item" href="#" data-view="assets"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg>首頁</a>
     <a class="nav-item" href="#" data-view="calendar"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="16" height="16" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>紀錄</a>
     <a class="nav-item" href="#" data-view="plan"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>計畫</a>
-    <a class="nav-item" href="#" data-view="wealth"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M21 12A9 9 0 1112 3v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z"/></svg>資產</a>
+    <a class="nav-item" href="#" data-view="wealth"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M21 12A9 9 0 1112 3v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z"/></svg>持倉</a>
     <div class="nav-section">管理</div>
     <a class="nav-item" href="#" data-view="txnmanage">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
@@ -1219,7 +1227,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <a class="nav-item" href="#" data-view="assets"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg>首頁</a>
     <a class="nav-item" href="#" data-view="calendar"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>紀錄</a>
     <a class="nav-item" href="#" data-view="plan"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>計畫</a>
-    <a class="nav-item" href="#" data-view="wealth"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M21 12A9 9 0 1112 3v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z"/></svg>資產</a>
+    <a class="nav-item" href="#" data-view="wealth"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M21 12A9 9 0 1112 3v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z"/></svg>持倉</a>
     <button type="button" class="bottom-nav-more" id="moreNavBtn" aria-label="更多">
       <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       更多
@@ -3252,9 +3260,9 @@ function buildReorderButtons(isFirst, isLast, onMove) {
 }
 
 function applyHoldingsVisibility(enabled) {
-  // v2.9.0：持倉收進「資產」頁的分頁，關掉時只是不顯示那個分頁。
+  // v2.22.0：資產總覽併進首頁的分頁，底部導覽列這一格只剩「持倉」——關掉持倉時整格隱藏。
   _holdingsEnabled = !!enabled;
-  if (!enabled && _wealthTab === 'holdings') _wealthTab = 'overview';
+  document.querySelectorAll('.nav-item[data-view="wealth"]').forEach(a => { a.style.display = enabled ? '' : 'none'; });
 }
 // Categories excluded from the "monthly income" figure that drives Bucket
 // percentage-based auto-contribution: 應收款入帳 isn't new money (it's
@@ -3344,14 +3352,17 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.21.1';
+const APP_VERSION = 'v2.22.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-08';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '記帳、確認本期、固定支出的分類改成兩個選單：先選主分類，子分類選填（不再是一長串）',
+  '首頁上方分成「概況｜資產」兩頁：總資產、成長與趨勢併進首頁；底部導覽列原本的「資產」改成「持倉」',
+  '紀錄頁的排程提醒預設收合，點標題才展開',
+  '修正：編輯定期定額、定期轉帳後，已確認或略過的那一期又跑出來；啟動時會從確認紀錄自動補回',
+  '修正：頁面最下面的紀錄被右下角「＋」擋住，刪除鈕點不到',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3626,6 +3637,34 @@ function catOptionsHtml(type, selected = null, { exclude = [], emptyLabel = null
   return html;
 }
 
+
+// v2.22.0：修復「編輯定期定額／定期轉帳／固定支出／分期後，已確認的那一期又跑出來」
+// （舊版存檔整筆覆蓋，把 last_confirmed_date／last_paid_ym 弄丟）。從現有的確認紀錄
+// （收支紀錄、轉帳紀錄上記的「確認的是哪一期」）找回最近確認的那一期補回去。
+// 只往後補、不往前改；用「略過本期」略過的那幾期沒有留下紀錄，找不回來。
+async function repairConfirmState() {
+  const [rec, dca, rt, inst, exp, inc, logs] = await Promise.all(['recurring_expenses','dca_schedules','recurring_transfers','installments','expense_txns','income_txns','transfer_logs'].map(st => getAll(db, st).catch(() => [])));
+  const maxBy = (list, idKey, dateKey) => { const m = {}; list.forEach(t => { const id = t[idKey], d = t[dateKey]; if (id && d && (!m[id] || d > m[id])) m[id] = d; }); return m; };
+  const fixDates = async (store, items, latest) => {
+    let n = 0;
+    for (const it of items) {
+      const skipLast = (it.skipped_periods || []).map(x => x.occ).filter(Boolean).sort().at(-1);
+      const best = [latest[it.id], skipLast].filter(Boolean).sort().at(-1);
+      if (best && best > (it.last_confirmed_date || '')) { await putOne(db, store, { ...it, last_confirmed_date: best }); n++; }
+    }
+    return n;
+  };
+  let n = 0;
+  n += await fixDates('recurring_expenses', rec, maxBy(exp, 'rec_id', 'rec_occ_date'));
+  n += await fixDates('dca_schedules', dca, maxBy(inc, 'dca_schedule_id', 'dca_occ_date'));
+  n += await fixDates('recurring_transfers', rt, maxBy(logs, 'rec_transfer_id', 'rec_occ_date'));
+  const instYm = maxBy(exp, 'inst_id', 'inst_occ_ym');
+  for (const i of inst) {
+    const best = instYm[i.id];
+    if (best && best > (i.last_paid_ym || '')) { await putOne(db, 'installments', { ...i, last_paid_ym: best }); n++; }
+  }
+  return n;
+}
 // v2.21.1（使用者：主項目、子項目放在同一個選單太長）：分成兩個選單——先選主分類，
 // 子分類選填。原本的 <select> 保留（隱藏）當作值的來源，既有讀寫 .value、onchange
 // 的程式都不用改；對它設定 .value 時兩個選單會自動跟著同步。
@@ -3711,6 +3750,7 @@ async function init() {
   await seedCategoriesIfNeeded(db).catch(()=>{});
   await migrateCategoryTreeV1().catch(e => console.warn('[category tree migrate]', e));
   await refreshCatCache();
+  await repairConfirmState().catch(e => console.warn('[repair confirm state]', e));
   // 配色主題 (§十五之四)：套用越早越好，這樣連底下的鎖定畫面都會是選定的主題色，
   // 不會先閃一下預設配色才變成使用者選的主題。
   const themeId = await getSetting(db, 'theme_id', null).catch(() => null);
@@ -3857,8 +3897,9 @@ function closeMoreSheet() {
 
 async function navigate(view) {
   // v2.9.0：持倉、趨勢收進「資產」，存錢目標收進「計畫」。
-  if (view === 'holdings') { _wealthTab = 'holdings'; view = 'wealth'; }
-  else if (view === 'trend') { _wealthTab = 'overview'; view = 'wealth'; }
+  if (view === 'holdings') { view = 'wealth'; }
+  else if (view === 'trend') { _homeTab = 'assets'; view = 'assets'; }
+  else if (view === 'assets') { _homeTab = 'overview'; }
   else if (view === 'goals') { _planTab = 'goals'; view = 'plan'; }
   currentView = view;
   // Reset the "which container do the 7 記帳管理 sub-pages render into" hook
@@ -3879,7 +3920,7 @@ async function navigate(view) {
   // 是 topbar 顯示文字，側邊欄／底部導覽列上的連結文字（資產總覽、收支紀錄）
   // 完全不受影響（navigate() 這裡只處理 topbarTitle 這一個 span，跟 nav-item
   // 的連結文字是兩份獨立的字串，見側邊欄與底部導覽列的 HTML）。
-  const titles = { assets:'手元', plan:'計畫', wealth:'虎の子', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'記帳管理', report:'帳務報表', creditcard:'信用卡', recurring:'固定支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢目標', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
+  const titles = { assets:'手元', plan:'計畫', wealth:'持倉', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'記帳管理', report:'帳務報表', creditcard:'信用卡', recurring:'固定支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢目標', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
   document.getElementById('topbarTitle').textContent = titles[view] ?? view;
   syncQaFab();
   document.getElementById('refreshBtn').style.display = (view === 'assets' || view === 'wealth') ? '' : 'none';
@@ -4083,7 +4124,7 @@ let _homeOpenTile = null;
 // renderAssets()」的刷新呼叫照舊可用——在首頁就重畫首頁，在資產頁就重畫資產頁。
 // ════════════════════════════════════════════════════════════════════════════
 let _planTab = 'plan';
-let _wealthTab = 'overview';
+let _wealthTab = 'holdings';
 let _holdingsEnabled = true;
 async function renderAssets() {
   if (currentView === 'wealth') return renderWealthHub();
@@ -4114,17 +4155,23 @@ async function renderPlanHub() {
 // 原本的總覽＋趨勢合成一頁往下捲（資產有多少、放在哪、怎麼成長），持倉維持
 // 獨立分頁。「可以撐多久」「可以留意的錢」搬到首頁。
 let _trendContainer = null;
+// v2.22.0（使用者決定）：「資產」總覽＋成長與趨勢併進首頁，跟原本資產頁一樣用
+// 上方分頁切換（首頁：概況｜資產）；底部導覽列這一格只剩「持倉」。
+let _homeTab = 'overview';
 async function renderWealthHub() {
   const root = document.getElementById('content');
-  if (_wealthTab === 'trend') _wealthTab = 'overview';
-  const tabs = [{ key: 'overview', label: '資產' }, ...(_holdingsEnabled ? [{ key: 'holdings', label: '持倉' }] : [])];
-  if (!tabs.some(t => t.key === _wealthTab)) _wealthTab = 'overview';
   root.innerHTML = '';
-  if (tabs.length > 1) root.appendChild(buildSegBar(tabs, _wealthTab, k => { _wealthTab = k; renderWealthHub(); window.scrollTo(0, 0); }));
+  _wealthTab = 'holdings';
   const sub = el('div'); root.appendChild(sub);
   _activeContentContainer = sub;
   _trendContainer = null;
-  if (_wealthTab === 'holdings') { await renderHoldings(); return; }
+  if (!_holdingsEnabled) { sub.innerHTML = '<div class="card" style="padding:32px;text-align:center;color:var(--text-3);font-size:13px">持倉頁已在「設定」關閉。</div>'; return; }
+  await renderHoldings();
+}
+async function renderHomeAssets(root) {
+  const sub = el('div'); root.appendChild(sub);
+  _activeContentContainer = sub;
+  _trendContainer = null;
   await renderAssetOverview();
   const head = el('div'); head.className = 'wealth-sec-head'; head.innerHTML = '<b>成長與趨勢</b><span>資產怎麼變化、每月存了多少、什麼時候達標</span>';
   root.appendChild(head);
@@ -4491,6 +4538,13 @@ async function openTopupModal(toAcc, amount) {
 let _homeSpendOpen = false;
 async function renderHome() {
   await loadData();
+  if (_homeTab === 'assets') {
+    const c = document.getElementById('content'); c.innerHTML = '';
+    c.appendChild(buildSegBar([{ key: 'overview', label: '概況' }, { key: 'assets', label: '資產' }], 'assets', k => { _homeTab = k; renderHome(); window.scrollTo(0, 0); }));
+    await renderHomeAssets(c);
+    return;
+  }
+  _activeContentContainer = document.getElementById('content'); _trendContainer = null;
   const { accounts, fxRates, cards, recurringExpenses, installments, reminders, todayAllowance, netWorth, expenseTxns } = state;
   const [buckets, allocations, dcaSchedules, budgets, incomeTxns] = await Promise.all([
     getAll(db,'buckets').catch(()=>[]), getAll(db,'bucket_allocations').catch(()=>[]), getAll(db,'dca_schedules').catch(()=>[]),
@@ -4507,6 +4561,7 @@ async function renderHome() {
   const content = document.getElementById('content');
   content.innerHTML = '';
   const root = el('div'); root.className = 'home2';
+  root.appendChild(buildSegBar([{ key: 'overview', label: '概況' }, { key: 'assets', label: '資產' }], 'overview', k => { _homeTab = k; renderHome(); window.scrollTo(0, 0); }));
 
   // 可動用資金
   const hero = el('div'); hero.className = 'networth-card sp-hero';
@@ -4552,11 +4607,11 @@ async function renderHome() {
       <span class="home-mini-s">看資產放在哪裡 ›</span>
     </button>`;
   duo.querySelector('[data-go="plan"]').addEventListener('click', () => { _planTab = 'plan'; navigate('plan'); });
-  duo.querySelector('[data-go="wealth"]').addEventListener('click', () => { _wealthTab = 'overview'; navigate('wealth'); });
+  duo.querySelector('[data-go="wealth"]').addEventListener('click', () => { _homeTab = 'assets'; renderHome(); window.scrollTo(0, 0); });
   root.appendChild(duo);
 
   // 旅行中
-  const tripBanner = await buildTripBanner(); if (tripBanner) root.insertBefore(tripBanner, root.firstChild);
+  const tripBanner = await buildTripBanner(); if (tripBanner) root.insertBefore(tripBanner, root.children[1]);
 
   // v2.18.0：要採取行動的卡片集中在首頁
   const runwayCard = await buildRunwayCard();
@@ -5518,7 +5573,7 @@ async function renderSystemSettings() {
       setHoldingsToggle(next);
       await setSetting(db, 'holdings_page_enabled', next).catch(()=>{});
       applyHoldingsVisibility(next);
-      if (!next && currentView === 'wealth' && _wealthTab === 'holdings') { _wealthTab = 'overview'; await navigate('wealth'); }
+      if (!next && currentView === 'wealth') { _homeTab = 'assets'; await navigate('assets'); }
       showToast(next ? '已開啟「投資持倉」頁面' : '已關閉「投資持倉」頁面');
     };
   }
@@ -6607,7 +6662,7 @@ function refreshHoldingClassIfNeeded(enriched, force = false) {
     } catch (e) {
       console.warn('[classify]', e); _holdClassState = 'error';
     }
-    if (currentView === 'wealth' && _wealthTab === 'holdings') await rerenderHoldingsKeepScroll();
+    if (currentView === 'wealth') await rerenderHoldingsKeepScroll();
   })();
 }
 async function fetchTwseOpenData(path) {
@@ -12443,7 +12498,9 @@ document.getElementById('recTransferModalSave').addEventListener('click',async()
   const endDate  = buildDate('recTransferEndYear','recTransferEndMonth','recTransferEndDay');
   const today2   = new Date().toISOString().slice(0,10);
   const isExpired = endDate && endDate < today2;
+  const prevRt = editId ? await getOne(db,'recurring_transfers',editId) : null;
   await putOne(db,'recurring_transfers',{
+    ...(prevRt || {}),
     id:editId||crypto.randomUUID(), name,
     from_account_id:fromId, to_account_id:toId,
     amount, currency: amountCurrency,
@@ -12735,7 +12792,11 @@ document.getElementById('dcaScheduleModalSave').addEventListener('click',async()
   // calcMonthCalendarItems (which has no access to the holdings list) can
   // label a calendar chip without a lookup.
   const holdingForName = state.holdings.find(h=>h.id===holdingId);
+  // v2.22.0：編輯時保留「這一期已確認／已略過」等欄位（原本整筆覆蓋會弄丟，
+  // 確認過、略過的那一期又跑出來——使用者回報）
+  const prevDca = editId ? await getOne(db,'dca_schedules',editId) : null;
   await putOne(db,'dca_schedules',{
+    ...(prevDca || {}),
     id:editId||crypto.randomUUID(),
     holding_id:holdingId,
     name: holdingForName ? `${holdingForName.ticker} ${holdingForName.name}` : '定期定額',
@@ -12765,7 +12826,7 @@ document.getElementById('dcaScheduleModalSave').addEventListener('click',async()
 // prefill, openConfirmInstModal, openDepositMatureModal, openCcPayModal,
 // openRecTransferConfirmModal) rather than duplicating any save logic.
 // ════════════════════════════════════════════════════════════════════════════
-let _calendarYear = null, _calendarMonth = null, _calendarSelectedDate = null;
+let _calendarYear = null, _calendarMonth = null, _calendarSelectedDate = null, _calSchedOpen = false;
 // 'calendar'（月曆＋當月排程提醒＋實際收支）｜'list'（甜甜圈圖＋可編輯月份清單）。
 // 見路線圖 §十五之五：收支紀錄頁合併了原本的行事曆／收入記帳／支出記帳三個獨立
 // 頁面，使用者可在這兩種檢視模式之間自由切換。刻意保留 currentView 仍只用單一
@@ -13097,11 +13158,13 @@ async function renderCalendar() {
     if (schedItems.length) {
       const card = el('div','card');
       card.style.borderRadius = '16px';
-      const h = el('div');
-      h.style.cssText = 'padding:11px 18px;font-size:12px;font-weight:600;color:var(--text-2);border-bottom:1px solid var(--border)';
-      h.textContent = `${fmtDate(_calendarSelectedDate)}・排程提醒`;
+      // v2.22.0（使用者要求）：排程提醒預設收合，點標題再展開
+      const h = el('button'); h.type = 'button'; h.className = 'cal-sched-head';
+      h.setAttribute('aria-expanded', _calSchedOpen);
+      h.innerHTML = `<span>${fmtDate(_calendarSelectedDate)}・排程提醒</span><em>${schedItems.length} 筆</em><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>`;
+      h.addEventListener('click', () => { _calSchedOpen = !_calSchedOpen; renderCalendar(); });
       card.appendChild(h);
-      schedItems.forEach(it => {
+      if (_calSchedOpen) schedItems.forEach(it => {
         const row = el('div');
         row.style.cssText = 'padding:10px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap';
         const amtColor = it.type==='recurringincome' ? 'var(--green)' : 'var(--text-2)';
