@@ -210,6 +210,17 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hold-num span{font-size:11px;color:var(--text-2)}
 .hold-num span.is-missing{color:var(--text-3);font-style:italic}
 .hold-acts{display:flex;gap:4px}
+.field-row.sell-pair{grid-template-columns:1fr 1fr;gap:12px}
+.sell-sum{margin:4px 0 6px;padding:12px 14px;border-radius:10px;background:var(--surface-2);font-size:12.5px;color:var(--text-2);display:flex;flex-direction:column;gap:5px}
+.sell-sum div{display:flex;justify-content:space-between;gap:12px}
+.sell-sum b{font-weight:600;color:var(--text-1);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sell-sum .sell-strong{padding-bottom:6px;border-bottom:1px dashed var(--border-2)}
+.sell-sum .sell-gain{padding-top:6px;border-top:1px solid var(--border-2);font-size:14px;color:var(--text-1);font-weight:600}
+.sell-sum .sell-gain b{font-size:16px}
+.sell-sum .sell-gain.up b{color:var(--green)}
+.sell-sum .sell-gain.down b{color:var(--red)}
+.sell-sum .sell-gain small{font-size:11px;margin-left:6px;font-weight:600}
+.sell-sum p{margin:2px 0 0;font-size:11px;line-height:1.55;color:var(--text-3)}
 
 /* 持股佔比：依券商的內部組成、產業／屬性快速分類 */
 .hp-sub-title{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.04em;margin-bottom:8px}
@@ -3247,20 +3258,16 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.19.0';
+const APP_VERSION = 'v2.20.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-08';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '記帳改成每一頁右下角的圓形「＋」按鈕，從底部彈出，可切換「支出／收入」；在紀錄頁先選某一天，就記在那一天。首頁只留狀態',
-  '可自由運用只扣「這個月」還沒確認的定期支出、分期、定期定額，下個月的不再提前算進來；明細在「怎麼算的」裡',
-  '確認視窗只留「略過本期」「確認本期」兩顆按鈕；分期付款不能略過；紀錄頁每筆排程只留一顆按鈕',
-  '定期支出、定期定額清單：拿掉「已略過 撤銷」標籤，本月處理過的顯示「✓ 本月已確認／已略過」；金額與按鈕對齊',
-  '定期定額頁頂端加上每月／每年扣款合計',
-  '分期與保險改成「已繳 9／12 期・下一期 10/12」；分期編輯視窗「屬於保險」勾選框、日期欄位顏色、信用卡選單修正',
-  '資產、計畫頁上方的分頁列捲動時會停在頂端，長頁面也能隨時切到「持倉」',
+  '持倉可以「賣出」：輸入股數和成交價，自動扣掉手續費、交易稅與平均成本，算出已實現損益。入帳帳戶加回實際拿到的錢，記成收入的只有賺（或賠）的部分',
+  '定期定額買進時自動更新持倉的平均成本（加權平均、含手續費）',
+  '設定頁編輯類別後不再整頁重畫，類別區塊維持打開、位置不跳',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -4027,7 +4034,7 @@ async function buildQuickIncome({ date = null, onDone = null } = {}) {
   const incomeTxns = await getAll(db,'income_txns').catch(()=>[]);
   const accounts = state.accounts || [];
   const bankMap = Object.fromEntries((state.banks || []).map(b => [b.id, b]));
-  const incCats = cats.filter(c => c.type === 'income' && c.active !== false && !['cat_receivable','cat_dca'].includes(c.id));
+  const incCats = cats.filter(c => c.type === 'income' && c.active !== false && !['cat_receivable','cat_dca','cat_realized'].includes(c.id));
   const useCount = {}; incomeTxns.forEach(t => { useCount[t.category] = (useCount[t.category] || 0) + 1; });
   const topCats = [...incCats].sort((a, b) => (useCount[b.id] || 0) - (useCount[a.id] || 0) || (a.sort_order ?? 99) - (b.sort_order ?? 99)).slice(0, 8);
   const accOpts = accounts.filter(a => a.show_in_menu !== false && (!a.currency || a.currency === 'TWD'));
@@ -5287,6 +5294,7 @@ async function renderSystemSettings() {
   {
     const body = addCollapsible({ key:'catSection', icon:'🏷️', title:'類別設定',
       subtitle:'新增／編輯／停用／刪除收入與支出類別', bodyPadding:'4px 0 0' });
+    _catSettingsBody = body;
     await renderCategories(body);
   }
 
@@ -6953,10 +6961,12 @@ async function renderHoldings() {
                 <div class="hold-id"><b>${escHtml(h.ticker)}</b><span>${escHtml(h.name)}</span></div>
                 <div class="hold-num"><b>${Number(h.shares||0).toLocaleString('en-US',{maximumFractionDigits:isUS?4:0})}<small> 股</small></b><span class="${eh.marketValueTWD==null?'is-missing':''}">${valTxt}</span></div>
                 <div class="hold-acts">
+                  ${(h.shares || 0) > 0 ? `<button class="btn btn-ghost btn-sm" style="font-size:11px" data-sell-hold="${h.id}">賣出</button>` : ''}
                   <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-hold="${h.id}">編輯</button>
                   <button class="btn btn-ghost btn-sm" style="font-size:11px;color:var(--red)" data-del-hold="${h.id}">刪除</button>
                 </div>`;
               hRow.querySelector(`[data-edit-hold]`).addEventListener('click', () => openHoldingModal(h, brokerages, banks));
+              hRow.querySelector(`[data-sell-hold]`)?.addEventListener('click', () => openSellModal(h));
               hRow.querySelector(`[data-del-hold]`).addEventListener('click', () => {
                 openDeleteModal(`確定要刪除持倉「${h.ticker} ${h.name}」嗎？`, async () => {
                   const t = db.transaction(['holdings'],'readwrite');
@@ -8237,8 +8247,12 @@ document.getElementById('holdingModalSave').addEventListener('click',async()=>{
 // 底下重新掛載的類別區塊），沒有嵌入時（safety net 情境）維持呼叫
 // renderCategories() 本身。跟§十五之五 _txnManageActiveTab 的判斷是同一種
 // 「依 currentView 決定刷新哪一頁」寫法。
+// v2.19.0（使用者：每改一個類別名稱，頁面就像重新整理一樣，要一直重新打開
+// 類別設定）：在設定頁裡只重畫類別那一塊，不重畫整頁——展開狀態、捲動位置都留著。
+let _catSettingsBody = null;
 async function refreshCategoriesView() {
-  if (currentView === 'appsettings') await renderSystemSettings();
+  if (currentView === 'appsettings' && _catSettingsBody?.isConnected) { _catSettingsBody.innerHTML = ''; await renderCategories(_catSettingsBody); }
+  else if (currentView === 'appsettings') await renderSystemSettings();
   else await renderCategories();
 }
 
@@ -8249,7 +8263,7 @@ async function refreshCategoriesView() {
 //   所以帳戶餘額、報表總額都不受影響。不想動到舊紀錄的話，「停用」仍然在。
 // - 應收款入帳／定期定額成交／呆帳沖銷是 App 流程本身會用到的系統類別（收入
 //   彈窗靠這兩個類別判斷要不要顯示應收款／定期定額欄位），只能停用、不能刪除。
-const SYSTEM_CATEGORY_IDS = ['cat_receivable', 'cat_dca', 'cat_bad_debt_writeoff'];
+const SYSTEM_CATEGORY_IDS = ['cat_receivable', 'cat_dca', 'cat_bad_debt_writeoff', 'cat_realized'];
 async function openCategoryHardDelete(cat, allCats) {
   const [inc, exp, budgets] = await Promise.all([
     getAll(db,'income_txns').catch(()=>[]), getAll(db,'expense_txns').catch(()=>[]), getAll(db,'budgets').catch(()=>[]),
@@ -8592,19 +8606,23 @@ async function updateReceivablePayment(paymentId, newDate, newAmount, newNote, n
 // 存檔時自動依「交易日期 vs. 今天」算出來（見 expenseModalSave／
 // incomeModalSave），不再對應使用者畫面上任何獨立開關——使用者只會看到
 // 單一的「是否影響帳戶餘額」開關。
+// 一筆收入紀錄對帳戶餘額的影響（正負號）：定期定額成交是扣掉 dca_spent；
+// 賣出股票（v2.19.0）是加上實收金額 sale_proceeds（成本＋損益，不是只有損益）；
+// 其他收入是加上 amount。
+function incomeBalanceDelta(t) {
+  if (t.sale_holding_id) return t.sale_proceeds || 0;
+  if (t.dca_brokerage_id != null || t.dca_holding_id != null) return -(t.dca_spent || 0);
+  return t.amount || 0;
+}
 async function reverseTxnBalanceEffect(t, isIncome) {
   if (t.affects_balance === false || t.defer_balance_effect === true) return;
   if (isIncome) {
     if (!t.account_id) return;
     const acc = await getOne(db, 'accounts', t.account_id);
     if (!acc) return;
-    const isDcaTxn = t.dca_brokerage_id != null || t.dca_holding_id != null;
-    const delta = isDcaTxn ? (t.dca_spent || 0) : (t.amount || 0);
+    const delta = incomeBalanceDelta(t);
     if (!delta) return;
-    // DCA 扣款存檔時是「扣掉」dca_spent，一般收入存檔時是「加上」amount——
-    // 還原時方向要反過來。
-    const newBalance = isDcaTxn ? acc.balance + delta : acc.balance - delta;
-    await putOne(db, 'accounts', { ...acc, balance: +newBalance.toFixed(6), updated_at: new Date().toISOString() });
+    await putOne(db, 'accounts', { ...acc, balance: +(acc.balance - delta).toFixed(6), updated_at: new Date().toISOString() });
   } else {
     if ((t.pay_type === 'account' || t.pay_type === 'cash') && t.account_id) {
       const acc = await getOne(db, 'accounts', t.account_id);
@@ -8656,11 +8674,9 @@ async function applyIncomeBalanceEffect(t) {
   if (!t.account_id) return;
   const acc = await getOne(db, 'accounts', t.account_id);
   if (!acc) return;
-  const isDcaTxn = t.dca_brokerage_id != null || t.dca_holding_id != null;
-  const delta = isDcaTxn ? (t.dca_spent || 0) : (t.amount || 0);
+  const delta = incomeBalanceDelta(t);
   if (!delta) return;
-  const newBalance = isDcaTxn ? acc.balance - delta : acc.balance + delta;
-  await putOne(db, 'accounts', { ...acc, balance: +newBalance.toFixed(6), updated_at: new Date().toISOString() });
+  await putOne(db, 'accounts', { ...acc, balance: +(acc.balance + delta).toFixed(6), updated_at: new Date().toISOString() });
 }
 
 // §四十二（「是否影響帳戶餘額」機制統一）：開關開著、但存檔當下日期還是
@@ -10831,7 +10847,18 @@ async function reverseIncomeSideEffects(t) {
   }
   if (t.dca_holding_id && t.dca_shares) {
     const h = await getOne(db, 'holdings', t.dca_holding_id);
-    if (h) await putOne(db, 'holdings', { ...h, shares: Math.max(0, +((h.shares || 0) - t.dca_shares).toFixed(6)) });
+    if (h) {
+      const shares = Math.max(0, +((h.shares || 0) - t.dca_shares).toFixed(6));
+      // v2.19.0：這筆成交當初加進平均成本的部分一起扣回去
+      let cost_basis = h.cost_basis;
+      if (t.dca_cost_added && h.cost_basis > 0) cost_basis = shares > 0 ? +(((h.cost_basis * (h.shares || 0)) - t.dca_cost_added) / shares).toFixed(4) : h.cost_basis;
+      await putOne(db, 'holdings', { ...h, shares, cost_basis });
+    }
+  }
+  // v2.19.0：賣出股票的紀錄刪掉 → 股數加回去
+  if (t.sale_holding_id && t.sale_shares) {
+    const h = await getOne(db, 'holdings', t.sale_holding_id);
+    if (h) await putOne(db, 'holdings', { ...h, shares: +((h.shares || 0) + t.sale_shares).toFixed(6) });
   }
 }
 
@@ -10872,6 +10899,162 @@ async function reversePeriodConfirmIfNeeded(t, isIncome) {
       await putOne(db,'dca_schedules',{...sched, last_confirmed_date: t.dca_prev_confirmed_date ?? null});
     }
   }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// 賣出股票（v2.19.0，使用者：賣出時只記回收金額不對，要自動扣掉成本算出淨損益）
+// ════════════════════════════════════════════════════════════════════════════
+// 一筆賣出＝一筆收入紀錄（類別「投資已實現損益」），但三個數字分開記：
+//   實收金額＝成交價 × 股數 − 手續費 − 交易稅 → 進入帳帳戶（本金回來不是收入）
+//   成本＝平均成本 × 股數
+//   已實現損益＝實收 − 成本 → 這才是收入紀錄的金額（虧損時是負數）
+// 算「一次性收入」（irregular），不算進每月計畫的基準。刪除紀錄時帳戶扣回實收、
+// 股數加回去；編輯時先整筆撤銷再重算。
+async function ensureRealizedCategory() {
+  const ex = await getOne(db, 'txn_categories', 'cat_realized');
+  if (ex) { if (ex.active === false) await putOne(db, 'txn_categories', { ...ex, active: true }); return ex; }
+  const cat = { id:'cat_realized', type:'income', label:'投資已實現損益', icon:'💹', color:'#0F766E', sort_order:9, is_default:true };
+  await putOne(db, 'txn_categories', cat);
+  return cat;
+}
+function estimateSellCosts(h, gross) {
+  const isTW = (h.market || 'TW') !== 'US';
+  if (!isTW || !(gross > 0)) return { fee: 0, tax: 0 };
+  const fee = Math.max(20, Math.floor(gross * 0.001425));
+  const tax = Math.floor(gross * (h.asset_type === 'etf' ? 0.001 : 0.003));
+  return { fee, tax };
+}
+function calcSale({ shares, price, fee, tax, costPerShare }) {
+  const gross = shares * price;
+  const proceeds = gross - (fee || 0) - (tax || 0);
+  const cost = shares * (costPerShare || 0);
+  return { gross, proceeds, cost, gain: proceeds - cost, pct: cost > 0 ? (proceeds - cost) / cost * 100 : null };
+}
+async function saveStockSale({ editId = null, holdingId, date, shares, price, fee = 0, tax = 0, costPerShare, accId = null }) {
+  if (!date) return { ok: false, error: '請選擇日期' };
+  if (!(shares > 0) || !(price > 0)) return { ok: false, error: '請輸入股數和成交價' };
+  if (!(costPerShare > 0)) return { ok: false, error: '請輸入平均成本，才能算出損益' };
+  const old = editId ? await getOne(db, 'income_txns', editId) : null;
+  if (old) { await reverseTxnBalanceEffect(old, true); await reverseIncomeSideEffects(old); }
+  const h = await getOne(db, 'holdings', holdingId);
+  if (!h) return { ok: false, error: '找不到這筆持倉' };
+  if (shares > (h.shares || 0) + 1e-6) {
+    if (old) { await applyIncomeBalanceEffect(old); await putOne(db, 'holdings', { ...h, shares: Math.max(0, +((h.shares || 0) - old.sale_shares).toFixed(6)) }); }
+    return { ok: false, error: `最多只能賣 ${fmt(h.shares || 0)} 股` };
+  }
+  await ensureRealizedCategory();
+  const hCur = h.currency || (h.market === 'US' ? 'USD' : 'TWD');
+  const acc = accId ? await getOne(db, 'accounts', accId) : null;
+  const currency = acc?.currency || hCur;
+  const rate = currency === 'TWD' ? 1 : (toTWD(1, currency, await getFxRates(db).catch(()=>({}))) || null);
+  const r = calcSale({ shares, price, fee, tax, costPerShare });
+  const todayStr = isoDate(new Date());
+  const affects = !!acc, applyNow = affects && date <= todayStr;
+  const txn = {
+    id: editId || crypto.randomUUID(), date, category: 'cat_realized',
+    description: `賣出 ${h.ticker} ${h.name} ${fmt(shares)} 股`,
+    amount: +r.gain.toFixed(2), account_id: acc?.id ?? null, note: old?.note ?? '',
+    currency, fx_rate_twd: rate, affects_balance: affects, defer_balance_effect: affects && !applyNow,
+    irregular: true, created_at: old?.created_at ?? new Date().toISOString(),
+    sale_holding_id: h.id, sale_shares: shares, sale_price: price, sale_fee: fee || 0, sale_tax: tax || 0,
+    sale_cost_per_share: costPerShare, sale_cost: +r.cost.toFixed(2), sale_proceeds: +r.proceeds.toFixed(2),
+  };
+  await putOne(db, 'holdings', { ...h, shares: Math.max(0, +((h.shares || 0) - shares).toFixed(6)), cost_basis: h.cost_basis > 0 ? h.cost_basis : costPerShare });
+  if (applyNow) await applyIncomeBalanceEffect(txn);
+  await putOne(db, 'income_txns', txn);
+  await syncPlanAutoRows();
+  return { ok: true, txn, ...r };
+}
+function ensureSellModal() {
+  let m = document.getElementById('sellModal');
+  if (m) return m;
+  m = el('div'); m.className = 'modal-overlay'; m.id = 'sellModal';
+  m.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="sellTitle">
+    <h2 id="sellTitle">賣出</h2>
+    <p id="sellHave" style="font-size:12px;color:var(--text-3);margin:-6px 0 12px"></p>
+    <div class="field-row sell-pair">
+      <div class="modal-field"><label for="sellShares">賣出股數</label><input type="number" id="sellShares" inputmode="decimal" min="0" step="any"></div>
+      <div class="modal-field"><label for="sellPrice">成交價（每股）</label><input type="number" id="sellPrice" inputmode="decimal" min="0" step="any"></div>
+    </div>
+    <div class="field-row sell-pair">
+      <div class="modal-field"><label for="sellFee">手續費</label><input type="number" id="sellFee" inputmode="decimal" min="0" step="any"></div>
+      <div class="modal-field"><label for="sellTax">交易稅</label><input type="number" id="sellTax" inputmode="decimal" min="0" step="any"></div>
+    </div>
+    <div class="modal-field"><label for="sellCost">平均成本（每股）</label><input type="number" id="sellCost" inputmode="decimal" min="0" step="any"><div id="sellCostNote" style="font-size:11px;color:var(--text-3);margin-top:4px"></div></div>
+    <div class="field-row">
+      <div class="modal-field"><label for="sellDate">成交日期</label><input type="date" id="sellDate"></div>
+      <div class="modal-field"><label for="sellAcc">入帳帳戶</label><select id="sellAcc"></select></div>
+    </div>
+    <div class="sell-sum" id="sellSum" aria-live="polite"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="sellCancel">取消</button>
+      <button type="button" class="btn btn-primary" id="sellSave">記錄賣出</button>
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  m.querySelector('#sellCancel').addEventListener('click', () => m.classList.remove('open'));
+  return m;
+}
+async function openSellModal(h, txn = null) {
+  if (!h && txn) h = await getOne(db, 'holdings', txn.sale_holding_id);
+  if (!h) { showToast('找不到這筆持倉（可能已刪除），無法編輯這筆賣出'); return; }
+  await loadData();
+  const m = ensureSellModal();
+  const $ = id => m.querySelector('#' + id);
+  const hCur = h.currency || (h.market === 'US' ? 'USD' : 'TWD');
+  const curTxt = hCur === 'TWD' ? 'NT$' : hCur;
+  const money = v => `${v < 0 ? '−' : ''}${curTxt} ${fmt(Math.abs(Math.round(v * 100) / 100))}`;
+  const have = (h.shares || 0) + (txn?.sale_shares || 0);
+  $('sellTitle').textContent = `${txn ? '編輯賣出' : '賣出'}：${h.ticker} ${h.name}`;
+  $('sellHave').textContent = `可賣 ${fmt(have)} 股${h.cost_basis > 0 ? `・平均成本 ${curTxt} ${fmt(h.cost_basis)}` : ''}`;
+  const accs = (state.accounts || []).filter(a => (a.currency || 'TWD') === hCur && a.account_type !== 'transit_card');
+  const brok = (state.brokerages || []).find(b => b.id === h.brokerage_id);
+  const pref = txn?.account_id ?? (accs.find(a => brok?.bank_id && a.bank_id === brok.bank_id && /交割/.test(a.name)) ?? accs.find(a => brok?.bank_id && a.bank_id === brok.bank_id) ?? accs[0])?.id ?? '';
+  const bankName = id => (state.banks || []).find(b => b.id === id)?.name;
+  $('sellAcc').innerHTML = accs.map(a => `<option value="${a.id}">${escHtml(`${bankName(a.bank_id) ? bankName(a.bank_id) + ' · ' : ''}${a.name}`)}</option>`).join('') + `<option value="">不更新帳戶餘額</option>`;
+  $('sellAcc').value = pref;
+  $('sellShares').value = txn?.sale_shares ?? have;
+  $('sellPrice').value = txn?.sale_price ?? ((state.inv?.enriched || []).find(x => x.id === h.id)?.price ?? h.manual_price ?? '');
+  $('sellCost').value = txn?.sale_cost_per_share ?? (h.cost_basis > 0 ? h.cost_basis : '');
+  $('sellCostNote').textContent = h.cost_basis > 0 || txn ? '預設帶入持倉的平均成本（定期定額買進會自動更新），可以改。' : '這筆持倉還沒填平均成本——請填買進時每股的成本（含手續費），才算得出賺賠。';
+  $('sellDate').value = txn?.date ?? isoDate(new Date());
+  $('sellFee').value = txn?.sale_fee ?? ''; $('sellTax').value = txn?.sale_tax ?? '';
+  let feeTouched = !!txn, taxTouched = !!txn;
+  $('sellFee').oninput = () => { feeTouched = true; render(); };
+  $('sellTax').oninput = () => { taxTouched = true; render(); };
+  function render() {
+    const shares = parseFloat($('sellShares').value) || 0, price = parseFloat($('sellPrice').value) || 0;
+    const est = estimateSellCosts(h, shares * price);
+    if (!feeTouched) $('sellFee').value = est.fee || (hCur === 'TWD' ? '' : 0);
+    if (!taxTouched) $('sellTax').value = est.tax || (hCur === 'TWD' ? '' : 0);
+    const r = calcSale({ shares, price, fee: parseFloat($('sellFee').value) || 0, tax: parseFloat($('sellTax').value) || 0, costPerShare: parseFloat($('sellCost').value) || 0 });
+    const ok = shares > 0 && price > 0;
+    const hasCost = (parseFloat($('sellCost').value) || 0) > 0;
+    $('sellSum').innerHTML = ok ? `
+      <div><span>成交金額</span><b>${money(r.gross)}</b></div>
+      <div><span>− 手續費與交易稅</span><b>${money(r.gross - r.proceeds)}</b></div>
+      <div class="sell-strong"><span>實際入帳</span><b>${money(r.proceeds)}</b></div>
+      ${hasCost ? `<div><span>− 成本（${fmt(shares)} 股 × ${fmt(parseFloat($('sellCost').value))}）</span><b>${money(r.cost)}</b></div>
+      <div class="sell-gain ${r.gain >= 0 ? 'up' : 'down'}"><span>已實現損益</span><b>${r.gain >= 0 ? '+' : ''}${money(r.gain)}${r.pct != null ? `<small>${r.gain >= 0 ? '+' : ''}${r.pct.toFixed(1)}%</small>` : ''}</b></div>
+      <p>入帳帳戶加回 ${money(r.proceeds)}；記成收入的只有${r.gain >= 0 ? '賺的' : '賠的'} ${money(Math.abs(r.gain))}（成本是你原本的錢，拿回來不算收入）。</p>` : `<p>填了平均成本才算得出賺賠。</p>`}` : '<p>輸入股數和成交價，就會算出實際入帳和損益。</p>';
+  }
+  ['sellShares','sellPrice','sellCost'].forEach(id => $(id).oninput = render);
+  render();
+  $('sellSave').onclick = async () => {
+    const btn = $('sellSave'); if (btn.disabled) return; btn.disabled = true;
+    try {
+      const res = await saveStockSale({ editId: txn?.id ?? null, holdingId: h.id, date: $('sellDate').value,
+        shares: parseFloat($('sellShares').value) || 0, price: parseFloat($('sellPrice').value) || 0,
+        fee: parseFloat($('sellFee').value) || 0, tax: parseFloat($('sellTax').value) || 0,
+        costPerShare: parseFloat($('sellCost').value) || 0, accId: $('sellAcc').value || null });
+      if (!res.ok) { showToast(res.error); return; }
+      m.classList.remove('open');
+      showToast(`✓ 已記錄賣出，${res.gain >= 0 ? '賺' : '賠'} ${money(Math.abs(res.gain))}`);
+      if (currentView === 'wealth') await renderWealthHub(); else await refreshAfterIncomeSaved();
+    } finally { btn.disabled = false; }
+  };
+  m.classList.add('open');
 }
 
 // ── Installment modal ──────────────────────────────────────────────────────────
@@ -12709,7 +12892,8 @@ async function renderTxnMergedList(content, scope = {}) {
         </div>
       </div>
       <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:${isIncome?'var(--green)':'var(--red)'}">${isIncome?'+':'-'}${t.currency&&t.currency!=='TWD'?fmtCurrency(t.amount,t.currency):'NT$ '+fmt(t.amount)}</div>
+        <div style="font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:${isIncome&&t.amount>=0?'var(--green)':'var(--red)'}">${isIncome&&t.amount>=0?'+':'-'}${t.currency&&t.currency!=='TWD'?fmtCurrency(Math.abs(t.amount),t.currency):'NT$ '+fmt(Math.abs(t.amount))}</div>
+        ${isIncome && t.sale_holding_id ? `<div style="font-size:10px;color:var(--text-3)">實收 ${t.currency&&t.currency!=='TWD'?fmtCurrency(t.sale_proceeds,t.currency):'NT$ '+fmt(t.sale_proceeds)}・成本 ${fmt(t.sale_cost)}</div>` : ''}
         ${t.currency&&t.currency!=='TWD'?`<div style="font-size:10px;color:var(--text-3)">≈ NT$ ${fmt(isIncome?resolveIncomeAmountTwd(t):resolveExpenseAmountTwd(t,accounts,fxRates))}</div>`:''}
         ${isIncome && t.dca_spent && t.dca_spent!==t.amount?`<div style="font-size:10px;color:var(--text-3)">扣款 ${t.currency&&t.currency!=='TWD'?fmtCurrency(t.dca_spent,t.currency):'NT$ '+fmt(t.dca_spent)}</div>`:''}
       </div>
@@ -12717,7 +12901,7 @@ async function renderTxnMergedList(content, scope = {}) {
         <button type="button" class="icon-act" data-edit-txn aria-label="編輯" title="編輯"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>
         <button type="button" class="icon-act danger" data-del-txn aria-label="刪除" title="刪除"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg></button>
       </div>`;
-    row.querySelector('[data-edit-txn]').addEventListener('click', () => isIncome ? openIncomeModal(t) : openExpenseModal(t));
+    row.querySelector('[data-edit-txn]').addEventListener('click', () => isIncome ? (t.sale_holding_id ? openSellModal(null, t) : openIncomeModal(t)) : openExpenseModal(t));
     row.querySelector('[data-del-txn]').addEventListener('click', () => {
       openDeleteModal(`確定要刪除「${t.description||cat.label}」這筆${isIncome?'收入':'支出'}記錄嗎？`, async () => {
         await deleteTxnRecord(t, isIncome);
@@ -13044,7 +13228,7 @@ async function buildReportPage(content) {
             <span class="rpt-txn-amt">${money(amtOf(t, isIncome))}${showOrig?`<small>${fmtCurrency(t.amount, t.currency)}</small>`:''}</span>
             <button type="button" class="btn btn-ghost btn-sm" data-e>編輯</button>
             <button type="button" class="btn btn-ghost btn-sm" style="color:var(--red)" data-d>刪除</button>`;
-          r.querySelector('[data-e]').addEventListener('click', () => isIncome ? openIncomeModal(t) : openExpenseModal(t));
+          r.querySelector('[data-e]').addEventListener('click', () => isIncome ? (t.sale_holding_id ? openSellModal(null, t) : openIncomeModal(t)) : openExpenseModal(t));
           r.querySelector('[data-d]').addEventListener('click', () => openDeleteModal(`確定要刪除「${t.description||info.label}」這筆${kindLabel}記錄嗎？`, async () => {
             await deleteTxnRecord(t, isIncome); showToast('已刪除'); await renderReport();
           }));
@@ -14652,7 +14836,21 @@ async function saveIncomeRecord(input) {
     // Update holding shares
     if (txn.dca_holding_id && txn.dca_shares) {
       const holding = await getOne(db, 'holdings', txn.dca_holding_id);
-      if (holding) await putOne(db, 'holdings', { ...holding, shares: +(holding.shares + txn.dca_shares).toFixed(6) });
+      if (holding) {
+        const newShares = +((holding.shares || 0) + txn.dca_shares).toFixed(6);
+        // v2.19.0：定期定額買進時一併更新平均成本（加權平均，含手續費），賣出時
+        // 才算得出正確的損益。原本沒填成本、又已經有股數的持倉算不出來，維持不動。
+        let cost_basis = holding.cost_basis;
+        if (txn.dca_spent > 0 && (holding.cost_basis > 0 || !(holding.shares > 0))) {
+          const hCur = holding.currency || (holding.market === 'US' ? 'USD' : 'TWD');
+          const add = hCur === currency ? txn.dca_spent : convertAmt(txn.dca_spent, currency, hCur, await getFxRates(db).catch(()=>({})));
+          if (add > 0) {
+            txn.dca_cost_added = +add.toFixed(4);
+            cost_basis = +((((holding.cost_basis || 0) * (holding.shares || 0)) + add) / newShares).toFixed(4);
+          }
+        }
+        await putOne(db, 'holdings', { ...holding, shares: newShares, cost_basis });
+      }
     }
     // Deduct spent from account。affects_balance 關閉或日期在未來時跳過（見 §廿六之 f／§四十二）。
     if (applyNow && acc && txn.dca_spent) {

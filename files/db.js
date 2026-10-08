@@ -426,6 +426,7 @@ export const DEFAULT_CATEGORIES = [
   { id:'cat_receivable', type:'income',  label:'應收款入帳',   icon:'✓',  color:'#16803C', sort_order:6, is_default:true },
   { id:'cat_interest',   type:'income',  label:'利息收入',     icon:'🏧', color:'#475569', sort_order:7, is_default:true },
   { id:'cat_other_in',   type:'income',  label:'其他收入',     icon:'＋', color:'#6B7280', sort_order:8, is_default:true },
+  { id:'cat_realized',   type:'income',  label:'投資已實現損益', icon:'💹', color:'#0F766E', sort_order:9, is_default:true },
   { id:'cat_food',       type:'expense', label:'餐飲',         icon:'🍽️', color:'#EA580C', sort_order:1, is_default:true },
   { id:'cat_transport',  type:'expense', label:'交通',         icon:'🚌', color:'#0369A1', sort_order:2, is_default:true },
   { id:'cat_shopping',   type:'expense', label:'購物',         icon:'🛍️', color:'#DB2777', sort_order:3, is_default:true },
