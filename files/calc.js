@@ -1473,30 +1473,55 @@ export function calcMonthlyPlan({ income = 0, baseFixed = 0, recurringExpenses =
 // ── 可動用資金（v2.9.0，重整藍圖第 2 步）───────────────────────────────────
 // 使用者問的「可以運用的錢有多少」。現金＋活存（所有計入總資產的帳戶，外幣折
 // 台幣）依序扣掉：
-//   1. 必付：信用卡待繳、30 天內要付的定期支出／分期／定期定額（還沒確認的）
+//   1. 必付：信用卡待繳、本月還沒付的定期支出／分期／定期定額（v2.19 起只看本月）
 //   2. 緊急預備金：整個目標金額都要保留（已存的＋還差的缺口）。使用者指出
 //      「預備金還不足」的情況——不足時缺口也要先保留，所以可自由運用可能是 0，
 //      畫面同時顯示還差多少，不讓人誤以為手上錢很多。沒有建立預備金時依
 //      每月計畫的必要開銷 × N 個月當建議目標，一樣先保留。
 //   3. 其他存錢目標已撥入、還沒花掉的錢（已經有用途了）
 // 剩下的才是「可自由運用」。
+// v2.19.0（使用者：「房租 28 天後要繳…那已經是 11 月的事情了，要搞清楚
+// 『每個月的支出』，不要把 30 天內的都放進來」）：本月還要付＝這個月曆月份裡
+// 還沒確認（沒按已付／確認本期／略過）的定期支出、分期、定期定額——包含本月
+// 已過日期但還沒確認的（days 為負），不含下個月的。每週的只算最後確認日之後的。
+export function calcMonthDue({ recurringExpenses = [], installments = [], dcaSchedules = [], fxRates = {} }, today = new Date()) {
+  const t0 = new Date(today); t0.setHours(0, 0, 0, 0);
+  const y = t0.getFullYear(), m = t0.getMonth() + 1, ym = `${y}-${pad2(m)}`;
+  const daysTo = date => Math.round((new Date(date + 'T00:00:00') - t0) / 86400000);
+  const out = [];
+  const push = (type, id, date, label, amount) => out.push({ type, id, date, label, days: daysTo(date), amount: Math.round(amount || 0) });
+  for (const r of recurringExpenses) {
+    if (r.is_expired) continue;
+    let dates = [];
+    if (r.freq === 'monthly') { const dt = monthlyDateInMonth(r.billing_day, y, m); if (dt) dates = [dt]; }
+    else if (r.freq === 'yearly') { const dt = yearlyDateInMonth(r.billing_month, r.billing_day, y, m); if (dt) dates = [dt]; }
+    else if (r.freq === 'weekly') dates = weeklyDatesInMonth(r.billing_weekday, y, m);
+    else if (r.freq === 'custom') { const dt = customDateInMonth(r.next_date, r.custom_months, y, m); if (dt) dates = [dt]; }
+    const amt = toTWD(r.amount || 0, r.currency || 'TWD', fxRates) || 0;
+    dates.filter(d => d > (r.last_confirmed_date || '')).forEach(d => push('recurring', r.id, d, r.name, amt));
+  }
+  for (const i of installments) {
+    if (!i.due_day || (i.paid_periods || 0) >= i.total_periods || i.last_paid_ym === ym) continue;
+    const d = monthlyDateInMonth(i.due_day, y, m);
+    if (d) push('installment', i.id, d, `${i.name} 分期`, i.per_amount ?? Math.round(i.total_amount / i.total_periods));
+  }
+  for (const s of dcaSchedules) {
+    if (s.is_expired) continue;
+    let d = null;
+    if (s.freq === 'monthly') d = monthlyDateInMonth(s.billing_day, y, m);
+    else if (s.freq === 'custom') d = customDateInMonth(s.next_date, s.custom_months, y, m);
+    if (!d || d <= (s.last_confirmed_date || '')) continue;
+    push('dca', s.id, d, `${s.name} 定期定額`, toTWD(s.amount || 0, s.currency || 'TWD', fxRates) || 0);
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date));
+}
+
 export function calcSpendable({ accounts = [], fxRates = {}, cards = [], recurringExpenses = [], installments = [],
-  dcaSchedules = [], buckets = [], allocations = [], expenseTxns = [], essentials = 0, emergencyMonths = 6, windowDays = 30 }) {
+  dcaSchedules = [], buckets = [], allocations = [], expenseTxns = [], essentials = 0, emergencyMonths = 6, today = new Date() }) {
   const liquidAccounts = accounts.filter(a => a.include_in_total !== false);
   const liquid = liquidAccounts.reduce((s, a) => s + (toTWD(a.balance || 0, a.currency || 'TWD', fxRates) || 0), 0);
   const cardsDue = cards.reduce((s, c) => s + Math.max(0, c.current_balance || 0), 0);
-  const recById = Object.fromEntries(recurringExpenses.map(r => [r.id, r]));
-  const upcoming = calcUpcomingReminders({ recurringExpenses, installments }, { windowDays })
-    .filter(r => r.type === 'recurring' || r.type === 'installment')
-    .map(r => ({ type: r.type, id: r.id, date: isoDateAfterDays(r.daysUntil), label: r.label, days: r.daysUntil, amount: r.type === 'recurring' ? (toTWD(r.amount || 0, recById[r.id]?.currency || 'TWD', fxRates) || 0) : (r.amount || 0) }));
-  for (const d of dcaSchedules) {
-    if (d.is_expired || d.freq !== 'monthly' || !d.billing_day) continue;
-    const days = daysToMonthDay(d.billing_day);
-    if (days == null || days > windowDays) continue;
-    if (isoDateAfterDays(days) === d.last_confirmed_date) continue;
-    upcoming.push({ type: 'dca', id: d.id, date: isoDateAfterDays(days), label: `${d.name} 定期定額`, days, amount: toTWD(d.amount || 0, d.currency || 'TWD', fxRates) || 0 });
-  }
-  upcoming.sort((a, b) => a.days - b.days);
+  const upcoming = calcMonthDue({ recurringExpenses, installments, dcaSchedules, fxRates }, today);
   const upcomingTotal = upcoming.reduce((s, u) => s + u.amount, 0);
   const bal = b => calcBucketAllocated(allocations, b.id) - calcBucketSpent(expenseTxns, b.id, accounts, fxRates);
   const active = buckets.filter(b => b.status !== 'closed');

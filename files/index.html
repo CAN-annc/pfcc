@@ -347,6 +347,8 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .sv-table div{display:grid;grid-template-columns:60px 1fr 1fr 90px;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11.5px;color:var(--text-2);font-variant-numeric:tabular-nums}
 .sv-table b{text-align:right}
 .seg{display:flex;gap:4px;padding:4px;margin-bottom:14px;border-radius:11px;background:var(--surface-2);border:1px solid var(--border)}
+/* v2.19.0：資產頁合併後很長，捲下去就找不到「持倉」分頁——分頁列跟著頂端停住 */
+.seg{position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top) + 8px);z-index:40;box-shadow:0 6px 14px -10px rgba(0,0,0,.35)}
 .seg-btn{flex:1;font:inherit;font-size:13px;font-weight:600;padding:8px 6px;border:none;border-radius:8px;background:transparent;color:var(--text-2);cursor:pointer}
 .seg-btn.on{background:var(--card);color:var(--text-1);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .home2{display:flex;flex-direction:column;gap:12px}
@@ -474,13 +476,6 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .pd-total{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 4px;font-size:13px;color:var(--text-2)}
 .pd-total b{font-size:18px;color:var(--text-1);font-variant-numeric:tabular-nums}
 .pd-hint{font-size:11px;color:var(--text-3);margin:0 0 4px}
-.sp-sub{display:flex;flex-direction:column;gap:3px;margin:-2px 0 2px 10px;font-size:11px;opacity:.8}
-.sp-sub .sp-it{display:flex;align-items:center;gap:8px;min-height:26px}
-.sp-sub .sp-it>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sp-sub b{font-weight:500;font-variant-numeric:tabular-nums}
-.sp-paid{flex-shrink:0;border:1px solid currentColor;background:transparent;color:inherit;font:inherit;font-size:10px;font-weight:600;line-height:1;padding:4px 8px;border-radius:999px;cursor:pointer;opacity:.85}
-.sp-paid:hover,.sp-paid:focus-visible{opacity:1;background:rgba(255,255,255,.14)}
-.sp-more{opacity:.7}
 .sp-warn{margin-top:12px;padding:9px 11px 9px 13px;border-radius:9px;background:rgba(255,255,255,.12);box-shadow:inset 3px 0 0 var(--amber);font-size:11.5px;line-height:1.55;color:inherit}
 .sp-warn b{display:block;font-size:13px;margin-bottom:2px}
 .home-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -491,14 +486,27 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .home-mini-s{font-size:10.5px;color:var(--text-3);line-height:1.4}
 .home-quick{display:grid;grid-template-columns:2fr 1fr;gap:10px}
 .home-quick .btn{justify-content:center;padding:11px;font-size:14px}
-.home-rem{padding:0}
-.home-rem-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-size:13px;font-weight:600}
-.home-rem-head span{font-size:11px;font-weight:400;color:var(--text-3)}
-.home-rem-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--border);font-size:13px}
-.home-rem-l{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.home-rem-a{font-size:12px;font-variant-numeric:tabular-nums}
-.home-rem-d{font-size:11px;font-weight:600;min-width:56px;text-align:right}
-.home-rem-empty{padding:4px 16px 14px;font-size:12px;color:var(--text-3)}
+.mdue{padding:0}
+.mdue-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:14px 16px 10px}
+.mdue-head b{font-size:13.5px;font-weight:600;color:var(--text-1)}
+.mdue-head span{font-size:11.5px;color:var(--text-3);font-variant-numeric:tabular-nums}
+.mdue-head span em{font-style:normal;font-size:14px;font-weight:700;color:var(--text-1);margin-left:4px}
+.mdue-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--border);min-height:48px;box-sizing:border-box}
+.mdue-ico{width:28px;height:28px;flex-shrink:0;display:grid;place-items:center;border-radius:8px;background:var(--surface-2);font-size:13px}
+.mdue-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.mdue-txt b{font-size:13px;font-weight:500;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mdue-txt small{font-size:11px;color:var(--text-3)}
+.mdue-txt small.late{color:var(--red);font-weight:600}
+.mdue-txt small.soon{color:var(--amber);font-weight:600}
+.mdue-amt{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-1);white-space:nowrap}
+.mdue-btn{flex-shrink:0;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font:inherit;font-size:11.5px;font-weight:600;padding:6px 10px;border-radius:999px;cursor:pointer;min-height:30px}
+.mdue-btn:hover,.mdue-btn:focus-visible{border-color:var(--blue);color:var(--blue)}
+.mdue-empty{padding:2px 16px 14px;font-size:12px;color:var(--text-3)}
+.mdue-more{all:unset;display:block;box-sizing:border-box;width:100%;padding:10px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--blue);cursor:pointer;text-align:center}
+.mdue-other{padding:10px 16px 12px;border-top:1px dashed var(--border);display:flex;flex-direction:column;gap:4px}
+.mdue-other>span{font-size:11px;color:var(--text-3)}
+.mdue-other div{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--text-2)}
+.mdue-other div b{font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
 .mp{display:flex;flex-direction:column;gap:12px}
 .mp-intro{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;background:color-mix(in srgb,var(--blue) 8%,var(--card));border:1px solid color-mix(in srgb,var(--blue) 25%,var(--border))}
 .mp-intro strong{display:block;font-size:13px}
@@ -3227,16 +3235,16 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.18.0';
+const APP_VERSION = 'v2.19.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-08';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '定期定額扣款前 3 天檢查扣款帳戶：餘額不夠時首頁提醒「幾號哪個帳戶要扣多少、帳戶只有多少、還差多少」，按「轉帳補足」直接記一筆轉帳',
-  '首頁放「要採取行動的」：「如果沒有收入，可以撐多久」與「可以留意的錢」移到首頁',
-  '資產頁放「累積的狀況」：總覽與趨勢合成一頁往下捲（資產分布 → 成長與趨勢），持倉維持獨立分頁',
+  '可自由運用只扣「這個月」還沒付的定期支出、分期、定期定額（含日期已過還沒確認的），下個月的不再提前算進來',
+  '首頁「本月還要付」合併成一張卡片：每筆可直接按「已付」，本月要繳的卡費可直接「記錄繳款」；定存到期、預計入帳放在「其他提醒」',
+  '資產、計畫頁上方的分頁列捲動時會停在頂端，長頁面也能隨時切到「持倉」',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -4135,6 +4143,44 @@ async function openTopupModal(toAcc, amount) {
   modal.classList.add('open');
 }
 
+let _monthDueAll = false;
+function buildMonthDueCard({ sp, cards, recurringExpenses, installments, dcaSchedules, reminders, money }) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const ym = currentMonthStr();
+  const md = d => `${Number(d.slice(5, 7))}/${Number(d.slice(8))}`;
+  const rows = sp.upcoming.map((u, k) => ({ ...u, ico: u.type === 'installment' ? '🧾' : u.type === 'dca' ? '📈' : '🔁', act: 'paid', k }));
+  for (const c of cards || []) {
+    if (!((c.current_balance || 0) > 0)) continue;
+    const st = ccPeriodStatus(c), t = st.overdue ?? st.upcoming;
+    if (!t?.due || t.due.slice(0, 7) > ym) continue;
+    const days = Math.round((new Date(t.due + 'T00:00:00') - today) / 86400000);
+    rows.push({ type: 'creditcard', id: c.id, date: t.due, days, label: `${c.name} ${ccPeriodLabel(t.ym)}卡費`, amount: Math.round(c.current_balance), ico: '💳', act: 'cc', ym: t.ym });
+  }
+  rows.sort((a, b) => a.date.localeCompare(b.date));
+  const total = rows.reduce((s, r) => s + r.amount, 0);
+  const when = r => r.days < 0 ? [`${md(r.date)}・已過 ${-r.days} 天，還沒確認`, 'late'] : r.days === 0 ? ['今天', 'soon'] : [`${md(r.date)}・${r.days} 天後`, r.days <= 3 ? 'soon' : ''];
+  const LIMIT = 6, shown = _monthDueAll ? rows : rows.slice(0, LIMIT);
+  const other = (reminders || []).filter(r => r.type === 'deposit' || r.type === 'recurringincome');
+  const card = el('div'); card.className = 'card mdue';
+  card.innerHTML = `<div class="mdue-head"><b>${Number(ym.slice(5))} 月還要付</b><span>${rows.length ? `${rows.length} 筆<em>${money(total)}</em>` : ''}</span></div>`
+    + (rows.length ? shown.map((r, i) => { const [w, cls] = when(r); return `<div class="mdue-row"><span class="mdue-ico" aria-hidden="true">${r.ico}</span>
+        <span class="mdue-txt"><b>${escHtml(r.label)}</b><small class="${cls}">${w}</small></span>
+        <span class="mdue-amt">${money(r.amount)}</span>
+        <button type="button" class="mdue-btn" data-mdue="${i}" aria-label="${escHtml(r.label)} ${r.act === 'cc' ? '記錄繳款' : '已付'}">${r.act === 'cc' ? '記錄繳款' : '已付'}</button></div>`; }).join('')
+      : `<div class="mdue-empty">這個月要付的都處理完了。</div>`)
+    + (rows.length > LIMIT ? `<button type="button" class="mdue-more">${_monthDueAll ? '收起' : `顯示全部 ${rows.length} 筆`}</button>` : '')
+    + (other.length ? `<div class="mdue-other"><span>其他提醒</span>${other.map(r => `<div><span>${r.type === 'deposit' ? '🏦' : '💵'} ${escHtml(r.label)}・${r.daysUntil < 0 ? `已到期 ${-r.daysUntil} 天` : r.daysUntil === 0 ? '今天' : `${r.daysUntil} 天後`}</span>${r.amount != null ? `<b>${r.type === 'recurringincome' ? '+' : ''}${money(r.amount)}</b>` : ''}</div>`).join('')}</div>` : '');
+  card.querySelector('.mdue-more')?.addEventListener('click', () => { _monthDueAll = !_monthDueAll; renderHome(); });
+  card.querySelectorAll('[data-mdue]').forEach(b => b.addEventListener('click', async () => {
+    const r = shown[+b.dataset.mdue];
+    if (r.type === 'recurring') { const x = recurringExpenses.find(v => v.id === r.id); if (x) await openRecurringExpenseConfirm(x, r.date); }
+    else if (r.type === 'installment') { const it = installments.find(v => v.id === r.id); if (it) openConfirmInstModal(it, it.per_amount || Math.round(it.total_amount / it.total_periods), r.date); }
+    else if (r.type === 'dca') { const d = dcaSchedules.find(v => v.id === r.id); if (d) await openDcaConfirm(d, r.date); }
+    else if (r.type === 'creditcard') { const c = cards.find(v => v.id === r.id); if (c) openCcPayModal(c, { ym: r.ym }); }
+  }));
+  return card;
+}
+
 let _homeSpendOpen = false;
 async function renderHome() {
   await loadData();
@@ -4165,30 +4211,21 @@ async function renderHome() {
   const rows = [
     ['現金與活存', sp.liquid, ''],
     ['信用卡待繳', -sp.cardsDue, ''],
-    ['30 天內要付', -sp.upcomingTotal, sp.upcoming.length ? `${sp.upcoming.length} 筆` : ''],
+    ['本月還要付', -sp.upcomingTotal, sp.upcoming.length ? `${sp.upcoming.length} 筆・明細在下方` : '本月都付完了'],
     [`緊急預備金${sp.ef.gap > 0 ? '（含缺口）' : ''}`, -sp.ef.protect, sp.ef.target ? `目標 ${money(sp.ef.target)}` : '尚未設定'],
     ['其他存錢目標', -sp.goalsTotal, sp.goals.length ? `${sp.goals.length} 個` : ''],
   ];
   hero.innerHTML = `
     <div class="networth-label">可自由運用</div>
     <div class="networth-amount"><span class="networth-currency">NT$</span>${fmt(sp.free)}</div>
-    <div class="home-hero-sub">${sp.shortfall > 0 ? `必付與保留的錢比手上多 ${money(sp.shortfall)}` : '扣掉要付的、要留的之後，真正能自由用的錢'}</div>
+    ${sp.shortfall > 0 ? `<div class="home-hero-sub">必付與保留的錢比手上多 ${money(sp.shortfall)}</div>` : ''}
     <button type="button" class="sp-toggle" aria-expanded="${_homeSpendOpen}">${_homeSpendOpen ? '收起' : '怎麼算的'}</button>
     <div class="sp-rows" ${_homeSpendOpen ? '' : 'hidden'}>
-      ${rows.map(([l, v, n], i) => `<div class="sp-row"><span>${l}${n ? `<small>${n}</small>` : ''}</span><b>${v < 0 ? '−' : ''}${money(Math.abs(v))}</b></div>`
-        + (i === 2 && sp.upcoming.length ? `<div class="sp-sub">${sp.upcoming.slice(0, 8).map((u, k) => `<div class="sp-it"><span>${escHtml(u.label)}・${u.days <= 0 ? '已到期' : u.days + ' 天後'}</span><b>${money(u.amount)}</b>${['recurring','installment','dca'].includes(u.type) ? `<button type="button" class="sp-paid" data-sp-paid="${k}" aria-label="${escHtml(u.label)} 已付">已付</button>` : ''}</div>`).join('')}${sp.upcoming.length > 8 ? `<div class="sp-it sp-more"><span>還有 ${sp.upcoming.length - 8} 筆</span></div>` : ''}</div>` : '')).join('')}
+      ${rows.map(([l, v, n]) => `<div class="sp-row"><span>${l}${n ? `<small>${n}</small>` : ''}</span><b>${v < 0 ? '−' : ''}${money(Math.abs(v))}</b></div>`).join('')}
       <div class="sp-row sp-total"><span>可自由運用</span><b>${money(sp.free)}</b></div>
     </div>
     ${efLine}${efStoreLine}`;
   hero.querySelector('.sp-toggle').addEventListener('click', () => { _homeSpendOpen = !_homeSpendOpen; renderHome(); });
-  // v2.11.0：已經付了（或這期不用付）卻還沒確認的項目，會被重複扣在「30 天內
-  // 要付」——直接在這裡按「已付」打開確認本期，彈窗裡也能選「這期不用我付」。
-  hero.querySelectorAll('[data-sp-paid]').forEach(b => b.addEventListener('click', async () => {
-    const u = sp.upcoming[+b.dataset.spPaid];
-    if (u.type === 'recurring') { const r = recurringExpenses.find(x => x.id === u.id); if (r) await openRecurringExpenseConfirm(r, u.date); }
-    else if (u.type === 'installment') { const it = installments.find(x => x.id === u.id); if (it) openConfirmInstModal(it, it.per_amount || Math.round(it.total_amount / it.total_periods), u.date); }
-    else if (u.type === 'dca') { const d = dcaSchedules.find(x => x.id === u.id); if (d) await openDcaConfirm(d, u.date); }
-  }));
   root.appendChild(hero);
   const fundAlert = await buildDcaFundAlert(); if (fundAlert) root.appendChild(fundAlert);
 
@@ -4213,20 +4250,14 @@ async function renderHome() {
   // 旅行中
   const tripBanner = await buildTripBanner(); if (tripBanner) root.insertBefore(tripBanner, root.firstChild);
 
-  // 快速記帳（v2.10.0）：輸入金額 → 點類別就存；常用項目一點就存。付款方式
-  // 記住上次選的。完整欄位（日期、外幣、備註…）按「完整表單」。
-  root.appendChild(await buildQuickAdd());
+  // 本月還要付（v2.19.0）：原本「可自由運用」裡的 30 天清單和「近期到期／即將
+  // 繳款」卡片重複，而且 30 天會把下個月的房租也算進來。合併成一張：只列這個
+  // 月還沒付的定期支出／分期／定期定額（含已過日期還沒確認的）、這個月要繳的
+  // 卡費；定存到期、預計入帳這類不是要付的錢，放在最下面「其他提醒」。
+  root.appendChild(buildMonthDueCard({ sp, cards, recurringExpenses, installments, dcaSchedules, reminders, money }));
 
-  // 近期提醒（5 天內，含逾期）
-  const typeIcon = { deposit:'🏦', creditcard:'💳', recurring:'🔁', installment:'🧾', recurringincome:'💵' };
-  const rem = el('div', 'card'); rem.className = 'card home-rem';
-  rem.innerHTML = `<div class="home-rem-head">🔔 近期到期／即將繳款<span>${reminders.length ? `共 ${reminders.length} 項` : ''}</span></div>` +
-    (reminders.length ? reminders.map(r => {
-      const c = r.daysUntil <= 1 ? 'var(--red)' : (r.daysUntil <= 3 ? 'var(--amber)' : 'var(--text-3)');
-      const inc = r.type === 'recurringincome';
-      return `<div class="home-rem-row"><span>${typeIcon[r.type] ?? '📌'}</span><span class="home-rem-l">${escHtml(r.label)}</span>${r.amount != null ? `<span class="home-rem-a" style="color:${inc ? 'var(--green)' : 'var(--text-2)'}">${inc ? '+' : ''}NT$ ${fmt(r.amount)}</span>` : ''}<span class="home-rem-d" style="color:${c}">${fmtDaysLabel(r.daysUntil)}</span></div>`;
-    }).join('') : `<div class="home-rem-empty">5 天內沒有要到期或繳款的項目。</div>`);
-  root.appendChild(rem);
+  // 快速記帳（v2.10.0）：輸入金額 → 點類別就存；常用項目一點就存。
+  root.appendChild(await buildQuickAdd());
 
   // v2.18.0：要採取行動的卡片集中在首頁
   const runwayCard = await buildRunwayCard();
