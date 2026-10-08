@@ -36,7 +36,7 @@
  * 伺服器要最新版本。
  */
 
-const CACHE_NAME  = 'pfcc-shell-v42'; // 2026-10-08：v2.21.0（主／子分類、錢的去向、固定支出合併、儲蓄險連保單、年度預存），index.html／calc.js／db.js 異動。
+const CACHE_NAME  = 'pfcc-shell-v43'; // 2026-10-08：v2.21.1（分類選單拆成主分類＋子分類兩個），index.html 異動。
 // （上一版 v15，2026-10-02：「新增收入」轉入帳戶／「應收款入帳」選擇帳戶新增「顯示外幣帳戶」勾選（預設只顯示台幣）＋「新增現金帳戶」快速新增捷徑，index.html 異動，版本號照約定往上跳一碼。）
 const SHELL_URLS  = ['/', '/index.html', '/db.js', '/market.js', '/calc.js', '/manifest.json'];
 

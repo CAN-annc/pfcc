@@ -209,6 +209,9 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hold-num small{font-size:10px;font-weight:400;color:var(--text-3)}
 .hold-num span{font-size:11px;color:var(--text-2)}
 .hold-num span.is-missing{color:var(--text-3);font-style:italic}
+.cat-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cat-pair select{width:100%;min-width:0}
+.cat-pair select:disabled{opacity:.55}
 .cat-card{margin-bottom:16px;padding-bottom:4px}
 .cat-row{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 14px;border-top:1px solid var(--border);min-height:48px}
 .cat-row.is-off{opacity:.5}
@@ -3341,21 +3344,14 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.21.0';
+const APP_VERSION = 'v2.21.1';
 const CHANGELOG_LAST_UPDATED = '2026-10-08';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '分類改成主分類＋子分類（飲食 › 早餐、交通 › 捷運…），可以自己新增、改名、搬動；記帳可以只選主分類',
-  '快速記帳先點主分類，再列出最常用的子分類，其他的按「更多」展開',
-  '「存下來的」（投資、儲蓄險）不算消費；報表「結餘」新增「錢的去向」：花掉／存下來／剩下',
-  '「定期支出」「App 訂閱」「保險」合成一頁「固定支出」，每一筆可以選分類，確認本期就用這個分類',
-  '儲蓄險可以連到保單：繳保費自動加進「累積已繳」，總資產用解約金或累積已繳可以自己選',
-  '年繳的固定支出自動每月預存到「年度支出預存」，繳費時從那裡扣',
-  '預算只設在主分類，子分類的花費會加總上來；報表依主分類，點開看子分類',
-  '修正：編輯固定支出、分期付款後，本期已確認的狀態被清掉',
+  '記帳、確認本期、固定支出的分類改成兩個選單：先選主分類，子分類選填（不再是一長串）',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3628,6 +3624,44 @@ function catOptionsHtml(type, selected = null, { exclude = [], emptyLabel = null
     html += `<option value="${selected}">${c ? `${escHtml(catPath(selected))}（已停用）` : '（已刪除的分類）'}</option>`;
   }
   return html;
+}
+
+// v2.21.1（使用者：主項目、子項目放在同一個選單太長）：分成兩個選單——先選主分類，
+// 子分類選填。原本的 <select> 保留（隱藏）當作值的來源，既有讀寫 .value、onchange
+// 的程式都不用改；對它設定 .value 時兩個選單會自動跟著同步。
+function pairCatSelect(sel) {
+  if (!sel) return;
+  const proto = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  let wrap = sel._catPair;
+  if (!wrap) {
+    wrap = el('div'); wrap.className = 'cat-pair';
+    wrap.innerHTML = `<select class="cat-pair-main" aria-label="主分類"></select><select class="cat-pair-sub" aria-label="子分類（選填）"></select>`;
+    sel.insertAdjacentElement('afterend', wrap);
+    sel.style.display = 'none';
+    sel._catPair = wrap;
+    Object.defineProperty(sel, 'value', { configurable: true,
+      get() { return proto.get.call(this); },
+      set(v) { proto.set.call(this, v); sel._syncPair?.(); } });
+    const mainSel = wrap.querySelector('.cat-pair-main'), subSel = wrap.querySelector('.cat-pair-sub');
+    const fire = v => { proto.set.call(sel, v); sel._syncPair(); sel.dispatchEvent(new Event('change')); };
+    mainSel.addEventListener('change', () => fire(mainSel.value));
+    subSel.addEventListener('change', () => fire(subSel.value || mainSel.value));
+  }
+  const mainSel = wrap.querySelector('.cat-pair-main'), subSel = wrap.querySelector('.cat-pair-sub');
+  const opts = [...sel.options].map(o => ({ v: o.value, t: o.textContent.trim() }));
+  const isSub = v => { const c = catById(v); return !!(c && c.parent_id && opts.some(o => o.v === c.parent_id)); };
+  mainSel.innerHTML = opts.filter(o => !isSub(o.v)).map(o => `<option value="${escHtml(o.v)}">${escHtml(o.t)}</option>`).join('');
+  sel._syncPair = () => {
+    const v = proto.get.call(sel);
+    const c = catById(v);
+    const main = isSub(v) ? c.parent_id : v;
+    mainSel.value = main;
+    const subs = opts.filter(o => catById(o.v)?.parent_id === main && isSub(o.v));
+    subSel.innerHTML = `<option value="">${subs.length ? '不選子分類' : '（沒有子分類）'}</option>` + subs.map(o => `<option value="${escHtml(o.v)}">${escHtml(o.t)}</option>`).join('');
+    subSel.disabled = !subs.length;
+    subSel.value = isSub(v) ? v : '';
+  };
+  sel._syncPair();
 }
 // 舊版（單層）→ 新版（主／子分類）轉換，只跑一次。舊分類沿用原本的 id，所以舊
 // 紀錄、舊預算都不用改；使用者沒改過名的預設分類換成新名稱（例如「餐飲」→「飲食」、
@@ -10848,7 +10882,7 @@ async function openConfirmInstModal(item, defaultAmt, occurrenceDate) {
     saveLabel: '✓ 確認付款',
     isConfirmed: item.last_paid_ym === occYM,
     extraHtml: `<div class="modal-field"><label>支出類別</label><select id="periodConfirmCategory">${catOptionsHtml('expense', defCat, { exclude: ['cat_bad_debt_writeoff'] })}</select></div>`,
-    onOpen: () => { const sel = document.getElementById('periodConfirmCategory'); if (sel) sel.value = defCat; },
+    onOpen: () => { const sel = document.getElementById('periodConfirmCategory'); if (sel) { pairCatSelect(sel); sel.value = defCat; } },
     onSave: async (amt) => {
       const inst = await getOne(db,'installments',item.id);
       if (inst && inst.last_paid_ym === occYM) { showToast('這一期已經確認過了，不能重複確認'); return true; }
@@ -10907,7 +10941,7 @@ async function openRecurringExpenseConfirm(item, occDate) {
     amountLabel: payCurr === 'TWD' ? '本期實際金額' : `本期實際金額（${payCurr}）`,
     isConfirmed: item.last_confirmed_date === occ,
     extraHtml: `<div class="modal-field"><label>支出類別</label><select id="periodConfirmCategory">${catOptionsHtml('expense', defCat, { exclude: ['cat_bad_debt_writeoff'] })}</select></div>${annualB ? `<p style="font-size:11.5px;color:var(--text-2);margin:-4px 0 10px">這筆是年繳項目，會從存錢目標「${escHtml(annualB.name)}」扣（每月已經先存好了），不算進當月生活預算。</p>` : ''}${annualShort ? `<p style="font-size:11.5px;color:var(--text-2);margin:-4px 0 10px">存錢目標「${escHtml(annualShort.name)}」目前只有 NT$ ${fmt(annualShort.have)}，還不夠付這筆，這次照一般支出記。</p>` : ''}`,
-    onOpen: () => { const sel = document.getElementById('periodConfirmCategory'); if (sel) sel.value = defCat; },
+    onOpen: () => { const sel = document.getElementById('periodConfirmCategory'); if (sel) { pairCatSelect(sel); sel.value = defCat; } },
     altLabel: '改用完整記帳視窗（可改付款方式、歸屬存錢目標等）',
     onAlt: () => openExpenseModal(null, {
       description: item.name, amount: item.amount, pay_type: item.pay_type,
@@ -11797,6 +11831,7 @@ async function wireSpendCatFields(catSelId, policyFieldId, policySelId, selected
   await refreshCatCache();
   const catSel = document.getElementById(catSelId);
   catSel.innerHTML = catOptionsHtml('expense', selectedCat, { exclude: ['cat_bad_debt_writeoff'], emptyLabel: '不指定（確認時再選）' });
+  pairCatSelect(catSel);
   catSel.value = selectedCat || '';
   const policies = (await getAll(db, 'other_assets').catch(() => [])).filter(a => a.type === 'insurance');
   const pSel = document.getElementById(policySelId);
@@ -14467,6 +14502,7 @@ async function openExpenseModal(txn=null, prefill=null) {
   await refreshCatCache();
   const catSel = document.getElementById('expenseCategory');
   catSel.innerHTML = catOptionsHtml('expense', txn?.category ?? prefill?.category ?? null, { exclude: ['cat_bad_debt_writeoff'] }) || `<option value="cat_other_out">其他</option>`;
+  pairCatSelect(catSel);
 
   const today = new Date().toISOString().slice(0,10);
   // prefill: used for a brand-new (non-editing) txn only — either the 資金池
@@ -14871,6 +14907,7 @@ async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null
   await refreshCatCache();
   const catSel = document.getElementById('incomeCategory');
   catSel.innerHTML = catOptionsHtml('income', txn?.category ?? null, { exclude: txn?.category === 'cat_realized' ? [] : ['cat_realized'] }) || `<option value="cat_other_in">其他</option>`;
+  pairCatSelect(catSel);
   const incomeCats = [...catSel.options].map(o => ({ id: o.value }));
 
   // Set all basic fields
