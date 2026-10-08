@@ -288,11 +288,11 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .proj-cat em{display:block;height:100%;background:#0891B2;border-radius:3px}
 .proj-cat b{font-weight:600;color:var(--text-1);font-variant-numeric:tabular-nums}
 .proj-cat small{color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
-.qa-fab{position:fixed;right:20px;bottom:24px;z-index:140;display:inline-flex;align-items:center;gap:6px;height:48px;padding:0 18px 0 14px;border:none;border-radius:999px;background:var(--blue);color:#fff;font:inherit;font-size:14px;font-weight:600;letter-spacing:.02em;cursor:pointer;box-shadow:0 8px 20px -6px color-mix(in srgb,var(--blue) 60%,transparent),0 2px 6px rgba(0,0,0,.12);transition:transform .15s ease}
-.qa-fab span{font-size:20px;font-weight:400;line-height:1}
+.qa-fab{position:fixed;right:20px;bottom:24px;z-index:140;display:grid;place-items:center;width:52px;height:52px;padding:0;border:none;border-radius:50%;background:var(--blue);color:#fff;cursor:pointer;box-shadow:0 8px 20px -6px color-mix(in srgb,var(--blue) 60%,transparent),0 2px 6px rgba(0,0,0,.12);transition:transform .15s ease}
 .qa-fab:active{transform:scale(.96)}
 .qa-fab:focus-visible{outline:2px solid var(--text-1);outline-offset:3px}
 .qa-fab[hidden]{display:none}
+body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .qa-sheet-bg{position:fixed;inset:0;z-index:190;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background .2s ease}
 .qa-sheet-bg.open{background:rgba(0,0,0,.42)}
 .qa-sheet{width:min(460px,92vw);max-height:88dvh;overflow-y:auto;background:var(--card);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.25);transform:translateY(12px);opacity:0;transition:transform .22s ease,opacity .22s ease}
@@ -302,6 +302,9 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .qa-sheet-head{display:flex;align-items:baseline;gap:8px;padding:16px 16px 8px}
 .qa-sheet-head b{font-size:16px;color:var(--text-1)}
 .qa-sheet-head span{font-size:12px;color:var(--text-3);flex:1}
+.qa-kind{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:0 16px 4px;padding:3px;border-radius:10px;background:var(--surface-2)}
+.qa-kind button{font:inherit;font-size:13px;font-weight:600;padding:7px;border:none;border-radius:8px;background:transparent;color:var(--text-2);cursor:pointer}
+.qa-kind button.on{background:var(--card);color:var(--text-1);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .qa-sheet-x{border:none;background:var(--surface-2);color:var(--text-2);width:32px;height:32px;border-radius:50%;font-size:13px;cursor:pointer;flex-shrink:0;align-self:center}
 @media(max-width:768px){
   .qa-fab{right:16px;bottom:calc(72px + env(safe-area-inset-bottom))}
@@ -504,11 +507,6 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .sp-due li em{font-style:normal;opacity:.75;font-variant-numeric:tabular-nums}
 .sp-due li b{font-weight:500;font-variant-numeric:tabular-nums;min-width:72px;text-align:right}
 .sp-due li.late em{opacity:1;font-weight:700}
-.sp-late{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;padding:9px 11px 9px 13px;border-radius:9px;background:rgba(255,255,255,.12);box-shadow:inset 3px 0 0 var(--red);font-size:11.5px;line-height:1.55;cursor:pointer}
-.sp-late span{flex:1;min-width:0}
-.sp-late b{display:block;font-size:13px;margin-bottom:2px}
-.sp-late i{font-style:normal;font-size:18px;opacity:.7}
-.sp-late:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 .sp-warn{margin-top:12px;padding:9px 11px 9px 13px;border-radius:9px;background:rgba(255,255,255,.12);box-shadow:inset 3px 0 0 var(--amber);font-size:11.5px;line-height:1.55;color:inherit}
 .sp-warn b{display:block;font-size:13px;margin-bottom:2px}
 .home-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -1567,10 +1565,9 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <div id="periodConfirmExtra"></div>
     <p id="periodConfirmHint" style="font-size:11px;color:var(--text-3);margin-bottom:4px"></p>
     <div class="modal-actions">
-      <button class="btn btn-ghost" id="periodConfirmCancel">取消（這期先不處理）</button>
-      <button class="btn btn-primary" id="periodConfirmSave">✓ 確認</button>
+      <button type="button" class="btn btn-ghost" id="periodConfirmSkip" style="display:none">略過本期</button>
+      <button class="btn btn-primary" id="periodConfirmSave">確認本期</button>
     </div>
-    <button type="button" class="pc-skip" id="periodConfirmSkip" style="display:none"><b>略過本期</b></button>
     <div id="periodConfirmAltWrap" style="display:none;text-align:center;margin-top:10px">
       <button type="button" class="btn btn-ghost btn-sm" id="periodConfirmAlt" style="font-size:11px"></button>
     </div>
@@ -3257,10 +3254,9 @@ const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '記帳改成每一頁右下角的「＋記帳」，從底部彈出快速記帳；在紀錄頁先選某一天，就記在那一天。首頁只留狀態',
+  '記帳改成每一頁右下角的圓形「＋」按鈕，從底部彈出，可切換「支出／收入」；在紀錄頁先選某一天，就記在那一天。首頁只留狀態',
   '可自由運用只扣「這個月」還沒確認的定期支出、分期、定期定額，下個月的不再提前算進來；明細在「怎麼算的」裡',
-  '首頁不再列待付清單和「已付」按鈕；本月日期已過還沒確認的才提醒，點一下到紀錄頁那一天處理',
-  '略過一期統一叫「略過本期」，放在「確認本期」裡面；紀錄頁每筆排程只留一顆按鈕。分期付款不能略過',
+  '確認視窗只留「略過本期」「確認本期」兩顆按鈕；分期付款不能略過；紀錄頁每筆排程只留一顆按鈕',
   '定期支出、定期定額清單：拿掉「已略過 撤銷」標籤，本月處理過的顯示「✓ 本月已確認／已略過」；金額與按鈕對齊',
   '定期定額頁頂端加上每月／每年扣款合計',
   '分期與保險改成「已繳 9／12 期・下一期 10/12」；分期編輯視窗「屬於保險」勾選框、日期欄位顏色、信用卡選單修正',
@@ -3977,7 +3973,6 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
   const realToday = isoDate(new Date());
   const today = date || realToday; // v2.19.0：從紀錄頁選了某一天再按「＋記帳」，記在那一天
   const dayLabel = today === realToday ? '今天' : `${Number(today.slice(5, 7))}/${Number(today.slice(8))}`;
-  const todays = expenseTxns.filter(t => t.date === today).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || '')).slice(0, 4);
 
   const box = el('div', 'card'); box.className = 'card qa';
   box.innerHTML = `
@@ -3991,10 +3986,9 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
     <div class="qa-foot">
       <label>付款 <select class="qa-pay" aria-label="付款方式">${payOptions.map(o => `<option value="${o.v}">${escHtml(o.label)}</option>`).join('')}</select></label>
       <button type="button" class="btn btn-ghost btn-sm" data-qa-full>完整表單</button>
-      <button type="button" class="btn btn-ghost btn-sm" data-qa-income>＋ 收入</button>
     </div>
-    ${trip ? `<div class="qa-trip">✈️ 旅行中，會自動歸到「${escHtml(trip.name)}」</div>` : ''}
-    ${todays.length ? `<div class="qa-today"><div class="qa-label">${dayLabel}記了</div>${todays.map(t => `<div class="qa-today-row"><span>${catById[t.category]?.icon ?? '·'} ${escHtml(t.description || catById[t.category]?.label || '支出')}</span><b>NT$ ${fmt(t.amount)}</b><button type="button" class="btn btn-ghost btn-sm" data-qa-del="${t.id}">刪除</button></div>`).join('')}</div>` : ''}`;
+    ${trip ? `<div class="qa-trip">✈️ 旅行中，會自動歸到「${escHtml(trip.name)}」</div>` : ''}`;
+
   const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc'), paySel = box.querySelector('.qa-pay');
   paySel.value = payV;
   paySel.addEventListener('change', () => setSetting(db, 'quick_pay', paySel.value).catch(() => {}));
@@ -4022,15 +4016,57 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
     onDone?.();
     openExpenseModal(null, { date: today, amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), pay_type: o?.payType, account_id: o?.accId, cc_id: o?.ccId });
   });
-  box.querySelector('[data-qa-income]').addEventListener('click', () => { onDone?.(); openIncomeModal(null, null, null, { date: today }); });
-  box.querySelectorAll('[data-qa-del]').forEach(b => b.addEventListener('click', () => {
-    const t = todays.find(x => x.id === b.dataset.qaDel);
-    onDone?.();
-    openDeleteModal(`刪除「${t.description || '這筆支出'}」NT$ ${fmt(t.amount)}？帳戶／信用卡餘額會一起還原。`, async () => { await deleteTxnRecord(t, false); showToast('已刪除'); await renderAssets(); });
-  }));
   return box;
 }
 
+
+// v2.19.0（使用者：記帳要能記收入，也要能記支出）：快速記收入——金額＋點類別
+// 就存，存進哪個帳戶記住上次選的。獎金、應收款入帳等特殊情況用「完整表單」。
+async function buildQuickIncome({ date = null, onDone = null } = {}) {
+  const cats = await getAll(db,'txn_categories').catch(()=>[]);
+  const incomeTxns = await getAll(db,'income_txns').catch(()=>[]);
+  const accounts = state.accounts || [];
+  const bankMap = Object.fromEntries((state.banks || []).map(b => [b.id, b]));
+  const incCats = cats.filter(c => c.type === 'income' && c.active !== false && !['cat_receivable','cat_dca'].includes(c.id));
+  const useCount = {}; incomeTxns.forEach(t => { useCount[t.category] = (useCount[t.category] || 0) + 1; });
+  const topCats = [...incCats].sort((a, b) => (useCount[b.id] || 0) - (useCount[a.id] || 0) || (a.sort_order ?? 99) - (b.sort_order ?? 99)).slice(0, 8);
+  const accOpts = accounts.filter(a => a.show_in_menu !== false && (!a.currency || a.currency === 'TWD'));
+  const saved = await getSetting(db, 'quick_income_acc', null).catch(() => null);
+  const lastAcc = [...incomeTxns].filter(t => t.account_id).sort((a, b) => (b.created_at || b.date || '').localeCompare(a.created_at || a.date || ''))[0]?.account_id;
+  const accV = [saved, lastAcc, accOpts.find(a => a.role === 'income')?.id, accOpts[0]?.id].find(v => v && accOpts.some(a => a.id === v)) ?? '';
+  const realToday = isoDate(new Date()), day = date || realToday;
+  const catById = Object.fromEntries(cats.map(c => [c.id, c]));
+  const box = el('div'); box.className = 'card qa';
+  box.innerHTML = `
+    <div class="qa-row">
+      <label class="qa-amt"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="1" placeholder="金額" aria-label="金額"></label>
+      <input class="qa-desc" type="text" placeholder="說明（選填）" aria-label="說明">
+    </div>
+    <div class="qa-label">輸入金額後點類別</div>
+    <div class="qa-chips">${topCats.map(c => `<button type="button" class="qa-chip" data-qi-cat="${c.id}">${c.icon ?? ''} ${escHtml(c.label)}</button>`).join('') || '<span style="font-size:12px;color:var(--text-3)">還沒有收入類別</span>'}</div>
+    <div class="qa-foot">
+      <label>存入 <select class="qa-pay" aria-label="存入帳戶">${accOpts.map(a => `<option value="${a.id}">${escHtml(`${bankMap[a.bank_id] ? bankMap[a.bank_id].name + ' ' : ''}${a.name}`)}</option>`).join('')}</select></label>
+      <button type="button" class="btn btn-ghost btn-sm" data-qi-full>完整表單</button>
+    </div>`;
+  const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc'), accSel = box.querySelector('.qa-pay');
+  accSel.value = accV;
+  accSel.addEventListener('change', () => setSetting(db, 'quick_income_acc', accSel.value).catch(() => {}));
+  box.querySelectorAll('[data-qi-cat]').forEach(b => b.addEventListener('click', async () => {
+    const amount = parseFloat(amtIn.value);
+    if (!(amount > 0)) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); return; }
+    const res = await saveIncomeRecord({ date: day, category: b.dataset.qiCat, description: descIn.value.trim(), amount, accId: accSel.value || null, affects: true });
+    if (!res.ok) { showToast(res.error); return; }
+    showToast(`✓ 已記收入 ${catById[b.dataset.qiCat]?.label ?? ''} NT$ ${fmt(amount)}${day === realToday ? '' : `（${Number(day.slice(5, 7))}/${Number(day.slice(8))}）`}`);
+    onDone?.();
+    await renderAssets();
+  }));
+  box.querySelector('[data-qi-full]').addEventListener('click', () => {
+    onDone?.();
+    openIncomeModal(null, null, null, { date: day, amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), account_id: accSel.value || null });
+  });
+  return box;
+}
+let _qaKind = 'expense';
 
 // ── ＋記帳（v2.19.0，使用者決定）────────────────────────────────────────
 // 首頁只放狀態；記帳改成每一頁右下角同一顆「＋記帳」，從底部彈出快速記帳。
@@ -4041,7 +4077,8 @@ function syncQaFab() {
   let fab = document.getElementById('qaFab');
   if (!fab) {
     fab = el('button'); fab.id = 'qaFab'; fab.type = 'button'; fab.className = 'qa-fab';
-    fab.setAttribute('aria-label', '記一筆'); fab.innerHTML = '<span aria-hidden="true">＋</span>記帳';
+    fab.setAttribute('aria-label', '記一筆'); fab.title = '記一筆';
+    fab.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
     fab.addEventListener('click', openQuickSheet);
     document.body.appendChild(fab);
   }
@@ -4054,14 +4091,22 @@ async function openQuickSheet() {
   const panel = el('div'); panel.className = 'qa-sheet';
   panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-label', '記一筆');
   const md = date ? `${Number(date.slice(5, 7))}/${Number(date.slice(8))}（${WEEKDAY_LABELS[new Date(date + 'T00:00:00').getDay()]}）` : '今天';
-  panel.innerHTML = `<div class="qa-sheet-grip" aria-hidden="true"></div><div class="qa-sheet-head"><b>記一筆</b><span>${md}</span><button type="button" class="qa-sheet-x" aria-label="關閉">✕</button></div>`;
-  panel.appendChild(await buildQuickAdd({ date, onDone: closeQuickSheet }));
+  panel.innerHTML = `<div class="qa-sheet-grip" aria-hidden="true"></div><div class="qa-sheet-head"><b>記一筆</b><span>${md}</span><button type="button" class="qa-sheet-x" aria-label="關閉">✕</button></div>
+    <div class="qa-kind" role="tablist">${[['expense','支出'],['income','收入']].map(([k, l]) => `<button type="button" role="tab" data-qa-kind="${k}" aria-selected="${_qaKind === k}" class="${_qaKind === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <div class="qa-kind-body"></div>`;
+  const body = panel.querySelector('.qa-kind-body');
+  const fill = async () => {
+    body.replaceChildren(_qaKind === 'income' ? await buildQuickIncome({ date, onDone: closeQuickSheet }) : await buildQuickAdd({ date, onDone: closeQuickSheet }));
+    panel.querySelectorAll('[data-qa-kind]').forEach(b => { const on = b.dataset.qaKind === _qaKind; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+    body.querySelector('.qa-amt input')?.focus({ preventScroll: true });
+  };
+  panel.querySelectorAll('[data-qa-kind]').forEach(b => b.addEventListener('click', () => { if (_qaKind !== b.dataset.qaKind) { _qaKind = b.dataset.qaKind; fill(); } }));
+  await fill();
   bg.appendChild(panel);
   bg.addEventListener('click', e => { if (e.target === bg) closeQuickSheet(); });
   panel.querySelector('.qa-sheet-x').addEventListener('click', closeQuickSheet);
   document.body.appendChild(bg);
   requestAnimationFrame(() => bg.classList.add('open'));
-  panel.querySelector('.qa-amt input')?.focus({ preventScroll: true });
 }
 function closeQuickSheet() { document.getElementById('qaSheet')?.remove(); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('qaSheet')) closeQuickSheet(); });
@@ -4230,10 +4275,6 @@ async function renderHome() {
   const efLine = sp.ef.gap > 0
     ? `<div class="sp-warn"><b>緊急預備金還差 ${money(sp.ef.gap)}</b>${sp.ef.exists ? `目前 ${money(sp.ef.have)}${sp.ef.months != null ? `，可撐 ${sp.ef.months.toFixed(1)} 個月` : ''}。` : '還沒建立，先依必要開銷保留建議金額。'}缺口先保留，所以可自由運用變少${sp.free === 0 ? '到 0' : ''}。</div>`
     : '';
-  // v2.19.0：首頁不再列待付清單（使用者：「已付」不需要出現）。日期已過、還沒
-  // 確認的才提醒，點了到紀錄頁那一天處理（確認本期／略過本期）。
-  const late = sp.upcoming.filter(u => u.days < 0);
-  const lateLine = late.length ? `<button type="button" class="sp-late"><span><b>${late.length} 筆本月排程日期已過，還沒確認</b>${escHtml(late.slice(0, 2).map(u => u.label).join('、'))}${late.length > 2 ? ' 等' : ''}・沒確認前仍從可自由運用扣掉</span><i aria-hidden="true">›</i></button>` : '';
   const rows = [
     ['現金與活存', sp.liquid, ''],
     ['信用卡待繳', -sp.cardsDue, ''],
@@ -4251,8 +4292,7 @@ async function renderHome() {
         + (i === 2 && sp.upcoming.length ? `<ul class="sp-due">${sp.upcoming.map(u => `<li${u.days < 0 ? ' class="late"' : ''}><span>${escHtml(u.label)}</span><em>${Number(u.date.slice(5, 7))}/${Number(u.date.slice(8))}${u.days < 0 ? ' 未確認' : ''}</em><b>${money(u.amount)}</b></li>`).join('')}</ul>` : '')).join('')}
       <div class="sp-row sp-total"><span>可自由運用</span><b>${money(sp.free)}</b></div>
     </div>
-    ${lateLine}${efLine}${efStoreLine}`;
-  hero.querySelector('.sp-late')?.addEventListener('click', () => { _calendarSelectedDate = late[0].date; _calendarYear = null; navigate('calendar'); });
+    ${efLine}${efStoreLine}`;
   hero.querySelector('.sp-toggle').addEventListener('click', () => { _homeSpendOpen = !_homeSpendOpen; renderHome(); });
   root.appendChild(hero);
   const fundAlert = await buildDcaFundAlert(); if (fundAlert) root.appendChild(fundAlert);
@@ -10355,7 +10395,7 @@ function openPeriodConfirmModal(ctx) {
   document.getElementById('periodConfirmExtra').innerHTML = ctx.extraHtml || '';
   document.getElementById('periodConfirmHint').textContent = ctx.hint ||
     '確認後會記錄在上面的「排定日期」，不是今天——避免同一期因為晚幾天才確認，變成用兩個日期記了兩次。這一期確認過後就不能重複確認；如果記錯了，到收支紀錄刪掉這筆，這一期就會恢復成可以再確認。';
-  document.getElementById('periodConfirmSave').textContent = ctx.saveLabel || '✓ 確認';
+  document.getElementById('periodConfirmSave').textContent = '確認本期'; // v2.19.0：統一兩顆按鈕「略過本期」「確認本期」
   const altWrap = document.getElementById('periodConfirmAltWrap');
   if (ctx.altLabel && ctx.onAlt) {
     altWrap.style.display = '';
@@ -10364,10 +10404,6 @@ function openPeriodConfirmModal(ctx) {
     altWrap.style.display = 'none';
   }
   document.getElementById('periodConfirmSkip').style.display = ctx.onSkip ? '' : 'none';
-  if (ctx.onSkip) {
-    const t = SKIP_TEXT[ctx.onSkip.store] || SKIP_TEXT.recurring_expenses;
-    document.getElementById('periodConfirmSkip').innerHTML = `<b>${t.title}</b>${t.desc}`;
-  }
   ctx.onOpen?.(modal);
   modal.classList.add('open');
 }
@@ -10375,7 +10411,6 @@ function closePeriodConfirmModal() {
   document.getElementById('periodConfirmModal').classList.remove('open');
   _periodConfirmCtx = null;
 }
-document.getElementById('periodConfirmCancel').addEventListener('click', closePeriodConfirmModal);
 document.getElementById('periodConfirmModal').addEventListener('click', e => { if (e.target === e.currentTarget) closePeriodConfirmModal(); });
 document.getElementById('periodConfirmAlt').addEventListener('click', () => {
   const ctx = _periodConfirmCtx;
@@ -14316,8 +14351,8 @@ async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null
   // 一律用今天——現在補上，跟 openExpenseModal 的 txn?.date ?? prefill?.date
   // ?? today 是同一個寫法。
   document.getElementById('incomeDate').value = txn?.date ?? prefillDca?.date ?? prefillGeneral?.date ?? today;
-  document.getElementById('incomeDesc').value = txn?.description ?? (prefillReceivable ? `${prefillReceivable.name} 結清入帳` : (prefillDca ? prefillDca.description : ''));
-  document.getElementById('incomeAmount').value = txn?.amount ?? (prefillReceivable ? (prefillReceivable.total_amount - prefillReceivable.received_amount) : '');
+  document.getElementById('incomeDesc').value = txn?.description ?? (prefillReceivable ? `${prefillReceivable.name} 結清入帳` : (prefillDca ? prefillDca.description : (prefillGeneral?.description ?? '')));
+  document.getElementById('incomeAmount').value = txn?.amount ?? (prefillReceivable ? (prefillReceivable.total_amount - prefillReceivable.received_amount) : (prefillGeneral?.amount ?? ''));
   document.getElementById('incomeNote').value = txn?.note ?? '';
   document.getElementById('incomeEditId').value = txn?.id ?? '';
   // §卅八：跟支出那邊同一種修正——「定期定額」的「確認本期」帶進來時，記住
