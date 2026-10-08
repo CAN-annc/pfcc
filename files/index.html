@@ -424,7 +424,12 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .sp-b{display:inline-block;margin-top:3px;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:999px;background:var(--surface-2);color:var(--text-2)}
 .sp-b.ok{background:color-mix(in srgb,var(--green) 12%,transparent);color:var(--green)}
 .sp-b.warn{background:color-mix(in srgb,var(--amber) 15%,transparent);color:var(--amber)}
-.sp-warn{color:var(--amber)!important}
+.sp-curwarn{color:var(--amber)!important}
+.cal-acts{display:flex;gap:6px;margin-left:auto;flex-shrink:0}
+.cal-skip{font-size:11px;padding:5px 9px;color:var(--text-2);white-space:nowrap}
+.cal-skipped{display:flex;align-items:center;gap:10px;padding:10px 18px;border-top:1px solid var(--border);font-size:13px}
+.cal-skipped span{flex:1;min-width:0}
+.cal-skipped em{font-style:normal;font-size:11px;color:var(--text-3)}
 .pb-modes{display:flex;flex-direction:column;gap:8px}
 .modal-field .pb-mode{display:flex;color:var(--text-3);font-size:11.5px}
 .modal-field .pb-mode input{width:auto;padding:0;border:0;margin:3px 0 0;flex:0 0 auto}
@@ -465,7 +470,7 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .sp-paid{flex-shrink:0;border:1px solid currentColor;background:transparent;color:inherit;font:inherit;font-size:10px;font-weight:600;line-height:1;padding:4px 8px;border-radius:999px;cursor:pointer;opacity:.85}
 .sp-paid:hover,.sp-paid:focus-visible{opacity:1;background:rgba(255,255,255,.14)}
 .sp-more{opacity:.7}
-.sp-warn{margin-top:12px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,.12);font-size:11.5px;line-height:1.55}
+.sp-warn{margin-top:12px;padding:9px 11px 9px 13px;border-radius:9px;background:rgba(255,255,255,.12);box-shadow:inset 3px 0 0 var(--amber);font-size:11.5px;line-height:1.55;color:inherit}
 .sp-warn b{display:block;font-size:13px;margin-bottom:2px}
 .home-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .home-mini{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:3px;padding:12px 14px;cursor:pointer;background:var(--card);border:1px solid var(--border);border-radius:12px}
@@ -3193,17 +3198,16 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.16.0';
+const APP_VERSION = 'v2.17.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-08';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '收入不固定模式（接案、兼職）：每月計畫用近 6 個月收入最低的那個月當基準，多的錢自動存進「收入緩衝」，收入少的月份從緩衝補，緩衝用完才動用緊急預備金；收入起伏大時，計畫頁會提示可以改用',
-  '「如果沒有收入，可以撐多久」加入被動收入：有股利、股息、利息時，顯示每月約多少、能付掉幾成必要開銷，以及加上被動收入可以撐到多久；其他收入類別也可以在類別設定標成被動收入',
-  '帳戶分流：帳戶可以設定用途（收入、生活、投資、儲蓄）、每月免費跨行轉帳次數與手續費；每個存錢目標都可以指定存放帳戶並檢查餘額夠不夠',
-  '發薪後的分流轉帳：一次撥入存錢目標之後，列出要轉到各帳戶的錢（同一個帳戶合併成一筆），依你的設定估算免費次數與手續費；在銀行 App 轉完再勾選記錄，兩邊帳戶餘額一起更新',
+  '記帳入口統一在首頁：紀錄頁拿掉「＋收入」「＋支出」，只負責看、改、刪；要補記過去的日期，用首頁快速記帳的「完整表單」改日期',
+  '修正首頁「緊急預備金還差…」變成橘色、看不清楚',
+  '紀錄頁的排程提醒每一項多一個「這期不用付／這期沒扣款／這期沒轉」：沒有發生的那一期直接略過，不會留下 0 元紀錄；略過的會列在當天下方，可以復原。定期轉帳也可以略過',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -9132,7 +9136,7 @@ async function openSplitTransfer({ allocs = [], sourceAccountId = null, includeM
       const to = accounts.find(a => a.id === l.toId);
       const curMismatch = (to?.currency || 'TWD') !== (source?.currency || 'TWD');
       return `<label class="pd-row sp-row"><input type="checkbox" data-sp-on="${i}" ${curMismatch ? 'disabled' : 'checked'}>
-        <span class="pd-n">→ ${escHtml(accLabel(to))}<small>${escHtml(l.parts.join('、'))}</small>${curMismatch ? '<small class="sp-warn">幣別不同，請到「帳戶移轉」記錄</small>' : badge(l)}</span>
+        <span class="pd-n">→ ${escHtml(accLabel(to))}<small>${escHtml(l.parts.join('、'))}</small>${curMismatch ? '<small class="sp-curwarn">幣別不同，請到「帳戶移轉」記錄</small>' : badge(l)}</span>
         <input type="number" inputmode="decimal" min="0" step="100" value="${Math.round(l.amount)}" data-sp-amt="${i}" aria-label="轉到 ${escHtml(to?.name || '')} 的金額"></label>`;
     }).join('') : '<div class="mp-empty">從這個帳戶不需要轉任何錢（目的帳戶就是它）。</div>';
     total();
@@ -10194,6 +10198,10 @@ function openPeriodConfirmModal(ctx) {
     altWrap.style.display = 'none';
   }
   document.getElementById('periodConfirmSkip').style.display = ctx.onSkip ? '' : 'none';
+  if (ctx.onSkip) {
+    const t = SKIP_TEXT[ctx.onSkip.store] || SKIP_TEXT.recurring_expenses;
+    document.getElementById('periodConfirmSkip').innerHTML = `<b>${t.title}</b>${t.desc}`;
+  }
   ctx.onOpen?.(modal);
   modal.classList.add('open');
 }
@@ -10225,7 +10233,16 @@ document.getElementById('periodConfirmSkip').addEventListener('click', async () 
 // 的值），之後可以撤銷——撤銷只在「目前的確認標記還是這一期」時才做，避免
 // 把之後又確認過的新一期誤清掉（跟刪除支出時的 reversePeriodConfirmIfNeeded
 // 同一個原則）。
-const SKIP_LABELS = { recurring_expenses: '定期支出', installments: '分期付款', dca_schedules: '定期定額' };
+const SKIP_STORE_BY_TYPE = { recurring: 'recurring_expenses', installment: 'installments', dca: 'dca_schedules', transfer: 'recurring_transfers' };
+const SKIP_LABELS = { recurring_expenses: '定期支出', installments: '分期付款', dca_schedules: '定期定額', recurring_transfers: '定期轉帳' };
+// v2.17.0：依類型說明「這期沒有發生」——使用者的例子：房租由室友付了、定期定額
+// 因為帳戶餘額不足沒有扣到款。都是「刪掉這一期」，不留下任何紀錄（不是記 0 元）。
+const SKIP_TEXT = {
+  recurring_expenses: { btn: '這期不用付', title: '這期不用我付', desc: '例如室友付了、對方免收，或已經另外記過。這一期會從提醒中移除，不會留下任何紀錄（不是記一筆 0 元）。', done: '沒有記任何支出' },
+  installments:       { btn: '這期不用付', title: '這期不用我付', desc: '例如已經另外記過。這一期算已付、從提醒中移除，不會留下任何紀錄。', done: '沒有記任何支出' },
+  dca_schedules:      { btn: '這期沒扣款', title: '這期沒有扣款', desc: '例如帳戶餘額不足、券商沒扣到款。這一期會從提醒中移除，不會留下任何紀錄、也不會增加股數。', done: '沒有記任何扣款' },
+  recurring_transfers:{ btn: '這期沒轉', title: '這期沒有轉', desc: '這一期會從提醒中移除，不會留下任何轉帳紀錄、帳戶餘額不變。', done: '沒有記任何轉帳' },
+};
 function currentSkip(store, item) {
   const last = item?.skipped_periods?.at?.(-1);
   if (!last) return null;
@@ -10259,18 +10276,20 @@ async function undoSkipPeriod(store, id) {
 }
 // 確認彈窗共用的 onSkip：標記、提示（可直接復原）、重畫目前頁面
 function makeSkipHandler(store, item, occ, name) {
-  return async () => {
+  const fn = async () => {
     if (!(await skipPeriod(store, item.id, occ))) return false;
-    showToast(`✓ 「${name}」${fmtDate(occ)} 這期已處理，沒有記支出`, {
+    showToast(`✓ 「${name}」${fmtDate(occ)} 這期已略過，${(SKIP_TEXT[store] || SKIP_TEXT.recurring_expenses).done}`, {
       label: '復原', onClick: async () => { if (await undoSkipPeriod(store, item.id)) { showToast('已復原，這期恢復成待確認'); await refreshAfterExpenseSaved(); } },
     });
     await refreshAfterExpenseSaved();
   };
+  fn.store = store;
+  return fn;
 }
 // 清單上的小標籤：最近一次確認是「不用我付」時顯示，附撤銷
 function skipChipHtml(store, item) {
   const sk = currentSkip(store, item);
-  return sk ? `<span class="skip-chip">✓ ${fmtDate(sk.occ)} 不用我付<button type="button" data-undo-skip="${store}:${item.id}">撤銷</button></span>` : '';
+  return sk ? `<span class="skip-chip">✓ ${fmtDate(sk.occ)} ${(SKIP_TEXT[store] || SKIP_TEXT.recurring_expenses).title}<button type="button" data-undo-skip="${store}:${item.id}">撤銷</button></span>` : '';
 }
 function bindSkipChips(root) {
   root.querySelectorAll('[data-undo-skip]').forEach(b => b.addEventListener('click', async e => {
@@ -10546,6 +10565,7 @@ async function openRecTransferConfirmModal(item, occurDate) {
       showToast(`✓ 已記錄「${schedule.name}」本期轉帳（${fmtDate(occ)}）`);
       if (currentView === 'calendar') await renderCalendar(); else await renderRecurringTransfers();
     },
+    onSkip: makeSkipHandler('recurring_transfers', item, occ, item.name),
   });
 }
 
@@ -12314,9 +12334,35 @@ async function renderCalendar() {
           <span style="flex:1;font-size:13px;min-width:80px">${it.label}</span>
           ${it.amountLabel?`<span style="font-size:12px;color:${amtColor};font-variant-numeric:tabular-nums">${it.amountLabel}</span>`:''}`;
         const actionBtn = buildActionButton(it);
-        if (actionBtn) row.appendChild(actionBtn);
+        const acts = el('div'); acts.className = 'cal-acts';
+        // v2.17.0：這期沒有發生（室友付了房租、定期定額沒扣到款）→ 直接略過，
+        // 不必打開確認視窗、也不會記一筆 0 元。
+        const skipStore = SKIP_STORE_BY_TYPE[it.type];
+        const skipItem = skipStore && ({ recurring_expenses: recurringExpenses, installments, dca_schedules: dcaSchedules, recurring_transfers: recurringTransfers }[skipStore] || []).find(x => x.id === it.refId);
+        if (skipItem) {
+          const sb = el('button', 'btn btn-ghost btn-sm cal-skip');
+          sb.type = 'button'; sb.textContent = SKIP_TEXT[skipStore].btn;
+          sb.title = SKIP_TEXT[skipStore].desc;
+          const nm = it.type === 'dca' ? it.label : (skipItem.name || it.label);
+          sb.addEventListener('click', () => makeSkipHandler(skipStore, skipItem, it.date, nm)());
+          acts.appendChild(sb);
+        }
+        if (actionBtn) acts.appendChild(actionBtn);
+        if (acts.children.length) row.appendChild(acts);
         card.appendChild(row);
       });
+      content.appendChild(card);
+    }
+    // 這一天被略過的排程：留一行「已略過」可以復原。
+    const skippedHere = [];
+    [['recurring_expenses', recurringExpenses], ['installments', installments], ['dca_schedules', dcaSchedules], ['recurring_transfers', recurringTransfers]].forEach(([store, list]) => {
+      (list || []).forEach(x => { const sk = currentSkip(store, x); if (sk && sk.occ === _calendarSelectedDate) skippedHere.push({ store, x }); });
+    });
+    if (skippedHere.length) {
+      const card = el('div','card'); card.style.borderRadius = '16px';
+      card.innerHTML = `<div style="padding:11px 18px;font-size:12px;font-weight:600;color:var(--text-2);border-bottom:1px solid var(--border)">${fmtDate(_calendarSelectedDate)}・已略過的排程</div>` +
+        skippedHere.map(({ store, x }) => `<div class="cal-skipped"><span>${escHtml(x.name || SKIP_LABELS[store])}</span><em>${SKIP_TEXT[store].title}・沒有留下紀錄</em><button type="button" class="btn btn-ghost btn-sm" data-undo-skip="${store}:${x.id}">復原</button></div>`).join('');
+      bindSkipChips(card);
       content.appendChild(card);
     }
   }
@@ -12388,13 +12434,9 @@ async function renderTxnMergedList(content, scope = {}) {
   bar.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 -6px';
   bar.innerHTML = `
     <div style="font-size:14px;font-weight:700;color:var(--text-1)">${scopeLabel}</div>
-    ${scope.date ? `<button type="button" class="chip-btn" data-clear-day>看整個月 ✕</button>` : ''}
-    <div style="margin-left:auto;display:flex;gap:6px">
-      <button type="button" class="btn btn-ghost btn-sm" style="color:var(--green)" data-add-income>+ 收入</button>
-      <button type="button" class="btn btn-primary btn-sm" data-add-expense>+ 支出</button>
-    </div>`;
-  bar.querySelector('[data-add-income]').addEventListener('click', () => openIncomeModal(null, null, null, scope.date ? { date: scope.date } : null));
-  bar.querySelector('[data-add-expense]').addEventListener('click', () => openExpenseModal(null, scope.date ? { date: scope.date } : null));
+    ${scope.date ? `<button type="button" class="chip-btn" data-clear-day>看整個月 ✕</button>` : ''}`;
+  // v2.17.0（使用者：不需要兩個記帳入口）：新增收支統一在首頁的快速記帳
+  // （完整表單可以改日期補記），這裡只負責看、改、刪。
   bar.querySelector('[data-clear-day]')?.addEventListener('click', () => { _calendarSelectedDate = null; renderCalendar(); });
   content.appendChild(bar);
 

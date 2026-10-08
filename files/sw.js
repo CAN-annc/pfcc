@@ -36,7 +36,7 @@
  * 伺服器要最新版本。
  */
 
-const CACHE_NAME  = 'pfcc-shell-v37'; // 2026-10-08：v2.16.0（收入緩衝、被動收入、帳戶分流），index.html／calc.js 異動。
+const CACHE_NAME  = 'pfcc-shell-v38'; // 2026-10-08：v2.17.0（記帳入口統一、首頁警示文字、排程略過），index.html 異動。
 // （上一版 v15，2026-10-02：「新增收入」轉入帳戶／「應收款入帳」選擇帳戶新增「顯示外幣帳戶」勾選（預設只顯示台幣）＋「新增現金帳戶」快速新增捷徑，index.html 異動，版本號照約定往上跳一碼。）
 const SHELL_URLS  = ['/', '/index.html', '/db.js', '/market.js', '/calc.js', '/manifest.json'];
 
