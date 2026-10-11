@@ -3352,17 +3352,14 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.22.0';
+const APP_VERSION = 'v2.22.1';
 const CHANGELOG_LAST_UPDATED = '2026-10-08';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '首頁上方分成「概況｜資產」兩頁：總資產、成長與趨勢併進首頁；底部導覽列原本的「資產」改成「持倉」',
-  '紀錄頁的排程提醒預設收合，點標題才展開',
-  '修正：編輯定期定額、定期轉帳後，已確認或略過的那一期又跑出來；啟動時會從確認紀錄自動補回',
-  '修正：頁面最下面的紀錄被右下角「＋」擋住，刪除鈕點不到',
+  '修正：首頁「資產」分頁偶爾出現兩份總資產（切分頁時剛好在更新報價）',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -4168,14 +4165,17 @@ async function renderWealthHub() {
   if (!_holdingsEnabled) { sub.innerHTML = '<div class="card" style="padding:32px;text-align:center;color:var(--text-3);font-size:13px">持倉頁已在「設定」關閉。</div>'; return; }
   await renderHoldings();
 }
-async function renderHomeAssets(root) {
-  const sub = el('div'); root.appendChild(sub);
+// 同時有兩次重畫（例如切分頁時剛好報價更新完也觸發重畫）時，只讓最後一次生效，
+// 避免畫面出現兩份。容器在一開始就建好，舊的那次只會寫進已經被移除的容器。
+let _homeTok = 0;
+async function renderHomeAssets(root, tok) {
+  const sub = el('div'), head = el('div'), trendBox = el('div');
+  head.className = 'wealth-sec-head'; head.innerHTML = '<b>成長與趨勢</b><span>資產怎麼變化、每月存了多少、什麼時候達標</span>';
+  root.append(sub, head, trendBox);
   _activeContentContainer = sub;
   _trendContainer = null;
   await renderAssetOverview();
-  const head = el('div'); head.className = 'wealth-sec-head'; head.innerHTML = '<b>成長與趨勢</b><span>資產怎麼變化、每月存了多少、什麼時候達標</span>';
-  root.appendChild(head);
-  const trendBox = el('div'); root.appendChild(trendBox);
+  if (tok !== _homeTok) return;
   _trendContainer = trendBox;
   await renderTrend();
 }
@@ -4537,11 +4537,13 @@ async function openTopupModal(toAcc, amount) {
 
 let _homeSpendOpen = false;
 async function renderHome() {
+  const tok = ++_homeTok;
   await loadData();
+  if (tok !== _homeTok) return;
   if (_homeTab === 'assets') {
     const c = document.getElementById('content'); c.innerHTML = '';
     c.appendChild(buildSegBar([{ key: 'overview', label: '概況' }, { key: 'assets', label: '資產' }], 'assets', k => { _homeTab = k; renderHome(); window.scrollTo(0, 0); }));
-    await renderHomeAssets(c);
+    await renderHomeAssets(c, tok);
     return;
   }
   _activeContentContainer = document.getElementById('content'); _trendContainer = null;
@@ -4619,15 +4621,17 @@ async function renderHome() {
   const idleCard = await buildIdleMoneyCard();
   if (idleCard) root.appendChild(idleCard);
 
-  content.appendChild(root);
+  if (tok !== _homeTok) return;
+  content.replaceChildren(root);
 }
 
 // 原首頁（總資產＋方塊）：v2.9.0 起是「資產 › 總覽」。
 async function renderAssetOverview() {
+  const content0 = _activeContentContainer || document.getElementById('content');
   await loadData();
   const { netWorth, cash, depositRes, inv, recv, otherAssets, gold, goldPriceRec, fxRates, ccDebt, cards, accounts } = state;
   const reminders = []; // 提醒搬到首頁，這裡不再重複
-  const content = _activeContentContainer || document.getElementById('content');
+  const content = content0;
   content.innerHTML = '';
 
   // ── 首頁一屏化（v2.4.0，使用者要求「整個畫面儘量保留在一個頁面、不用上下
