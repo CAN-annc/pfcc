@@ -1860,6 +1860,22 @@ export function calcAnnualSpend(expenseTxns = [], accounts = [], fxRates = {}, t
   return { months: months.length, monthly: Math.round(avg), annual: Math.round(avg * 12) };
 }
 
+// ── 近幾個月實際平均支出（v2.24.0，「可以撐多久」依實際花費）──────────────
+// 最近 n 個完整月份裡有支出紀錄的月份，全部支出（不含定期定額、呆帳沖銷、
+// 存款類）的月平均。沒有任何完整月份的紀錄時回傳 null。
+export function calcRecentSpend(expenseTxns = [], accounts = [], fxRates = {}, today = new Date(), n = 6) {
+  const tx = expenseTxns.filter(t => !['cat_dca', 'cat_bad_debt_writeoff'].includes(t.category) && !isSavingCategory(t.category));
+  const months = [];
+  for (let i = n; i >= 1; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
+    if (tx.some(t => (t.date || '').slice(0, 7) === ym)) months.push(ym);
+  }
+  if (!months.length) return null;
+  const avg = months.reduce((s, m) => s + calcMonthlyExpenseTotal(tx, m, accounts, fxRates), 0) / months.length;
+  return { months: months.length, monthly: Math.round(avg) };
+}
+
 // ── 被動收入（v2.16.0）───────────────────────────────────────────────────
 // 不工作也會進來的錢：預設股利（台股）、股息（美股）、利息收入；使用者可以在
 // 類別設定把其他收入類別標成被動收入（txn_categories.passive === true），或把

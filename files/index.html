@@ -211,6 +211,8 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hold-num span.is-missing{color:var(--text-3);font-style:italic}
 .cal-sched-head{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;padding:12px 18px;font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer}
 .cal-sched-head span{flex:1}
+.cal-sched-date{flex-shrink:0;min-width:34px;font-size:12px;font-weight:600;color:var(--text-2);font-variant-numeric:tabular-nums}
+.cal-sched-date.is-late{color:var(--red)}
 .cal-sched-head em{font-style:normal;font-size:11px;font-weight:600;color:var(--text-1);background:var(--surface-2);padding:2px 8px;border-radius:999px}
 .cal-sched-head svg{color:var(--text-3);transition:transform .15s}
 .cal-sched-head[aria-expanded=true]{border-bottom:1px solid var(--border)}
@@ -311,6 +313,25 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .rw-all{background:color-mix(in srgb,var(--blue) 45%,var(--surface-2))}
 .rw-row small{font-size:10.5px;color:var(--text-3)}
 .rw-row small em{font-style:normal;display:block;color:var(--green);font-weight:600;margin-top:1px}
+.rw-main,.rw-layer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.rw-layer{padding-top:10px;border-top:1px solid var(--border)}
+.rw-main-k{font-size:12.5px;color:var(--text-2);min-width:0}
+.rw-main-k span{display:block;font-size:10.5px;color:var(--text-3);margin-top:2px}
+.rw-stats{display:flex;gap:14px;flex-shrink:0;text-align:right}
+.rw-stat small{display:block;font-size:10px;color:var(--text-3)}
+.rw-stat b{display:block;font-size:17px;font-weight:700;color:var(--text-1);font-variant-numeric:tabular-nums;white-space:nowrap}
+.rw-main .rw-stat b{font-size:20px}
+.rw-pnote{margin-top:6px;font-size:10.5px;color:var(--green)}
+.rw-more{all:unset;display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:12px;color:var(--blue);cursor:pointer;padding:2px 0}
+.rw-more[aria-expanded=true] svg{transform:rotate(180deg)}
+.rw-more:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+.rw-layers{margin-top:4px}
+.rw-basis{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-3)}
+.rw-seg{display:flex;flex:1;background:var(--surface-2);border-radius:8px;padding:2px;gap:2px}
+.rw-seg button{flex:1;font:inherit;font-size:11.5px;border:0;background:transparent;color:var(--text-2);padding:6px 4px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.rw-seg button[aria-checked=true]{background:var(--card);color:var(--text-1);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.rw-seg button:disabled{opacity:.4;cursor:default}
+.rw-foot{margin:8px 0 0;font-size:10.5px;line-height:1.5;color:var(--text-3)}
 .rw-passive{margin-top:10px;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--green) 8%,var(--surface-2));font-size:11.5px;line-height:1.55;color:var(--text-2)}
 .rw-passive b{display:block;font-size:12px;color:var(--text-1)}
 .mp-avg{display:flex;align-items:center;gap:10px;margin:8px 0 2px;font-size:11.5px;color:var(--text-2)}
@@ -588,10 +609,13 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .pd-total b{font-size:18px;color:var(--text-1);font-variant-numeric:tabular-nums}
 .pd-hint{font-size:11px;color:var(--text-3);margin:0 0 4px}
 .sp-due{list-style:none;margin:-2px 0 4px 10px;padding:0;display:flex;flex-direction:column;gap:2px;font-size:11px;opacity:.82}
-.sp-due li{display:flex;align-items:baseline;gap:8px;min-height:20px}
-.sp-due li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sp-due li em{font-style:normal;opacity:.75;font-variant-numeric:tabular-nums}
-.sp-due li b{font-weight:500;font-variant-numeric:tabular-nums;min-width:72px;text-align:right}
+.sp-due li{display:block}
+.sp-due li button{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:baseline;gap:8px;min-height:28px;padding:4px 0;cursor:pointer}
+.sp-due li button:focus-visible{outline:2px solid currentColor;outline-offset:1px;border-radius:4px}
+.sp-due li i{font-style:normal;opacity:.6}
+.sp-due li button span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-due li button em{font-style:normal;opacity:.75;font-variant-numeric:tabular-nums}
+.sp-due li button b{font-weight:500;font-variant-numeric:tabular-nums;min-width:72px;text-align:right}
 .sp-due li.late em{opacity:1;font-weight:700}
 .sp-warn{margin-top:12px;padding:9px 11px 9px 13px;border-radius:9px;background:rgba(255,255,255,.12);box-shadow:inset 3px 0 0 var(--amber);font-size:11.5px;line-height:1.55;color:inherit}
 .sp-warn b{display:block;font-size:13px;margin-bottom:2px}
@@ -3106,7 +3130,7 @@ import {
   runDataHealthChecks,
   classifyStockStyle, DEFENSIVE_TW_INDUSTRIES, ccPeriodStatus, ccDueDateFor, ccPeriodLabel,
   policyEffectiveValue, setCategoryTree, mainCategoryOf, isSavingCategory, buildCategoryTree, calcMoneyFlow, isAnnualItem, calcAnnualReserveTarget,
-  calcMonthlyPlan, calcRecurringMonthlyEquivalent, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcAvgLivingSpend, calcRunway, calcAnnualSpend, calcPassiveIncome, passiveCategoryIds, DEFAULT_PASSIVE_CATEGORIES, calcBufferBase, calcStorageChecks, estimateTransferFees, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
+  calcMonthlyPlan, calcRecurringMonthlyEquivalent, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcAvgLivingSpend, calcRunway, calcAnnualSpend, calcRecentSpend, calcPassiveIncome, passiveCategoryIds, DEFAULT_PASSIVE_CATEGORIES, calcBufferBase, calcStorageChecks, estimateTransferFees, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
 } from './calc.js';
 
@@ -3373,20 +3397,17 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.23.0';
+const APP_VERSION = 'v2.24.0';
 const CHANGELOG_LAST_UPDATED = '2026-10-11';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '記一筆：拿掉「常用」，類別改成一排四格，只列最常用的 7 個＋「更多」；收入、支出同一個樣子',
-  '記一筆：付款方式改成左右兩格（種類／哪一張卡或帳戶），預設成你最常用的那一個',
-  '首頁：「怎麼算的」移到區塊右上角，拿掉「N 筆還沒確認」',
-  '紀錄頁：一打開就是今天的收支；「今天還能花」只留標題和金額',
-  '確認本期：三顆按鈕排同一列，左邊改成「改用完整記帳視窗」',
-  '編輯支出：付款方式與帳戶左右並排；「備註（選填）」改成「備註」',
-  '每月計劃：「計劃基準」不再斷行，計劃超出時下方小字拿掉',
+  '排程到期自動記帳：固定支出、分期、定期定額、定期轉帳到了扣款日自動記一筆，有出入到「紀錄」修改（設定可關閉）',
+  '紀錄頁：看整個月時，列出這個月所有還沒處理的排程；選某一天只看那一天',
+  '首頁「本月還要付」每一筆點一下就能確認本期，跟紀錄頁的排程提醒是同一份清單',
+  '「如果沒有收入，可以撐多久」搬到首頁「資產」分頁：平常只看現金與活存，點開看其他層；可選依計畫、依實際花費或兩個都看',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3837,8 +3858,17 @@ async function init() {
     // data-view='txnmanage'），設定鍵 home_view，預設 'assets' 維持原本行為。
     // v2.3.0（使用者要求）：第二個選項從「記帳管理」改成「收支紀錄」
     // （calendar）。舊版存過 'txnmanage' 的使用者一律視為新的「收支紀錄」。
+    // v2.24.0：先把今天以前到期的排程自動記帳，再畫第一頁
+    await runAutoConfirm().catch(e => console.warn('[auto confirm]', e));
     const homeView = await getSetting(db, 'home_view', 'assets').catch(() => 'assets');
     await navigate((homeView === 'calendar' || homeView === 'txnmanage') ? 'calendar' : 'assets');
+    // App 放在背景跨日後回來：再檢查一次，有新記帳就重畫目前這頁
+    let _autoDay = isoDate(new Date());
+    document.addEventListener('visibilitychange', async () => {
+      if (document.visibilityState !== 'visible' || isoDate(new Date()) === _autoDay) return;
+      _autoDay = isoDate(new Date());
+      if (await runAutoConfirm().catch(() => 0)) await navigate(currentView);
+    });
   }
   // 2026-09-24：頁面（重新）載入時視為使用者主動開啟，強制抓最新匯率，
   // 滿足「使用者想要更新的時候…重新整理頁面就可以更新」的需求。
@@ -4197,12 +4227,15 @@ async function renderWealthHub() {
 // 避免畫面出現兩份。容器在一開始就建好，舊的那次只會寫進已經被移除的容器。
 let _homeTok = 0;
 async function renderHomeAssets(root, tok) {
-  const sub = el('div'), head = el('div'), trendBox = el('div');
+  const sub = el('div'), rwBox = el('div'), head = el('div'), trendBox = el('div');
   head.className = 'wealth-sec-head'; head.innerHTML = '<b>成長與趨勢</b><span>資產怎麼變化、每月存了多少、什麼時候達標</span>';
-  root.append(sub, head, trendBox);
+  root.append(sub, rwBox, head, trendBox);
   _activeContentContainer = sub;
   _trendContainer = null;
   await renderAssetOverview();
+  if (tok !== _homeTok) return;
+  // v2.24.0（使用者決定）：「如果沒有收入，可以撐多久」從概況搬到資產分頁，放在總資產下面
+  rwBox.replaceChildren(await buildRunwayCard());
   if (tok !== _homeTok) return;
   _trendContainer = trendBox;
   await renderTrend();
@@ -4472,33 +4505,52 @@ function fmtRunway(m) {
   if (Math.round(m) >= 24) { const mm = Math.round(m), y = Math.floor(mm / 12), r = mm % 12; return r ? `${y} 年 ${r} 個月` : `${y} 年`; }
   return `${m < 10 ? m.toFixed(1) : Math.round(m)} 個月`;
 }
+// v2.24.0（使用者決定）：
+// - 計算基準：依計畫（固定支出＋生活預算）／依實際花費（近 6 個月平均支出）／
+//   兩個都看，在卡片展開後切換（存在設定 runway_basis，預設兩個都看）。
+// - 平常只顯示一個數字（現金與活存），點「看其他層」才看預備金、全部資產。
+// - 不區分哪些支出可以先停；搬到首頁「資產」分頁。
+let _rwOpen = false;
+const RW_BASIS = [['both', '兩個都看'], ['plan', '依計畫'], ['actual', '依實際花費']];
 async function buildRunwayCard() {
   const ctx = await loadPlanContext();
   const { accounts, fxRates, cards, expenseTxns, netWorth } = state;
   const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses: ctx.recurringExpenses, installments: ctx.installments, dcaSchedules: ctx.dcaSchedules,
     buckets: ctx.buckets, allocations: ctx.allocations, expenseTxns, essentials: ctx.essentials, emergencyMonths: Number(ctx.settings.emergency_months) || 6 });
   const card = el('div', 'card'); card.className = 'card rw-card';
-  // v2.16.0：有被動收入（股利、利息…）就併進來——沒有的人卡片維持原樣。
   const passive = calcPassiveIncome(ctx.incomeTxns, await getAll(db,'txn_categories').catch(()=>[]));
-  const rw = calcRunway({ efHave: sp.ef.exists ? sp.ef.have : 0, liquid: sp.liquid, total: netWorth, essentials: ctx.essentials, passiveMonthly: passive.monthly });
-  if (!rw) {
-    card.innerHTML = `<div class="rw-head"><b>如果沒有收入，可以撐多久</b><span>到「計畫」設定固定支出與生活預算後，就能算出來。</span></div>`;
+  const actual = calcRecentSpend(expenseTxns || [], accounts || [], fxRates || {});
+  const args = { efHave: sp.ef.exists ? sp.ef.have : 0, liquid: sp.liquid, total: netWorth, passiveMonthly: passive.monthly };
+  const rwPlan = calcRunway({ ...args, essentials: ctx.essentials });
+  const rwAct = actual && actual.monthly > 0 ? calcRunway({ ...args, essentials: actual.monthly }) : null;
+  if (!rwPlan && !rwAct) {
+    card.innerHTML = `<div class="rw-head"><b>如果沒有收入，可以撐多久</b><span>到「計畫」設定固定支出與生活預算，或記滿一個月的支出後，就能算出來。</span></div>`;
     return card;
   }
-  const hasP = rw.passiveMonthly > 0;
-  const rows = [
-    { k: '只用緊急預備金', v: rw.ef, vp: rw.efP, note: sp.ef.exists ? `NT$ ${fmt(sp.ef.have)}` : '還沒建立預備金', tone: 'ef' },
-    { k: '現金與活存', v: rw.liquid, vp: rw.liquidP, note: `NT$ ${fmt(sp.liquid)}・含預備金`, tone: 'cash' },
-    { k: '全部資產', v: rw.total, vp: rw.totalP, note: `NT$ ${fmt(Math.round(netWorth))}・含投資、定存，需要賣出或解約`, tone: 'all' },
+  let basis = await getSetting(db, 'runway_basis', 'both').catch(() => 'both');
+  if (basis === 'plan' && !rwPlan) basis = 'actual';
+  if (basis === 'actual' && !rwAct) basis = 'plan';
+  const hasP = (passive.monthly || 0) > 0;
+  // 有被動收入時，每個月只要從存款拿「開銷－被動收入」（calcRunway 的 *P 值）
+  const pick = (rw, k) => !rw ? null : (hasP ? rw[k + 'P'] : rw[k]);
+  const fmtM = v => v == null ? '—' : !Number.isFinite(v) ? '一直撐下去' : fmtRunway(v);
+  const cols = basis === 'both' ? [['依計畫', rwPlan], ['依實際花費', rwAct]].filter(c => c[1]) : [[basis === 'plan' ? '依計畫' : '依實際花費', basis === 'plan' ? rwPlan : rwAct]];
+  const statRow = k => `<div class="rw-stats">${cols.map(([l, rw]) => `<div class="rw-stat"><small>${l}</small><b>${fmtM(pick(rw, k))}</b></div>`).join('')}</div>`;
+  const layers = [
+    { k: 'ef', t: '只用緊急預備金', note: sp.ef.exists ? `NT$ ${fmt(sp.ef.have)}` : '還沒建立預備金' },
+    { k: 'total', t: '全部資產', note: `NT$ ${fmt(Math.round(netWorth))}・含投資、定存，需要賣出或解約` },
   ];
-  const max = Math.max(1, ...rows.map(r => r.v));
-  const pTxt = v => !Number.isFinite(v) ? '可以一直撐下去' : `可以撐到 ${fmtRunway(v)}`;
-  card.innerHTML = `<div class="rw-head"><b>如果沒有收入，可以撐多久</b><span>以每月必要開銷 NT$ ${fmt(rw.essentials)}（固定支出＋生活預算）計算</span></div>
-    ${hasP ? `<div class="rw-passive"><b>被動收入每月約 NT$ ${fmt(rw.passiveMonthly)}，已經能付掉必要開銷的 ${Math.min(100, Math.round(rw.coverage * 100))}%</b>近 12 個月的股利、股息、利息等平均。沒有工作時，每個月只要從存款拿 NT$ ${fmt(Math.max(0, rw.essentials - rw.passiveMonthly))}。</div>` : ''}
-    <div class="rw-rows">${rows.map(r => `<div class="rw-row">
-      <div class="rw-top"><span>${r.k}</span><b>${fmtRunway(r.v)}</b></div>
-      <div class="rw-bar"><span class="rw-${r.tone}" style="width:${Math.max(1.5, r.v / max * 100).toFixed(1)}%"></span></div>
-      <small>${r.note}${hasP ? `<em>加上被動收入${pTxt(r.vp)}</em>` : ''}</small></div>`).join('')}</div>`;
+  const basisNote = [rwPlan ? `計畫＝固定支出＋生活預算 NT$ ${fmt(rwPlan.essentials)}／月` : '', rwAct ? `實際＝近 ${actual.months} 個月平均支出 NT$ ${fmt(actual.monthly)}／月` : ''].filter(Boolean).join('；');
+  card.innerHTML = `<div class="rw-head"><b>如果沒有收入，可以撐多久</b></div>
+    <div class="rw-main"><div class="rw-main-k">現金與活存<span>NT$ ${fmt(sp.liquid)}・含預備金</span></div>${statRow('liquid')}</div>
+    ${hasP ? `<div class="rw-pnote">已扣掉被動收入每月約 NT$ ${fmt(passive.monthly)}（近 12 個月股利、利息等平均）</div>` : ''}
+    <button type="button" class="rw-more" aria-expanded="${_rwOpen}">${_rwOpen ? '收起' : '看其他層'}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+    ${_rwOpen ? `<div class="rw-layers">${layers.map(l => `<div class="rw-layer"><div class="rw-main-k">${l.t}<span>${l.note}</span></div>${statRow(l.k)}</div>`).join('')}
+      <div class="rw-basis"><span>計算基準</span><div class="rw-seg" role="radiogroup" aria-label="計算基準">${RW_BASIS.map(([v, l]) => `<button type="button" role="radio" data-rw-basis="${v}" aria-checked="${basis === v}"${(v === 'plan' && !rwPlan) || (v === 'actual' && !rwAct) || (v === 'both' && !(rwPlan && rwAct)) ? ' disabled' : ''}>${l}</button>`).join('')}</div></div>
+      <p class="rw-foot">${basisNote}</p></div>` : ''}`;
+  const rerender = async () => card.replaceWith(await buildRunwayCard());
+  card.querySelector('.rw-more').addEventListener('click', () => { _rwOpen = !_rwOpen; rerender(); });
+  card.querySelectorAll('[data-rw-basis]').forEach(b => b.addEventListener('click', async () => { await setSetting(db, 'runway_basis', b.dataset.rwBasis).catch(() => {}); rerender(); }));
   return card;
 }
 
@@ -4649,11 +4701,13 @@ async function renderHome() {
     <button type="button" class="sp-toggle" aria-expanded="${_homeSpendOpen}">${_homeSpendOpen ? '收起' : '怎麼算的'}</button>
     <div class="sp-rows" ${_homeSpendOpen ? '' : 'hidden'}>
       ${rows.map(([l, v, n], i) => `<div class="sp-row"><span>${l}${n ? `<small>${n}</small>` : ''}</span><b>${v < 0 ? '−' : ''}${money(Math.abs(v))}</b></div>`
-        + (i === 2 && sp.upcoming.length ? `<ul class="sp-due">${sp.upcoming.map(u => `<li${u.days < 0 ? ' class="late"' : ''}><span>${escHtml(u.label)}</span><em>${Number(u.date.slice(5, 7))}/${Number(u.date.slice(8))}${u.days < 0 ? ' 未確認' : ''}</em><b>${money(u.amount)}</b></li>`).join('')}</ul>` : '')).join('')}
+        + (i === 2 && sp.upcoming.length ? `<ul class="sp-due">${sp.upcoming.map(u => `<li${u.days < 0 ? ' class="late"' : ''}><button type="button" data-due="${u.type}:${u.id}:${u.date}" aria-label="確認「${escHtml(u.label)}」${Number(u.date.slice(5, 7))}/${Number(u.date.slice(8))} 這一期"><span>${escHtml(u.label)}</span><em>${Number(u.date.slice(5, 7))}/${Number(u.date.slice(8))}${u.days < 0 ? ' 未確認' : ''}</em><b>${money(u.amount)}</b><i aria-hidden="true">›</i></button></li>`).join('')}</ul>` : '')).join('')}
       <div class="sp-row sp-total"><span>可自由運用</span><b>${money(sp.free)}</b></div>
     </div>
     ${efLine}${efStoreLine}`;
   hero.querySelector('.sp-toggle').addEventListener('click', () => { _homeSpendOpen = !_homeSpendOpen; renderHome(); });
+  // v2.24.0（使用者決定）：本月還要付跟紀錄頁的排程提醒是同一份清單，點一下就能確認本期
+  hero.querySelectorAll('[data-due]').forEach(b => b.addEventListener('click', () => openDueConfirm(...b.dataset.due.split(':'))));
   root.appendChild(hero);
   const fundAlert = await buildDcaFundAlert(); if (fundAlert) root.appendChild(fundAlert);
 
@@ -4679,8 +4733,6 @@ async function renderHome() {
   const tripBanner = await buildTripBanner(); if (tripBanner) root.insertBefore(tripBanner, root.children[1]);
 
   // v2.18.0：要採取行動的卡片集中在首頁
-  const runwayCard = await buildRunwayCard();
-  if (runwayCard) root.appendChild(runwayCard);
   const idleCard = await buildIdleMoneyCard();
   if (idleCard) root.appendChild(idleCard);
 
@@ -5642,6 +5694,26 @@ async function renderSystemSettings() {
       applyHoldingsVisibility(next);
       if (!next && currentView === 'wealth') { _homeTab = 'assets'; await navigate('assets'); }
       showToast(next ? '已開啟「投資持倉」頁面' : '已關閉「投資持倉」頁面');
+    };
+  }
+
+  // ── v2.24.0：排程到期自動記帳開關 ───────────────────────────────────────
+  {
+    const autoOn = await getSetting(db, 'auto_confirm', true).catch(() => true);
+    const row = addRow({ icon:'🔁', title:'排程到期自動記帳',
+      subtitle:'固定支出、分期、定期定額、定期轉帳到了扣款日自動記一筆；有出入到「紀錄」修改。信用卡繳款不會自動記。',
+      rightHtml:`<button type="button" id="autoConfirmToggle" class="toggle-switch" role="switch" aria-label="排程到期自動記帳" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;flex-shrink:0">
+          <span id="autoConfirmThumb" style="position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;display:block"></span>
+        </button>` });
+    const set = on => { const b = row.querySelector('#autoConfirmToggle'); b.style.background = on ? 'var(--blue)' : '#D1D5DB'; row.querySelector('#autoConfirmThumb').style.left = on ? '21px' : '3px'; b.dataset.on = on ? '1' : '0'; b.setAttribute('aria-checked', on); };
+    set(autoOn);
+    row.querySelector('#autoConfirmToggle').onclick = async () => {
+      const next = row.querySelector('#autoConfirmToggle').dataset.on !== '1';
+      set(next);
+      await setSetting(db, 'auto_confirm', next).catch(()=>{});
+      // 重新開啟時從今天起算，不回頭補記關閉期間的
+      if (next) { await setSetting(db, 'auto_confirm_since', isoDate(new Date())).catch(()=>{}); await runAutoConfirm(); }
+      showToast(next ? '已開啟排程到期自動記帳' : '已關閉，排程改回手動確認');
     };
   }
 
@@ -11006,10 +11078,21 @@ async function openConfirmInstModal(item, defaultAmt, occurrenceDate) {
     extraHtml: `<div class="modal-field"><label>支出類別</label><select id="periodConfirmCategory">${catOptionsHtml('expense', defCat, { exclude: ['cat_bad_debt_writeoff'] })}</select></div>`,
     onOpen: () => { const sel = document.getElementById('periodConfirmCategory'); if (sel) { pairCatSelect(sel); sel.value = defCat; } },
     onSave: async (amt) => {
-      const inst = await getOne(db,'installments',item.id);
-      if (inst && inst.last_paid_ym === occYM) { showToast('這一期已經確認過了，不能重複確認'); return true; }
-      const periodNo = (inst?.paid_periods ?? 0) + 1;
       const cat = document.getElementById('periodConfirmCategory')?.value || defCat;
+      const res = await commitInstPeriod(item, occurrenceDate, amt, cat);
+      if (res.dup) { showToast('這一期已經確認過了，不能重複確認'); return true; }
+      if (!res.ok) { showToast(res.error); return false; }
+      showToast(`✓ 第 ${res.periodNo} 期已記帳（${fmtDate(occurrenceDate)}）${res.deferBalance?'，帳戶／信用卡餘額將於當天才變動':''}`);
+      await refreshAfterExpenseSaved();
+    },
+  });
+}
+// v2.24.0：確認彈窗與「到期自動記帳」共用的存檔邏輯（不碰畫面）
+async function commitInstPeriod(item, occurrenceDate, amt, cat) {
+      const occYM = occurrenceDate.slice(0,7);
+      const inst = await getOne(db,'installments',item.id);
+      if (inst && inst.last_paid_ym === occYM) return { ok: true, dup: true };
+      const periodNo = (inst?.paid_periods ?? 0) + 1;
       const res = await saveExpenseRecord({
         policyId: isSavingCategory(cat) ? (item.policy_asset_id || null) : null,
         date: occurrenceDate,
@@ -11022,12 +11105,9 @@ async function openConfirmInstModal(item, defaultAmt, occurrenceDate) {
         affects: true,
         extraFields: { inst_id: item.id, inst_occ_ym: occYM },
       });
-      if (!res.ok) { showToast(res.error); return false; }
+      if (!res.ok) return res;
       if (inst) await putOne(db,'installments',{...inst, paid_periods: periodNo, last_paid_ym: occYM});
-      showToast(`✓ 第 ${periodNo} 期已記帳（${fmtDate(occurrenceDate)}）${res.deferBalance?'，帳戶／信用卡餘額將於當天才變動':''}`);
-      await refreshAfterExpenseSaved();
-    },
-  });
+      return { ...res, periodNo };
 }
 
 // ── 定期支出 ───────────────────────────────────────────────────────────────
@@ -11049,12 +11129,7 @@ async function openRecurringExpenseConfirm(item, occDate) {
   const defCat = item.spend_category || await getDefaultExpenseCategoryId();
   // v2.21.0：年繳項目從「年度支出預存」存錢目標扣（每月已經先存好了）
   // 第一年預存還沒存夠時（目標裡的錢比這筆少），這次照一般支出記，不讓目標變負數。
-  let annualB = isAnnualItem(item) ? (await getAll(db,'buckets').catch(()=>[])).find(b => b.is_annual_reserve && b.status !== 'closed') : null;
-  let annualShort = null;
-  if (annualB) {
-    const have = calcBucketAllocated(await getAll(db,'bucket_allocations').catch(()=>[]), annualB.id) - calcBucketSpent(state.expenseTxns || [], annualB.id, state.accounts || [], fxRates);
-    if (have < toTWD(item.amount || 0, itemCurr, fxRates)) { annualShort = { name: annualB.name, have: Math.max(0, Math.round(have)) }; annualB = null; }
-  }
+  const { annualB, annualShort } = await resolveAnnualBucket(item, fxRates);
   openPeriodConfirmModal({
     title: `確認「${item.name}」本期支出`,
     summary: `付款方式：${payMethodLabel(payType, accId, ccId)}`,
@@ -11071,23 +11146,47 @@ async function openRecurringExpenseConfirm(item, occDate) {
       _confirmRecId: item.id, _confirmDate: occ,
     }),
     onSave: async (amt) => {
-      const fresh = await getOne(db,'recurring_expenses',item.id);
-      if (fresh && fresh.last_confirmed_date === occ) { showToast('這一期已經確認過了，不能重複確認'); return true; }
       const cat = document.getElementById('periodConfirmCategory')?.value || defCat;
-      const res = await saveExpenseRecord({
-        date: occ,
-        category: cat,
-        description: item.name, amount: amt, note: '',
-        payType, accId, ccId, affects: true,
-        bucketId: annualB?.id ?? null,
-        policyId: isSavingCategory(cat) ? (item.policy_asset_id || null) : null,
-        confirmRecurring: { id: item.id, occDate: occ },
-      });
+      const res = await commitRecurringPeriod(item, occ, amt, cat, annualB?.id ?? null);
+      if (res.dup) { showToast('這一期已經確認過了，不能重複確認'); return true; }
       if (!res.ok) { showToast(res.error); return false; }
       showToast(`✓ 「${item.name}」本期已記帳（${fmtDate(occ)}）${res.deferBalance?'，帳戶／信用卡餘額將於當天才變動':''}`);
       await refreshAfterExpenseSaved();
     },
     onSkip: makeSkipHandler('recurring_expenses', item, occ, item.name),
+  });
+}
+
+// v2.21.0：年繳項目從「年度支出預存」存錢目標扣（每月已經先存好了）
+// 第一年預存還沒存夠時（目標裡的錢比這筆少），這次照一般支出記，不讓目標變負數。
+async function resolveAnnualBucket(item, fxRates) {
+  let annualB = isAnnualItem(item) ? (await getAll(db,'buckets').catch(()=>[])).find(b => b.is_annual_reserve && b.status !== 'closed') : null;
+  let annualShort = null;
+  if (annualB) {
+    const have = calcBucketAllocated(await getAll(db,'bucket_allocations').catch(()=>[]), annualB.id) - calcBucketSpent(state.expenseTxns || [], annualB.id, state.accounts || [], fxRates);
+    if (have < toTWD(item.amount || 0, item.currency || 'TWD', fxRates)) { annualShort = { name: annualB.name, have: Math.max(0, Math.round(have)) }; annualB = null; }
+  }
+  return { annualB, annualShort };
+}
+// v2.24.0：用「類型＋排程 id＋日期」打開確認本期（首頁本月還要付用）
+async function openDueConfirm(type, id, date) {
+  if (type === 'recurring') { const r = await getOne(db, 'recurring_expenses', id); if (r) return openRecurringExpenseConfirm(r, date); }
+  if (type === 'installment') { const i = await getOne(db, 'installments', id); if (i) return openConfirmInstModal(i, i.per_amount ?? Math.round(i.total_amount / i.total_periods), date); }
+  if (type === 'dca') { const d = await getOne(db, 'dca_schedules', id); if (d) return openDcaConfirm(d, date); }
+  if (type === 'transfer') { const t = await getOne(db, 'recurring_transfers', id); if (t) return openRecTransferConfirmModal(t, date); }
+  showToast('找不到這個排程，可能已經刪除');
+}
+async function commitRecurringPeriod(item, occ, amt, cat, bucketId) {
+  const fresh = await getOne(db,'recurring_expenses',item.id);
+  if (fresh && fresh.last_confirmed_date === occ) return { ok: true, dup: true };
+  const payType = item.pay_type || null;
+  const accId = (payType==='account'||payType==='cash') ? (item.account_id||null) : null;
+  const ccId = payType==='cc' ? (item.cc_id||null) : null;
+  return saveExpenseRecord({
+    date: occ, category: cat, description: item.name, amount: amt, note: '',
+    payType, accId, ccId, affects: true, bucketId: bucketId ?? null,
+    policyId: isSavingCategory(cat) ? (item.policy_asset_id || null) : null,
+    confirmRecurring: { id: item.id, occDate: occ },
   });
 }
 
@@ -11119,26 +11218,30 @@ async function openDcaConfirm(item, occDate) {
     altLabel: '改用完整記帳視窗（可改券商、標的等）',
     onAlt: () => openIncomeModal(null, null, prefillDca),
     onSave: async (amt) => {
-      const fresh = await getOne(db,'dca_schedules',item.id);
-      if (fresh && fresh.last_confirmed_date === occ) { showToast('這一期已經確認過了，不能重複確認'); return true; }
-      const allCats = await getAll(db,'txn_categories').catch(()=>[]);
-      const dcaCat = allCats.find(c=>c.type==='income'&&c.active!==false&&String(c.label).includes('定期定額'))
-        || allCats.find(c=>c.id==='cat_dca');
-      if (!dcaCat) { showToast('找不到「定期定額」收入分類，請改用完整記帳視窗'); return false; }
-      const res = await saveIncomeRecord({
-        date: occ, category: dcaCat.id, description: label, amount: 0,
-        accId: item.account_id || null, note: '', affects: true,
-        dca: {
-          spent: amt, brokerageId: h?.brokerage_id ?? null, holdingId: item.holding_id || null,
-          shares: parseFloat(document.getElementById('periodConfirmShares')?.value) || null,
-        },
-        confirmDca: { id: item.id, occDate: occ },
-      });
+      const res = await commitDcaPeriod(item, occ, amt, parseFloat(document.getElementById('periodConfirmShares')?.value) || null);
+      if (res.dup) { showToast('這一期已經確認過了，不能重複確認'); return true; }
       if (!res.ok) { showToast(res.error); return false; }
       showToast(`✓ 「${label}」本期已記錄（${fmtDate(occ)}）${res.deferBalance?'，帳戶餘額將於當天才變動':''}`);
       await refreshAfterIncomeSaved();
     },
     onSkip: makeSkipHandler('dca_schedules', item, occ, label),
+  });
+}
+
+async function commitDcaPeriod(item, occ, amt, shares) {
+  const fresh = await getOne(db,'dca_schedules',item.id);
+  if (fresh && fresh.last_confirmed_date === occ) return { ok: true, dup: true };
+  const h = state.holdings.find(x=>x.id===item.holding_id);
+  const label = h ? `${h.ticker} 定期定額` : (item.note || '定期定額');
+  const allCats = await getAll(db,'txn_categories').catch(()=>[]);
+  const dcaCat = allCats.find(c=>c.type==='income'&&c.active!==false&&String(c.label).includes('定期定額'))
+    || allCats.find(c=>c.id==='cat_dca');
+  if (!dcaCat) return { ok: false, error: '找不到「定期定額」收入分類，請改用完整記帳視窗' };
+  return saveIncomeRecord({
+    date: occ, category: dcaCat.id, description: label, amount: 0,
+    accId: item.account_id || null, note: '', affects: true,
+    dca: { spent: amt, brokerageId: h?.brokerage_id ?? null, holdingId: item.holding_id || null, shares: shares ?? null },
+    confirmDca: { id: item.id, occDate: occ },
   });
 }
 
@@ -11191,14 +11294,24 @@ async function openRecTransferConfirmModal(item, occurDate) {
       wireFxPair(fromEl, toEl, rateEl);
     },
     onSave: async (fAmt) => {
-      const schedule = await getOne(db,'recurring_transfers',item.id);
-      if (!schedule) return true;
-      if (schedule.last_confirmed_date === occ) { showToast('這一期已經確認過了，不能重複確認'); return true; }
-      const fromAccDb = await getOne(db,'accounts',schedule.from_account_id);
-      const toAccDb   = await getOne(db,'accounts',schedule.to_account_id);
-      if (!fromAccDb||!toAccDb) { showToast('帳戶資料異常'); return false; }
       const tAmt = isCross ? parseFloat(document.getElementById('periodConfirmToAmt').value) : fAmt;
       if (isCross && (!tAmt||tAmt<=0)) { showToast('請輸入有效的轉入金額'); return false; }
+      const res = await commitTransferPeriod(item, occ, fAmt, tAmt, isCross);
+      if (res.dup) { showToast('這一期已經確認過了，不能重複確認'); return true; }
+      if (!res.ok) { showToast(res.error); return false; }
+      showToast(`✓ 已記錄「${item.name}」本期轉帳（${fmtDate(occ)}）`);
+      if (currentView === 'calendar') await renderCalendar(); else await renderRecurringTransfers();
+    },
+    onSkip: makeSkipHandler('recurring_transfers', item, occ, item.name),
+  });
+}
+async function commitTransferPeriod(item, occ, fAmt, tAmt, isCross) {
+      const schedule = await getOne(db,'recurring_transfers',item.id);
+      if (!schedule) return { ok: true, dup: true };
+      if (schedule.last_confirmed_date === occ) return { ok: true, dup: true };
+      const fromAccDb = await getOne(db,'accounts',schedule.from_account_id);
+      const toAccDb   = await getOne(db,'accounts',schedule.to_account_id);
+      if (!fromAccDb||!toAccDb) return { ok: false, error: '帳戶資料異常' };
       const rate = isCross ? +(tAmt/fAmt).toFixed(6) : null;
       await putOne(db,'accounts',{ ...fromAccDb, balance:+(fromAccDb.balance-fAmt).toFixed(6), updated_at:new Date().toISOString() });
       await putOne(db,'accounts',{ ...toAccDb,   balance:+(toAccDb.balance+tAmt).toFixed(6),   updated_at:new Date().toISOString() });
@@ -11218,11 +11331,71 @@ async function openRecTransferConfirmModal(item, occurDate) {
         });
       } catch(e) { console.warn('transfer_logs',e); }
       await putOne(db,'recurring_transfers',{...schedule, last_confirmed_date: occ});
-      showToast(`✓ 已記錄「${schedule.name}」本期轉帳（${fmtDate(occ)}）`);
-      if (currentView === 'calendar') await renderCalendar(); else await renderRecurringTransfers();
-    },
-    onSkip: makeSkipHandler('recurring_transfers', item, occ, item.name),
-  });
+      return { ok: true };
+}
+
+// ── 到期自動記帳（v2.24.0，使用者決定）──────────────────────────────────────
+// 固定支出、分期付款、定期定額、定期轉帳到了扣款日就自動記帳，金額、分類、
+// 付款方式照排程設定；有出入再到紀錄頁改或刪。只處理「開始使用這個功能那天」
+// 以後到期的（不回頭補記舊的）；同一期只自動記一次——自動記的那筆被刪掉後，
+// 那一期回到待確認，不會再自動記第二次。信用卡繳款（金額每期不同）不自動記。
+const AUTO_TYPES = ['recurring', 'installment', 'dca', 'transfer'];
+let _autoRunning = false;
+async function runAutoConfirm() {
+  if (_autoRunning) return 0;
+  _autoRunning = true;
+  try {
+    if (!(await getSetting(db, 'auto_confirm', true).catch(() => true))) return 0;
+    const today = isoDate(new Date());
+    let since = await getSetting(db, 'auto_confirm_since', null).catch(() => null);
+    if (!since) { since = today; await setSetting(db, 'auto_confirm_since', today).catch(() => {}); }
+    const done = new Set((await getSetting(db, 'auto_confirm_done', []).catch(() => [])) || []);
+    await loadData();
+    const [cards, recurringTransfers, dcaSchedules] = await Promise.all([getAll(db,'credit_cards').catch(()=>[]), getAll(db,'recurring_transfers').catch(()=>[]), getAll(db,'dca_schedules').catch(()=>[])]);
+    const { depositRes, recurringExpenses, installments, recurringIncome } = state;
+    const fxRates = await getFxRates(db).catch(()=>({}));
+    const months = [];
+    for (let d = new Date(since.slice(0, 7) + '-01T00:00:00'); isoDate(d).slice(0, 7) <= today.slice(0, 7); d.setMonth(d.getMonth() + 1)) months.push([d.getFullYear(), d.getMonth() + 1]);
+    const due = months.flatMap(([y, m]) => calcMonthCalendarItems({ depositItems: depositRes.items, creditCards: cards, recurringExpenses, installments, recurringIncome, recurringTransfers, dcaSchedules }, y, m))
+      .filter(it => AUTO_TYPES.includes(it.type) && it.date >= since && it.date <= today)
+      .sort((a, b) => a.date.localeCompare(b.date));
+    let n = 0;
+    for (const it of due) {
+      const key = `${it.type}:${it.refId}:${it.date}`;
+      if (done.has(key)) continue;
+      done.add(key);
+      let res = null;
+      try {
+        if (it.type === 'recurring') {
+          const r = recurringExpenses.find(x => x.id === it.refId); if (!r || it.date <= (r.last_confirmed_date || '')) continue;
+          const acc = r.account_id ? state.accounts.find(a => a.id === r.account_id) : null;
+          const payCurr = (r.pay_type === 'account' || r.pay_type === 'cash') ? (acc?.currency || 'TWD') : 'TWD';
+          const amt = (r.currency || 'TWD') === payCurr ? r.amount : convertAmt(r.amount, r.currency || 'TWD', payCurr, fxRates);
+          const { annualB } = await resolveAnnualBucket(r, fxRates);
+          res = await commitRecurringPeriod(r, it.date, amt, r.spend_category || await getDefaultExpenseCategoryId(), annualB?.id ?? null);
+        } else if (it.type === 'installment') {
+          const i = installments.find(x => x.id === it.refId); if (!i) continue;
+          res = await commitInstPeriod(i, it.date, i.per_amount ?? Math.round(i.total_amount / i.total_periods), i.spend_category || await getDefaultExpenseCategoryId());
+        } else if (it.type === 'dca') {
+          const d = dcaSchedules.find(x => x.id === it.refId); if (!d || it.date <= (d.last_confirmed_date || '')) continue;
+          res = await commitDcaPeriod(d, it.date, d.amount, null);
+        } else if (it.type === 'transfer') {
+          const t = recurringTransfers.find(x => x.id === it.refId); if (!t || it.date <= (t.last_confirmed_date || '')) continue;
+          const fromAcc = state.accounts.find(a => a.id === t.from_account_id), toAcc = state.accounts.find(a => a.id === t.to_account_id);
+          if (!fromAcc || !toAcc) continue;
+          const isCross = fromAcc.currency !== toAcc.currency;
+          const refRate = isCross ? (toTWD(1, fromAcc.currency, fxRates) / (toTWD(1, toAcc.currency, fxRates) || 1)) : 1;
+          let fAmt = t.amount, tAmt = t.amount;
+          if (isCross) { if (t.currency === toAcc.currency) fAmt = +(tAmt / refRate).toFixed(2); else tAmt = +(fAmt * refRate).toFixed(2); }
+          res = await commitTransferPeriod(t, it.date, fAmt, tAmt, isCross);
+        }
+      } catch (e) { console.warn('[auto confirm]', key, e); }
+      if (res?.ok && !res.dup) n++;
+    }
+    await setSetting(db, 'auto_confirm_done', [...done].slice(-400)).catch(() => {});
+    if (n) { await loadData(); showToast(`已自動記帳 ${n} 筆到期的排程，有出入到「紀錄」修改`); }
+    return n;
+  } finally { _autoRunning = false; }
 }
 
 // §四十九之四：雙向換算共用小工具——fromEl／toEl 是兩邊金額，rateEl 是
@@ -13215,15 +13388,17 @@ async function renderCalendar() {
     return null; // recurringincome：目前僅供參考顯示，不會自動入帳（見 §十四）
   }
 
-  if (_calendarSelectedDate) {
-    const schedItems = schedByDate[_calendarSelectedDate] || [];
+  // v2.24.0（使用者決定）：選某一天看那天的排程；看整個月時列出這個月所有還沒處理的排程
+  {
+    const schedItems = _calendarSelectedDate ? (schedByDate[_calendarSelectedDate] || []) : [...items].sort((a, b) => a.date.localeCompare(b.date));
+    const monthMode = !_calendarSelectedDate;
     if (schedItems.length) {
       const card = el('div','card');
       card.style.borderRadius = '16px';
       // v2.22.0（使用者要求）：排程提醒預設收合，點標題再展開
       const h = el('button'); h.type = 'button'; h.className = 'cal-sched-head';
       h.setAttribute('aria-expanded', _calSchedOpen);
-      h.innerHTML = `<span>${fmtDate(_calendarSelectedDate)}・排程提醒</span><em>${schedItems.length} 筆</em><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>`;
+      h.innerHTML = `<span>${monthMode ? `${_calendarYear}/${_calendarMonth} 整個月` : fmtDate(_calendarSelectedDate)}・排程提醒</span><em>${schedItems.length} 筆</em><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>`;
       h.addEventListener('click', () => { _calSchedOpen = !_calSchedOpen; renderCalendar(); });
       card.appendChild(h);
       if (_calSchedOpen) schedItems.forEach(it => {
@@ -13232,6 +13407,7 @@ async function renderCalendar() {
         const amtColor = it.type==='recurringincome' ? 'var(--green)' : 'var(--text-2)';
         row.innerHTML = `
           <span style="font-size:16px;flex-shrink:0">${typeIcon[it.type]??'📌'}</span>
+          ${monthMode ? `<span class="cal-sched-date${it.date < todayStr ? ' is-late' : ''}">${Number(it.date.slice(5, 7))}/${Number(it.date.slice(8))}</span>` : ''}
           <span style="flex:1;font-size:13px;min-width:80px">${it.label}</span>
           ${it.amountLabel?`<span style="font-size:12px;color:${amtColor};font-variant-numeric:tabular-nums">${it.amountLabel}</span>`:''}`;
         const actionBtn = buildActionButton(it);
@@ -13243,6 +13419,8 @@ async function renderCalendar() {
       });
       content.appendChild(card);
     }
+  }
+  if (_calendarSelectedDate) {
     // 這一天被略過的排程：留一行「已略過」可以復原。
     const skippedHere = [];
     [['recurring_expenses', recurringExpenses], ['installments', installments], ['dca_schedules', dcaSchedules], ['recurring_transfers', recurringTransfers]].forEach(([store, list]) => {
