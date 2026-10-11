@@ -388,6 +388,17 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .qa-desc{flex:1;min-width:0;border:1px solid var(--border-2);border-radius:10px;padding:0 10px;font-size:16px;background:var(--card);color:var(--text-1)}
 .qa-label{font-size:10.5px;font-weight:600;color:var(--text-3);margin:12px 0 6px;letter-spacing:.03em}
 .qa-chips{display:flex;flex-wrap:wrap;gap:6px}
+/* v2.23.0：類別改成一排四格、左右對齊；最常用 7 個＋「更多」 */
+.qa-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.qa-cell{font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:58px;padding:8px 4px;border-radius:12px;border:1px solid var(--border-2);background:var(--card);color:var(--text-1);cursor:pointer;min-width:0;transition:background .15s,border-color .15s,transform .1s}
+.qa-cell:active{transform:scale(.95)}
+.qa-cell .qc-ico{font-size:19px;line-height:1}
+.qa-cell .qc-lbl{font-size:12px;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qa-cell.is-on{background:color-mix(in srgb,var(--blue) 12%,var(--card));border-color:var(--blue);font-weight:600}
+.qa-cell.is-more{background:transparent;border-style:dashed;color:var(--text-2)}
+.qa-cell.is-sub{background:var(--card)}
+.qa-cell:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.qa-paypair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:6px;flex:1;min-width:0}
 .qa-chip{font:inherit;font-size:12.5px;padding:7px 11px;border-radius:999px;border:1px solid var(--border-2);background:var(--card);color:var(--text-1);cursor:pointer}
 .qa-chip:active{transform:scale(.96)}
 .qa-chip.is-freq{background:color-mix(in srgb,var(--blue) 8%,var(--card));border-color:color-mix(in srgb,var(--blue) 30%,var(--border-2))}
@@ -399,8 +410,9 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .qa-main-only:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
 .qa-chip b{font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-2)}
 .qa-foot{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);flex-wrap:wrap}
+.qa-foot.is-pay{margin-top:0;padding-top:0;border-top:0;flex-wrap:nowrap}
 .qa-foot label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-3);flex:1;min-width:0}
-.qa-pay{flex:1;min-width:0;font-size:13px;padding:6px 8px;border:1px solid var(--border-2);border-radius:8px;background:var(--card);color:var(--text-1)}
+.qa-pay{width:100%;min-width:0;font-size:13px;padding:6px 8px;border:1px solid var(--border-2);border-radius:8px;background:var(--card);color:var(--text-1)}
 .qa-trip{font-size:11px;color:#0E7490;margin-top:8px}
 .qa-today{margin-top:6px}
 .qa-today-row{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:4px 0;border-top:1px solid var(--border)}
@@ -451,6 +463,8 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .home2{display:flex;flex-direction:column;gap:12px}
 .home2>.seg{margin-bottom:2px}
 .sp-hero{position:relative}
+.sp-hero{position:relative}
+.sp-hero .sp-toggle{position:absolute;top:18px;right:18px;margin-top:0}
 .sp-toggle{margin-top:10px;font:inherit;font-size:12px;padding:5px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:inherit;cursor:pointer}
 .sp-rows{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18);display:flex;flex-direction:column;gap:6px}
 .sp-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:13px}
@@ -771,6 +785,12 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 input[type=date],input[type=month],input[type=time],input[type=datetime-local]{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;box-sizing:border-box;min-height:40px;text-align:left}
 input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-and-time-value{text-align:left;margin:0}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+/* v2.23.0：確認本期三顆按鈕排同一列 */
+.pc-actions{flex-wrap:nowrap;gap:6px}
+.field-row.pay-pair{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px}
+.pay-pair .pay-right{min-width:0}
+.pc-actions .btn{padding:9px 10px;font-size:13px;white-space:nowrap}
+.pc-actions #periodConfirmAltWrap{margin-right:auto}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
 /* ── Settings ── */
@@ -1636,12 +1656,10 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     </div>
     <div id="periodConfirmExtra"></div>
     <p id="periodConfirmHint" style="font-size:11px;color:var(--text-3);margin-bottom:4px"></p>
-    <div class="modal-actions">
+    <div class="modal-actions pc-actions">
+      <span id="periodConfirmAltWrap" style="display:none"><button type="button" class="btn btn-ghost" id="periodConfirmAlt">改用完整記帳視窗</button></span>
       <button type="button" class="btn btn-ghost" id="periodConfirmSkip" style="display:none">略過本期</button>
       <button class="btn btn-primary" id="periodConfirmSave">確認本期</button>
-    </div>
-    <div id="periodConfirmAltWrap" style="display:none;text-align:center;margin-top:10px">
-      <button type="button" class="btn btn-ghost btn-sm" id="periodConfirmAlt" style="font-size:11px"></button>
     </div>
   </div>
 </div>
@@ -2783,11 +2801,12 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <label>說明</label>
       <input type="text" id="expenseDesc" placeholder="例：午餐、交通費">
     </div>
-    <div class="field-row">
-      <div class="modal-field">
-        <label id="expenseAmountLabel">金額</label>
-        <input type="number" id="expenseAmount" inputmode="decimal" placeholder="0" min="0" step="0.01">
-      </div>
+    <div class="modal-field">
+      <label id="expenseAmountLabel">金額</label>
+      <input type="number" id="expenseAmount" inputmode="decimal" placeholder="0" min="0" step="0.01">
+    </div>
+    <!-- v2.23.0：付款方式在左、帳戶／信用卡在右，同一列 -->
+    <div class="field-row pay-pair">
       <div class="modal-field">
         <label>付款方式</label>
         <select id="expensePayType">
@@ -2797,10 +2816,10 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
           <option value="cc">信用卡</option>
         </select>
       </div>
-    </div>
+      <div class="pay-right">
     <div class="modal-field" id="expenseAccountField" style="display:none">
       <label style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-        <span>從哪個帳戶扣除</span>
+        <span>帳戶</span>
         <span id="expenseAccShowHiddenWrap" style="display:none;align-items:center;gap:4px;font-weight:normal;font-size:11px;color:var(--text-3);cursor:pointer">
           <input type="checkbox" id="expenseAccShowHidden" style="margin:0;cursor:pointer">顯示已隱藏幣別的帳戶
         </span>
@@ -2808,17 +2827,19 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <select id="expenseAccount"></select>
     </div>
     <div class="modal-field" id="expenseCcField" style="display:none">
-      <label>使用哪張信用卡</label>
+      <label>信用卡</label>
       <select id="expenseCc"></select>
     </div>
     <div class="modal-field" id="expenseCashField" style="display:none">
       <label style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-        <span>從哪個現金帳戶扣除</span>
+        <span>現金帳戶</span>
         <span id="expenseCashShowHiddenWrap" style="display:none;align-items:center;gap:4px;font-weight:normal;font-size:11px;color:var(--text-3);cursor:pointer">
           <input type="checkbox" id="expenseCashShowHidden" style="margin:0;cursor:pointer">顯示已隱藏幣別的帳戶
         </span>
       </label>
       <select id="expenseCashAcc"></select>
+    </div>
+      </div>
     </div>
     <div class="modal-field" id="expenseFxField" style="display:none">
       <label>換算匯率（1 <span id="expenseFxCurrLabel">USD</span> = ? TWD）</label>
@@ -2834,7 +2855,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <select id="expenseProject"></select>
     </div>
     <div class="modal-field">
-      <label>備註（選填）</label>
+      <label>備註</label>
       <input type="text" id="expenseNote" placeholder="">
     </div>
     <input type="hidden" id="expenseEditId">
@@ -3352,14 +3373,20 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.22.1';
-const CHANGELOG_LAST_UPDATED = '2026-10-08';
+const APP_VERSION = 'v2.23.0';
+const CHANGELOG_LAST_UPDATED = '2026-10-11';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '修正：首頁「資產」分頁偶爾出現兩份總資產（切分頁時剛好在更新報價）',
+  '記一筆：拿掉「常用」，類別改成一排四格，只列最常用的 7 個＋「更多」；收入、支出同一個樣子',
+  '記一筆：付款方式改成左右兩格（種類／哪一張卡或帳戶），預設成你最常用的那一個',
+  '首頁：「怎麼算的」移到區塊右上角，拿掉「N 筆還沒確認」',
+  '紀錄頁：一打開就是今天的收支；「今天還能花」只留標題和金額',
+  '確認本期：三顆按鈕排同一列，左邊改成「改用完整記帳視窗」',
+  '編輯支出：付款方式與帳戶左右並排；「備註（選填）」改成「備註」',
+  '每月計劃：「計劃基準」不再斷行，計劃超出時下方小字拿掉',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3894,6 +3921,7 @@ function closeMoreSheet() {
 
 async function navigate(view) {
   // v2.9.0：持倉、趨勢收進「資產」，存錢目標收進「計畫」。
+  if (view === 'calendar') { _calendarYear = null; _calendarSelectedDate = isoDate(new Date()); } // v2.23.0：打開紀錄頁就看今天的收支
   if (view === 'holdings') { view = 'wealth'; }
   else if (view === 'trend') { _homeTab = 'assets'; view = 'assets'; }
   else if (view === 'assets') { _homeTab = 'overview'; }
@@ -4215,28 +4243,61 @@ function buildCatPicker(type, txns, exclude, onPick, guard = () => true) {
     .map(x => ({ ...x, subs: x.subs.filter(c => !exclude.includes(c.id)) }));
   const mainUse = x => (use[x.main.id] || 0) + x.subs.reduce((t, c) => t + (use[c.id] || 0), 0);
   tree.sort((a, b) => mainUse(b) - mainUse(a) || (a.main.sort_order ?? 99) - (b.main.sort_order ?? 99));
-  let open = null, all = false;
+  // v2.23.0（使用者決定）：只列最常用的 7 個，第 8 格是「更多」；點了才展開全部。
+  // 總數 8 個以內就全部列出，不需要「更多」。
+  const TOP = 7;
+  let open = null, allMain = false, allSub = false;
+  const cell = (attr, icon, label, cls = '', extra = '') => `<button type="button" class="qa-cell${cls}" ${attr}${extra}><span class="qc-ico" aria-hidden="true">${icon || '·'}</span><span class="qc-lbl">${escHtml(label)}</span></button>`;
   const render = () => {
     const x = tree.find(t => t.main.id === open);
+    let mains = tree;
+    if (!allMain && tree.length > TOP + 1) {
+      mains = tree.slice(0, TOP);
+      if (x && !mains.includes(x)) mains = [...tree.slice(0, TOP - 1), x];
+    }
+    const mainMore = tree.length > TOP + 1 ? cell('data-more-main', allMain ? '︿' : '⋯', allMain ? '收起' : '更多', ' is-more') : '';
     const subs = x ? [...x.subs].sort((a, b) => (use[b.id] || 0) - (use[a.id] || 0) || (a.sort_order ?? 99) - (b.sort_order ?? 99)) : [];
-    const shown = all ? subs : subs.slice(0, 8);
-    wrap.innerHTML = `<div class="qa-chips">${tree.map(t => `<button type="button" class="qa-chip${t.main.id === open ? ' is-on' : ''}" data-main="${t.main.id}" aria-expanded="${t.main.id === open}">${t.main.icon ?? ''} ${escHtml(t.main.label)}</button>`).join('') || '<span style="font-size:12px;color:var(--text-3)">還沒有分類</span>'}</div>
+    const shown = (!allSub && subs.length > TOP + 1) ? subs.slice(0, TOP) : subs;
+    const subMore = subs.length > TOP + 1 ? cell('data-more-sub', allSub ? '︿' : '⋯', allSub ? '收起' : '更多', ' is-more') : '';
+    wrap.innerHTML = tree.length ? `<div class="qa-grid">${mains.map(t => cell(`data-main="${t.main.id}"`, t.main.icon, t.main.label, t.main.id === open ? ' is-on' : '', ` aria-expanded="${t.main.id === open}"`)).join('')}${mainMore}</div>
       ${x ? `<div class="qa-subs" role="group" aria-label="${escHtml(x.main.label)}的子分類">
-        <div class="qa-chips">${shown.map(c => `<button type="button" class="qa-chip is-sub" data-sub="${c.id}">${c.icon ?? ''} ${escHtml(c.label)}</button>`).join('')}
-        ${subs.length > 8 ? `<button type="button" class="qa-chip is-more" data-more>${all ? '收起' : `更多（${subs.length - 8}）`}</button>` : ''}</div>
+        <div class="qa-grid">${shown.map(c => cell(`data-sub="${c.id}"`, c.icon, c.label, ' is-sub')).join('')}${subMore}</div>
         <button type="button" class="qa-main-only" data-only>只記「${escHtml(x.main.label)}」，不選子分類</button>
-      </div>` : ''}`;
+      </div>` : ''}` : '<span style="font-size:12px;color:var(--text-3)">還沒有分類</span>';
     wrap.querySelectorAll('[data-main]').forEach(b => b.addEventListener('click', () => {
       const t = tree.find(z => z.main.id === b.dataset.main);
       if (!t.subs.length) { if (guard()) onPick(t.main.id); return; }
-      open = open === t.main.id ? null : t.main.id; all = false; render();
+      open = open === t.main.id ? null : t.main.id; allSub = false; render();
     }));
     wrap.querySelectorAll('[data-sub]').forEach(b => b.addEventListener('click', () => { if (guard()) onPick(b.dataset.sub); }));
-    wrap.querySelector('[data-more]')?.addEventListener('click', () => { all = !all; render(); });
+    wrap.querySelector('[data-more-main]')?.addEventListener('click', () => { allMain = !allMain; render(); });
+    wrap.querySelector('[data-more-sub]')?.addEventListener('click', () => { allSub = !allSub; render(); });
     wrap.querySelector('[data-only]')?.addEventListener('click', () => { if (guard()) onPick(open); });
   };
   render();
   return wrap;
+}
+
+// v2.23.0（使用者：信用卡一直預設 A 卡，但比較常用 B 卡）：付款方式改成一排兩格，
+// 左邊選種類（現金／銀行帳戶／信用卡），右邊選是哪一個。預設值看最近 90 天
+// 用得最多的；換種類時，右邊也預設成這個種類裡最常用的。
+const PAY_TYPE_LABEL = { cash: '現金', account: '銀行帳戶', cc: '信用卡' };
+function buildPayPair(options, useCount, fallbackV, ariaPrefix = '付款') {
+  const wrap = el('div'); wrap.className = 'qa-paypair';
+  const types = ['cash', 'account', 'cc'].filter(t => options.some(o => o.payType === t));
+  const byUse = list => [...list].sort((a, b) => (useCount[b.v] || 0) - (useCount[a.v] || 0));
+  const top = byUse(options)[0];
+  let cur = (top && useCount[top.v]) ? top : (options.find(o => o.v === fallbackV) || options[0]);
+  wrap.innerHTML = `<select class="qa-pay" data-pay-type aria-label="${ariaPrefix}種類">${types.map(t => `<option value="${t}">${PAY_TYPE_LABEL[t]}</option>`).join('')}</select><select class="qa-pay" data-pay-item aria-label="${ariaPrefix}帳戶"></select>`;
+  const typeSel = wrap.querySelector('[data-pay-type]'), itemSel = wrap.querySelector('[data-pay-item]');
+  const fillItems = (t, keepV) => {
+    const list = byUse(options.filter(o => o.payType === t));
+    itemSel.innerHTML = list.map(o => `<option value="${o.v}">${escHtml(o.label)}</option>`).join('');
+    itemSel.value = keepV && list.some(o => o.v === keepV) ? keepV : (list[0]?.v ?? '');
+  };
+  if (cur) { typeSel.value = cur.payType; fillItems(cur.payType, cur.v); }
+  typeSel.addEventListener('change', () => fillItems(typeSel.value));
+  return { node: wrap, get: () => options.find(o => o.v === itemSel.value) || null };
 }
 
 async function buildQuickAdd({ date = null, onDone = null } = {}) {
@@ -4246,16 +4307,15 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
   const expCats = cats.filter(c => c.type === 'expense' && c.active !== false && !['cat_dca','cat_bad_debt_writeoff'].includes(c.id));
   const since = new Date(); since.setDate(since.getDate() - 90); const sinceStr = isoDate(since);
   const useCount = {}; expenseTxns.filter(t => t.date >= sinceStr).forEach(t => { useCount[t.category] = (useCount[t.category] || 0) + 1; });
-  const topCats = [...expCats].sort((a, b) => (useCount[b.id] || 0) - (useCount[a.id] || 0) || (a.sort_order ?? 99) - (b.sort_order ?? 99)).slice(0, 8);
-  const frequent = calcFrequentExpenses(expenseTxns, 4);
   const payOptions = [
     ...accounts.filter(a => a.show_in_menu !== false && (!a.currency || a.currency === 'TWD')).map(a => ({ v: `acc:${a.id}`, label: `${bankMap[a.bank_id] ? bankMap[a.bank_id].name + ' ' : ''}${a.name}`, payType: a.bank_id ? 'account' : 'cash', accId: a.id })),
-    ...cards.map(c => ({ v: `cc:${c.id}`, label: `💳 ${c.name}`, payType: 'cc', ccId: c.id })),
+    ...cards.map(c => ({ v: `cc:${c.id}`, label: c.name, payType: 'cc', ccId: c.id })),
   ];
+  const payUse = {}; expenseTxns.filter(t => t.date >= sinceStr && t.pay_type).forEach(t => { const v = t.pay_type === 'cc' ? `cc:${t.cc_id}` : `acc:${t.account_id}`; payUse[v] = (payUse[v] || 0) + 1; });
   const lastTxn = [...expenseTxns].filter(t => t.pay_type).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))[0];
   const saved = await getSetting(db, 'quick_pay', null).catch(() => null);
   const lastV = lastTxn ? (lastTxn.pay_type === 'cc' ? `cc:${lastTxn.cc_id}` : `acc:${lastTxn.account_id}`) : null;
-  let payV = [saved, lastV, payOptions[0]?.v].find(v => v && payOptions.some(o => o.v === v)) ?? '';
+  const payV = [lastV, saved, payOptions[0]?.v].find(v => v && payOptions.some(o => o.v === v)) ?? '';
   const trip = findActiveTrip(projects);
   const realToday = isoDate(new Date());
   const today = date || realToday; // v2.19.0：從紀錄頁選了某一天再按「＋記帳」，記在那一天
@@ -4267,21 +4327,21 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
       <label class="qa-amt"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="1" placeholder="金額" aria-label="金額"></label>
       <input class="qa-desc" type="text" placeholder="說明（選填）" aria-label="說明">
     </div>
-    ${frequent.length ? `<div class="qa-label">常用（點一下就記）</div><div class="qa-chips">${frequent.map((f, i) => `<button type="button" class="qa-chip is-freq" data-qa-freq="${i}">${escHtml(f.description)} <b>${fmt(f.amount)}</b></button>`).join('')}</div>` : ''}
-    <div class="qa-label">輸入金額後點分類</div>
-    <div data-catpick></div>
-    <div class="qa-foot">
-      <label>付款 <select class="qa-pay" aria-label="付款方式">${payOptions.map(o => `<option value="${o.v}">${escHtml(o.label)}</option>`).join('')}</select></label>
+    <div class="qa-label">付款方式</div>
+    <div class="qa-foot is-pay">
+      <div data-paypair></div>
       <button type="button" class="btn btn-ghost btn-sm" data-qa-full>完整表單</button>
     </div>
+    <div class="qa-label">類別</div>
+    <div data-catpick></div>
     ${trip ? `<div class="qa-trip">✈️ 旅行中，會自動歸到「${escHtml(trip.name)}」</div>` : ''}`;
 
-  const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc'), paySel = box.querySelector('.qa-pay');
-  paySel.value = payV;
-  paySel.addEventListener('change', () => setSetting(db, 'quick_pay', paySel.value).catch(() => {}));
+  const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc');
+  const pay = buildPayPair(payOptions, payUse, payV, '付款');
+  box.querySelector('[data-paypair]').replaceWith(pay.node);
   async function quickSave(category, amount, description) {
     if (!(amount > 0)) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); return; }
-    const o = payOptions.find(x => x.v === paySel.value);
+    const o = pay.get();
     let bucketId = trip?.bucket_id ?? null, projectId = trip?.id ?? null;
     if (!bucketId && o?.accId) {
       const pick = await askEfAccountUse(o.accId, amount);
@@ -4298,9 +4358,8 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
   }
   box.querySelector('[data-catpick]').replaceWith(buildCatPicker('expense', expenseTxns, ['cat_bad_debt_writeoff'], id => quickSave(id, parseFloat(amtIn.value), descIn.value.trim()), () => {
     const ok = parseFloat(amtIn.value) > 0; if (!ok) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); } return ok; }));
-  box.querySelectorAll('[data-qa-freq]').forEach(b => b.addEventListener('click', () => { const f = frequent[+b.dataset.qaFreq]; quickSave(f.category, f.amount, f.description); }));
   box.querySelector('[data-qa-full]').addEventListener('click', () => {
-    const o = payOptions.find(x => x.v === paySel.value);
+    const o = pay.get();
     onDone?.();
     openExpenseModal(null, { date: today, amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), pay_type: o?.payType, account_id: o?.accId, cc_id: o?.ccId });
   });
@@ -4317,11 +4376,13 @@ async function buildQuickIncome({ date = null, onDone = null } = {}) {
   const bankMap = Object.fromEntries((state.banks || []).map(b => [b.id, b]));
   const incCats = cats.filter(c => c.type === 'income' && c.active !== false && !['cat_receivable','cat_dca','cat_realized'].includes(c.id));
   const useCount = {}; incomeTxns.forEach(t => { useCount[t.category] = (useCount[t.category] || 0) + 1; });
-  const topCats = [...incCats].sort((a, b) => (useCount[b.id] || 0) - (useCount[a.id] || 0) || (a.sort_order ?? 99) - (b.sort_order ?? 99)).slice(0, 8);
   const accOpts = accounts.filter(a => a.show_in_menu !== false && (!a.currency || a.currency === 'TWD'));
   const saved = await getSetting(db, 'quick_income_acc', null).catch(() => null);
   const lastAcc = [...incomeTxns].filter(t => t.account_id).sort((a, b) => (b.created_at || b.date || '').localeCompare(a.created_at || a.date || ''))[0]?.account_id;
-  const accV = [saved, lastAcc, accOpts.find(a => a.role === 'income')?.id, accOpts[0]?.id].find(v => v && accOpts.some(a => a.id === v)) ?? '';
+  const accV = [lastAcc, saved, accOpts.find(a => a.role === 'income')?.id, accOpts[0]?.id].find(v => v && accOpts.some(a => a.id === v)) ?? '';
+  const inOpts = accOpts.map(a => ({ v: a.id, label: `${bankMap[a.bank_id] ? bankMap[a.bank_id].name + ' ' : ''}${a.name}`, payType: a.bank_id ? 'account' : 'cash' }));
+  const inSince = new Date(); inSince.setDate(inSince.getDate() - 180); const inSinceStr = isoDate(inSince);
+  const accUse = {}; incomeTxns.filter(t => t.account_id && (t.date || '') >= inSinceStr).forEach(t => { accUse[t.account_id] = (accUse[t.account_id] || 0) + 1; });
   const realToday = isoDate(new Date()), day = date || realToday;
   const box = el('div'); box.className = 'card qa';
   box.innerHTML = `
@@ -4329,15 +4390,17 @@ async function buildQuickIncome({ date = null, onDone = null } = {}) {
       <label class="qa-amt"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="1" placeholder="金額" aria-label="金額"></label>
       <input class="qa-desc" type="text" placeholder="說明（選填）" aria-label="說明">
     </div>
-    <div class="qa-label">輸入金額後點分類</div>
-    <div data-catpick></div>
-    <div class="qa-foot">
-      <label>存入 <select class="qa-pay" aria-label="存入帳戶">${accOpts.map(a => `<option value="${a.id}">${escHtml(`${bankMap[a.bank_id] ? bankMap[a.bank_id].name + ' ' : ''}${a.name}`)}</option>`).join('')}</select></label>
+    <div class="qa-label">存入</div>
+    <div class="qa-foot is-pay">
+      <div data-paypair></div>
       <button type="button" class="btn btn-ghost btn-sm" data-qi-full>完整表單</button>
-    </div>`;
-  const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc'), accSel = box.querySelector('.qa-pay');
-  accSel.value = accV;
-  accSel.addEventListener('change', () => setSetting(db, 'quick_income_acc', accSel.value).catch(() => {}));
+    </div>
+    <div class="qa-label">類別</div>
+    <div data-catpick></div>`;
+  const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc');
+  const dep = buildPayPair(inOpts, accUse, accV, '存入');
+  box.querySelector('[data-paypair]').replaceWith(dep.node);
+  const accSel = { get value() { return dep.get()?.v || ''; } };
   box.querySelector('[data-catpick]').replaceWith(buildCatPicker('income', incomeTxns, ['cat_receivable','cat_dca','cat_realized'], async catId => {
     const amount = parseFloat(amtIn.value);
     const irregular = !!catById(catId)?.irregular_default;
@@ -4575,7 +4638,7 @@ async function renderHome() {
   const rows = [
     ['現金與活存', sp.liquid, ''],
     ['信用卡待繳', -sp.cardsDue, ''],
-    ['本月還要付', -sp.upcomingTotal, sp.upcoming.length ? `${sp.upcoming.length} 筆還沒確認` : '本月都處理完了'],
+    ['本月還要付', -sp.upcomingTotal, sp.upcoming.length ? '' : '本月都處理完了'],
     [`緊急預備金${sp.ef.gap > 0 ? '（含缺口）' : ''}`, -sp.ef.protect, sp.ef.target ? `目標 ${money(sp.ef.target)}` : '尚未設定'],
     ['其他存錢目標', -sp.goalsTotal, sp.goals.length ? `${sp.goals.length} 個` : ''],
   ];
@@ -9892,7 +9955,7 @@ async function renderMonthlyPlan() {
   hero.innerHTML = `
     <div class="mp-hero-top">
       <div><div class="mp-k">本月可分配</div><div class="mp-big">${money(plan.base)}</div><div class="mp-src">${srcText}</div>${irregularIncome > 0 ? `<div class="mp-src">另有獎金／一次性收入 ${money(irregularIncome)}，不算進計畫</div>` : ''}</div>
-      <button class="btn btn-ghost btn-sm" data-mp-base>計畫基準</button>
+      <button class="btn btn-ghost btn-sm" data-mp-base style="white-space:nowrap;flex-shrink:0">計畫基準</button>
     </div>
     ${bufferHtml}${switchHint}
     <div class="mp-bar">${segs.map(([k, v]) => v > 0 ? `<span style="flex:${v};background:${COLORS[k]}"></span>` : '').join('')}${plan.unassigned > 0 ? `<span style="flex:${plan.unassigned};background:repeating-linear-gradient(45deg,${COLORS.free}55 0 4px,transparent 4px 8px);border:1px dashed ${COLORS.free}"></span>` : ''}</div>
@@ -9904,7 +9967,7 @@ async function renderMonthlyPlan() {
     </div>
     <div class="mp-rest ${plan.unassigned < 0 ? 'is-over' : plan.unassigned > 0 ? 'is-free' : 'is-zero'}">
       ${plan.unassigned > 0 ? `<strong>還有 ${money(plan.unassigned)} 沒有安排用途</strong><span>這就是會變成「閒置資金」的錢——放進存下來、投資或生活預算，讓每一塊錢都有用途。</span>`
-        : plan.unassigned < 0 ? `<strong>計畫超出 ${money(-plan.unassigned)}</strong><span>${plan.base === 0 ? '本月還沒有可分配的錢，' : ''}超出的部分要從存款支應${buckets.some(b => b.is_emergency_fund && b.status !== 'closed') ? '（會先動用緊急預備金）' : ''}。可以調低生活預算或存下來的金額。</span>`
+        : plan.unassigned < 0 ? `<strong>計畫超出 ${money(-plan.unassigned)}</strong>`
         : `<strong>每一塊錢都有用途了</strong><span>收入剛好分配完。</span>`}
     </div>`;
   hero.querySelector('[data-mp-base]').addEventListener('click', () => openPlanBaseModal(settings));
@@ -10777,7 +10840,7 @@ function openPeriodConfirmModal(ctx) {
   const altWrap = document.getElementById('periodConfirmAltWrap');
   if (ctx.altLabel && ctx.onAlt) {
     altWrap.style.display = '';
-    document.getElementById('periodConfirmAlt').textContent = ctx.altLabel;
+    document.getElementById('periodConfirmAlt').textContent = '改用完整記帳視窗';
   } else {
     altWrap.style.display = 'none';
   }
@@ -12954,16 +13017,11 @@ async function renderCalendar() {
   if (state.todayAllowance) {
     const ta = state.todayAllowance;
     const allowCard = el('div','card');
-    allowCard.style.cssText = 'padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap';
+    // v2.23.0：左邊「今天還能花」、右邊金額，其他小字拿掉
+    allowCard.style.cssText = 'padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px';
     allowCard.innerHTML = `
-      <div>
-        <div style="font-size:11px;color:var(--text-3)">今天還能花</div>
-        <div style="font-size:22px;font-weight:700;color:${ta.perDay>=0?'var(--green)':'var(--red)'};font-variant-numeric:tabular-nums">NT$ ${fmt(ta.perDay)}</div>
-      </div>
-      <div style="text-align:right;font-size:11px;color:var(--text-3);line-height:1.7">
-        生活預算 NT$ ${fmt(ta.totalBudget)}　已花 NT$ ${fmt(ta.spent)}<br>
-        剩餘 NT$ ${fmt(ta.remaining)}　還有 ${ta.daysLeft} 天（含今天）
-      </div>`;
+      <span style="font-size:13px;font-weight:600;color:var(--text-2)">今天還能花</span>
+      <span style="font-size:20px;font-weight:700;color:${ta.perDay>=0?'var(--green)':'var(--red)'};font-variant-numeric:tabular-nums">NT$ ${fmt(ta.perDay)}</span>`;
     content.appendChild(allowCard);
   }
 
