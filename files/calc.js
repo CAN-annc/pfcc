@@ -1659,13 +1659,11 @@ export function calcGrowthBreakdown(snapshots, incomeTxns, expenseTxns, fromDate
 // 進行中的旅行＝存錢目標底下、沒有結束、今天落在開始～結束日期之間的專案
 // （沒填結束日就只看開始日當天起 30 天內）。旅行期間新增支出自動歸到這趟。
 export function findActiveTrip(projects = [], today = new Date()) {
-  const t = `${today.getFullYear()}-${pad2(today.getMonth() + 1)}-${pad2(today.getDate())}`;
+  // v2.24.0：也可以直接傳 'YYYY-MM-DD'（支出的日期），看那天是不是在旅行期間
+  const t = typeof today === 'string' ? today : `${today.getFullYear()}-${pad2(today.getMonth() + 1)}-${pad2(today.getDate())}`;
   return projects.filter(p => p.status !== 'closed' && p.start_date && p.start_date <= t)
-    .filter(p => {
-      if (p.end_date) return t <= p.end_date;
-      const s = new Date(p.start_date + 'T00:00:00'); s.setDate(s.getDate() + 30);
-      return t <= `${s.getFullYear()}-${pad2(s.getMonth() + 1)}-${pad2(s.getDate())}`;
-    })
+    // v2.24.0（使用者決定）：旅行一定有結束日期；沒填的不算進行中，不自動歸類
+    .filter(p => p.end_date && t <= p.end_date)
     .sort((a, b) => b.start_date.localeCompare(a.start_date))[0] ?? null;
 }
 export function calcProjectByCategory(expenseTxns, projectId, accounts = [], fxRates = {}) {

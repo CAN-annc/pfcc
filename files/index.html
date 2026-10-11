@@ -300,40 +300,6 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hp-qt-title{font-size:13px;font-weight:600;color:var(--text-1)}
 .hp-qt-desc{font-size:11px;color:var(--text-3);margin-top:3px;line-height:1.5}
 .idle-card{padding:0;margin-top:16px;overflow:hidden}
-.rw-card{margin-top:16px;padding:14px 16px}
-.rw-head b{display:block;font-size:14px}
-.rw-head span{display:block;font-size:11px;color:var(--text-3);margin-top:2px}
-.rw-rows{display:flex;flex-direction:column;gap:12px;margin-top:12px}
-.rw-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12.5px;color:var(--text-2)}
-.rw-top b{font-size:15px;color:var(--text-1);font-variant-numeric:tabular-nums}
-.rw-bar{height:8px;border-radius:4px;background:var(--surface-2);margin:5px 0 3px;overflow:hidden}
-.rw-bar span{display:block;height:100%;border-radius:4px}
-.rw-ef{background:var(--green)}
-.rw-cash{background:var(--blue)}
-.rw-all{background:color-mix(in srgb,var(--blue) 45%,var(--surface-2))}
-.rw-row small{font-size:10.5px;color:var(--text-3)}
-.rw-row small em{font-style:normal;display:block;color:var(--green);font-weight:600;margin-top:1px}
-.rw-main,.rw-layer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
-.rw-layer{padding-top:10px;border-top:1px solid var(--border)}
-.rw-main-k{font-size:12.5px;color:var(--text-2);min-width:0}
-.rw-main-k span{display:block;font-size:10.5px;color:var(--text-3);margin-top:2px}
-.rw-stats{display:flex;gap:14px;flex-shrink:0;text-align:right}
-.rw-stat small{display:block;font-size:10px;color:var(--text-3)}
-.rw-stat b{display:block;font-size:17px;font-weight:700;color:var(--text-1);font-variant-numeric:tabular-nums;white-space:nowrap}
-.rw-main .rw-stat b{font-size:20px}
-.rw-pnote{margin-top:6px;font-size:10.5px;color:var(--green)}
-.rw-more{all:unset;display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:12px;color:var(--blue);cursor:pointer;padding:2px 0}
-.rw-more[aria-expanded=true] svg{transform:rotate(180deg)}
-.rw-more:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
-.rw-layers{margin-top:4px}
-.rw-basis{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-3)}
-.rw-seg{display:flex;flex:1;background:var(--surface-2);border-radius:8px;padding:2px;gap:2px}
-.rw-seg button{flex:1;font:inherit;font-size:11.5px;border:0;background:transparent;color:var(--text-2);padding:6px 4px;border-radius:6px;cursor:pointer;white-space:nowrap}
-.rw-seg button[aria-checked=true]{background:var(--card);color:var(--text-1);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.rw-seg button:disabled{opacity:.4;cursor:default}
-.rw-foot{margin:8px 0 0;font-size:10.5px;line-height:1.5;color:var(--text-3)}
-.rw-passive{margin-top:10px;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--green) 8%,var(--surface-2));font-size:11.5px;line-height:1.55;color:var(--text-2)}
-.rw-passive b{display:block;font-size:12px;color:var(--text-1)}
 .mp-avg{display:flex;align-items:center;gap:10px;margin:8px 0 2px;font-size:11.5px;color:var(--text-2)}
 .mp-avg span{flex:1;min-width:0;line-height:1.5}
 .mp-avg b{color:var(--text-1);font-variant-numeric:tabular-nums}
@@ -434,7 +400,12 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .qa-foot.is-pay{margin-top:0;padding-top:0;border-top:0;flex-wrap:nowrap}
 .qa-foot label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-3);flex:1;min-width:0}
 .qa-pay{width:100%;min-width:0;font-size:13px;padding:6px 8px;border:1px solid var(--border-2);border-radius:8px;background:var(--card);color:var(--text-1)}
-.qa-trip{font-size:11px;color:#0E7490;margin-top:8px}
+.qa-trip{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:6px 2px;font-size:12px;color:#0E7490;cursor:pointer}
+.qa-trip-box{width:16px;height:16px;border-radius:5px;border:1.5px solid currentColor;display:inline-grid;place-items:center;flex-shrink:0}
+.qa-trip[aria-checked=true] .qa-trip-box{background:currentColor}
+.qa-trip[aria-checked=true] .qa-trip-box::after{content:'';width:8px;height:4px;border:2px solid #fff;border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
+.qa-trip[aria-checked=false]{color:var(--text-3)}
+.qa-trip:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
 .qa-today{margin-top:6px}
 .qa-today-row{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:4px 0;border-top:1px solid var(--border)}
 .qa-today-row span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -608,6 +579,13 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .pd-total{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 4px;font-size:13px;color:var(--text-2)}
 .pd-total b{font-size:18px;color:var(--text-1);font-variant-numeric:tabular-nums}
 .pd-hint{font-size:11px;color:var(--text-3);margin:0 0 4px}
+.sp-rw{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.14)}
+.sp-rw-k{font-size:12px;opacity:.78;line-height:1.4}
+.sp-rw-v{display:flex;gap:14px;flex-shrink:0}
+.sp-rw-stat{all:unset;cursor:pointer;text-align:right;display:block}
+.sp-rw-stat small{display:block;font-size:10.5px;opacity:.7;letter-spacing:.02em}
+.sp-rw-stat b{display:block;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sp-rw-stat:focus-visible{outline:2px solid currentColor;outline-offset:2px;border-radius:4px}
 .sp-due{list-style:none;margin:-2px 0 4px 10px;padding:0;display:flex;flex-direction:column;gap:2px;font-size:11px;opacity:.82}
 .sp-due li{display:block}
 .sp-due li button{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:baseline;gap:8px;min-height:28px;padding:4px 0;cursor:pointer}
@@ -620,6 +598,7 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .sp-warn{margin-top:12px;padding:9px 11px 9px 13px;border-radius:9px;background:rgba(255,255,255,.12);box-shadow:inset 3px 0 0 var(--amber);font-size:11.5px;line-height:1.55;color:inherit}
 .sp-warn b{display:block;font-size:13px;margin-bottom:2px}
 .home-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.home-duo.is-one{grid-template-columns:1fr}
 .home-mini{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:3px;padding:12px 14px;cursor:pointer;background:var(--card);border:1px solid var(--border);border-radius:12px}
 .home-mini:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .home-mini-k{font-size:11px;color:var(--text-3)}
@@ -2161,10 +2140,11 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
         <input type="date" id="projectStart">
       </div>
       <div class="modal-field">
-        <label>結束日期（選填）</label>
+        <label>結束日期</label>
         <input type="date" id="projectEnd">
       </div>
     </div>
+    <p style="font-size:11px;color:var(--text-3);margin:-4px 0 10px">有填開始日期就要填結束日期；這段期間記的支出會自動歸進來（記帳時可以取消）。</p>
     <div class="modal-field">
       <label>備註（選填）</label>
       <input type="text" id="projectNote" placeholder="">
@@ -3407,7 +3387,9 @@ const CHANGELOG_DONE = [
   '排程到期自動記帳：固定支出、分期、定期定額、定期轉帳到了扣款日自動記一筆，有出入到「紀錄」修改（設定可關閉）',
   '紀錄頁：看整個月時，列出這個月所有還沒處理的排程；選某一天只看那一天',
   '首頁「本月還要付」每一筆點一下就能確認本期，跟紀錄頁的排程提醒是同一份清單',
-  '「如果沒有收入，可以撐多久」搬到首頁「資產」分頁：平常只看現金與活存，點開看其他層；可選依計畫、依實際花費或兩個都看',
+  '「如果沒有收入，可以撐多久」改成可自由運用裡的一行：緊急預備金可撐幾個月，點小字切換依計畫／依實際花費／兩個都看',
+  '首頁拿掉「今天還能花」（紀錄頁看得到）',
+  '旅行：看支出的日期是否在旅行期間；記一筆可以取消「算進旅行」；旅行要填結束日期才會自動歸類',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -4227,15 +4209,12 @@ async function renderWealthHub() {
 // 避免畫面出現兩份。容器在一開始就建好，舊的那次只會寫進已經被移除的容器。
 let _homeTok = 0;
 async function renderHomeAssets(root, tok) {
-  const sub = el('div'), rwBox = el('div'), head = el('div'), trendBox = el('div');
+  const sub = el('div'), head = el('div'), trendBox = el('div');
   head.className = 'wealth-sec-head'; head.innerHTML = '<b>成長與趨勢</b><span>資產怎麼變化、每月存了多少、什麼時候達標</span>';
-  root.append(sub, rwBox, head, trendBox);
+  root.append(sub, head, trendBox);
   _activeContentContainer = sub;
   _trendContainer = null;
   await renderAssetOverview();
-  if (tok !== _homeTok) return;
-  // v2.24.0（使用者決定）：「如果沒有收入，可以撐多久」從概況搬到資產分頁，放在總資產下面
-  rwBox.replaceChildren(await buildRunwayCard());
   if (tok !== _homeTok) return;
   _trendContainer = trendBox;
   await renderTrend();
@@ -4349,9 +4328,10 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
   const saved = await getSetting(db, 'quick_pay', null).catch(() => null);
   const lastV = lastTxn ? (lastTxn.pay_type === 'cc' ? `cc:${lastTxn.cc_id}` : `acc:${lastTxn.account_id}`) : null;
   const payV = [lastV, saved, payOptions[0]?.v].find(v => v && payOptions.some(o => o.v === v)) ?? '';
-  const trip = findActiveTrip(projects);
   const realToday = isoDate(new Date());
   const today = date || realToday; // v2.19.0：從紀錄頁選了某一天再按「＋記帳」，記在那一天
+  const trip = findActiveTrip(projects, today); // v2.24.0：看這筆的日期，不是看今天
+  let tripOn = !!trip;
   const dayLabel = today === realToday ? '今天' : `${Number(today.slice(5, 7))}/${Number(today.slice(8))}`;
 
   const box = el('div', 'card'); box.className = 'card qa';
@@ -4367,7 +4347,7 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
     </div>
     <div class="qa-label">類別</div>
     <div data-catpick></div>
-    ${trip ? `<div class="qa-trip">✈️ 旅行中，會自動歸到「${escHtml(trip.name)}」</div>` : ''}`;
+    ${trip ? `<button type="button" class="qa-trip" role="switch" aria-checked="true" data-qa-trip><span class="qa-trip-box" aria-hidden="true"></span><span>算進旅行「${escHtml(trip.name)}」</span></button>` : ''}`;
 
   const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc');
   const pay = buildPayPair(payOptions, payUse, payV, '付款');
@@ -4375,7 +4355,7 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
   async function quickSave(category, amount, description) {
     if (!(amount > 0)) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); return; }
     const o = pay.get();
-    let bucketId = trip?.bucket_id ?? null, projectId = trip?.id ?? null;
+    let bucketId = tripOn ? trip.bucket_id ?? null : null, projectId = tripOn ? trip.id : null;
     if (!bucketId && o?.accId) {
       const pick = await askEfAccountUse(o.accId, amount);
       if (!pick) return;
@@ -4391,10 +4371,13 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
   }
   box.querySelector('[data-catpick]').replaceWith(buildCatPicker('expense', expenseTxns, ['cat_bad_debt_writeoff'], id => quickSave(id, parseFloat(amtIn.value), descIn.value.trim()), () => {
     const ok = parseFloat(amtIn.value) > 0; if (!ok) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); } return ok; }));
+  box.querySelector('[data-qa-trip]')?.addEventListener('click', e => {
+    tripOn = !tripOn; e.currentTarget.setAttribute('aria-checked', tripOn);
+  });
   box.querySelector('[data-qa-full]').addEventListener('click', () => {
     const o = pay.get();
     onDone?.();
-    openExpenseModal(null, { date: today, amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), pay_type: o?.payType, account_id: o?.accId, cc_id: o?.ccId });
+    openExpenseModal(null, { date: today, amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), pay_type: o?.payType, account_id: o?.accId, cc_id: o?.ccId, no_trip: trip && !tripOn });
   });
   return box;
 }
@@ -4505,53 +4488,24 @@ function fmtRunway(m) {
   if (Math.round(m) >= 24) { const mm = Math.round(m), y = Math.floor(mm / 12), r = mm % 12; return r ? `${y} 年 ${r} 個月` : `${y} 年`; }
   return `${m < 10 ? m.toFixed(1) : Math.round(m)} 個月`;
 }
-// v2.24.0（使用者決定）：
-// - 計算基準：依計畫（固定支出＋生活預算）／依實際花費（近 6 個月平均支出）／
-//   兩個都看，在卡片展開後切換（存在設定 runway_basis，預設兩個都看）。
-// - 平常只顯示一個數字（現金與活存），點「看其他層」才看預備金、全部資產。
-// - 不區分哪些支出可以先停；搬到首頁「資產」分頁。
-let _rwOpen = false;
-const RW_BASIS = [['both', '兩個都看'], ['plan', '依計畫'], ['actual', '依實際花費']];
-async function buildRunwayCard() {
-  const ctx = await loadPlanContext();
-  const { accounts, fxRates, cards, expenseTxns, netWorth } = state;
-  const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses: ctx.recurringExpenses, installments: ctx.installments, dcaSchedules: ctx.dcaSchedules,
-    buckets: ctx.buckets, allocations: ctx.allocations, expenseTxns, essentials: ctx.essentials, emergencyMonths: Number(ctx.settings.emergency_months) || 6 });
-  const card = el('div', 'card'); card.className = 'card rw-card';
-  const passive = calcPassiveIncome(ctx.incomeTxns, await getAll(db,'txn_categories').catch(()=>[]));
-  const actual = calcRecentSpend(expenseTxns || [], accounts || [], fxRates || {});
-  const args = { efHave: sp.ef.exists ? sp.ef.have : 0, liquid: sp.liquid, total: netWorth, passiveMonthly: passive.monthly };
-  const rwPlan = calcRunway({ ...args, essentials: ctx.essentials });
-  const rwAct = actual && actual.monthly > 0 ? calcRunway({ ...args, essentials: actual.monthly }) : null;
-  if (!rwPlan && !rwAct) {
-    card.innerHTML = `<div class="rw-head"><b>如果沒有收入，可以撐多久</b><span>到「計畫」設定固定支出與生活預算，或記滿一個月的支出後，就能算出來。</span></div>`;
-    return card;
-  }
-  let basis = await getSetting(db, 'runway_basis', 'both').catch(() => 'both');
-  if (basis === 'plan' && !rwPlan) basis = 'actual';
-  if (basis === 'actual' && !rwAct) basis = 'plan';
-  const hasP = (passive.monthly || 0) > 0;
-  // 有被動收入時，每個月只要從存款拿「開銷－被動收入」（calcRunway 的 *P 值）
-  const pick = (rw, k) => !rw ? null : (hasP ? rw[k + 'P'] : rw[k]);
-  const fmtM = v => v == null ? '—' : !Number.isFinite(v) ? '一直撐下去' : fmtRunway(v);
-  const cols = basis === 'both' ? [['依計畫', rwPlan], ['依實際花費', rwAct]].filter(c => c[1]) : [[basis === 'plan' ? '依計畫' : '依實際花費', basis === 'plan' ? rwPlan : rwAct]];
-  const statRow = k => `<div class="rw-stats">${cols.map(([l, rw]) => `<div class="rw-stat"><small>${l}</small><b>${fmtM(pick(rw, k))}</b></div>`).join('')}</div>`;
-  const layers = [
-    { k: 'ef', t: '只用緊急預備金', note: sp.ef.exists ? `NT$ ${fmt(sp.ef.have)}` : '還沒建立預備金' },
-    { k: 'total', t: '全部資產', note: `NT$ ${fmt(Math.round(netWorth))}・含投資、定存，需要賣出或解約` },
-  ];
-  const basisNote = [rwPlan ? `計畫＝固定支出＋生活預算 NT$ ${fmt(rwPlan.essentials)}／月` : '', rwAct ? `實際＝近 ${actual.months} 個月平均支出 NT$ ${fmt(actual.monthly)}／月` : ''].filter(Boolean).join('；');
-  card.innerHTML = `<div class="rw-head"><b>如果沒有收入，可以撐多久</b></div>
-    <div class="rw-main"><div class="rw-main-k">現金與活存<span>NT$ ${fmt(sp.liquid)}・含預備金</span></div>${statRow('liquid')}</div>
-    ${hasP ? `<div class="rw-pnote">已扣掉被動收入每月約 NT$ ${fmt(passive.monthly)}（近 12 個月股利、利息等平均）</div>` : ''}
-    <button type="button" class="rw-more" aria-expanded="${_rwOpen}">${_rwOpen ? '收起' : '看其他層'}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-    ${_rwOpen ? `<div class="rw-layers">${layers.map(l => `<div class="rw-layer"><div class="rw-main-k">${l.t}<span>${l.note}</span></div>${statRow(l.k)}</div>`).join('')}
-      <div class="rw-basis"><span>計算基準</span><div class="rw-seg" role="radiogroup" aria-label="計算基準">${RW_BASIS.map(([v, l]) => `<button type="button" role="radio" data-rw-basis="${v}" aria-checked="${basis === v}"${(v === 'plan' && !rwPlan) || (v === 'actual' && !rwAct) || (v === 'both' && !(rwPlan && rwAct)) ? ' disabled' : ''}>${l}</button>`).join('')}</div></div>
-      <p class="rw-foot">${basisNote}</p></div>` : ''}`;
-  const rerender = async () => card.replaceWith(await buildRunwayCard());
-  card.querySelector('.rw-more').addEventListener('click', () => { _rwOpen = !_rwOpen; rerender(); });
-  card.querySelectorAll('[data-rw-basis]').forEach(b => b.addEventListener('click', async () => { await setSetting(db, 'runway_basis', b.dataset.rwBasis).catch(() => {}); rerender(); }));
-  return card;
+// v2.24.0（使用者決定）：「如果沒有收入，可以撐多久」不再是獨立卡片，改成首頁
+// 「可自由運用」裡的一行——有緊急預備金的人看「預備金可撐幾個月」，還沒建立
+// 預備金才看現金與活存。點數字上方的小字切換依計畫／依實際花費／兩個都看
+// （設定 runway_basis）。有被動收入時，每月只要從存款拿「開銷－被動收入」。
+const RW_BASIS_NEXT = { both: 'plan', plan: 'actual', actual: 'both' };
+function runwayLineHtml({ sp, essentials, actual, passiveMonthly, basis }) {
+  const have = sp.ef.exists ? sp.ef.have : sp.liquid;
+  const calc = spend => { if (!(spend > 0)) return null; const net = spend - (passiveMonthly || 0); return net <= 0 ? Infinity : Math.max(0, have) / net; };
+  const vPlan = calc(essentials), vAct = actual ? calc(actual.monthly) : null;
+  if (vPlan == null && vAct == null) return '';
+  if (basis === 'plan' && vPlan == null) basis = 'actual';
+  if (basis === 'actual' && vAct == null) basis = 'plan';
+  if (basis === 'both' && (vPlan == null || vAct == null)) basis = vPlan == null ? 'actual' : 'plan';
+  const f = v => !Number.isFinite(v) ? '一直撐下去' : fmtRunway(v);
+  const cols = basis === 'both' ? [['依計畫', vPlan], ['依實際花費', vAct]] : [[basis === 'plan' ? '依計畫' : '依實際花費', basis === 'plan' ? vPlan : vAct]];
+  const tip = [vPlan != null ? `計畫：固定支出＋生活預算 NT$ ${fmt(Math.round(essentials))}／月` : '', vAct != null ? `實際：近 ${actual.months} 個月平均支出 NT$ ${fmt(actual.monthly)}／月` : '', passiveMonthly > 0 ? `已扣掉被動收入每月約 NT$ ${fmt(passiveMonthly)}` : ''].filter(Boolean).join('\n');
+  return `<div class="sp-rw" title="${escHtml(tip)}"><span class="sp-rw-k">${sp.ef.exists ? '沒有收入時，緊急預備金可撐' : '沒有收入時，現金與活存可撐'}</span>
+    <span class="sp-rw-v">${cols.map(([l, v]) => `<button type="button" class="sp-rw-stat" data-rw-cycle aria-label="${l} ${f(v)}，點一下切換計算基準"><small>${l} ⇄</small><b>${f(v)}</b></button>`).join('')}</span></div>`;
 }
 
 async function buildIdleMoneyCard() {
@@ -4675,6 +4629,9 @@ async function renderHome() {
   const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses, installments, dcaSchedules, buckets, allocations, expenseTxns,
     essentials, emergencyMonths: Number(planSettings.emergency_months) || 6 });
   const money = v => `NT$ ${fmt(Math.round(v))}`;
+  const rwActual = calcRecentSpend(expenseTxns || [], accounts || [], fxRates || {});
+  const rwPassive = calcPassiveIncome(incomeTxns, await getAll(db,'txn_categories').catch(()=>[])).monthly || 0;
+  const rwBasis = await getSetting(db, 'runway_basis', 'both').catch(() => 'both');
   const content = document.getElementById('content');
   content.innerHTML = '';
   const root = el('div'); root.className = 'home2';
@@ -4685,7 +4642,7 @@ async function renderHome() {
   const efSt = calcEfStorage({ efBucket: buckets.find(b => b.is_emergency_fund && b.status !== 'closed'), allocations, expenseTxns, accounts, fxRates });
   const efStoreLine = efSt?.short > 0 ? `<div class="sp-warn"><b>預備金有 ${money(efSt.short)} 沒有現金撐著</b>存放帳戶「${escHtml(efSt.account.name)}」只有 ${money(efSt.balanceTwd)}，比預備金帳面上的 ${money(efSt.have)} 少。</div>` : '';
   const efLine = sp.ef.gap > 0
-    ? `<div class="sp-warn"><b>緊急預備金還差 ${money(sp.ef.gap)}</b>${sp.ef.exists ? `目前 ${money(sp.ef.have)}${sp.ef.months != null ? `，可撐 ${sp.ef.months.toFixed(1)} 個月` : ''}。` : '還沒建立，先依必要開銷保留建議金額。'}缺口先保留，所以可自由運用變少${sp.free === 0 ? '到 0' : ''}。</div>`
+    ? `<div class="sp-warn"><b>緊急預備金還差 ${money(sp.ef.gap)}</b>${sp.ef.exists ? `目前 ${money(sp.ef.have)}。` : '還沒建立，先依必要開銷保留建議金額。'}缺口先保留，所以可自由運用變少${sp.free === 0 ? '到 0' : ''}。</div>`
     : '';
   const rows = [
     ['現金與活存', sp.liquid, ''],
@@ -4704,28 +4661,23 @@ async function renderHome() {
         + (i === 2 && sp.upcoming.length ? `<ul class="sp-due">${sp.upcoming.map(u => `<li${u.days < 0 ? ' class="late"' : ''}><button type="button" data-due="${u.type}:${u.id}:${u.date}" aria-label="確認「${escHtml(u.label)}」${Number(u.date.slice(5, 7))}/${Number(u.date.slice(8))} 這一期"><span>${escHtml(u.label)}</span><em>${Number(u.date.slice(5, 7))}/${Number(u.date.slice(8))}${u.days < 0 ? ' 未確認' : ''}</em><b>${money(u.amount)}</b><i aria-hidden="true">›</i></button></li>`).join('')}</ul>` : '')).join('')}
       <div class="sp-row sp-total"><span>可自由運用</span><b>${money(sp.free)}</b></div>
     </div>
+    ${runwayLineHtml({ sp, essentials, actual: rwActual, passiveMonthly: rwPassive, basis: rwBasis })}
     ${efLine}${efStoreLine}`;
+  hero.querySelectorAll('[data-rw-cycle]').forEach(b => b.addEventListener('click', async () => { await setSetting(db, 'runway_basis', RW_BASIS_NEXT[rwBasis] || 'both').catch(() => {}); renderHome(); }));
   hero.querySelector('.sp-toggle').addEventListener('click', () => { _homeSpendOpen = !_homeSpendOpen; renderHome(); });
   // v2.24.0（使用者決定）：本月還要付跟紀錄頁的排程提醒是同一份清單，點一下就能確認本期
   hero.querySelectorAll('[data-due]').forEach(b => b.addEventListener('click', () => openDueConfirm(...b.dataset.due.split(':'))));
   root.appendChild(hero);
   const fundAlert = await buildDcaFundAlert(); if (fundAlert) root.appendChild(fundAlert);
 
-  // 今天還能花＋總資產（兩格）
-  const duo = el('div'); duo.className = 'home-duo';
-  const ta = todayAllowance;
+  // v2.24.0（使用者決定）：「今天還能花」只在紀錄頁顯示，首頁只留總資產
+  const duo = el('div'); duo.className = 'home-duo is-one';
   duo.innerHTML = `
-    <button type="button" class="card home-mini" data-go="plan">
-      <span class="home-mini-k">今天還能花</span>
-      <span class="home-mini-v" style="color:${ta ? (ta.perDay >= 0 ? 'var(--green)' : 'var(--red)') : 'var(--text-3)'}">${ta ? money(ta.perDay) : '—'}</span>
-      <span class="home-mini-s">${ta ? `生活預算剩 ${money(ta.remaining)}・${ta.daysLeft} 天` : '到「計畫」設定生活預算'}</span>
-    </button>
     <button type="button" class="card home-mini" data-go="wealth">
       <span class="home-mini-k">總資產</span>
       <span class="home-mini-v">${money(netWorth)}</span>
       <span class="home-mini-s">看資產放在哪裡 ›</span>
     </button>`;
-  duo.querySelector('[data-go="plan"]').addEventListener('click', () => { _planTab = 'plan'; navigate('plan'); });
   duo.querySelector('[data-go="wealth"]').addEventListener('click', () => { _homeTab = 'assets'; renderHome(); window.scrollTo(0, 0); });
   root.appendChild(duo);
 
@@ -10672,6 +10624,10 @@ document.getElementById('projectModalDelete')?.addEventListener('click',async()=
 document.getElementById('projectModalSave').addEventListener('click',async()=>{
   const name=document.getElementById('projectName').value.trim();
   if(!name){document.getElementById('projectName').style.borderColor='var(--red)';return;}
+  { const ps=document.getElementById('projectStart').value, pe=document.getElementById('projectEnd').value;
+    if(ps&&!pe){document.getElementById('projectEnd').style.borderColor='var(--red)';showToast('請填結束日期');return;}
+    if(ps&&pe&&pe<ps){document.getElementById('projectEnd').style.borderColor='var(--red)';showToast('結束日期不能早於開始日期');return;}
+    document.getElementById('projectEnd').style.borderColor=''; }
   const editId=document.getElementById('projectEditId').value;
   const bucketId=document.getElementById('projectBucketId').value;
   const existing = editId ? await getOne(db,'projects',editId) : null;
@@ -14830,7 +14786,8 @@ async function openExpenseModal(txn=null, prefill=null) {
   document.getElementById('expenseConfirmRecId').value = txn ? '' : (prefill?._confirmRecId ?? '');
   document.getElementById('expenseConfirmOccDate').value = txn ? '' : (prefill?._confirmDate ?? '');
   document.getElementById('expenseModalTitle').textContent = txn ? '編輯支出' : '新增支出';
-  catSel.value = txn?.category ?? prefill?.category ?? (expCats[0]?.id ?? '');
+  // v2.24.0：修正新增支出時沒有預設分類會出錯（expCats 早已不存在），改用選單第一個選項
+  catSel.value = txn?.category ?? prefill?.category ?? (catSel.options[0]?.value ?? '');
 
   // Pay type
   const payTypeSel = document.getElementById('expensePayType');
@@ -14926,12 +14883,13 @@ async function openExpenseModal(txn=null, prefill=null) {
   bucketSel.innerHTML = `<option value="">— 不歸屬 —</option>` +
     activeBuckets.map(b=>`<option value="${b.id}">🧳 ${b.name}</option>`).join('');
   // v2.10.0 旅行模式：旅行期間新增的支出，自動歸到那趟旅行（使用者可以改回「不歸屬」）。
-  const activeTrip = !txn && !prefill?.bucket_id ? findActiveTrip(allProjects) : null;
+  // v2.24.0（使用者決定）：看這筆支出的日期是不是在旅行期間，不是看今天
+  const activeTrip = !txn && !prefill?.bucket_id && !prefill?.no_trip ? findActiveTrip(allProjects, prefill?.date || isoDate(new Date())) : null;
   const initialBucketId  = txn ? (txn.bucket_id  ?? '') : (prefill?.bucket_id  ?? activeTrip?.bucket_id ?? '');
   const initialProjectId = txn ? (txn.project_id ?? '') : (prefill?.project_id ?? activeTrip?.id ?? '');
   let tripNote = document.getElementById('expenseTripNote');
   if (!tripNote) { tripNote = el('div'); tripNote.id = 'expenseTripNote'; tripNote.className = 'trip-note'; bucketSel.closest('.modal-field').appendChild(tripNote); }
-  tripNote.textContent = activeTrip ? `✈️ 旅行中：已自動歸到「${activeTrip.name}」，不是這趟的花費改成「不歸屬」即可。` : '';
+  tripNote.textContent = activeTrip ? `✈️ 這天在旅行期間：已自動歸到「${activeTrip.name}」，不是這趟的花費改成「不歸屬」即可。` : '';
   tripNote.style.display = activeTrip ? '' : 'none';
   bucketSel.value = initialBucketId;
 
@@ -14948,6 +14906,23 @@ async function openExpenseModal(txn=null, prefill=null) {
   }
   bucketSel.onchange = () => refreshExpenseProjectOptions('');
   refreshExpenseProjectOptions(initialProjectId);
+  // 新增支出時改了日期：如果歸屬還是系統自動帶的（使用者沒動過），依新日期重新判斷旅行
+  {
+    const dateEl = document.getElementById('expenseDate');
+    if (dateEl._tripHandler) dateEl.removeEventListener('change', dateEl._tripHandler);
+    let autoTrip = activeTrip;
+    dateEl._tripHandler = txn || prefill?.bucket_id || prefill?.no_trip ? null : () => {
+      const projSel = document.getElementById('expenseProject');
+      const untouched = autoTrip ? (bucketSel.value === autoTrip.bucket_id && projSel.value === autoTrip.id) : !bucketSel.value;
+      if (!untouched) return;
+      autoTrip = findActiveTrip(allProjects, dateEl.value);
+      bucketSel.value = autoTrip?.bucket_id ?? '';
+      refreshExpenseProjectOptions(autoTrip?.id ?? '');
+      tripNote.textContent = autoTrip ? `✈️ 這天在旅行期間：已自動歸到「${autoTrip.name}」，不是這趟的花費改成「不歸屬」即可。` : '';
+      tripNote.style.display = autoTrip ? '' : 'none';
+    };
+    if (dateEl._tripHandler) dateEl.addEventListener('change', dateEl._tripHandler);
+  }
 
   // §四十二（2026-10-03）：「是否影響帳戶餘額」機制統一——單一開關，固定
   // 顯示（不再依日期決定要不要顯示）；編輯既有紀錄時沿用它自己存的值（舊
