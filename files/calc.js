@@ -1134,8 +1134,10 @@ export function fmt(amount, { currency = 'TWD', compact = false, showSign = fals
   if (compact && Math.abs(amount) >= 1_000) {
     return sign + (amount / 1_000).toFixed(1) + 'K';
   }
-  const maxFrac = currency === 'TWD' ? 0 : (currency === 'JPY' ? 0 : 2);
-  const minFrac = Math.min(maxFrac, currency === 'TWD' ? 0 : (currency === 'JPY' ? 0 : 2));
+  // v2.25.0：沒有小數的幣別（新增幣別裡的韓元、越南盾也是）
+  const noFrac = ['TWD', 'JPY', 'KRW', 'VND'].includes(currency);
+  const maxFrac = noFrac ? 0 : 2;
+  const minFrac = maxFrac;
   const formatted = new Intl.NumberFormat('zh-TW', {
     minimumFractionDigits: minFrac,
     maximumFractionDigits: maxFrac,
@@ -1144,7 +1146,7 @@ export function fmt(amount, { currency = 'TWD', compact = false, showSign = fals
 }
 
 export function fmtCurrency(amount, currency) {
-  const symbols = { TWD: 'NT$', USD: 'US$', JPY: '¥', EUR: '€', CNY: 'CN¥' };
+  const symbols = { TWD: 'NT$', USD: 'US$', JPY: '¥', EUR: '€', CNY: 'CN¥', HKD: 'HK$', GBP: '£', KRW: '₩', AUD: 'A$', SGD: 'S$', CAD: 'C$', THB: '฿', NZD: 'NZ$', PHP: '₱' };
   return (symbols[currency] ?? currency + ' ') + fmt(amount, { currency });
 }
 
