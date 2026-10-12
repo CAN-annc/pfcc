@@ -1155,6 +1155,8 @@ export function fmtDate(isoString) {
     const [y, m] = isoString.split('-');
     return `${y}/${m}`;
   }
+  // v2.25.0：日期一律 yyyy/mm/dd，不受系統語言與時區影響
+  if (/^\d{4}-\d{2}-\d{2}$/.test(isoString)) return isoString.replace(/-/g, '/');
   return new Date(isoString).toLocaleDateString('zh-TW', {
     year: 'numeric', month: '2-digit', day: '2-digit',
   });
