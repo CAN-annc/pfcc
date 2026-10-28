@@ -616,6 +616,7 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .mp-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .mp-k{font-size:11px;color:var(--text-3);letter-spacing:.04em}
 .mp-big{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text-1);line-height:1.2;margin-top:2px}
+.mp-sec-title span:empty,.mp-src:empty{display:none}
 .mp-src{font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.5}
 .mp-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px;margin:14px 0 10px;background:var(--surface-2)}
 .mp-bar span{min-width:3px}
@@ -814,6 +815,14 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 .mod-more[open]>summary::after{transform:rotate(-135deg) translateY(-1px)}
 .field-row.pc-pair{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 /* v2.25.0：清單上的「確認本期／編輯」改成小膠囊，不再是大色塊 */
+/* v2.26.0（使用者：不要多餘的副標與說明，讓排版說話）：真的需要解釋的地方改成標題旁的 ⓘ，點了才看得到 */
+.ii{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1.3px solid currentColor;font:600 10px/1 Georgia,'Times New Roman',serif;font-style:italic;color:var(--text-3);cursor:pointer;vertical-align:1px;margin-left:4px;position:relative;flex-shrink:0}
+.ii::after{content:'';position:absolute;inset:-14px}
+.ii:hover,.ii[aria-expanded=true]{color:var(--blue)}
+.ii:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.ii-pop{position:fixed;z-index:9999;max-width:min(300px,calc(100vw - 32px));padding:10px 12px;border-radius:10px;background:var(--text-1);color:var(--card);font-size:12.5px;line-height:1.6;font-weight:400;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:iiIn .12s ease-out}
+@keyframes iiIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ii-pop{animation:none}}
 .dt-wrap{position:relative;display:block;min-width:0}
 .dt-wrap>input[type=date]{color:transparent!important;-webkit-text-fill-color:transparent!important}
 .dt-show{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-1);font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -1372,11 +1381,10 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <input type="password" id="appLockConfirmPassword" autocomplete="new-password">
     </div>
     <div class="modal-field" id="appLockHintField">
-      <label>密碼提示（選填）</label>
+      <label>密碼提示 <button type="button" class="ii" data-tip="這是裝置畫面鎖，不是資料加密——瀏覽器開發者工具仍能直接讀到 IndexedDB 裡的原始資料，適合用來防止「別人拿起裝置隨手滑開」，不是防駭客等級的保護。忘記密碼本身無法救回，只能靠上面設定的提示詞自己回想；提示詞也想不起來的話，就只能到瀏覽器設定清除這個網站的資料重新開始（所有財務資料也會一併消失）。" aria-label="說明">i</button></label>
       <input type="text" id="appLockHint" maxlength="100" placeholder="忘記密碼時會顯示這段文字給自己看">
     </div>
     <div id="appLockModalError" style="color:var(--red);font-size:12px;margin-bottom:8px;min-height:16px"></div>
-    <p style="font-size:11px;color:var(--text-3);margin-bottom:14px">這是裝置畫面鎖，不是資料加密——瀏覽器開發者工具仍能直接讀到 IndexedDB 裡的原始資料，適合用來防止「別人拿起裝置隨手滑開」，不是防駭客等級的保護。忘記密碼本身無法救回，只能靠上面設定的提示詞自己回想；提示詞也想不起來的話，就只能到瀏覽器設定清除這個網站的資料重新開始（所有財務資料也會一併消失）。</p>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="appLockModalCancel">取消</button>
       <button class="btn btn-primary" id="appLockModalSave">儲存</button>
@@ -1393,10 +1401,9 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <input type="number" id="balanceModalInput" inputmode="decimal" placeholder="輸入最新餘額" step="0.01">
     </div>
     <div class="modal-field">
-      <label>調整原因（選填）</label>
+      <label>調整原因 <button type="button" class="ii" data-tip="更新後會記錄一筆餘額調整紀錄（含差額與備註），但不會產生收支交易。" aria-label="說明">i</button></label>
       <input type="text" id="balanceModalNote" placeholder="例：對帳更正、提款機領現未即時更新">
     </div>
-    <div style="font-size:11px;color:var(--text-3)">更新後會記錄一筆餘額調整紀錄（含差額與備註），但不會產生收支交易。</div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="balanceModalCancel">取消</button>
       <button class="btn btn-primary" id="balanceModalSave">確認更新</button>
@@ -1492,9 +1499,8 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
          券商自己的交割戶，不會再跟其他券商／單純活存帳戶混在同一份清單裡。
          選填、預設不指定，不影響任何既有帳戶的既有行為。 -->
     <div class="modal-field" id="accountBrokerageField">
-      <label>所屬券商（交割戶，選填）</label>
+      <label>交割戶所屬券商 <button type="button" class="ii" data-tip="如果這是某家券商的交割戶，選起來——之後「定期定額排程」選這家券商時，扣款帳戶會優先列出標記過的交割戶。" aria-label="說明">i</button></label>
       <select id="accountBrokerageId"><option value="">── 不指定（一般帳戶）──</option></select>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">如果這是某家券商的交割戶，選起來——之後「定期定額排程」選這家券商時，扣款帳戶會優先列出標記過的交割戶。</div>
     </div>
     <!-- 2026-09-27（見 §三十）：悠遊卡專用欄位，只有帳戶類型選「悠遊卡」時才
          顯示。悠遊卡固定台幣（上面的幣別欄位會被鎖住），可以設定「低於門檻
@@ -1506,8 +1512,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <div class="modal-field" id="transitCardFields" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0">
         <div>
-          <div style="font-size:13px;font-weight:500">低於門檻自動儲值</div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:2px">悠遊卡餘額已經低於門檻時，下一筆消費會自動先儲值再扣款</div>
+          <div style="font-size:13px;font-weight:500">低於門檻自動儲值 <button type="button" class="ii" data-tip="悠遊卡餘額已經低於門檻時，下一筆消費會自動先儲值再扣款" aria-label="說明">i</button></div>
         </div>
         <button type="button" id="accountTopupToggle" class="toggle-switch" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;flex-shrink:0">
           <span id="accountTopupThumb" style="position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;display:block"></span>
@@ -1525,15 +1530,14 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
           </div>
         </div>
         <div class="modal-field">
-          <label>從哪張信用卡自動儲值</label>
+          <label>從哪張信用卡自動儲值 <button type="button" class="ii" data-tip="觸發時，這張信用卡當期應繳金額會一併增加這筆儲值金額，並自動記一筆支出，跟你在信用卡實際刷卡自動加值的情況一致。" aria-label="說明">i</button></label>
           <select id="accountTopupCcId"><option value="">── 尚未選擇 ──</option></select>
-          <div style="font-size:11px;color:var(--text-3);margin-top:4px">觸發時，這張信用卡當期應繳金額會一併增加這筆儲值金額，並自動記一筆支出，跟你在信用卡實際刷卡自動加值的情況一致。</div>
         </div>
       </div>
     </div>
-    <!-- v2.16.0：帳戶分流（選填）——不填就不檢查、不算手續費 -->
+    <!-- v2.16.0：帳戶分流——不填就不檢查、不算手續費 -->
     <details class="acc-split" id="accountSplitBox">
-      <summary>帳戶分流設定（選填）</summary>
+      <summary>帳戶分流設定</summary>
       <div class="modal-field">
         <label>這個帳戶的用途</label>
         <select id="accountRole">
@@ -1554,14 +1558,12 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
           <input type="number" id="accountTransferFee" inputmode="decimal" min="0" step="1" placeholder="例：15">
         </div>
       </div>
-      <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:400;margin:0 0 4px"><input type="checkbox" id="accountSameBankFree" style="width:16px;height:16px;accent-color:var(--blue)">同銀行互轉免費</label>
-      <div style="font-size:11px;color:var(--text-3);line-height:1.55">每家銀行的規則不同、也會調整，請依你的帳戶實際規定填寫。發薪後「分流轉帳」會用這些設定估算這個月還剩幾次免費、要付多少手續費。</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:400;margin:0 0 4px"><input type="checkbox" id="accountSameBankFree" style="width:16px;height:16px;accent-color:var(--blue)">同銀行互轉免費 <button type="button" class="ii" data-tip="每家銀行的規則不同、也會調整，請依你的帳戶實際規定填寫。發薪後「分流轉帳」會用這些設定估算這個月還剩幾次免費、要付多少手續費。" aria-label="說明">i</button></label>
     </details>
     <div style="display:flex;flex-direction:column;gap:12px;padding:4px 0 8px">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div>
-          <div style="font-size:13px;font-weight:500">計入總資產</div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:2px">關閉後此帳戶餘額不納入總資產計算</div>
+          <div style="font-size:13px;font-weight:500">計入總資產 <button type="button" class="ii" data-tip="關閉後此帳戶餘額不納入總資產計算" aria-label="說明">i</button></div>
         </div>
         <button type="button" id="accountIncludeToggle" class="toggle-switch" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;flex-shrink:0">
           <span id="accountIncludeThumb" style="position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;display:block"></span>
@@ -1569,8 +1571,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div>
-          <div style="font-size:13px;font-weight:500">顯示在支出選單</div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:2px">支出記帳時顯示此帳戶為快速選項</div>
+          <div style="font-size:13px;font-weight:500">顯示在支出選單 <button type="button" class="ii" data-tip="支出記帳時顯示此帳戶為快速選項" aria-label="說明">i</button></div>
         </div>
         <button type="button" id="accountMenuToggle" class="toggle-switch" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;flex-shrink:0">
           <span id="accountMenuThumb" style="position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;display:block"></span>
@@ -1578,8 +1579,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div>
-          <div style="font-size:13px;font-weight:500">顯示於首頁總覽</div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:2px">關閉後「資產總覽」頁不會列出此帳戶，跟「計入總資產」互不影響</div>
+          <div style="font-size:13px;font-weight:500">顯示於首頁總覽 <button type="button" class="ii" data-tip="關閉後「資產總覽」頁不會列出此帳戶，跟「計入總資產」互不影響" aria-label="說明">i</button></div>
         </div>
         <button type="button" id="accountHomeToggle" class="toggle-switch" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;flex-shrink:0">
           <span id="accountHomeThumb" style="position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;display:block"></span>
@@ -1589,7 +1589,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <!-- §四十七（2026-10-03）：帳戶備註——資料健檢第 7 項「負數餘額又沒有備註」
          需要一個地方讓使用者寫下原因（例如透支、預借），寫了之後就不再提醒。 -->
     <div class="modal-field">
-      <label>備註（選填）</label>
+      <label>備註</label>
       <input type="text" id="accountNote" placeholder="例：信用透支額度、預借現金">
     </div>
     <input type="hidden" id="accountEditId">
@@ -1669,10 +1669,9 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 <div class="modal-overlay" id="paydayModal">
   <div class="modal">
     <h2 id="paydayTitle">發薪了，先存起來</h2>
-    <p class="pd-sub">照每月計畫，這個月還沒撥滿的存錢目標。先存，剩下的才是生活費。</p>
     <div id="paydayList" class="pd-list"></div>
     <div class="pd-total"><span>合計</span><b id="paydayTotal">NT$ 0</b></div>
-    <p class="pd-hint">撥入是把錢記給存錢目標，不會動帳戶餘額。</p>
+    <p class="pd-hint">只記給存錢目標，不動帳戶餘額</p>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="paydaySkip">這個月先不要</button>
       <button class="btn btn-primary" id="paydaySave">全部撥入</button>
@@ -1734,9 +1733,8 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     </div>
     <div class="field-row">
       <div class="modal-field">
-        <label>市場 / 交易方式</label>
+        <label>市場 / 交易方式 <button type="button" class="ii" data-tip="自由填寫，顯示在括號內" aria-label="說明">i</button></label>
         <input type="text" id="brokerageMarketLabel" placeholder="例：台股、複委託、美股直投">
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">自由填寫，顯示在括號內</div>
       </div>
       <div class="modal-field">
         <label>股票計價幣別</label>
@@ -1747,7 +1745,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field">
-      <label>所屬銀行（選填）</label>
+      <label>所屬銀行</label>
       <select id="brokerageBankId">
         <option value="">── 不指定 ──</option>
       </select>
@@ -1798,7 +1796,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field" id="holdingManualPriceField">
-      <label id="holdingManualPriceLabel">參考價格（選填，台股用）</label>
+      <label id="holdingManualPriceLabel">參考價格（台股用）</label>
       <!-- 2026-09-22：台股改成會先嘗試自動抓證交所即時報價（見
            fetchTwPrice()／refreshTwPrices()），這裡留空不代表「一定要自己
            手動輸入」，只是「填了會優先蓋過自動抓到的價格」——placeholder
@@ -1806,12 +1804,11 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <input type="number" id="holdingManualPrice" inputmode="decimal" placeholder="留空會嘗試自動抓報價；抓不到才需要手動輸入" min="0" step="0.01">
     </div>
     <div class="modal-field">
-      <label id="holdingCostBasisLabel">平均成本（選填）</label>
+      <label id="holdingCostBasisLabel">平均成本 <button type="button" class="ii" data-tip="填了之後，持倉清單會自動顯示「現價 - 成本」算出的未實現損益，僅供參考，不影響任何記帳或資產計算。" aria-label="說明">i</button></label>
       <!-- 2026-09-24（使用者要求）：成本完全選填，不填不影響任何既有功能；
            填了之後畫面上會自動算「未實現損益」（現價 - 成本）× 股數，美股
            會再用即時匯率換算成台幣——見 calc.js calcInvestmentAssets。 -->
       <input type="number" id="holdingCostBasis" inputmode="decimal" placeholder="留空則不計算未實現損益" min="0" step="0.01">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">填了之後，持倉清單會自動顯示「現價 - 成本」算出的未實現損益，僅供參考，不影響任何記帳或資產計算。</div>
     </div>
     <!-- v2.7.1：產業別／投資屬性由系統依公開資料自動判定（/api/classify），
          這裡預設「自動判定」，只有資料來源查不到或不同意判定時才手動覆寫。 -->
@@ -1853,9 +1850,8 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
         <input type="number" id="recvTotal" inputmode="decimal" placeholder="0" min="0" step="1">
       </div>
       <div class="modal-field">
-        <label>已收金額</label>
+        <label>已收金額 <button type="button" class="ii" data-tip="直接調整這筆應收款的已收總額（差額會自動補一筆流水帳），但不會動到任何帳戶餘額，日期一律記今天。要指定過去的收款日期、或想連動影響某個帳戶，請用清單上的「＋ 收款」按鈕；要連同收支紀錄一起結清，請用「結清」按鈕。" aria-label="說明">i</button></label>
         <input type="number" id="recvReceived" inputmode="decimal" placeholder="0" min="0" step="1" value="0">
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">直接調整這筆應收款的已收總額（差額會自動補一筆流水帳），但不會動到任何帳戶餘額，日期一律記今天。要指定過去的收款日期、或想連動影響某個帳戶，請用清單上的「＋ 收款」按鈕；要連同收支紀錄一起結清，請用「結清」按鈕。</div>
       </div>
     </div>
     <div class="modal-field">
@@ -1891,7 +1887,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field">
-      <label>備註（選填）</label>
+      <label>備註</label>
       <input type="text" id="recvPaymentNote" placeholder="例：匯入第一銀行">
     </div>
     <div class="modal-field" style="display:flex;align-items:center;justify-content:space-between;gap:12px">
@@ -1931,12 +1927,11 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
   <div class="modal">
     <h2 id="otherAssetModalTitle">新增其他資產</h2>
     <div class="modal-field">
-      <label>類型</label>
+      <label>類型 <button type="button" class="ii" data-tip="只有「有累積現金價值」的保單才算——定期壽險、意外險、醫療險這類消費型保險繳了就是買保障，沒有價值可以拿回來，不算資產。" aria-label="說明">i</button></label>
       <select id="otherAssetType">
         <option value="insurance">保單價值（儲蓄險／還本型／投資型／終身壽險）</option>
         <option value="realestate">不動產</option>
       </select>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">只有「有累積現金價值」的保單才算——定期壽險、意外險、醫療險這類消費型保險繳了就是買保障，沒有價值可以拿回來，不算資產。</div>
     </div>
     <div class="modal-field">
       <label>名稱</label>
@@ -1944,7 +1939,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     </div>
     <div class="field-row">
       <div class="modal-field">
-        <label>目前價值</label>
+        <label>目前價值 <button type="button" class="ii" data-tip="保單填保價金準備金（可跟保險公司查詢或看保單價值試算表），不動產填實價登錄或自己估算的市值——這兩者都沒有即時報價可以自動抓，需要自己定期回來更新這個數字。" aria-label="說明">i</button></label>
         <input type="number" id="otherAssetValue" inputmode="decimal" placeholder="0" min="0" step="1">
       </div>
       <div class="modal-field">
@@ -1958,24 +1953,21 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
         </select>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--text-3);margin:-6px 0 4px">保單填保價金準備金（可跟保險公司查詢或看保單價值試算表），不動產填實價登錄或自己估算的市值——這兩者都沒有即時報價可以自動抓，需要自己定期回來更新這個數字。</div>
     <div id="otherAssetPolicyBox">
       <div class="modal-field" style="margin-top:12px">
-        <label for="otherAssetPaid">累積已繳保費</label>
+        <label for="otherAssetPaid">累積已繳保費 <button type="button" class="ii" data-tip="固定支出或分期選了「存下來的 › 儲蓄險」並連結這張保單後，每確認一期就自動加上去。開始用 App 之前已經繳的，可以自己填進來。" aria-label="說明">i</button></label>
         <input type="number" id="otherAssetPaid" inputmode="decimal" placeholder="0" min="0" step="1">
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">固定支出或分期選了「存下來的 › 儲蓄險」並連結這張保單後，每確認一期就自動加上去。開始用 App 之前已經繳的，可以自己填進來。</div>
       </div>
       <div class="modal-field">
-        <label for="otherAssetValueMode">算總資產用哪個數字</label>
+        <label for="otherAssetValueMode">算總資產用哪個數字 <button type="button" class="ii" data-tip="儲蓄險前幾年的解約金通常比已繳的少；選「一律用目前價值」比較保守。" aria-label="說明">i</button></label>
         <select id="otherAssetValueMode">
           <option value="auto">用解約金，沒填就用累積已繳</option>
           <option value="value">一律用解約金（目前價值）</option>
         </select>
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">儲蓄險前幾年的解約金通常比已繳的少；選「一律用目前價值」比較保守。</div>
       </div>
     </div>
     <div class="modal-field">
-      <label>備註（選填）</label>
+      <label>備註</label>
       <input type="text" id="otherAssetNote" placeholder="例：2026 年 9 月查詢">
     </div>
     <input type="hidden" id="otherAssetEditId">
@@ -2013,16 +2005,15 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field">
-      <label>購入總成本（選填，TWD）</label>
+      <label>購入總成本（TWD） <button type="button" class="ii" data-tip="填了之後，會自動用「目前金價換算的市值」減掉這筆成本，算出未實現損益，僅供參考。" aria-label="說明">i</button></label>
       <input type="number" id="goldCostTotal" inputmode="decimal" placeholder="留空則不計算未實現損益" min="0" step="1">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">填了之後，會自動用「目前金價換算的市值」減掉這筆成本，算出未實現損益，僅供參考。</div>
     </div>
     <div class="modal-field">
-      <label>購入日期（選填）</label>
+      <label>購入日期</label>
       <input type="date" id="goldPurchaseDate">
     </div>
     <div class="modal-field">
-      <label>備註（選填）</label>
+      <label>備註</label>
       <input type="text" id="goldNote" placeholder="例：足金 9999、含工錢">
     </div>
     <input type="hidden" id="goldEditId">
@@ -2043,7 +2034,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <div id="writeOffAmountLabel" style="font-size:12px;color:var(--text-3);margin-bottom:14px"></div>
     <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;line-height:1.6">這筆應收款會標記為「不再追討」，不再出現在待收清單中。系統會自動記一筆「呆帳沖銷」支出，金額等於尚未收到的餘額——這筆錢確實沒有回來，是一筆真實的損失。</div>
     <div class="modal-field">
-      <label>原因（選填）</label>
+      <label>原因</label>
       <input type="text" id="writeOffReason" placeholder="例：對方失聯、金額太小不值得追">
     </div>
     <input type="hidden" id="writeOffRecvId">
@@ -2070,7 +2061,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field">
-      <label id="depositMatureTotalLabel">合計（自動計算）</label>
+      <label id="depositMatureTotalLabel">合計</label>
       <input type="number" id="depositMatureTotal" readonly style="background:var(--surface);color:var(--text-2)">
     </div>
     <div class="modal-field">
@@ -2097,7 +2088,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <input type="text" id="bucketName" placeholder="例：旅遊基金、買房頭期款、緊急備用金">
     </div>
     <div class="modal-field">
-      <label>目標金額（選填）</label>
+      <label>目標金額</label>
       <input type="number" id="bucketTarget" inputmode="decimal" placeholder="不填代表沒有固定目標" min="0" step="1">
     </div>
     <div class="modal-field">
@@ -2108,38 +2099,35 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field" id="bucketFixedField">
-      <label>每月預計提撥（選填）</label>
+      <label>每月預計提撥</label>
       <input type="number" id="bucketMonthly" inputmode="decimal" placeholder="例：2000" min="0" step="1">
     </div>
     <div class="modal-field" id="bucketPercentField" style="display:none">
-      <label>月收入的百分比（%）</label>
+      <label>月收入的百分比（%） <button type="button" class="ii" data-tip="系統會依本月至今收入（薪水、利息、二手交易等，不含應收款）自動計算並提撥，每月即時更新。本月還沒有收入時，改用每月計畫的「每月生活費」計算，這筆錢由緊急預備金支應。" aria-label="說明">i</button></label>
       <input type="number" id="bucketIncomePercent" inputmode="decimal" placeholder="例：10" min="0" max="100" step="0.1">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">系統會依本月至今收入（薪水、利息、二手交易等，不含應收款）自動計算並提撥，每月即時更新。本月還沒有收入時，改用每月計畫的「每月生活費」計算，這筆錢由緊急預備金支應。</div>
       <div id="bucketPercentWarning" style="font-size:11px;color:var(--red);margin-top:4px;display:none"></div>
     </div>
     <div class="modal-field">
-      <label>目標日期（選填）</label>
-      <div style="font-size:11px;color:var(--text-3);margin-bottom:6px">讓系統估算大概還要幾個月達標</div>
+      <label>目標日期 <button type="button" class="ii" data-tip="讓系統估算大概還要幾個月達標" aria-label="說明">i</button></label>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
         <input type="number" id="bucketDateYear" placeholder="年 2027" min="2024" max="2050">
         <input type="number" id="bucketDateMonth" placeholder="月 1-12" min="1" max="12">
-        <input type="number" id="bucketDateDay" placeholder="日（選填）" min="1" max="31">
+        <input type="number" id="bucketDateDay" placeholder="日" min="1" max="31">
       </div>
     </div>
     <div class="modal-field">
       <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
         <input type="checkbox" id="bucketIsEmergencyFund">作為緊急預備金
-      </label>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">本月支出超過收入（超支）時，差額會自動從這個存錢目標扣一筆（虛擬），紀錄上會寫明支出與收入各多少。同時間只能有一個緊急預備金，勾選這個會自動取消其他存錢目標的勾選。</div>
+       <button type="button" class="ii" data-tip="本月支出超過收入（超支）時，差額會自動從這個存錢目標扣一筆（虛擬），紀錄上會寫明支出與收入各多少。同時間只能有一個緊急預備金，勾選這個會自動取消其他存錢目標的勾選。" aria-label="說明">i</button></label>
 
     </div>
     <div class="modal-field" id="bucketStoreField">
-      <label for="bucketStoreAccount">存放帳戶（選填）</label>
+      <label for="bucketStoreAccount">存放帳戶</label>
       <select id="bucketStoreAccount"></select>
       <div style="font-size:11px;color:var(--text-3);margin-top:4px" id="bucketStoreHelp">這筆錢實際放在哪個帳戶。指定後會檢查帳戶餘額夠不夠，發薪後的「分流轉帳」也會提醒把錢轉過去；不指定就只在 App 裡分帳，不檢查。</div>
     </div>
     <div class="modal-field">
-      <label>備註（選填）</label>
+      <label>備註</label>
       <input type="text" id="bucketNote" placeholder="">
     </div>
     <input type="hidden" id="bucketEditId">
@@ -2165,13 +2153,12 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
         <input type="number" id="bucketAllocAmount" inputmode="decimal" placeholder="0" min="0" step="1">
       </div>
       <div class="modal-field">
-        <label>日期</label>
+        <label>日期 <button type="button" class="ii" data-tip="這筆只是把錢「記給」這個存錢目標，不會扣任何帳戶餘額——實際花掉時才會真的影響帳戶。" aria-label="說明">i</button></label>
         <input type="date" id="bucketAllocDate">
       </div>
     </div>
-    <div style="font-size:11px;color:var(--text-3);margin:-4px 0 10px">這筆只是把錢「記給」這個存錢目標，不會扣任何帳戶餘額——實際花掉時才會真的影響帳戶。</div>
     <div class="modal-field">
-      <label>備註（選填）</label>
+      <label>備註</label>
       <input type="text" id="bucketAllocNote" placeholder="">
     </div>
     <input type="hidden" id="bucketAllocBucketId">
@@ -2193,17 +2180,16 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     </div>
     <div class="field-row">
       <div class="modal-field">
-        <label>開始日期（選填）</label>
+        <label>開始日期</label>
         <input type="date" id="projectStart">
       </div>
       <div class="modal-field">
-        <label>結束日期</label>
+        <label>結束日期 <button type="button" class="ii" data-tip="有填開始日期就要填結束日期；這段期間記的支出會自動歸進來（記帳時可以取消）。" aria-label="說明">i</button></label>
         <input type="date" id="projectEnd">
       </div>
     </div>
-    <p style="font-size:11px;color:var(--text-3);margin:-4px 0 10px">有填開始日期就要填結束日期；這段期間記的支出會自動歸進來（記帳時可以取消）。</p>
     <div class="modal-field">
-      <label>備註（選填）</label>
+      <label>備註</label>
       <input type="text" id="projectNote" placeholder="">
     </div>
     <input type="hidden" id="projectEditId">
@@ -2282,9 +2268,8 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <input type="checkbox" id="instIsInsurance" hidden>
     </div>
     <div class="modal-field" id="instPolicyField" style="display:none">
-      <label for="instPolicy">對應的儲蓄險保單</label>
+      <label for="instPolicy">對應的儲蓄險保單 <button type="button" class="ii" data-tip="繳的保費會自動加進這張保單的「累積已繳」。" aria-label="說明">i</button></label>
       <select id="instPolicy"></select>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">繳的保費會自動加進這張保單的「累積已繳」。</div>
     </div>
     <details class="mod-more" id="instMore">
       <summary>更多設定</summary>
@@ -2401,15 +2386,14 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <select id="recurringSpendCat"></select>
     </div>
     <div class="modal-field" id="recurringPolicyField" style="display:none">
-      <label for="recurringPolicy">對應的儲蓄險保單</label>
+      <label for="recurringPolicy">對應的儲蓄險保單 <button type="button" class="ii" data-tip="繳的保費會自動加進這張保單的「累積已繳」。" aria-label="說明">i</button></label>
       <select id="recurringPolicy"></select>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">繳的保費會自動加進這張保單的「累積已繳」。</div>
     </div>
     <input type="hidden" id="recurringCategory">
     <details class="mod-more" id="recurringMore">
       <summary>更多設定</summary>
       <div class="modal-field">
-        <label>截止日期（到期後自動結束）</label>
+        <label>截止日期</label>
         <div class="ymd3">
           <input type="number" id="recurringEndYear" placeholder="年" min="2020" max="2099" aria-label="年">
           <input type="number" id="recurringEndMonth" placeholder="月" min="1" max="12" aria-label="月">
@@ -2448,16 +2432,15 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <input type="number" id="recurringIncomeAmount" inputmode="decimal" placeholder="0" min="0" step="1">
     </div>
     <div class="modal-field">
-      <label>入帳帳戶（選填）</label>
+      <label>入帳帳戶</label>
       <select id="recurringIncomeAccount"><option value="">── 不指定 ──</option></select>
     </div>
     <div class="modal-field">
-      <label>預計入帳日（每月幾號，選填）</label>
+      <label>入帳日（每月幾號） <button type="button" class="ii" data-tip="填了之後，快到入帳日時會出現在資產總覽的「近期到期／即將繳款」提醒卡片裡。" aria-label="說明">i</button></label>
       <input type="number" id="recurringIncomeBillingDay" placeholder="例：5（5號發薪）" min="1" max="31">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">填了之後，快到入帳日時會出現在資產總覽的「近期到期／即將繳款」提醒卡片裡。</div>
     </div>
     <div class="modal-field">
-      <label>備註（選填）</label>
+      <label>備註</label>
       <input type="text" id="recurringIncomeNote" placeholder="">
     </div>
     <input type="hidden" id="recurringIncomeEditId">
@@ -2533,7 +2516,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <input type="number" id="recTransferCustomMonths" placeholder="例：3（每季一次）" min="2" step="1">
     </div>
     <div class="modal-field" id="recTransferDayField">
-      <label id="recTransferDayLabel">執行日（每月幾號，選填）</label>
+      <label id="recTransferDayLabel">執行日（每月幾號）</label>
       <input type="number" id="recTransferDay" placeholder="例：13（13號）" min="1" max="31">
     </div>
     <div class="modal-field" id="recTransferNextDateField" style="display:none">
@@ -2541,19 +2524,19 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
         <input type="number" id="recTransferNextYear" placeholder="年 2027" min="2020" max="2099">
         <input type="number" id="recTransferNextMonth" placeholder="月 1-12" min="1" max="12">
-        <input type="number" id="recTransferNextDay" placeholder="日（選填）" min="1" max="31">
+        <input type="number" id="recTransferNextDay" placeholder="日" min="1" max="31">
       </div>
     </div>
     <div class="modal-field">
-      <label>截止日期（選填，到期後自動標記結束）</label>
+      <label>截止日期（到期後自動標記結束）</label>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
         <input type="number" id="recTransferEndYear" placeholder="年" min="2020" max="2099">
         <input type="number" id="recTransferEndMonth" placeholder="月 1-12" min="1" max="12">
-        <input type="number" id="recTransferEndDay" placeholder="日（選填）" min="1" max="31">
+        <input type="number" id="recTransferEndDay" placeholder="日" min="1" max="31">
       </div>
     </div>
     <div class="modal-field">
-      <label>備註（選填）</label>
+      <label>備註</label>
       <input type="text" id="recTransferNote" placeholder="">
     </div>
     <input type="hidden" id="recTransferEditId">
@@ -2636,7 +2619,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <div class="modal-field">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0">
           <input type="checkbox" id="dcaScheduleEndEnabled" style="margin:0;cursor:pointer">
-          設定截止日期（到期後自動結束）
+          設定截止日期
         </label>
         <div id="dcaScheduleEndDateFields" class="ymd3" style="display:none;margin-top:8px">
           <input type="number" id="dcaScheduleEndYear" placeholder="年" min="2020" max="2099" aria-label="年">
@@ -2679,12 +2662,11 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field">
-      <label id="ccActualDueLabel">本期實際繳款日（選填，遇假日順延時填入）</label>
+      <label id="ccActualDueLabel">本期實際繳款日 <button type="button" class="ii" data-tip="只套用在這一期；記錄繳款後自動失效，下一期不必回來清掉。" aria-label="說明">i</button></label>
       <input type="date" id="ccActualDueDate">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">只套用在這一期；記錄繳款後自動失效，下一期不必回來清掉。</div>
     </div>
     <div class="modal-field">
-      <label>繳款帳戶（選填）</label>
+      <label>繳款帳戶</label>
       <select id="ccPayAccount"><option value="">── 不指定 ──</option></select>
     </div>
     <div class="modal-field">
@@ -2714,14 +2696,12 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field">
-      <label>每月生活費（沒有收入的月份用這個金額做計畫）</label>
+      <label>每月生活費 <button type="button" class="ii" data-tip="本月有記錄收入時，計畫一律以實際收入為準；還沒有收入時（例如待業、月初還沒領薪）改用這個金額，計畫才不會整個變成 0。" aria-label="說明">i</button></label>
       <input type="number" id="planBaseFixed" inputmode="decimal" min="0" step="1000" placeholder="例：30000">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">本月有記錄收入時，計畫一律以實際收入為準；還沒有收入時（例如待業、月初還沒領薪）改用這個金額，計畫才不會整個變成 0。</div>
     </div>
     <div class="modal-field">
-      <label>緊急預備金要存幾個月的必要開銷</label>
+      <label>緊急預備金月數 <button type="button" class="ii" data-tip="必要開銷＝固定支出＋生活預算。常見建議是 3～6 個月。" aria-label="說明">i</button></label>
       <input type="number" id="planEmergencyMonths" inputmode="numeric" min="1" max="24" step="1" placeholder="6">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">必要開銷＝固定支出＋生活預算。常見建議是 3～6 個月。</div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="planBaseCancel">取消</button>
@@ -2753,11 +2733,10 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
         <input type="date" id="ccPayDate">
       </div>
       <div class="modal-field">
-        <label>繳款金額</label>
+        <label>繳款金額 <button type="button" class="ii" data-tip="預設是目前待繳全部。如果帳單金額比較少（結帳日後新刷的要下一期才繳），改成帳單上的金額。" aria-label="說明">i</button></label>
         <input type="number" id="ccPayAmount" inputmode="decimal" min="0" step="1">
       </div>
     </div>
-    <div style="font-size:11px;color:var(--text-3);margin:-4px 0 12px">預設是目前待繳全部。如果帳單金額比較少（結帳日後新刷的要下一期才繳），改成帳單上的金額。</div>
     <div class="modal-field">
       <label>從哪個帳戶扣款</label>
       <select id="ccPayFrom"></select>
@@ -2810,7 +2789,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field">
-      <label>預期利息（選填，直接填入實際利息金額，優先於系統估算）</label>
+      <label>預期利息（直接填入實際利息金額，優先於系統估算）</label>
       <input type="number" id="depositExpectedInterest" inputmode="decimal" placeholder="例：9.27（空白則由系統依利率估算）" min="0" step="0.01">
       <div id="depositEstInterestHint" style="font-size:11px;color:var(--text-3);margin-top:4px"></div>
     </div>
@@ -2820,14 +2799,13 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
         <input type="date" id="depositMaturity">
       </div>
       <div class="modal-field">
-        <label>到期後匯入帳戶（選填）</label>
+        <label>到期後匯入帳戶</label>
         <select id="depositMaturityAccount"><option value="">── 不指定 ──</option></select>
       </div>
     </div>
     <div class="modal-field" id="depositSourceAccountRow">
-      <label>扣款帳戶（選填，新增時從此帳戶扣除本金）</label>
+      <label>扣款帳戶 <button type="button" class="ii" data-tip="選擇後，本金會從該帳戶餘額扣除，並記錄為資產移轉（顯示在「移轉記錄」，不計入支出）。若這筆定存本來就沒有對應的現金帳戶（例如補登舊資料），請留空。" aria-label="說明">i</button></label>
       <select id="depositSourceAccount"><option value="">── 不指定（不異動任何帳戶）──</option></select>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">選擇後，本金會從該帳戶餘額扣除，並記錄為資產移轉（顯示在「移轉記錄」，不計入支出）。若這筆定存本來就沒有對應的現金帳戶（例如補登舊資料），請留空。</div>
     </div>
     <input type="hidden" id="depositEditId">
     <div class="modal-actions" style="justify-content:space-between">
@@ -2894,9 +2872,8 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field" id="expenseFxField" style="display:none">
-      <label>換算匯率（1 <span id="expenseFxCurrLabel">USD</span> = ? TWD）</label>
+      <label>換算匯率（1 <span id="expenseFxCurrLabel">USD</span> = ? TWD） <button type="button" class="ii" data-tip="已帶入即時匯率，可改成實際匯率；這筆之後都用這個匯率換算。" aria-label="說明">i</button></label>
       <input type="number" id="expenseFxRate" inputmode="decimal" step="0.0001" min="0">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">已帶入即時匯率，可改成實際匯率；這筆之後都用這個匯率換算。</div>
     </div>
     <div class="modal-field">
       <label>類別</label>
@@ -2911,12 +2888,11 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
       <div class="modal-field" id="expenseAffectsField">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-          <label style="margin:0">從帳戶扣錢</label>
+          <label style="margin:0">從帳戶扣錢 <button type="button" class="ii" data-tip="一般保持開啟。關掉＝只記帳，帳戶和信用卡餘額不變（例如這筆錢已經在別處記過）。" aria-label="說明">i</button></label>
           <button type="button" id="expenseAffectsToggle" class="toggle-switch" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;flex-shrink:0">
             <span id="expenseAffectsThumb" style="position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;display:block"></span>
           </button>
         </div>
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">一般保持開啟。關掉＝只記帳，帳戶和信用卡餘額不變（例如這筆錢已經在別處記過）。</div>
       </div>
       <div class="field-row two">
         <div class="modal-field">
@@ -2981,9 +2957,8 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <input type="text" id="incomeDesc" placeholder="例：9月薪資">
     </div>
     <div class="modal-field" id="incomeFxField" style="display:none">
-      <label>換算匯率（1 <span id="incomeFxCurrLabel">USD</span> = ? TWD）</label>
+      <label>換算匯率（1 <span id="incomeFxCurrLabel">USD</span> = ? TWD） <button type="button" class="ii" data-tip="已帶入即時匯率，可改成實際匯率；這筆之後都用這個匯率換算。" aria-label="說明">i</button></label>
       <input type="number" id="incomeFxRate" inputmode="decimal" step="0.0001" min="0">
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">已帶入即時匯率，可改成實際匯率；這筆之後都用這個匯率換算。</div>
     </div>
 
     <!-- DCA extra fields -->
@@ -3015,12 +2990,9 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
           </select>
         </div>
         <div class="modal-field">
-          <label>取得股數</label>
+          <label>取得股數 <button type="button" class="ii" data-tip="儲存後會自動將取得股數累加到持倉，並從「轉入帳戶」扣除扣款金額。" aria-label="說明">i</button></label>
           <input type="number" id="incomeDcaShares" inputmode="decimal" placeholder="0" min="0" step="0.0001">
         </div>
-      </div>
-      <div style="font-size:11px;color:var(--text-3);margin-top:-8px;margin-bottom:10px">
-        儲存後會自動將取得股數累加到持倉，並從「轉入帳戶」扣除扣款金額。
       </div>
     </div>
 
@@ -3036,7 +3008,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 
     <!-- v2.12.0：獎金／非經常性收入——由使用者自己決定要不要跟每月收入分開 -->
     <div id="incomeBonusField" class="bonus-box">
-      <label class="bonus-check"><input type="checkbox" id="incomeIrregular"><span><b>這是獎金或一次性收入</b>年終、三節、績效獎金、退稅等。勾選後不算進每月計畫，可以整筆放進存錢目標；不勾就跟每月收入一起算。</span></label>
+      <label class="bonus-check"><input type="checkbox" id="incomeIrregular"><span><b>獎金或一次性收入</b></span></label> <button type="button" class="ii" data-tip="年終、三節、績效獎金、退稅等。勾選後不算進每月計畫，可以整筆放進存錢目標。" aria-label="說明">i</button>
       <div id="incomeBonusAlloc" class="field-row" style="display:none">
         <div class="modal-field">
           <label>放進存錢目標</label>
@@ -3056,12 +3028,11 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
       <div class="modal-field" id="incomeAffectsField">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-          <label style="margin:0">存進帳戶</label>
+          <label style="margin:0">存進帳戶 <button type="button" class="ii" data-tip="一般保持開啟。關掉＝只記帳，帳戶餘額不變。" aria-label="說明">i</button></label>
           <button type="button" id="incomeAffectsToggle" class="toggle-switch" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;flex-shrink:0">
             <span id="incomeAffectsThumb" style="position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;display:block"></span>
           </button>
         </div>
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">一般保持開啟。關掉＝只記帳，帳戶餘額不變。</div>
       </div>
       <div class="modal-field">
         <label for="incomeNote">備註</label>
@@ -3110,12 +3081,10 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <div style="display:flex;gap:8px;flex-wrap:wrap" id="categoryColorPicker"></div>
     </div>
     <div class="modal-field" id="categoryPassiveField">
-      <label style="display:flex;align-items:center;gap:8px;font-weight:400;margin:0"><input type="checkbox" id="categoryPassive" style="width:16px;height:16px;accent-color:var(--blue)">算被動收入</label>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">不工作也會進來的錢（例如股利、利息、租金）。勾選的類別會算進「如果沒有收入，可以撐多久」。</div>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:400;margin:0"><input type="checkbox" id="categoryPassive" style="width:16px;height:16px;accent-color:var(--blue)">算被動收入 <button type="button" class="ii" data-tip="不工作也會進來的錢（例如股利、利息、租金）。勾選的類別會算進「如果沒有收入，可以撐多久」。" aria-label="說明">i</button></label>
     </div>
     <div class="modal-field" id="categoryIrregularField">
-      <label class="chk-line"><input type="checkbox" id="categoryIrregular">預設算一次性收入</label>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">例如獎金、退稅、紅包。記這類收入時會自動勾「獎金／一次性」，不算進每月計畫的收入基準。</div>
+      <label class="chk-line"><input type="checkbox" id="categoryIrregular">預設算一次性收入 <button type="button" class="ii" data-tip="例如獎金、退稅、紅包。記這類收入時會自動勾「獎金／一次性」，不算進每月計畫的收入基準。" aria-label="說明">i</button></label>
     </div>
     <input type="hidden" id="categoryEditId">
     <div class="modal-actions" style="justify-content:space-between;flex-wrap:wrap">
@@ -3466,23 +3435,15 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.25.0';
-const CHANGELOG_LAST_UPDATED = '2026-10-12';
+const APP_VERSION = 'v2.26.0';
+const CHANGELOG_LAST_UPDATED = '2026-10-28';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '首頁：概況與資產合成一頁（可自由運用 → 總資產 → 成長與趨勢），拿掉「可以留意的錢」',
-  '「存到目標要多久」搬到 計畫 › 存錢目標',
-  '每月計畫：每一區都可以收合，標題列看得到金額與佔比',
-  '新增／編輯支出、收入改成從底部滑出，跟記一筆同樣式；日期、扣錢開關、存錢目標、備註收在「更多」',
-  '固定支出、分期付款、定期定額的編輯視窗重新排版，不常用的收進「更多設定」',
-  '固定支出、定期定額、分期付款可以看付款紀錄',
-  '設定：可以新增幣別（港幣、英鎊、韓元、澳幣、新加坡幣等）；拿掉快速設定精靈、每月計畫捷徑、歷史紀錄',
-  '日期一律顯示 yyyy/mm/dd；確認本期可以直接改日期',
-  '清單上的「確認本期／編輯」改成小按鈕；「是否影響帳戶餘額」改成「從帳戶扣錢／存進帳戶」',
-  '記一筆拿掉「只記主分類」；每月實際存了多少只看最近 3 個月',
+  '全站精簡文字：拿掉重複標題的副標、解釋算法的句子與「（選填）」，讓數字和排版自己說話',
+  '真的需要說明的地方改成標題旁的 ⓘ，點了才看得到',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3794,7 +3755,7 @@ function pairCatSelect(sel) {
   let wrap = sel._catPair;
   if (!wrap) {
     wrap = el('div'); wrap.className = 'cat-pair';
-    wrap.innerHTML = `<select class="cat-pair-main" aria-label="主分類"></select><select class="cat-pair-sub" aria-label="子分類（選填）"></select>`;
+    wrap.innerHTML = `<select class="cat-pair-main" aria-label="主分類"></select><select class="cat-pair-sub" aria-label="子分類"></select>`;
     sel.insertAdjacentElement('afterend', wrap);
     sel.style.display = 'none';
     sel._catPair = wrap;
@@ -4304,7 +4265,7 @@ async function renderWealthHub() {
 let _homeTok = 0;
 async function renderHomeAssets(root, tok) {
   const sub = el('div'), head = el('div'), trendBox = el('div');
-  head.className = 'wealth-sec-head'; head.innerHTML = '<b>成長與趨勢</b><span>資產怎麼變化、每月存了多少</span>';
+  head.className = 'wealth-sec-head'; head.innerHTML = '<b>成長與趨勢</b>';
   root.append(sub, head, trendBox);
   _activeContentContainer = sub;
   _trendContainer = null;
@@ -4332,7 +4293,7 @@ async function buildTripBanner() {
   const dayN = Math.floor((now - d0) / 86400000) + 1;
   const total = trip.end_date ? Math.floor((new Date(trip.end_date + 'T00:00:00') - d0) / 86400000) + 1 : null;
   const b = el('button'); b.type = 'button'; b.className = 'trip-banner';
-  b.innerHTML = `<span class="trip-ico">✈️</span><span class="trip-main"><b>旅行中：${escHtml(trip.name)}</b><small>第 ${dayN}${total ? ` / ${total}` : ''} 天・已花 NT$ ${fmt(spent)}${left != null ? `・${escHtml(bucket.name)}還剩 NT$ ${fmt(left)}` : ''}</small></span><span class="trip-go">›</span>`;
+  b.innerHTML = `<span class="trip-ico">✈️</span><span class="trip-main"><b>${escHtml(trip.name)}</b><small>第 ${dayN}${total ? `／${total}` : ''} 天・已花 NT$ ${fmt(spent)}${left != null ? `・剩 NT$ ${fmt(left)}` : ''}</small></span><span class="trip-go">›</span>`;
   b.addEventListener('click', () => { _planTab = 'goals'; navigate('plan'); });
   return b;
 }
@@ -4465,7 +4426,7 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
   box.innerHTML = `
     <div class="qa-row">
       <label class="qa-amt"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="1" placeholder="金額" aria-label="金額"></label>
-      <input class="qa-desc" type="text" placeholder="說明（選填）" aria-label="說明">
+      <input class="qa-desc" type="text" placeholder="說明" aria-label="說明">
     </div>
     <div class="qa-label">付款方式</div>
     <div class="qa-foot is-pay">
@@ -4531,7 +4492,7 @@ async function buildQuickIncome({ date = null, onDone = null } = {}) {
   box.innerHTML = `
     <div class="qa-row">
       <label class="qa-amt"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="1" placeholder="金額" aria-label="金額"></label>
-      <input class="qa-desc" type="text" placeholder="說明（選填）" aria-label="說明">
+      <input class="qa-desc" type="text" placeholder="說明" aria-label="說明">
     </div>
     <div class="qa-label">存入</div>
     <div class="qa-foot is-pay">
@@ -4763,7 +4724,7 @@ async function renderHome() {
   const efSt = calcEfStorage({ efBucket: buckets.find(b => b.is_emergency_fund && b.status !== 'closed'), allocations, expenseTxns, accounts, fxRates });
   const efStoreLine = efSt?.short > 0 ? `<div class="sp-warn"><b>預備金有 ${money(efSt.short)} 沒有現金撐著</b>存放帳戶「${escHtml(efSt.account.name)}」只有 ${money(efSt.balanceTwd)}，比預備金帳面上的 ${money(efSt.have)} 少。</div>` : '';
   const efLine = sp.ef.gap > 0
-    ? `<div class="sp-warn"><b>緊急預備金還差 ${money(sp.ef.gap)}</b>${sp.ef.exists ? `目前 ${money(sp.ef.have)}。` : '還沒建立，先依必要開銷保留建議金額。'}缺口先保留，所以可自由運用變少${sp.free === 0 ? '到 0' : ''}。</div>`
+    ? `<div class="sp-warn"><b>緊急預備金還差 ${money(sp.ef.gap)}</b></div>`
     : '';
   const rows = [
     ['現金與活存', sp.liquid, ''],
@@ -4838,7 +4799,7 @@ async function renderAssetOverview() {
   nw.innerHTML = `
     <div class="networth-label">總資產（折合台幣）</div>
     <div class="networth-amount"><span class="networth-currency">NT$</span>${fmt(netWorth)}</div>
-    ${ccDebt>0?`<div class="home-hero-sub">已扣除 NT$ ${fmt(ccDebt)} 信用卡負債</div>`:''}
+
     <div class="home-alloc" role="img" aria-label="資產配置：${posTiles.map(t=>`${t.label} ${Math.round(t.value/grossAssets*100)}%`).join('、')}">
       ${posTiles.map(t=>`<span style="flex:${t.value};background:${t.color}"></span>`).join('')}
     </div>
@@ -5617,7 +5578,7 @@ async function renderSystemSettings() {
     const prefs = await loadCurrencyPrefs(codes);
     const labelOf = c => SUPPORTED_CURRENCIES.find(x => x.code === c)?.label ?? c;
     const body = addCollapsible({ key:'currency', icon:'💰', title:'幣別管理',
-      subtitle: `目前使用中：${codes.join('、')}` });
+      subtitle: codes.join('、') });
     const triSelect = (attr, c, val, autoLabel, onLabel, offLabel, disabled = false) => `
       <select data-${attr}="${c}" ${disabled?'disabled':''} style="font-size:12px;padding:5px 6px;min-width:0;width:100%">
         <option value="" ${val==null?'selected':''}>${autoLabel}</option>
@@ -5626,14 +5587,14 @@ async function renderSystemSettings() {
       </select>`;
     body.innerHTML = `
       <div class="curr-add">
-        <div class="curr-add-k">新增幣別</div>
+        <div class="curr-add-k">新增幣別 ${infoTip('新增後，新增帳戶、定存、固定支出、定期定額時就能選這個幣別；匯率會自動抓。')}</div>
         <div class="curr-add-row">
           <select id="currAddSel" aria-label="要新增的幣別">${EXTRA_CURRENCY_CATALOG.filter(c => !SUPPORTED_CURRENCIES.some(x => x.code === c.code)).map(c => `<option value="${c.code}">${c.code} ${c.label}</option>`).join('') || '<option value="">清單裡的幣別都加過了</option>'}</select>
           <button type="button" class="btn btn-primary btn-sm" id="currAddBtn">新增</button>
         </div>
-        <div class="curr-add-note">可以用的幣別：${SUPPORTED_CURRENCIES.map(x => `${x.code} ${x.label}`).join('、')}。新增後，新增帳戶、定存、固定支出、定期定額時就能選；匯率會自動抓。</div>
+
       </div>
-      <div style="font-size:11px;color:var(--text-3);margin-bottom:12px">下面列出帳戶、持股、排程裡實際有在用的幣別。顏色會用在資產總覽的合併標籤、整列底色與所有幣別徽章。</div>
+
       <div style="display:flex;flex-direction:column;gap:12px">
         ${codes.map(c => `
           <div style="border:1px solid var(--border);border-radius:10px;padding:10px 12px">
@@ -5725,7 +5686,7 @@ async function renderSystemSettings() {
   {
     const holdingsEnabled = await getSetting(db, 'holdings_page_enabled', true).catch(() => true);
     const holdCard = addRow({ icon:'📈', title:'顯示「投資持倉」頁面',
-      subtitle:'沒有買股票／ETF 的話可以關閉；「資產」頁就不會顯示「持倉」分頁。',
+      subtitle:'',
       rightHtml:`<button type="button" id="holdingsPageToggle" class="toggle-switch" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;flex-shrink:0">
           <span id="holdingsPageThumb" style="position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;display:block"></span>
         </button>` });
@@ -5750,8 +5711,8 @@ async function renderSystemSettings() {
   // ── v2.24.0：排程到期自動記帳開關 ───────────────────────────────────────
   {
     const autoOn = await getSetting(db, 'auto_confirm', true).catch(() => true);
-    const row = addRow({ icon:'🔁', title:'排程到期自動記帳',
-      subtitle:'固定支出、分期、定期定額、定期轉帳到了扣款日自動記一筆；有出入到「紀錄」修改。信用卡繳款不會自動記。',
+    const row = addRow({ icon:'🔁', title:`排程到期自動記帳 ${infoTip('固定支出、分期、定期定額、定期轉帳到了扣款日自動記一筆；有出入到「紀錄」修改。信用卡繳款不會自動記。')}`,
+      subtitle:'',
       rightHtml:`<button type="button" id="autoConfirmToggle" class="toggle-switch" role="switch" aria-label="排程到期自動記帳" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;flex-shrink:0">
           <span id="autoConfirmThumb" style="position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;display:block"></span>
         </button>` });
@@ -5771,7 +5732,7 @@ async function renderSystemSettings() {
   // 卡片畫進傳入的子容器，不清空整頁）。展開狀態沿用 'catSection' 這個 key。
   {
     const body = addCollapsible({ key:'catSection', icon:'🏷️', title:'類別設定',
-      subtitle:'新增／編輯／停用／刪除收入與支出類別', bodyPadding:'4px 0 0' });
+      subtitle:'', bodyPadding:'4px 0 0' });
     _catSettingsBody = body;
     await renderCategories(body);
   }
@@ -5844,7 +5805,7 @@ async function renderSystemSettings() {
   {
     const lastExport = await getSetting(db, 'last_export_at', null).catch(() => null);
     const row = addRow({ icon:'📤', title:'匯出／匯入備份',
-      subtitle: lastExport ? `上次匯出：${String(lastExport).slice(0,10)}` : '還沒有匯出過備份——資料只存在這台裝置的瀏覽器裡，建議定期匯出',
+      subtitle: lastExport ? `上次匯出：${String(lastExport).slice(0,10)}` : '還沒備份過',
       rightHtml:`<button class="btn btn-ghost btn-sm" id="settingsExportBtn">匯出</button><button class="btn btn-ghost btn-sm" id="settingsImportBtn">匯入</button>` });
     row.querySelector('#settingsExportBtn').addEventListener('click', async () => {
       document.getElementById('exportBtn').click();
@@ -7554,11 +7515,11 @@ async function renderTransfer() {
   const panel = el('div','transfer-panel');
   panel.innerHTML = `
     <h3 style="font-size:15px;font-weight:600;margin-bottom:20px">帳戶移轉</h3>
-    ${buildAccDropdown('transferFrom','從（來源帳戶）')}
+    ${buildAccDropdown('transferFrom','從')}
     <div class="transfer-arrow">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
     </div>
-    ${buildAccDropdown('transferTo','到（目標帳戶）')}
+    ${buildAccDropdown('transferTo','到')}
 
     <div id="transferFormBody" style="display:none">
       <div class="modal-field">
@@ -8574,10 +8535,10 @@ function openHoldingModal(h=null, brokerages=[], banks=[], defaultBrokId=null) {
       priceField.style.display='none'; // US auto-fetched from Finnhub
     } else {
       priceField.style.display='block';
-      priceLabel.textContent = `參考價格（${currency}，選填）`;
+      priceLabel.textContent = `參考價格（${currency}）`;
     }
     const costLabel = document.getElementById('holdingCostBasisLabel');
-    if (costLabel) costLabel.textContent = `平均成本（${currency}／股，選填）`;
+    if (costLabel) costLabel.textContent = `平均成本（${currency}／股）`;
     // 台股沒有零股以下的小數股數：用上下鍵微調時，step 要是整數，否則
     // 40 按一下上鍵會變成 40.0001 這種不存在的股數。美股／其他市場則保留
     // 可以有小數股（部分券商支援定期定額買零股）。
@@ -9338,7 +9299,7 @@ document.getElementById('recvModalSave').addEventListener('click',async()=>{
 // 手動補登（只動 received_amount，不碰任何帳戶）；「開啟」時比照
 // renderTransfer 應收款入帳快速動作（只調整帳戶餘額，不寫 income_txns，
 // 這點已由使用者透過 AskUserQuestion 確認，見廿四之b）。
-// payment（選填，2026-09-27 新增，見卅三）：傳入既有的一筆收款流水帳紀錄時，
+// payment（2026-09-27 新增，見卅三）：傳入既有的一筆收款流水帳紀錄時，
 // 彈窗切換成「編輯」模式——標題改成「編輯收款紀錄」、日期／金額／備註／是否
 // 影響帳戶＋所選帳戶都會帶入這筆紀錄原本的值，儲存時會走 updateReceivablePayment()
 // 覆寫同一筆紀錄，而不是 addReceivablePayment() 新增一筆。不傳（或傳 null）維持
@@ -9967,7 +9928,7 @@ async function openPaydayModal({ fromIncome = false, sourceAccountId = null } = 
   document.getElementById('paydaySkip').style.display = fromIncome ? '' : 'none';
   const list = document.getElementById('paydayList');
   list.innerHTML = gaps.map((g, i) => `<label class="pd-row"><input type="checkbox" data-pd-on="${i}" checked>
-    <span class="pd-n">${g.bucket.is_emergency_fund ? '🚨 ' : ''}${escHtml(g.bucket.name)}<small>每月 NT$ ${fmt(g.bucket.monthly_amount)}${g.done > 0 ? `・本月已撥 ${fmt(g.done)}` : ''}</small></span>
+    <span class="pd-n">${g.bucket.is_emergency_fund ? '🚨 ' : ''}${escHtml(g.bucket.name)}${g.done > 0 ? `<small>本月已撥 ${fmt(g.done)}</small>` : ''}</span>
     <input type="number" inputmode="decimal" min="0" step="100" value="${g.gap}" data-pd-amt="${i}" aria-label="${escHtml(g.bucket.name)} 撥入金額"></label>`).join('');
   const total = () => {
     let t = 0;
@@ -10064,8 +10025,8 @@ async function renderMonthlyPlan() {
   const switchHint = stabNow && stabNow.level !== '穩定'
     ? `<div class="mp-buffer is-hint"><b>收入${stabNow.level}</b>近 ${stabNow.n} 個月收入起伏大，計畫會跟著每月大起大落。可以改用「收入不固定」模式，用最低收入當基準、多的存進緩衝。<button type="button" class="mp-ef-link" data-mp-base2>改用</button></div>` : '';
   const srcText = pInc.mode === 'buffer' ? `依近 ${pInc.bb.months} 個月最低收入（${Number(pInc.bb.lowMonth.slice(5))} 月）`
-    : plan.baseSource === 'income' ? `依本月實際收入${baseFixed ? `（沒有收入的月份改用每月生活費 ${money(baseFixed)}）` : ''}`
-    : plan.baseSource === 'fixed' ? `本月還沒有收入，先用你設定的每月生活費` : '本月還沒有收入，也還沒設定每月生活費';
+    : plan.baseSource === 'income' ? ''
+    : plan.baseSource === 'fixed' ? `本月還沒有收入，用每月生活費` : '本月還沒有收入';
   const segs = [['fixed', plan.fixed.total], ['save', plan.save.total], ['invest', plan.invest.total], ['living', plan.living.total]];
   const denom = Math.max(plan.base, segs.reduce((s, [, v]) => s + v, 0)) || 1;
   hero.innerHTML = `
@@ -10110,7 +10071,7 @@ async function renderMonthlyPlan() {
   const FIXED_KIND = { general: '定期支出', subscription: 'App 訂閱', insurance: '保險', installment: '分期付款' };
 
   // 1 固定支出
-  const fb = section('fixed', '🔁', '固定支出', plan.fixed.total, '從定期支出、訂閱、保險、分期自動帶入（每月約當金額）',
+  const fb = section('fixed', '🔁', '固定支出', plan.fixed.total, '',
     [linkBtn('管理定期支出', 'recurring'), linkBtn('分期付款', 'installment')]);
   fb.innerHTML = plan.fixed.items.length
     ? plan.fixed.items.map(i => row(escHtml(i.name), money(i.amount), `${FIXED_KIND[i.category] ?? '定期支出'}${plan.base > 0 ? `・佔${plan.baseSource === 'income' ? '收入' : '每月生活費'} ${(i.amount / plan.base * 100).toFixed(i.amount / plan.base < 0.1 ? 1 : 0)}%` : ''}`)).join('')
@@ -10119,7 +10080,7 @@ async function renderMonthlyPlan() {
   // 2 存下來（緊急預備金優先）
   const essentials = plan.fixed.total + plan.living.total;
   const suggestedEF = Math.round(essentials * emergencyMonths);
-  const sb = section('save', '🧳', '存下來', plan.save.total, '每個存錢目標每月撥多少；緊急預備金排第一',
+  const sb = section('save', '🧳', '存下來', plan.save.total, '',
     [(() => { const b = el('button', 'btn btn-ghost btn-sm'); b.textContent = '＋ 新增存錢目標'; b.addEventListener('click', () => openBucketModal()); return b; })(), (() => { const b = el('button', 'btn btn-ghost btn-sm'); b.textContent = '目標明細與旅行'; b.addEventListener('click', () => { _planTab = 'goals'; renderPlanHub(); window.scrollTo(0, 0); }); return b; })()]);
   const ef = buckets.find(b => b.is_emergency_fund && b.status !== 'closed');
   const efBox = el('div'); efBox.className = 'mp-ef';
@@ -10143,12 +10104,12 @@ async function renderMonthlyPlan() {
     const st = calcEfStorage({ efBucket: ef, allocations, expenseTxns, accounts, fxRates });
     const storeHtml = st
       ? `<div class="mp-ef-note ${st.short > 0 ? 'is-warn' : ''}">${st.short > 0
-          ? `<b>存放帳戶「${escHtml(st.account.name)}」只有 ${money(st.balanceTwd)}，少 ${money(st.short)}</b>帳面上的預備金有一部分沒有現金撐著，把差額轉進這個帳戶，要用時才拿得出來。`
-          : `<b>存放在「${escHtml(st.account.name)}」</b>帳戶餘額 ${money(st.balanceTwd)}，撐得住目前的預備金。`}</div>`
-      : `<div class="mp-ef-note"><b>還沒指定存放帳戶</b>指定一個跟生活費分開的帳戶，App 會幫你檢查錢是不是真的在那裡。<button type="button" class="mp-ef-link" data-ef-store>指定</button></div>`;
+          ? `<b>存放帳戶「${escHtml(st.account.name)}」少 ${money(st.short)}</b>`
+          : `<b>存放在「${escHtml(st.account.name)}」・${money(st.balanceTwd)}</b>`}</div>`
+      : `<div class="mp-ef-note"><b>還沒指定存放帳戶 ${infoTip('指定一個跟生活費分開的帳戶，App 會檢查錢是不是真的在那裡。')}</b><button type="button" class="mp-ef-link" data-ef-store>指定</button></div>`;
     const stab = calcIncomeStability(incomeTxns);
     const stabHtml = stab
-      ? `<div class="mp-ef-note"><b>依你近 ${stab.n} 個月的收入：${stab.level}，建議存 ${stab.range}</b>${stab.zeros ? `其中 ${stab.zeros} 個月沒有收入。` : (stab.cv < 0.05 ? '每月收入幾乎固定。' : `每月收入的起伏約 ${Math.round(stab.cv * 100)}%。`)}收入越不穩定，預備金要越多。${emergencyMonths < stab.min || emergencyMonths > stab.max ? `<button type="button" class="mp-ef-link" data-ef-months="${stab.suggest}">改成 ${stab.suggest} 個月</button>` : ''}</div>`
+      ? `<div class="mp-ef-note"><b>收入${stab.level}，建議存 ${stab.range} ${infoTip(`依近 ${stab.n} 個月的收入${stab.zeros ? `（其中 ${stab.zeros} 個月沒有收入）` : stab.cv < 0.05 ? '（每月幾乎固定）' : `（起伏約 ${Math.round(stab.cv * 100)}%）`}。收入越不穩定，預備金要越多。`)}</b>${emergencyMonths < stab.min || emergencyMonths > stab.max ? `<button type="button" class="mp-ef-link" data-ef-months="${stab.suggest}">改成 ${stab.suggest} 個月</button>` : ''}</div>`
       : '';
     const efDrawHtml = storeHtml + stabHtml + (draws.length ? `<div class="mp-ef-draws">${draws.map(a => `<div class="mp-ef-draw"><span class="k">${a.auto_type === 'shortfall' ? '本月超支' : '沒有收入時代撥'}</span><b>−${money(Math.abs(a.amount))}</b><small>${escHtml(a.note || '')}</small></div>`).join('')}</div>` : '');
     efBox.classList.add('has-detail');
@@ -10176,7 +10137,7 @@ async function renderMonthlyPlan() {
     if (gaps.length) {
       const bar = el('div'); bar.className = 'mp-payday';
       const sum = gaps.reduce((t, g) => t + g.gap, 0);
-      bar.innerHTML = `<span><b>本月還有 NT$ ${fmt(sum)} 沒撥入</b>${gaps.length} 個存錢目標。發薪後先存，剩下的才是生活費。</span>`;
+      bar.innerHTML = `<span><b>本月還有 NT$ ${fmt(sum)} 沒撥入</b>${gaps.length} 個存錢目標</span>`;
       const go = el('button', 'btn btn-primary btn-sm'); go.textContent = '一次撥入';
       go.addEventListener('click', () => openPaydayModal());
       bar.appendChild(go); sb.appendChild(bar);
@@ -10203,12 +10164,12 @@ async function renderMonthlyPlan() {
   });
 
   // 3 投資
-  const ib = section('invest', '📈', '投資', plan.invest.total, '從定期定額排程自動帶入', [linkBtn('定期定額排程', 'dcaschedule')]);
+  const ib = section('invest', '📈', '投資', plan.invest.total, '', [linkBtn('定期定額排程', 'dcaschedule')]);
   ib.innerHTML = plan.invest.items.length ? plan.invest.items.map(i => row(escHtml(i.name), money(i.amount))).join('')
     : `<div class="mp-empty">還沒有定期定額排程。</div>`;
 
   // 4 生活預算（＝本月總預算，今天還能花從這裡算）
-  const lb = section('living', '🧺', '生活預算', plan.living.total, '吃飯、交通、購物等日常花費的上限；「今天還能花」從這裡算');
+  const lb = section('living', '🧺', '生活預算', plan.living.total, '');
   // v2.14.0：依實際花費建議（近 3 個完整月份的平均）
   const avgSpend = calcAvgLivingSpend(expenseTxns, accounts, fxRates, 3);
   const lv = el('div'); lv.className = 'mp-living';
@@ -10220,7 +10181,7 @@ async function renderMonthlyPlan() {
     </div>
     ${avgSpend && avgSpend.total > 0 ? `<div class="mp-avg"><span>近 ${avgSpend.months} 個月平均實際花 <b>${money(avgSpend.total)}</b>${livingBudget != null ? (avgSpend.total > livingBudget ? `，比預算多 ${money(avgSpend.total - livingBudget)}` : avgSpend.total < livingBudget ? `，比預算少 ${money(livingBudget - avgSpend.total)}` : '，跟預算一樣') : ''}</span>${livingBudget !== avgSpend.total ? `<button type="button" class="btn btn-ghost btn-sm" data-mp-avg>用實際平均</button>` : ''}</div>` : ''}
     ${plan.living.set ? `<div class="mp-ef-bar ${livingSpent > plan.living.total ? 'is-over' : ''}"><span style="width:${usedPct}%"></span></div>
-    <div class="mp-src">本月生活支出 ${money(livingSpent)}，${livingSpent > plan.living.total ? `已超出 ${money(livingSpent - plan.living.total)}` : `還剩 ${money(plan.living.total - livingSpent)}`}（不含固定支出與存錢目標專款的花費）</div>` : ''}`;
+    <div class="mp-src">本月已花 ${money(livingSpent)}・${livingSpent > plan.living.total ? `超出 ${money(livingSpent - plan.living.total)}` : `剩 ${money(plan.living.total - livingSpent)}`}</div>` : ''}`;
   const saveLiving = async v => { await saveBudgetRecord(null, { amount: v }); await syncEmergencyFundShortfall(); await rerender(); };
   lv.querySelector('[data-mp-living]').addEventListener('change', e => { const v = parseFloat(e.target.value); if (v > 0) saveLiving(v); });
   lv.querySelector('[data-mp-fill]')?.addEventListener('click', () => saveLiving(plan.suggestedLiving));
@@ -10229,7 +10190,7 @@ async function renderMonthlyPlan() {
   const catHead = el('div'); catHead.className = 'mp-subhead';
   const catSet = expenseCats.map(c => resolveBudgetRecord(budgets, c.id, month)).filter(r => r && (r.allocation_mode || 'fixed') === 'fixed' && r.amount > 0);
   const catSum = catSet.reduce((s, r) => s + r.amount, 0);
-  catHead.innerHTML = `<span>分到各類別（選填）</span><em class="${plan.living.set && catSum > plan.living.total ? 'is-over' : ''}">${plan.living.set ? `已分 ${money(catSum)} ／ ${money(plan.living.total)}` : `已分 ${money(catSum)}`}</em>`;
+  catHead.innerHTML = `<span>分到各類別</span><em class="${plan.living.set && catSum > plan.living.total ? 'is-over' : ''}">${plan.living.set ? `已分 ${money(catSum)} ／ ${money(plan.living.total)}` : `已分 ${money(catSum)}`}</em>`;
   lb.appendChild(catHead);
   expenseCats.forEach(c => {
     const rec = resolveBudgetRecord(budgets, c.id, month);
@@ -10351,7 +10312,7 @@ async function renderBuckets() {
   toolbar.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:4px';
   const activeCount = buckets.filter(b=>b.status!=='closed').length;
   const summary = el('div'); summary.style.cssText='font-size:13px;color:var(--text-2)';
-  summary.textContent = `${activeCount} 個進行中的存錢目標`;
+  summary.textContent = '';
   toolbar.appendChild(summary);
   const addBtn = el('button','btn btn-primary btn-sm');
   addBtn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> 新增存錢目標`;
@@ -10402,8 +10363,8 @@ async function renderBuckets() {
         </div>`:''}
         ${!closed && monthlyContribution ? `
         <div style="margin-top:5px;font-size:11px;color:var(--text-3)">
-          ${isPercentMode?`🤖 每月自動提撥 NT$ ${fmt(Math.round(monthlyContribution))}（本月收入 ${bucket.income_percent}%）`:`每月預計提撥 NT$ ${fmt(Math.round(monthlyContribution))}`}
-          ${hasTarget && !achieved ? (monthsToTarget!=null?`・還要約 ${monthsToTarget} 個月達標`:''):''}
+          ${isPercentMode?`🤖 每月自動提撥 NT$ ${fmt(Math.round(monthlyContribution))}（本月收入 ${bucket.income_percent}%）`:`每月 NT$ ${fmt(Math.round(monthlyContribution))}`}
+          ${hasTarget && !achieved ? (monthsToTarget!=null?`・約 ${monthsToTarget} 個月達標`:''):''}
         </div>`:''}
       </div>
       <div style="text-align:right;flex-shrink:0">
@@ -11247,6 +11208,25 @@ async function resolveAnnualBucket(item, fxRates) {
   return { annualB, annualShort };
 }
 const pcRecordDate = occ => document.getElementById('periodConfirmDateInput')?.value || occ;
+// v2.26.0：ⓘ 說明泡泡——任何 .ii[data-tip] 點了顯示，點別的地方或捲動就關
+const infoTip = text => `<button type="button" class="ii" data-tip="${escHtml(text)}" aria-label="說明">i</button>`;
+function closeInfoTip() { document.querySelector('.ii-pop')?.remove(); document.querySelectorAll('.ii[aria-expanded=true]').forEach(b => b.setAttribute('aria-expanded', 'false')); }
+document.addEventListener('click', e => {
+  const b = e.target.closest?.('.ii[data-tip]');
+  if (!b) { if (!e.target.closest?.('.ii-pop')) closeInfoTip(); return; }
+  e.preventDefault(); e.stopPropagation();
+  const was = b.getAttribute('aria-expanded') === 'true';
+  closeInfoTip(); if (was) return;
+  const pop = document.createElement('div'); pop.className = 'ii-pop'; pop.setAttribute('role', 'tooltip'); pop.textContent = b.dataset.tip;
+  document.body.appendChild(pop); b.setAttribute('aria-expanded', 'true');
+  const r = b.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+  const left = Math.min(Math.max(16, r.left + r.width / 2 - w / 2), innerWidth - w - 16);
+  const top = r.bottom + 8 + h > innerHeight - 8 ? r.top - h - 8 : r.bottom + 8;
+  pop.style.left = `${left}px`; pop.style.top = `${top}px`;
+}, true);
+document.addEventListener('scroll', closeInfoTip, true);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfoTip(); });
+
 // v2.25.0（使用者：日期一律 yyyy/mm/dd）：手機的日期欄位會照系統語言顯示（例如
 // iPhone 顯示「2026年10月8日」、英文系統顯示 10/08/2026）。所有日期欄位外面
 // 包一層，把原生文字藏起來，改顯示 yyyy/mm/dd；點下去仍是系統的日期選擇器。
@@ -11336,7 +11316,7 @@ async function openDcaConfirm(item, occDate) {
     amount: item.amount,
     amountLabel: `實際扣款金額（${curr}）`,
     isConfirmed: item.last_confirmed_date === occ,
-    extraHtml: `<div class="modal-field"><label>取得股數（選填，成交後再補也可以）</label>
+    extraHtml: `<div class="modal-field"><label>取得股數</label>
       <input type="number" id="periodConfirmShares" inputmode="decimal" min="0" step="0.0001" placeholder="0"></div>`,
     altLabel: '改用完整記帳視窗（可改券商、標的等）',
     onAlt: () => openIncomeModal(null, null, prefillDca),
@@ -11997,7 +11977,7 @@ async function renderRecurring() {
     subscription: `${items.length} 項 App 訂閱（月繳／年繳等週期性扣款）`,
     insurance:    `${items.length} 項保費（用「定期支出」記錄的部分；分期刷卡的保費列在下方）`,
     general:      `${items.length} 項定期支出（電話費、房租等週期性扣款，App 訂閱／保險已另外獨立頁面）`,
-    all:          `${items.length} 項固定支出（房租、電信費、App 訂閱、保險等每月或每年固定要付的錢）`,
+    all:          '',
   };
   summary.textContent = summaryTextByMode[mode] ?? summaryTextByMode.general;
   toolbar.appendChild(summary);
@@ -12120,7 +12100,6 @@ async function renderRecurring() {
       </div>
       <div style="text-align:right;flex-shrink:0;min-width:72px">
         <div style="font-weight:600;color:var(--red);white-space:nowrap">${fmtCurrency(item.amount, item.currency||'TWD')}</div>
-        <div style="font-size:10px;color:var(--text-3)">${freqLabel[item.freq]??item.freq}</div>
       </div>
       ${(!isExpiredItem && (monthOccHandled(item) || (nextCharge && nextCharge===item.last_confirmed_date)))
         ? ROW_STATUS(monthOccHandled(item) || (currentSkip('recurring_expenses', item) ? '已略過' : '本期已確認'))
@@ -12251,7 +12230,7 @@ async function renderRecurring() {
 async function wireSpendCatFields(catSelId, policyFieldId, policySelId, selectedCat, selectedPolicy) {
   await refreshCatCache();
   const catSel = document.getElementById(catSelId);
-  catSel.innerHTML = catOptionsHtml('expense', selectedCat, { exclude: ['cat_bad_debt_writeoff'], emptyLabel: '不指定（確認時再選）' });
+  catSel.innerHTML = catOptionsHtml('expense', selectedCat, { exclude: ['cat_bad_debt_writeoff'], emptyLabel: '不指定' });
   pairCatSelect(catSel);
   catSel.value = selectedCat || '';
   const policies = (await getAll(db, 'other_assets').catch(() => [])).filter(a => a.type === 'insurance');
@@ -12933,9 +12912,7 @@ async function renderDcaSchedules() {
     const statsRow = el('div'); statsRow.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 6px';
     statsRow.innerHTML = [['📅 每月扣款', monthly], ['🗓️ 每年扣款', monthly * 12]].map(([l, v]) => `<div class="card" style="padding:14px 16px"><div style="font-size:11px;color:var(--text-3);margin-bottom:4px">${l}</div><div style="font-size:18px;font-weight:700;color:var(--red)">NT$ ${fmt(Math.round(v))}</div></div>`).join('');
     content.appendChild(statsRow);
-    const note = el('div'); note.style.cssText='font-size:11px;color:var(--text-3);margin-bottom:14px';
-    note.textContent = '每月計畫裡算在「投資」，跟固定支出一樣，先從每月收入扣掉；也會算進首頁的「本月還要付」。';
-    content.appendChild(note);
+    statsRow.style.marginBottom = '14px';
   }
 
   if (items.length === 0 && expired.length === 0) {
@@ -13995,7 +13972,7 @@ async function buildReportPage(content) {
   detail.innerHTML = `
     <div class="rpt-detail-head">
       <span>${kindLabel}明細</span>
-      <span style="font-size:11px;color:var(--text-3);font-weight:500;margin-left:6px">箭頭＝跟${range.prevLabel}相比</span>
+      ${infoTip(`箭頭＝跟${range.prevLabel}相比`)}
       <button type="button" class="rpt-sort" data-rpt-sort aria-label="切換排序">${st.sort==='desc'?'金額 ↓':'金額 ↑'}</button>
     </div>`;
   detail.querySelector('[data-rpt-sort]').addEventListener('click', () => { st.sort = st.sort === 'desc' ? 'asc' : 'desc'; renderReport(); });
@@ -14090,7 +14067,7 @@ function renderReportBalance(content, { range, incCur, expCur, incPrev, expPrev,
         <div><i class="f-spent"></i><span>花掉</span><b>${nt(f.spent)}</b></div>
         <div><i class="f-saved"></i><span>存下來</span><b>${nt(f.saved)}</b></div>
         ${parts.map(([k, v, n]) => `<div class="flow-sub"><span>${k}${n ? `<small>${n}</small>` : ''}</span><b>${nt(v)}</b></div>`).join('')}
-        <div><i class="f-left"></i><span>剩下${f.left < 0 ? '<small>負數＝動用了以前的存款</small>' : '<small>還沒安排用途的錢</small>'}</span><b style="${f.left < 0 ? 'color:var(--red)' : ''}">${nt(f.left)}</b></div>
+        <div><i class="f-left"></i><span>剩下${f.left < 0 ? ' ' + infoTip('負數＝動用了以前的存款') : ''}</span><b style="${f.left < 0 ? 'color:var(--red)' : ''}">${nt(f.left)}</b></div>
       </div>`;
   })();
 
@@ -14411,7 +14388,7 @@ async function openCcModal(card=null) {
   const ccSt = card ? ccPeriodStatus(card) : null;
   const ccTargetYm = ccSt ? (ccSt.overdue ?? ccSt.upcoming)?.ym : null;
   document.getElementById('ccActualDueLabel').textContent = ccTargetYm
-    ? `${ccPeriodLabel(ccTargetYm)}實際繳款日（選填，遇假日順延時填入）` : '本期實際繳款日（選填，遇假日順延時填入）';
+    ? `${ccPeriodLabel(ccTargetYm)}實際繳款日（遇假日順延時填入）` : '本期實際繳款日';
   const staleActual = card?.actual_due_date && card.actual_due_date.slice(0, 7) <= (card.last_paid_period ?? '');
   document.getElementById('ccActualDueDate').value = staleActual ? '' : (card?.actual_due_date ?? '');
   document.getElementById('ccBalance').value = card?.current_balance ?? 0;
@@ -15045,7 +15022,7 @@ async function openExpenseModal(txn=null, prefill=null) {
     document.getElementById('expenseFxRate').value = txn.fx_rate_twd;
   }
 
-  // 歸屬資金池／專案（選填）— editing an existing txn always uses its own
+  // 歸屬資金池／專案— editing an existing txn always uses its own
   // tags; a brand-new txn can be prefilled (e.g. opened from the 資金池
   // page's "記一筆花費" button, which already knows which bucket/project).
   const allBuckets  = await getAll(db,'buckets').catch(()=>[]);
@@ -15061,7 +15038,7 @@ async function openExpenseModal(txn=null, prefill=null) {
   const initialProjectId = txn ? (txn.project_id ?? '') : (prefill?.project_id ?? activeTrip?.id ?? '');
   let tripNote = document.getElementById('expenseTripNote');
   if (!tripNote) { tripNote = el('div'); tripNote.id = 'expenseTripNote'; tripNote.className = 'trip-note'; bucketSel.closest('.modal-field').appendChild(tripNote); }
-  tripNote.textContent = activeTrip ? `✈️ 這天在旅行期間：已自動歸到「${activeTrip.name}」，不是這趟的花費改成「不歸屬」即可。` : '';
+  tripNote.textContent = activeTrip ? `✈️ 已歸到「${activeTrip.name}」` : '';
   tripNote.style.display = activeTrip ? '' : 'none';
   bucketSel.value = initialBucketId;
 
@@ -15090,7 +15067,7 @@ async function openExpenseModal(txn=null, prefill=null) {
       autoTrip = findActiveTrip(allProjects, dateEl.value);
       bucketSel.value = autoTrip?.bucket_id ?? '';
       refreshExpenseProjectOptions(autoTrip?.id ?? '');
-      tripNote.textContent = autoTrip ? `✈️ 這天在旅行期間：已自動歸到「${autoTrip.name}」，不是這趟的花費改成「不歸屬」即可。` : '';
+      tripNote.textContent = autoTrip ? `✈️ 已歸到「${autoTrip.name}」` : '';
       tripNote.style.display = autoTrip ? '' : 'none';
     };
     if (dateEl._tripHandler) dateEl.addEventListener('change', dateEl._tripHandler);
@@ -15946,7 +15923,7 @@ function buildGrowthCard(snapshots, incomeTxns, expenseTxns, accounts, fxRates, 
   const sign = v => v > 0 ? '+' : v < 0 ? '−' : '';
   const money = v => `${sign(v)}NT$ ${fmt(Math.abs(Math.round(v)))}`;
   const pct = x => x?.pct == null ? '' : `${x.pct >= 0 ? '+' : '−'}${Math.abs(x.pct).toFixed(1)}%`;
-  const tile = (label, x) => `<div class="gr-tile"><span>${label}</span><b style="color:${(x?.change ?? 0) >= 0 ? 'var(--green)' : 'var(--red)'}">${x ? pct(x) || '—' : '—'}</b><em>${x ? money(x.change) : '尚無資料'}</em>${x?.partial ? `<small>從 ${fmtDate(x.startDate)} 起算</small>` : ''}</div>`;
+  const tile = (label, x) => `<div class="gr-tile"><span>${label}</span><b style="color:${(x?.change ?? 0) >= 0 ? 'var(--green)' : 'var(--red)'}">${x ? pct(x) || '—' : '—'}</b><em>${x ? money(x.change) : '尚無資料'}</em></div>`;
   const card = el('div', 'card'); card.className = 'card gr-card';
   const last = snapshots[snapshots.length - 1];
   const tot = Math.abs(gr.saved) + Math.abs(gr.other) || 1;
@@ -15960,7 +15937,7 @@ function buildGrowthCard(snapshots, incomeTxns, expenseTxns, accounts, fxRates, 
         <div><i style="background:${gr.saved >= 0 ? 'var(--green)' : 'var(--red)'}"></i>存進去的（收入－支出）<b>${money(gr.saved)}</b></div>
         <div><i style="background:${gr.other >= 0 ? 'var(--blue)' : 'color-mix(in srgb,var(--red) 55%,transparent)'}"></i>投資、匯率與其他<b>${money(gr.other)}</b></div>
       </div>
-      <div class="gr-note">「其他」包含股價與匯率變動、手動調整餘額，以及沒有設成影響帳戶餘額的紀錄。</div>
+
     </div>`;
   return card;
 }
@@ -15992,12 +15969,12 @@ async function buildSavingsCard() {
   const done = series.filter(x => x.income || x.expense);
   const avg = done.length ? Math.round(done.reduce((s, x) => s + x.saved, 0) / done.length) : 0;
   card.innerHTML = `
-    <div class="sv-head"><b>每月實際存了多少</b><span>收入（不含應收款入帳）－全部支出</span></div>
+    <div class="sv-head"><b>每月實際存了多少 ${infoTip('收入（不含應收款入帳）減全部支出')}</b></div>
     <div class="sv-stats">
       <div><span>本月</span><b style="color:${cur.saved >= 0 ? 'var(--green)' : 'var(--red)'}">${cur.saved < 0 ? '−' : ''}NT$ ${fmt(Math.abs(cur.saved))}</b><em>${cur.rate != null ? `儲蓄率 ${Math.round(cur.rate)}%` : '本月還沒有收入'}</em></div>
       <div><span>近 3 個月平均</span><b>${avg < 0 ? '−' : ''}NT$ ${fmt(Math.abs(avg))}</b><em>${target > 0 ? `計畫每月存＋投資 NT$ ${fmt(target)}` : '還沒設定存下來／投資'}</em></div>
-      <div><span>${yr} 年累計（1–${new Date().getMonth() + 1} 月）</span><b style="color:${thisYear >= 0 ? 'var(--green)' : 'var(--red)'}">${sMoney(thisYear)}</b><em>${bonusThisYear > 0 ? `其中獎金收入 NT$ ${fmt(Math.round(bonusThisYear))}` : '收入－支出加總'}</em></div>
-      <div><span>${yr - 1} 年全年</span><b>${lastYear == null ? '—' : sMoney(lastYear)}</b><em>${lastYear == null ? '沒有去年的紀錄' : '收入－支出加總'}</em></div>
+      <div><span>${yr} 年累計（1–${new Date().getMonth() + 1} 月）</span><b style="color:${thisYear >= 0 ? 'var(--green)' : 'var(--red)'}">${sMoney(thisYear)}</b>${bonusThisYear > 0 ? `<em>含獎金 NT$ ${fmt(Math.round(bonusThisYear))}</em>` : ''}</div>
+      <div><span>${yr - 1} 年全年</span><b>${lastYear == null ? '—' : sMoney(lastYear)}</b></div>
     </div>
     <div class="sv-chart" style="height:${H}px">
       ${target > 0 ? `<div class="sv-target" style="bottom:${H - zeroY + target * scale}px"><span>計畫 ${fmt(target)}</span></div>` : ''}
@@ -16062,7 +16039,7 @@ async function buildProjectionCard(currentTotal) {
     const tickEvery = years <= 6 ? 1 : years <= 15 ? 2 : 5;
     const ticks = []; for (let k = 0; k <= years; k += tickEvery) ticks.push(k);
     card.innerHTML = `
-      <div class="sv-head"><b>存到目標要多久</b><span>從目前總資產 NT$ ${fmt(Math.round(currentTotal))} 開始試算（只是估算，不會改任何資料）</span></div>
+      <div class="sv-head"><b>存到目標要多久 ${infoTip(`從目前總資產 NT$ ${fmt(Math.round(currentTotal))} 開始試算，只是估算。每月存＋投資預設帶入每月計畫，每年獎金預設帶入近一年放進存錢目標的獎金；投資報酬建議用保守的數字。`)}</b></div>
       <div class="pj-mode" role="tablist"><button type="button" role="tab" data-pj-mode="custom" class="${fire ? '' : 'on'}" aria-selected="${!fire}">自訂目標</button><button type="button" role="tab" data-pj-mode="fire" class="${fire ? 'on' : ''}" aria-selected="${fire}">財務自由目標</button></div>
       ${fire ? `<div class="pj-fire">
         <div class="pj-fire-eq"><span>年支出 <b>NT$ ${fmt(annual)}</b></span><span>÷ 提領率 <b>${v.wr}%</b></span><span>＝ <b>NT$ ${fmt(v.target)}</b></span></div>
@@ -16088,7 +16065,7 @@ async function buildProjectionCard(currentTotal) {
         <label><span>每年獎金存下</span><input type="number" inputmode="decimal" min="0" step="1000" data-pj="bonus" value="${v.bonus}"></label>
         <label><span>年報酬率 %</span><input type="number" inputmode="decimal" min="0" max="20" step="0.5" data-pj="rate" value="${v.rate}"></label>
       </div>
-      <div class="gr-note">每月存＋投資預設帶入每月計畫的「存下來＋投資」，每年獎金預設帶入近一年放進存錢目標的獎金。投資報酬每年都會變動，建議用保守的數字，並對照「不含報酬」那條線。</div>`;
+`;
     card.querySelectorAll('[data-pj]').forEach(inp => inp.addEventListener('change', async () => {
       if (inp.readOnly) return;
       const n = parseFloat(inp.value);
@@ -16215,7 +16192,7 @@ async function renderTrend() {
 
   const hint = el('div'); hint.style.cssText='font-size:11px;color:var(--text-3);margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap';
   const hintText = el('span');
-  hintText.textContent = `每天第一次打開 App 時自動記錄一筆「總資產」快照（現金＋定存＋投資，不含應收款），目前共 ${snapshots.length} 筆。滑鼠停在圓點上可看到當天確切金額。`;
+  hintText.innerHTML = infoTip(`每天第一次打開 App 自動記一筆總資產快照（現金＋定存＋投資，不含應收款），目前共 ${snapshots.length} 筆。`);
   hint.appendChild(hintText);
   // §卅六：平常不需要用到，但如果懷疑今天的快照沒存到（例如金額明顯不對），
   // 可以手動重新記一次今天，不用等隔天。
@@ -16507,7 +16484,7 @@ async function stepCreditCards(body) {
       <input type="text" id="obCcName" placeholder="例：國泰現金回饋卡" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;box-sizing:border-box">
     </div>
     <div style="width:160px">
-      <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:4px">目前待繳卡費（選填）</label>
+      <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:4px">目前待繳卡費</label>
       <input type="number" id="obCcBalance" inputmode="decimal" placeholder="0" min="0" step="1" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;box-sizing:border-box">
     </div>
     <button class="btn btn-primary btn-sm" id="obCcAdd">新增</button>`;
