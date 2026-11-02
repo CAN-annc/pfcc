@@ -1299,17 +1299,36 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 .mpl-title-row > span{display:inline-flex;align-items:center;gap:4px}
 .mpl-title-row .mpl-link2{margin-top:0;font-weight:600}
 .mpl-methods{display:flex;flex-direction:column;gap:10px}
-.mpl-grp{display:flex;flex-direction:column;gap:6px}
-.mpl-grp-k{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--text-3)}
+.mpl-methods{gap:8px}
+.mpl-grp{display:grid;grid-template-columns:58px 1fr;align-items:center;gap:8px}
+.mpl-grp-k{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--text-3);line-height:1.3}
+.mpl-grp.is-fit{grid-template-columns:1fr}
+.mpl-grp.is-plain{grid-template-columns:1fr}
+.mpl-chips.is-mid{align-items:center;justify-content:space-between}
+.mpl-chips.is-mid .mpl-link2{margin-top:0}
 .mpl-grp.is-fit{padding:10px 12px;border-radius:12px;background:var(--accent-tint)}
 .mpl-grp.is-fit .mpl-grp-k{color:var(--blue)}
 .mpl-fit{display:flex;flex-direction:column;gap:8px}
 .mpl-fit-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .mpl-fit-row small{font-size:11.5px;color:var(--text-2);flex:1;min-width:120px;line-height:1.5}
 .mpl-chip.is-fit:not(.on){border-color:color-mix(in srgb,var(--blue) 45%,var(--border-2));color:var(--text-1);background:var(--card)}
-.mpl-quiz{display:flex;flex-direction:column;gap:14px}
-.mpl-q-k{font-size:12.5px;font-weight:600;color:var(--text-1);margin-bottom:6px;display:flex;align-items:baseline;gap:6px}
-.mpl-q-k small{font-size:11px;font-weight:400;color:var(--text-3)}
+.mpl-quiz{border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--card)}
+.mpl-quiz-top{display:flex;align-items:center;gap:10px}
+.mpl-quiz-n{font-size:12px;font-weight:600;color:var(--blue);font-variant-numeric:tabular-nums;min-width:30px}
+.mpl-quiz-bar{flex:1;height:4px;border-radius:2px;background:var(--surface-2);overflow:hidden}
+.mpl-quiz-bar i{display:block;height:100%;background:var(--blue);border-radius:2px;transition:width .25s ease}
+.mpl-quiz-x{all:unset;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;color:var(--text-3);font-size:12px}
+.mpl-quiz-q{font-size:16px;font-weight:700;color:var(--text-1);margin:14px 0 10px;display:flex;align-items:baseline;gap:8px}
+.mpl-quiz-q small{font-size:11.5px;font-weight:400;color:var(--text-3)}
+.mpl-quiz-opts{display:flex;flex-direction:column;gap:8px}
+.mpl-opt{all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:11px;border:1px solid var(--border-2);font-size:14px;color:var(--text-1);cursor:pointer;transition:border-color .15s,background .15s}
+.mpl-opt i{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border-2);flex-shrink:0}
+.mpl-opt[role=checkbox] i{border-radius:5px}
+.mpl-opt.on{border-color:var(--blue);background:var(--accent-tint)}
+.mpl-opt.on i{border-color:var(--blue);background:var(--blue);box-shadow:inset 0 0 0 3px var(--card)}
+.mpl-opt:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.mpl-quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:12px;min-height:34px}
+.mpl-quiz-nav .mpl-link2{margin-top:0}
 .mpl-jar.is-keep span,.mpl-jar.is-keep b{color:var(--text-3)}
 .mpl-jar-tag{font-size:12px;color:var(--text-2);line-height:1.6;padding:10px 0 4px}
 .mpl-jar-cmp{font-size:12px;color:var(--text-2);line-height:1.6;padding:10px 0 8px;border-top:1px dashed var(--border-2)}
@@ -3642,7 +3661,7 @@ const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '本月規劃方式「幫我選」：回答 7 個問題（收入、記帳習慣、家庭負擔、目標、收入階段、保險、緊急預備金），挑出最適合的 1～2 種理財方法並說明原因；下次打開會帶入上次的答案',
+  '本月規劃方式「幫我選」：一次一題、共 7 題（收入、記帳習慣、家庭負擔、目標、收入階段、保險、緊急預備金），挑出最適合的 1～2 種理財方法並說明原因；下次打開會帶入上次的答案',
   '理財方法依「先存到錢／兼顧生活／積極投資／精細管理」分組排列',
   '168 法則跟 631 的比例相同（60／30／10），不再另外列出',
 ];
@@ -10771,37 +10790,39 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
   const close = () => bg.remove();
   let editSrc = null; // 正在新增／編輯的有期限收入
   // v2.28.0：理財方法篩選清單。第一次不預先勾；之後打開會帶入上次的答案（設定 method_quiz）
-  const savedQuiz = await getSetting(db, 'method_quiz', null).catch(() => null);
-  let quizOpen = false, quizAns = {}, quizResult = savedQuiz?.result || null;
+  let savedQuiz = await getSetting(db, 'method_quiz', null).catch(() => null);
+  let quizOpen = false, quizAns = {}, quizResult = savedQuiz?.result || null, allMethods = false;
+  // v2.28.0（使用者：一次列 7 題頁面太長）：一次一題。單選點了就跳下一題；複選按「下一題」；最後一題答完直接出結果
+  let quizIdx = 0;
   const quizPanel = () => {
     const f = el('div'); f.className = 'mpl-quiz';
-    f.innerHTML = METHOD_QUIZ.map(q => `<div class="mpl-q"><div class="mpl-q-k">${q.q}${q.multi ? '<small>可以複選</small>' : ''}</div><div class="mpl-chips">${q.opts.map(([v, l]) => {
-      const on = q.multi ? (quizAns[q.id] || []).includes(v) : quizAns[q.id] === v;
-      return `<button type="button" class="mpl-chip${on ? ' on' : ''}" aria-pressed="${on}" data-q="${q.id}" data-v="${v}">${l}</button>`; }).join('')}</div></div>`).join('')
-      + `<div class="mpl-form-btns"><button type="button" class="btn btn-ghost" data-quiz-cancel>取消</button><button type="button" class="btn btn-primary" data-quiz-go>看結果</button></div>`;
-    const answered = () => METHOD_QUIZ.filter(q => q.multi ? (quizAns[q.id] || []).length : quizAns[q.id]).length;
-    const sync = () => { f.querySelector('[data-quiz-go]').disabled = answered() < 3; };
-    f.querySelectorAll('[data-q]').forEach(b => b.addEventListener('click', () => {
-      const q = METHOD_QUIZ.find(x => x.id === b.dataset.q), v = b.dataset.v;
-      if (q.multi) {
-        let cur = quizAns[q.id] || [];
-        cur = cur.includes(v) ? cur.filter(x => x !== v) : (v === 'none' ? ['none'] : [...cur.filter(x => x !== 'none'), v]);
-        quizAns[q.id] = cur;
-        f.querySelectorAll(`[data-q="${q.id}"]`).forEach(x => { const on = cur.includes(x.dataset.v); x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
-      } else {
-        quizAns[q.id] = quizAns[q.id] === v ? null : v;
-        f.querySelectorAll(`[data-q="${q.id}"]`).forEach(x => { const on = quizAns[q.id] === x.dataset.v; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
-      }
-      sync();
-    }));
-    f.querySelector('[data-quiz-cancel]').onclick = () => { quizOpen = false; render(); };
-    f.querySelector('[data-quiz-go]').onclick = async () => {
+    const q = METHOD_QUIZ[quizIdx], n = METHOD_QUIZ.length;
+    const isOn = v => q.multi ? (quizAns[q.id] || []).includes(v) : quizAns[q.id] === v;
+    f.innerHTML = `<div class="mpl-quiz-top"><span class="mpl-quiz-n">${quizIdx + 1}／${n}</span><span class="mpl-quiz-bar"><i style="width:${(quizIdx + 1) / n * 100}%"></i></span><button type="button" class="mpl-quiz-x" data-quiz-cancel aria-label="不選了">✕</button></div>
+      <div class="mpl-quiz-q">${q.q}${q.multi ? '<small>可以複選</small>' : ''}</div>
+      <div class="mpl-quiz-opts" role="${q.multi ? 'group' : 'radiogroup'}">${q.opts.map(([v, l]) => `<button type="button" role="${q.multi ? 'checkbox' : 'radio'}" aria-checked="${isOn(v)}" class="mpl-opt${isOn(v) ? ' on' : ''}" data-v="${v}"><span>${l}</span><i aria-hidden="true"></i></button>`).join('')}</div>
+      <div class="mpl-quiz-nav">${quizIdx > 0 ? '<button type="button" class="mpl-link2" data-quiz-prev>‹ 上一題</button>' : '<span></span>'}
+        ${q.multi || quizAns[q.id] ? `<button type="button" class="btn btn-primary btn-sm" data-quiz-next>${quizIdx === n - 1 ? '看結果' : '下一題'}</button>` : '<button type="button" class="mpl-link2" data-quiz-next>跳過</button>'}</div>`;
+    const finish = async () => {
       quizResult = scoreMethodQuiz(quizAns);
       await setSetting(db, 'method_quiz', { answers: quizAns, result: quizResult, at: new Date().toISOString() }).catch(() => {});
+      savedQuiz = { answers: JSON.parse(JSON.stringify(quizAns)), result: quizResult };
       if (quizResult[0]) d.method = quizResult[0].key;
       quizOpen = false; render();
     };
-    sync();
+    const next = () => { if (quizIdx < n - 1) { quizIdx++; render(); } else finish(); };
+    f.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => {
+      const v = b.dataset.v;
+      if (q.multi) {
+        let cur = quizAns[q.id] || [];
+        cur = cur.includes(v) ? cur.filter(x => x !== v) : (v === 'none' ? ['none'] : [...cur.filter(x => x !== 'none'), v]);
+        quizAns[q.id] = cur; render();
+      } else { quizAns[q.id] = v; b.classList.add('on'); setTimeout(next, 160); }
+    }));
+    f.querySelector('[data-quiz-next]').onclick = next;
+    f.querySelector('[data-quiz-prev]')?.addEventListener('click', () => { quizIdx--; render(); });
+    f.querySelector('[data-quiz-cancel]').onclick = () => { quizOpen = false; render(); };
+    requestAnimationFrame(() => f.scrollIntoView({ block: 'nearest' }));
     return f;
   };
 
@@ -10933,7 +10954,7 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
       box.appendChild(f);
       const mt = el('div'); mt.className = 'mpl-title is-sub mpl-title-row';
       mt.innerHTML = `<span>本月規劃方式 ${infoTip('選一個理財方法，固定支出＋生活費依它的比例分到各罐；記帳時每一筆會從它的類別對應的罐子扣，首頁看得到每罐還剩多少。')}</span>${quizOpen ? '' : `<button type="button" class="mpl-link2" data-quiz-open>${quizResult ? '重新選' : '幫我選'}</button>`}`;
-      mt.querySelector('[data-quiz-open]')?.addEventListener('click', () => { quizOpen = true; quizAns = JSON.parse(JSON.stringify(savedQuiz?.answers || {})); render(); });
+      mt.querySelector('[data-quiz-open]')?.addEventListener('click', () => { quizOpen = true; quizIdx = 0; quizAns = JSON.parse(JSON.stringify((quizResult && savedQuiz?.answers) || {})); render(); });
       box.appendChild(mt);
       if (quizOpen) { box.appendChild(quizPanel()); return box; }
       const chip = (k, l, extra = '') => `<button type="button" class="mpl-chip${(d.method || '') === k ? ' on' : ''}${extra}" data-method="${k}">${l}</button>`;
@@ -10943,12 +10964,16 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
       if (quizResult?.length) {
         html += `<div class="mpl-grp is-fit"><span class="mpl-grp-k">適合妳</span><div class="mpl-fit">${quizResult.filter(r => avail(r.key)).map(r => `<div class="mpl-fit-row">${chip(r.key, INCOME_ALLOCATION_METHODS[r.key].label, ' is-fit')}<small>${escHtml(r.why)}</small></div>`).join('')}</div></div>`;
       }
-      html += `<div class="mpl-grp"><div class="mpl-chips">${chip('', '只看生活費總額')}</div></div>`;
-      METHOD_GROUPS.forEach(([label, ks]) => {
+      // 有推薦結果時，其他方法先收起來（目前選的不在推薦裡時才展開）
+      const fitKeys = (quizResult || []).map(r => r.key);
+      const showAll = allMethods || !quizResult?.length || (d.method && !fitKeys.includes(d.method));
+      html += `<div class="mpl-grp is-plain"><div class="mpl-chips is-mid">${chip('', '只看生活費總額')}${showAll ? '' : '<button type="button" class="mpl-link2" data-all-methods>看全部方法</button>'}</div></div>`;
+      if (showAll) METHOD_GROUPS.forEach(([label, ks]) => {
         const list = ks.filter(avail).concat(label === '先存到錢' && d.method === '168' ? ['168'] : []);
         if (list.length) html += `<div class="mpl-grp"><span class="mpl-grp-k">${label}</span><div class="mpl-chips">${list.map(k => chip(k, INCOME_ALLOCATION_METHODS[k].label)).join('')}</div></div>`;
       });
       wrap.innerHTML = html;
+      wrap.querySelector('[data-all-methods]')?.addEventListener('click', () => { allMethods = true; render(); });
       wrap.querySelectorAll('[data-method]').forEach(b => b.addEventListener('click', () => { d.method = b.dataset.method || null; render(); }));
       box.appendChild(wrap);
       box.appendChild(jarsBox());
