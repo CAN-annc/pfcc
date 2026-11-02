@@ -1295,6 +1295,21 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 .mpl-jar span{flex:1;display:flex;flex-direction:column}
 .mpl-jar small{font-size:11px;color:var(--text-3)}
 .mpl-jar b{font-variant-numeric:tabular-nums}
+.mpl-title-row{justify-content:space-between}
+.mpl-title-row > span{display:inline-flex;align-items:center;gap:4px}
+.mpl-title-row .mpl-link2{margin-top:0;font-weight:600}
+.mpl-methods{display:flex;flex-direction:column;gap:10px}
+.mpl-grp{display:flex;flex-direction:column;gap:6px}
+.mpl-grp-k{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--text-3)}
+.mpl-grp.is-fit{padding:10px 12px;border-radius:12px;background:var(--accent-tint)}
+.mpl-grp.is-fit .mpl-grp-k{color:var(--blue)}
+.mpl-fit{display:flex;flex-direction:column;gap:8px}
+.mpl-fit-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mpl-fit-row small{font-size:11.5px;color:var(--text-2);flex:1;min-width:120px;line-height:1.5}
+.mpl-chip.is-fit:not(.on){border-color:color-mix(in srgb,var(--blue) 45%,var(--border-2));color:var(--text-1);background:var(--card)}
+.mpl-quiz{display:flex;flex-direction:column;gap:14px}
+.mpl-q-k{font-size:12.5px;font-weight:600;color:var(--text-1);margin-bottom:6px;display:flex;align-items:baseline;gap:6px}
+.mpl-q-k small{font-size:11px;font-weight:400;color:var(--text-3)}
 .mpl-jar.is-keep span,.mpl-jar.is-keep b{color:var(--text-3)}
 .mpl-jar-tag{font-size:12px;color:var(--text-2);line-height:1.6;padding:10px 0 4px}
 .mpl-jar-cmp{font-size:12px;color:var(--text-2);line-height:1.6;padding:10px 0 8px;border-top:1px dashed var(--border-2)}
@@ -3620,16 +3635,16 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.27.1';
+const APP_VERSION = 'v2.28.0';
 const CHANGELOG_LAST_UPDATED = '2026-11-02';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '本月規劃方式：所有理財方法都能選——80/20、631、50/30/20、333、4321、六罐子，以及 321、168、自訂',
-  '選了方法後列出每個罐子：花費的罐子分到固定支出＋生活費，儲蓄、投資的罐子照比例換算，跟這個月規劃的投資比',
-  '保險支出歸到「風險規避」罐（631、4321）',
+  '本月規劃方式「幫我選」：回答 7 個問題（收入、記帳習慣、家庭負擔、目標、收入階段、保險、緊急預備金），挑出最適合的 1～2 種理財方法並說明原因；下次打開會帶入上次的答案',
+  '理財方法依「先存到錢／兼顧生活／積極投資／精細管理」分組排列',
+  '168 法則跟 631 的比例相同（60／30／10），不再另外列出',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -10531,7 +10546,7 @@ async function renderMonthlyPlan() {
   refCard.innerHTML = `<div class="mp-sec-head"><span class="mp-ico" style="background:var(--surface-2)">🫙</span>
     <div class="mp-sec-title"><b>比例參考</b><span>拿理財法則的建議比例，跟你的計畫比一比（只是參考，不會改任何數字）</span></div></div>
     <div class="mp-sec-body">
-      <div class="mp-chips">${INCOME_ALLOCATION_ALL_KEYS.filter(k => !INCOME_ALLOCATION_CUSTOM_KEYS.includes(k) || presets[k]).map(k => `<button type="button" class="mp-chip${k === methodKey ? ' on' : ''}" data-mp-ref="${k}">${INCOME_ALLOCATION_METHODS[k].label}</button>`).join('')}</div>
+      <div class="mp-chips">${INCOME_ALLOCATION_ALL_KEYS.filter(k => (!INCOME_ALLOCATION_CUSTOM_KEYS.includes(k) || presets[k]) && (k !== '168' || methodKey === '168')).map(k => `<button type="button" class="mp-chip${k === methodKey ? ' on' : ''}" data-mp-ref="${k}">${INCOME_ALLOCATION_METHODS[k].label}</button>`).join('')}</div>
       <div class="mp-ref">
         ${[['spend','花費（固定＋生活）'],['save','存下來'],['invest','投資']].map(([k, l]) => `
           <div class="mp-ref-row"><span>${l}</span>
@@ -10589,6 +10604,38 @@ function recurringLeft(r, today = new Date()) {
   const y = today.getFullYear(), m = today.getMonth() + 1, ym = `${y}-${String(m).padStart(2, '0')}`;
   const n = (ey - y) * 12 + (em - m) + ((r.last_confirmed_date || '').slice(0, 7) === ym ? 0 : 1);
   return Math.max(0, n);
+}
+// ── 理財方法分組與篩選清單（v2.28.0，使用者決定）────────────────────────
+// 依「想做到什麼」分組；168 跟 631 比例相同（60／30／10），只是名稱不同，不再列出
+// （正在用 168 的人仍看得到）。篩選清單 7 題，每個答案替幾個方法加分，取最高的 1～2 個。
+const METHOD_GROUPS = [['先存到錢', ['8020', '321']], ['兼顧生活', ['532', '631']], ['積極投資', ['333', '4321']], ['精細管理', ['jars6']], ['自訂', ['custom1', 'custom2']]];
+const METHOD_QUIZ = [
+  { id: 'income', q: '收入', opts: [['fixed', '固定', '收入固定'], ['irregular', '不固定或暫時沒有', '收入不固定']] },
+  { id: 'track', q: '記帳習慣', opts: [['lazy', '不想記帳，先存一筆就好', '不想記帳'], ['major', '願意記大項', '記大項就好'], ['precise', '想精準控制每一筆', '想精準控制每一筆']] },
+  { id: 'family', q: '家庭負擔', multi: true, opts: [['mortgage', '房貸', '有房貸'], ['kids', '小孩', '有小孩'], ['parents', '扶養父母', '要扶養父母'], ['none', '都沒有', '沒有家庭負擔']] },
+  { id: 'goal', q: '最想做到', opts: [['save', '先存到錢', '想先存到錢'], ['balance', '兼顧生活品質', '想兼顧生活品質'], ['invest', '積極累積資產', '想積極累積資產']] },
+  { id: 'stage', q: '收入階段', opts: [['start', '剛起步', '收入剛起步'], ['stable', '穩定', '收入穩定'], ['high', '收入較高', '收入較高']] },
+  { id: 'insure', q: '保險保障', opts: [['lack', '還沒規劃或不夠', '保險還不夠'], ['ok', '已經足夠', '保險已足夠']] },
+  { id: 'ef', q: '緊急預備金', opts: [['low', '不到 3 個月生活費', '預備金不到 3 個月'], ['mid', '3～6 個月', '預備金 3～6 個月'], ['high', '6 個月以上', '預備金 6 個月以上']] },
+];
+const QUIZ_SCORE = {
+  'income:fixed': { 532: 2, 333: 1, 631: 1, jars6: 1 }, 'income:irregular': { 532: 2, 8020: 1, 321: 1 },
+  'track:lazy': { 8020: 3 }, 'track:major': { 631: 1, 532: 1, 333: 1, 321: 1 }, 'track:precise': { jars6: 3, 532: 1 },
+  'family:mortgage': { 4321: 3 }, 'family:kids': { 4321: 2, 631: 1 }, 'family:parents': { 4321: 2, 631: 1 }, 'family:none': { 333: 1, 532: 1 },
+  'goal:save': { 321: 2, 8020: 2 }, 'goal:balance': { 532: 2, 631: 1 }, 'goal:invest': { 333: 3, 4321: 1 },
+  'stage:start': { 631: 2, 8020: 1 }, 'stage:stable': { 532: 1, 333: 1, jars6: 1 }, 'stage:high': { 4321: 2, 333: 1 },
+  'insure:lack': { 631: 2, 4321: 1 }, 'insure:ok': { 333: 1, 532: 1 },
+  'ef:low': { 321: 2, 8020: 1, 631: 1 }, 'ef:mid': { 532: 1, 631: 1 }, 'ef:high': { 333: 2, 4321: 1 },
+};
+function scoreMethodQuiz(ans) {
+  const score = {}, why = {};
+  METHOD_QUIZ.forEach(q => (q.multi ? (ans[q.id] || []) : [ans[q.id]]).filter(Boolean).forEach(v => {
+    const o = q.opts.find(x => x[0] === v); const label = o?.[2] || o?.[1];
+    Object.entries(QUIZ_SCORE[`${q.id}:${v}`] || {}).forEach(([k, pt]) => { score[k] = (score[k] || 0) + pt; (why[k] ||= []).push({ pt, t: label }); });
+  }));
+  const order = METHOD_GROUPS.flatMap(g => g[1]);
+  return Object.entries(score).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1] || order.indexOf(a[0]) - order.indexOf(b[0]))
+    .slice(0, 2).map(([key, v]) => ({ key, score: v, why: why[key].sort((a, b) => b.pt - a.pt).slice(0, 3).map(x => x.t).join('・') }));
 }
 const mplanKey = ym => `mplan:${ym}`;
 async function getMplan(ym) { return (await getSetting(db, mplanKey(ym), null).catch(() => null)) || null; }
@@ -10723,6 +10770,40 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
   const money = v => `NT$ ${fmt(Math.round(v))}`;
   const close = () => bg.remove();
   let editSrc = null; // 正在新增／編輯的有期限收入
+  // v2.28.0：理財方法篩選清單。第一次不預先勾；之後打開會帶入上次的答案（設定 method_quiz）
+  const savedQuiz = await getSetting(db, 'method_quiz', null).catch(() => null);
+  let quizOpen = false, quizAns = {}, quizResult = savedQuiz?.result || null;
+  const quizPanel = () => {
+    const f = el('div'); f.className = 'mpl-quiz';
+    f.innerHTML = METHOD_QUIZ.map(q => `<div class="mpl-q"><div class="mpl-q-k">${q.q}${q.multi ? '<small>可以複選</small>' : ''}</div><div class="mpl-chips">${q.opts.map(([v, l]) => {
+      const on = q.multi ? (quizAns[q.id] || []).includes(v) : quizAns[q.id] === v;
+      return `<button type="button" class="mpl-chip${on ? ' on' : ''}" aria-pressed="${on}" data-q="${q.id}" data-v="${v}">${l}</button>`; }).join('')}</div></div>`).join('')
+      + `<div class="mpl-form-btns"><button type="button" class="btn btn-ghost" data-quiz-cancel>取消</button><button type="button" class="btn btn-primary" data-quiz-go>看結果</button></div>`;
+    const answered = () => METHOD_QUIZ.filter(q => q.multi ? (quizAns[q.id] || []).length : quizAns[q.id]).length;
+    const sync = () => { f.querySelector('[data-quiz-go]').disabled = answered() < 3; };
+    f.querySelectorAll('[data-q]').forEach(b => b.addEventListener('click', () => {
+      const q = METHOD_QUIZ.find(x => x.id === b.dataset.q), v = b.dataset.v;
+      if (q.multi) {
+        let cur = quizAns[q.id] || [];
+        cur = cur.includes(v) ? cur.filter(x => x !== v) : (v === 'none' ? ['none'] : [...cur.filter(x => x !== 'none'), v]);
+        quizAns[q.id] = cur;
+        f.querySelectorAll(`[data-q="${q.id}"]`).forEach(x => { const on = cur.includes(x.dataset.v); x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
+      } else {
+        quizAns[q.id] = quizAns[q.id] === v ? null : v;
+        f.querySelectorAll(`[data-q="${q.id}"]`).forEach(x => { const on = quizAns[q.id] === x.dataset.v; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
+      }
+      sync();
+    }));
+    f.querySelector('[data-quiz-cancel]').onclick = () => { quizOpen = false; render(); };
+    f.querySelector('[data-quiz-go]').onclick = async () => {
+      quizResult = scoreMethodQuiz(quizAns);
+      await setSetting(db, 'method_quiz', { answers: quizAns, result: quizResult, at: new Date().toISOString() }).catch(() => {});
+      if (quizResult[0]) d.method = quizResult[0].key;
+      quizOpen = false; render();
+    };
+    sync();
+    return f;
+  };
 
   const render = () => {
     const t = planTotals(d), rw = planRunway(d);
@@ -10850,13 +10931,26 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
       f.querySelector('input').addEventListener('input', e => { d.living = parseFloat(e.target.value) || 0; f.querySelector('[data-avg]')?.classList.toggle('on', Math.round(d.living) === d.avg?.total); live(); });
       f.querySelector('[data-avg]')?.addEventListener('click', () => { d.living = d.avg.total; render(); });
       box.appendChild(f);
-      const mt = el('div'); mt.className = 'mpl-title is-sub'; mt.innerHTML = `本月規劃方式 ${infoTip('選一個理財方法，固定支出＋生活費依它的比例分到各罐；記帳時每一筆會從它的類別對應的罐子扣，首頁看得到每罐還剩多少。')}`;
+      const mt = el('div'); mt.className = 'mpl-title is-sub mpl-title-row';
+      mt.innerHTML = `<span>本月規劃方式 ${infoTip('選一個理財方法，固定支出＋生活費依它的比例分到各罐；記帳時每一筆會從它的類別對應的罐子扣，首頁看得到每罐還剩多少。')}</span>${quizOpen ? '' : `<button type="button" class="mpl-link2" data-quiz-open>${quizResult ? '重新選' : '幫我選'}</button>`}`;
+      mt.querySelector('[data-quiz-open]')?.addEventListener('click', () => { quizOpen = true; quizAns = JSON.parse(JSON.stringify(savedQuiz?.answers || {})); render(); });
       box.appendChild(mt);
-      const keys = INCOME_ALLOCATION_ALL_KEYS.filter(k => (!INCOME_ALLOCATION_CUSTOM_KEYS.includes(k) || presets[k]) && jarsOf(k).some(isSpendJar));
-      const chips = el('div'); chips.className = 'mpl-chips';
-      chips.innerHTML = [['', '只看生活費總額'], ...keys.map(k => [k, INCOME_ALLOCATION_METHODS[k].label])].map(([k, l]) => `<button type="button" class="mpl-chip${(d.method || '') === k ? ' on' : ''}" data-method="${k}">${l}</button>`).join('');
-      chips.querySelectorAll('[data-method]').forEach(b => b.addEventListener('click', () => { d.method = b.dataset.method || null; render(); }));
-      box.appendChild(chips);
+      if (quizOpen) { box.appendChild(quizPanel()); return box; }
+      const chip = (k, l, extra = '') => `<button type="button" class="mpl-chip${(d.method || '') === k ? ' on' : ''}${extra}" data-method="${k}">${l}</button>`;
+      const avail = k => INCOME_ALLOCATION_METHODS[k] && (!INCOME_ALLOCATION_CUSTOM_KEYS.includes(k) || presets[k]) && jarsOf(k).some(isSpendJar);
+      const wrap = el('div'); wrap.className = 'mpl-methods';
+      let html = '';
+      if (quizResult?.length) {
+        html += `<div class="mpl-grp is-fit"><span class="mpl-grp-k">適合妳</span><div class="mpl-fit">${quizResult.filter(r => avail(r.key)).map(r => `<div class="mpl-fit-row">${chip(r.key, INCOME_ALLOCATION_METHODS[r.key].label, ' is-fit')}<small>${escHtml(r.why)}</small></div>`).join('')}</div></div>`;
+      }
+      html += `<div class="mpl-grp"><div class="mpl-chips">${chip('', '只看生活費總額')}</div></div>`;
+      METHOD_GROUPS.forEach(([label, ks]) => {
+        const list = ks.filter(avail).concat(label === '先存到錢' && d.method === '168' ? ['168'] : []);
+        if (list.length) html += `<div class="mpl-grp"><span class="mpl-grp-k">${label}</span><div class="mpl-chips">${list.map(k => chip(k, INCOME_ALLOCATION_METHODS[k].label)).join('')}</div></div>`;
+      });
+      wrap.innerHTML = html;
+      wrap.querySelectorAll('[data-method]').forEach(b => b.addEventListener('click', () => { d.method = b.dataset.method || null; render(); }));
+      box.appendChild(wrap);
       box.appendChild(jarsBox());
     } else {
       const ex = t.out - t.incomeIn;
@@ -11662,7 +11756,7 @@ const INCOME_ALLOCATION_METHODS = {
     { key:'risk', label:'風險規避', percent:10, type:'pool',     color:'#A8457A', bucketId:null, linkedInsurance:true },
   ]},
 };
-const INCOME_ALLOCATION_ALL_KEYS = ['8020','631','532','333','4321','jars6','321','168','custom1','custom2'];
+const INCOME_ALLOCATION_ALL_KEYS = ['8020','321','532','631','333','4321','jars6','168','custom1','custom2'];
 const INCOME_ALLOCATION_CUSTOM_KEYS = ['custom1','custom2'];
 // ════════════════════════════════════════════════════════════════════════════
 // INSTALLMENT VIEW
