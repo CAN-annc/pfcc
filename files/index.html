@@ -1239,8 +1239,16 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 .mpl-src-top{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--text-1);padding-right:44px}
 .mpl-src-top span{font-variant-numeric:tabular-nums;font-weight:600}
 .mpl-count{display:flex;align-items:center;gap:4px;margin:10px 0}
-.mpl-count i{width:18px;height:6px;border-radius:3px;background:var(--surface-2)}
-.mpl-count i.on{background:var(--blue)}
+.pdots{display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap}
+.pdots i{width:18px;height:6px;border-radius:3px;background:var(--surface-2)}
+.pdots i.on{background:var(--blue)}
+.pdots.is-sm{display:flex;gap:3px;margin:5px 0 2px}
+.pdots.is-sm i{width:12px;height:5px}
+.pdots.is-wide{display:flex;gap:3px}
+.pdots.is-wide i{flex:1;width:auto;height:6px}
+.pdots.is-bar{display:block;position:relative;height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;min-width:80px}
+.pdots.is-bar span{position:absolute;left:0;top:0;bottom:0;background:var(--blue);border-radius:3px}
+.mpl-link2{all:unset;display:inline-flex;align-items:center;gap:4px;margin-top:12px;font-size:12.5px;color:var(--blue);cursor:pointer}
 .mpl-count em{font-style:normal;font-size:11.5px;color:var(--text-3);margin-left:6px}
 .mpl-field{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--text-2);margin-top:8px}
 .mpl-field input,.mpl-field select{font:inherit;font-size:14px;padding:9px 10px;border:1px solid var(--border-2);border-radius:9px;background:var(--card);color:var(--text-1);min-width:0}
@@ -10571,6 +10579,22 @@ function mpCollapsible(card, key) {
 //   ・可撐多久：台幣現金（扣掉信用卡待繳）照規劃每個月付出去，有期限的收入在
 //     預計入帳的月份加回來，模擬到錢不夠付為止（calc.js simulateRunway）。
 // ════════════════════════════════════════════════════════════════════════════
+// v2.27.0（使用者：「已領 3／6 次」也可以用在分期付款等已知次數的付款）：
+// 一格一期的進度點，總期數超過 24 期改成連續的進度條。
+function periodDots(done, total, cls = '') {
+  if (!(total > 0)) return '';
+  const d = Math.min(done, total);
+  if (total > 24) return `<span class="pdots is-bar ${cls}" role="img" aria-label="${d}／${total}"><span style="width:${d / total * 100}%"></span></span>`;
+  return `<span class="pdots ${cls}" role="img" aria-label="${d}／${total}">${Array.from({ length: total }, (_, i) => `<i class="${i < d ? 'on' : ''}"></i>`).join('')}</span>`;
+}
+// 每月的固定支出設了截止日期時，還剩幾期（含本月還沒確認的那一期）
+function recurringLeft(r, today = new Date()) {
+  if (!r?.end_date || r.freq !== 'monthly') return null;
+  const [ey, em] = r.end_date.split('-').map(Number);
+  const y = today.getFullYear(), m = today.getMonth() + 1, ym = `${y}-${String(m).padStart(2, '0')}`;
+  const n = (ey - y) * 12 + (em - m) + ((r.last_confirmed_date || '').slice(0, 7) === ym ? 0 : 1);
+  return Math.max(0, n);
+}
 const mplanKey = ym => `mplan:${ym}`;
 async function getMplan(ym) { return (await getSetting(db, mplanKey(ym), null).catch(() => null)) || null; }
 const shiftMonth = (ym, n) => addMonthsISO(`${ym}-01`, n).slice(0, 7);
@@ -10615,8 +10639,10 @@ async function buildPlanDraft(ym = currentMonthStr()) {
   const fixed = [
     ...ctx.plan.fixed.items.map(i => {
       const r = i.kind === 'recurring' ? recById[i.id] : null, inst = i.kind === 'installment' ? instById[i.id] : null;
-      const tag = inst ? `分期・剩 ${inst.total_periods - (inst.paid_periods || 0)} 期` : r?.pay_mode === 'manual' ? '手動扣款' : '';
-      return { key: `${i.kind}:${i.id}`, kind: i.kind, id: i.id, name: i.name, amount: Math.round(i.amount), tag, cat: r?.spend_category || inst?.spend_category || null };
+      const left = r ? recurringLeft(r) : null;
+      const tag = [inst ? `已繳 ${inst.paid_periods || 0}／${inst.total_periods} 期` : '', left != null ? `剩 ${left} 期・到 ${fmtDate(r.end_date).slice(0, 7)}` : '', r?.pay_mode === 'manual' ? '手動扣款' : ''].filter(Boolean).join('・');
+      return { key: `${i.kind}:${i.id}`, kind: i.kind, id: i.id, name: i.name, amount: Math.round(i.amount), tag, cat: r?.spend_category || inst?.spend_category || null,
+        dots: inst ? [inst.paid_periods || 0, inst.total_periods] : null };
     }),
     ...(reserve && reserve.monthly_amount > 0 ? [{ key: 'annual', kind: 'annual', id: reserve.id, name: '年繳預存', amount: reserve.monthly_amount, tag: '年繳項目 ÷ 12' }] : []),
   ].map(x => ({ ...x, on: saved?.fixed?.off ? !saved.fixed.off.includes(x.key) : true }));
@@ -10758,7 +10784,7 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
         const c = el('div'); c.className = 'mpl-src';
         const late = x.next_date && x.next_date < isoDate(new Date()) && x.inMonth;
         c.innerHTML = `<div class="mpl-src-top"><b>${escHtml(x.name)}</b><span>${money(x.amount)}</span></div>
-          <div class="mpl-count" aria-label="已領 ${x.received} 次，共 ${x.total} 次">${Array.from({ length: x.total }, (_, i) => `<i class="${i < x.received ? 'on' : ''}"></i>`).join('')}<em>已領 ${x.received}／${x.total} 次・還有 ${x.left} 次</em></div>
+          <div class="mpl-count">${periodDots(x.received, x.total)}<em>已領 ${x.received}／${x.total} 次・還有 ${x.left} 次</em></div>
           <label class="mpl-field"><span>下次預計入帳</span><input type="date" value="${x.next_date || ''}" data-src-date></label>
           ${x.inMonth ? `<label class="mpl-check"><input type="checkbox" ${x.expected ? 'checked' : ''} data-src-exp><span>${monthLabel(ym)}會入帳${late ? '（日期已過，還沒記到）' : ''}</span></label>` : ''}
           <button type="button" class="mpl-link" data-src-edit>編輯</button>`;
@@ -10771,14 +10797,15 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
         c.querySelector('[data-src-edit]').addEventListener('click', () => { editSrc = d.srcs.find(z => z.id === x.id) || null; render(); });
         box.appendChild(c);
       });
-      const add = el('button'); add.type = 'button'; add.className = 'mpl-add';
-      add.innerHTML = `<b>＋ 有期限的收入</b><span>例如失業給付：每次多少、總共領幾次</span>`;
-      add.onclick = () => { editSrc = {}; render(); };
-      box.appendChild(add);
+      // v2.27.0（使用者：不需要為失業給付特別做規劃）：預設只填一個金額；還剩固定次數的收入是選用的
       const o = el('label'); o.className = 'mpl-field mpl-other';
-      o.innerHTML = `<span>其他預計收入</span><input type="number" inputmode="decimal" min="0" step="100" value="${d.other || ''}" placeholder="0">`;
+      o.innerHTML = `<span>${d.income.length ? '其他預計收入' : '這個月預計進來'}</span><input type="number" inputmode="decimal" min="0" step="100" value="${d.other || ''}" placeholder="0">`;
       o.querySelector('input').addEventListener('input', e => { d.other = parseFloat(e.target.value) || 0; live(); });
       box.appendChild(o);
+      const add = el('button'); add.type = 'button'; add.className = 'mpl-link2';
+      add.innerHTML = `＋ 還剩固定次數的收入 ${infoTip('例如補助還能領幾次。記下每次金額跟總次數，之後的月份會自動算進「可以撐多久」，領完就不再算。')}`;
+      add.onclick = e => { if (e.target.closest('.ii')) return; editSrc = {}; render(); };
+      box.appendChild(add);
       const sum = el('div'); sum.className = 'mpl-sum';
       sum.innerHTML = `<span>${monthLabel(ym)}預計進來</span><b data-live-total="incomeIn">${money(t.incomeIn)}</b>`;
       box.appendChild(sum);
@@ -10787,7 +10814,7 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
       const list = el('div'); list.className = 'mpl-list';
       d.fixed.forEach(x => {
         const r = el('label'); r.className = 'mpl-row';
-        r.innerHTML = `<input type="checkbox" ${x.on ? 'checked' : ''}><span class="mpl-row-n">${escHtml(x.name)}${x.tag ? `<small>${escHtml(x.tag)}</small>` : ''}</span><b>${money(x.amount)}</b>`;
+        r.innerHTML = `<input type="checkbox" ${x.on ? 'checked' : ''}><span class="mpl-row-n">${escHtml(x.name)}${x.dots ? periodDots(...x.dots, 'is-sm') : ''}${x.tag ? `<small>${escHtml(x.tag)}</small>` : ''}</span><b>${money(x.amount)}</b>`;
         r.querySelector('input').addEventListener('change', e => { x.on = e.target.checked; live(); });
         list.appendChild(r);
       });
@@ -10818,11 +10845,11 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
       f.querySelector('input').addEventListener('input', e => { d.living = parseFloat(e.target.value) || 0; f.querySelector('[data-avg]')?.classList.toggle('on', Math.round(d.living) === d.avg?.total); live(); });
       f.querySelector('[data-avg]')?.addEventListener('click', () => { d.living = d.avg.total; render(); });
       box.appendChild(f);
-      const mt = el('div'); mt.className = 'mpl-title is-sub'; mt.innerHTML = `分成幾個罐子 ${infoTip('選一個理財方法，固定支出＋生活費依它的比例分到各罐；記帳時每一筆會從它的類別對應的罐子扣，首頁看得到每罐還剩多少。')}`;
+      const mt = el('div'); mt.className = 'mpl-title is-sub'; mt.innerHTML = `本月規劃方式 ${infoTip('選一個理財方法，固定支出＋生活費依它的比例分到各罐；記帳時每一筆會從它的類別對應的罐子扣，首頁看得到每罐還剩多少。')}`;
       box.appendChild(mt);
       const keys = INCOME_ALLOCATION_ALL_KEYS.filter(k => (!INCOME_ALLOCATION_CUSTOM_KEYS.includes(k) || presets[k]) && jarsOf(k).filter(isSpendJar).length > 1);
       const chips = el('div'); chips.className = 'mpl-chips';
-      chips.innerHTML = [['', '不分罐'], ...keys.map(k => [k, INCOME_ALLOCATION_METHODS[k].label])].map(([k, l]) => `<button type="button" class="mpl-chip${(d.method || '') === k ? ' on' : ''}" data-method="${k}">${l}</button>`).join('');
+      chips.innerHTML = [['', '只看生活費總額'], ...keys.map(k => [k, INCOME_ALLOCATION_METHODS[k].label])].map(([k, l]) => `<button type="button" class="mpl-chip${(d.method || '') === k ? ' on' : ''}" data-method="${k}">${l}</button>`).join('');
       chips.querySelectorAll('[data-method]').forEach(b => b.addEventListener('click', () => { d.method = b.dataset.method || null; render(); }));
       box.appendChild(chips);
       box.appendChild(jarsBox());
@@ -11707,9 +11734,7 @@ async function renderInstallment() {
             <span style="color:var(--text-2)">已繳 <strong>${item.paid_periods}</strong>／${item.total_periods} 期${instNextLabel(item) ? '・' + instNextLabel(item) : ''}</span>
             <span style="color:var(--text-3)">剩 ${remaining} 期（NT$ ${fmt(remaining * perAmt)}）</span>
           </div>
-          <div style="height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden">
-            <div style="height:100%;width:${pct}%;background:var(--blue);border-radius:3px;transition:width .3s"></div>
-          </div>
+          ${periodDots(item.paid_periods || 0, item.total_periods, 'is-wide')}
         </div>
         <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
           ${isDue?`<button type="button" class="sched-act" data-confirm-inst="${item.id}">確認本期</button>`:''}
@@ -13056,6 +13081,7 @@ async function renderRecurring() {
         row.innerHTML = `
           <div style="flex:1;min-width:0">
             <div style="font-weight:500;font-size:13px">${item.name}${done?'　<span style="font-size:10px;background:#F3F4F6;color:#6B7280;padding:1px 6px;border-radius:4px">已繳完</span>':''}</div>
+            ${done ? '' : periodDots(item.paid_periods || 0, item.total_periods, 'is-sm')}
             <div style="color:var(--text-3);margin-top:2px">${done ? `已繳完 ${item.total_periods} 期` : `已繳 ${item.paid_periods||0}／${item.total_periods} 期${instNextLabel(item) ? '・' + instNextLabel(item) : ''}`}${item.note?'・'+escHtml(item.note):''}</div>
           </div>
           <div style="text-align:right;flex-shrink:0">
