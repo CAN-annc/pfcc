@@ -354,6 +354,9 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .qa-sheet-head{display:flex;align-items:baseline;gap:8px;padding:16px 16px 8px}
 .qa-sheet-head b{font-size:16px;color:var(--text-1)}
 .qa-sheet-head span{font-size:12px;color:var(--text-3);flex:1}
+.qa-sheet-head .qa-date{position:relative;flex:1;display:inline-flex;align-items:center;gap:4px;font-size:12.5px;color:var(--blue);cursor:pointer}
+.qa-sheet-head .qa-date .qa-date-t{flex:0 0 auto;font-size:12.5px;color:var(--blue);font-weight:600}
+.qa-sheet-head .qa-date input{position:absolute;inset:-8px 0;opacity:0;width:100%;cursor:pointer}
 .qa-kind{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:0 16px 4px;padding:3px;border-radius:10px;background:var(--surface-2)}
 .qa-kind button{font:inherit;font-size:13px;font-weight:600;padding:7px;border:none;border-radius:8px;background:transparent;color:var(--text-2);cursor:pointer}
 .qa-kind button.on{background:var(--card);color:var(--text-1);box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -3435,15 +3438,15 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.26.0';
-const CHANGELOG_LAST_UPDATED = '2026-10-28';
+const APP_VERSION = 'v2.26.1';
+const CHANGELOG_LAST_UPDATED = '2026-11-02';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '全站精簡文字：拿掉重複標題的副標、解釋算法的句子與「（選填）」，讓數字和排版自己說話',
-  '真的需要說明的地方改成標題旁的 ⓘ，點了才看得到',
+  '修正：在紀錄頁選了過去的日期，記完第一筆後日期會跳回今天',
+  '記一筆：標題旁的日期可以點，直接改這一筆的日期',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3988,7 +3991,9 @@ function closeMoreSheet() {
 
 async function navigate(view) {
   // v2.9.0：持倉、趨勢收進「資產」，存錢目標收進「計畫」。
-  if (view === 'calendar') { _calendarYear = null; _calendarSelectedDate = isoDate(new Date()); } // v2.23.0：打開紀錄頁就看今天的收支
+  // v2.23.0：打開紀錄頁就看今天的收支。v2.26.1 修正：只在「從別的頁面切進來」時才回到今天——
+  // 原本記完一筆、畫面重畫也走這裡，選好的日期被拉回今天，下一筆就記到今天去了。
+  if (view === 'calendar' && currentView !== 'calendar') { _calendarYear = null; _calendarSelectedDate = isoDate(new Date()); }
   if (view === 'holdings') { view = 'wealth'; }
   else if (view === 'trend') { view = 'assets'; }
   else if (view === 'assets') { _homeTab = 'overview'; }
@@ -4540,12 +4545,13 @@ function syncQaFab() {
 }
 async function openQuickSheet() {
   closeQuickSheet();
-  const date = currentView === 'calendar' && _calendarSelectedDate ? _calendarSelectedDate : null;
+  // v2.26.1（使用者：補記過去的日期）：標題旁的日期可以點，直接改這一筆的日期
+  let date = currentView === 'calendar' && _calendarSelectedDate ? _calendarSelectedDate : null;
   const bg = el('div'); bg.className = 'qa-sheet-bg'; bg.id = 'qaSheet';
   const panel = el('div'); panel.className = 'qa-sheet';
   panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-label', '記一筆');
-  const md = date ? `${Number(date.slice(5, 7))}/${Number(date.slice(8))}（${WEEKDAY_LABELS[new Date(date + 'T00:00:00').getDay()]}）` : '今天';
-  panel.innerHTML = `<div class="qa-sheet-grip" aria-hidden="true"></div><div class="qa-sheet-head"><b>記一筆</b><span>${md}</span><button type="button" class="qa-sheet-x" aria-label="關閉">✕</button></div>
+  const mdOf = d => !d || d === isoDate(new Date()) ? '今天' : `${Number(d.slice(5, 7))}/${Number(d.slice(8))}（${WEEKDAY_LABELS[new Date(d + 'T00:00:00').getDay()]}）`;
+  panel.innerHTML = `<div class="qa-sheet-grip" aria-hidden="true"></div><div class="qa-sheet-head"><b>記一筆</b><label class="qa-date"><span class="qa-date-t">${mdOf(date)}</span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><input type="date" class="qa-date-in" value="${date || isoDate(new Date())}" aria-label="這一筆的日期"></label><button type="button" class="qa-sheet-x" aria-label="關閉">✕</button></div>
     <div class="qa-kind" role="tablist">${[['expense','支出'],['income','收入']].map(([k, l]) => `<button type="button" role="tab" data-qa-kind="${k}" aria-selected="${_qaKind === k}" class="${_qaKind === k ? 'on' : ''}">${l}</button>`).join('')}</div>
     <div class="qa-kind-body"></div>`;
   const body = panel.querySelector('.qa-kind-body');
@@ -4555,6 +4561,8 @@ async function openQuickSheet() {
     body.querySelector('.qa-amt input')?.focus({ preventScroll: true });
   };
   panel.querySelectorAll('[data-qa-kind]').forEach(b => b.addEventListener('click', () => { if (_qaKind !== b.dataset.qaKind) { _qaKind = b.dataset.qaKind; fill(); } }));
+  const dIn = panel.querySelector('.qa-date-in');
+  dIn.addEventListener('change', () => { if (!dIn.value) return; date = dIn.value === isoDate(new Date()) ? null : dIn.value; panel.querySelector('.qa-date-t').textContent = mdOf(date); fill(); });
   await fill();
   bg.appendChild(panel);
   bg.addEventListener('click', e => { if (e.target === bg) closeQuickSheet(); });
@@ -11231,7 +11239,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfoTip
 // iPhone 顯示「2026年10月8日」、英文系統顯示 10/08/2026）。所有日期欄位外面
 // 包一層，把原生文字藏起來，改顯示 yyyy/mm/dd；點下去仍是系統的日期選擇器。
 function enhanceDateInput(inp) {
-  if (!inp || inp._dtShow || inp.type !== 'date') return;
+  if (!inp || inp._dtShow || inp.type !== 'date' || inp.classList.contains('qa-date-in')) return;
   const wrap = document.createElement('span'); wrap.className = 'dt-wrap';
   const parent = inp.parentElement;
   const pd = parent ? getComputedStyle(parent).display : '';
