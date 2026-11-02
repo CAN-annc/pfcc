@@ -1213,6 +1213,175 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 .acc-sub-card > .card-header-row .chevron{display:none}
 .acc-sub-card > .card-header-row .card-title{font-size:15px;gap:8px}
 .acc-sub-ico{font-size:18px;line-height:1}
+
+/* ── v2.27.0 每月規劃 ───────────────────────────────────────────── */
+.mpl{display:flex;flex-direction:column;overflow:hidden}
+.mpl-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 4px}
+.mpl-head b{font-size:17px;color:var(--text-1);letter-spacing:.01em}
+.mpl-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;list-style:none;margin:6px 12px 0;padding:0}
+.mpl-steps button{all:unset;box-sizing:border-box;width:100%;display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 0 8px;cursor:pointer;border-radius:8px}
+.mpl-steps button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.mpl-steps i{font-style:normal;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:var(--surface-2);color:var(--text-3);transition:background .2s,color .2s}
+.mpl-steps span{font-size:11px;color:var(--text-3);white-space:nowrap}
+.mpl-steps li.done i{background:var(--accent-tint-strong);color:var(--blue)}
+.mpl-steps li.on i{background:var(--blue);color:var(--on-accent)}
+.mpl-steps li.on span{color:var(--text-1);font-weight:600}
+.mpl-body{flex:1;overflow-y:auto;padding:8px 16px 16px;border-top:1px solid var(--border);margin-top:2px}
+.mpl-title{display:flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--text-1);margin:10px 0 10px}
+.mpl-title.is-sub{font-size:13px;margin-top:18px}
+.mpl-foot{border-top:1px solid var(--border);padding:10px 16px calc(12px + env(safe-area-inset-bottom));background:var(--card)}
+.mpl-live{display:flex;align-items:baseline;justify-content:space-between;font-size:12px;color:var(--text-3);margin-bottom:8px}
+.mpl-live b{font-size:14px;color:var(--blue);font-variant-numeric:tabular-nums}
+.mpl-btns{display:flex;justify-content:space-between;gap:8px}
+.mpl-btns[hidden]{display:none}
+.mpl-btns .btn{min-width:96px;justify-content:center}
+.mpl-src{position:relative;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--card)}
+.mpl-src-top{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--text-1);padding-right:44px}
+.mpl-src-top span{font-variant-numeric:tabular-nums;font-weight:600}
+.mpl-count{display:flex;align-items:center;gap:4px;margin:10px 0}
+.pdots{display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap}
+.pdots i{width:18px;height:6px;border-radius:3px;background:var(--surface-2)}
+.pdots i.on{background:var(--blue)}
+.pdots.is-sm{display:flex;gap:3px;margin:5px 0 2px}
+.pdots.is-sm i{width:12px;height:5px}
+.pdots.is-wide{display:flex;gap:3px}
+.pdots.is-wide i{flex:1;width:auto;height:6px}
+.pdots.is-bar{display:block;position:relative;height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;min-width:80px}
+.pdots.is-bar span{position:absolute;left:0;top:0;bottom:0;background:var(--blue);border-radius:3px}
+.mpl-link2{all:unset;display:inline-flex;align-items:center;gap:4px;margin-top:12px;font-size:12.5px;color:var(--blue);cursor:pointer}
+.mpl-count em{font-style:normal;font-size:11.5px;color:var(--text-3);margin-left:6px}
+.mpl-field{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--text-2);margin-top:8px}
+.mpl-field input,.mpl-field select{font:inherit;font-size:14px;padding:9px 10px;border:1px solid var(--border-2);border-radius:9px;background:var(--card);color:var(--text-1);min-width:0}
+.mpl-f2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mpl-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-1);margin-top:10px}
+.mpl-check input{width:18px;height:18px;accent-color:var(--blue)}
+.mpl-link{all:unset;position:absolute;top:10px;right:10px;font-size:12px;color:var(--blue);padding:4px 6px;cursor:pointer}
+.mpl-add{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:2px;width:100%;padding:12px;border:1.5px dashed var(--border-2);border-radius:12px;cursor:pointer;margin-bottom:6px}
+.mpl-add b{font-size:13px;color:var(--blue)}
+.mpl-add span{font-size:11.5px;color:var(--text-3)}
+.mpl-other{margin-top:12px}
+.mpl-sum{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-2);font-size:13px;color:var(--text-2)}
+.mpl-sum b{font-size:17px;color:var(--text-1);font-variant-numeric:tabular-nums}
+.mpl-list{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.mpl-row{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:13px;color:var(--text-1);border-top:1px solid var(--border);cursor:pointer}
+.mpl-list .mpl-row:first-child{border-top:0}
+.mpl-row input{width:18px;height:18px;flex-shrink:0;accent-color:var(--blue)}
+.mpl-row-n{flex:1;min-width:0;display:flex;flex-direction:column}
+.mpl-row-n small{font-size:11px;color:var(--text-3);margin-top:1px}
+.mpl-row b{font-variant-numeric:tabular-nums;font-weight:600}
+.mpl-row:has(input:not(:checked)) .mpl-row-n,.mpl-row:has(input:not(:checked)) b{color:var(--text-3);text-decoration:line-through}
+.mpl-inv{border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
+.mpl-inv-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13.5px;color:var(--text-1)}
+.mpl-inv-top span{display:flex;flex-direction:column;min-width:0}
+.mpl-inv-top small{font-size:11px;color:var(--text-3);margin-top:2px}
+.mpl-inv-top b{font-variant-numeric:tabular-nums}
+.mpl-seg,.seg2{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;padding:3px;border-radius:10px;background:var(--surface-2);margin-top:10px}
+.seg2{margin-top:0}
+.mpl-seg button,.seg2 button{font:inherit;font-size:12.5px;font-weight:600;padding:7px 4px;border:none;border-radius:8px;background:transparent;color:var(--text-2);cursor:pointer}
+.mpl-seg button.on,.seg2 button.on{background:var(--card);color:var(--text-1);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.mpl-seg button[data-mode=pause].on{color:var(--amber)}
+.mpl-hint{font-size:12px;color:var(--text-2);margin-top:10px;line-height:1.6;padding:10px 12px;background:var(--surface);border-radius:10px}
+.mpl-living{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.mpl-big{display:flex;align-items:baseline;gap:8px;width:100%;border-bottom:2px solid var(--blue);padding-bottom:4px}
+.mpl-big span{font-size:14px;color:var(--text-3)}
+.mpl-big input{font:inherit;font-size:30px;font-weight:700;border:none;outline:none;background:transparent;color:var(--text-1);width:100%;font-variant-numeric:tabular-nums;padding:0}
+.mpl-chips{display:flex;flex-wrap:wrap;gap:6px}
+.mpl-chip{font:inherit;font-size:12px;padding:6px 11px;border-radius:999px;border:1px solid var(--border-2);background:var(--card);color:var(--text-2);cursor:pointer}
+.mpl-chip.on{border-color:var(--blue);background:var(--accent-tint);color:var(--blue);font-weight:600}
+.mpl-jars{display:flex;flex-direction:column;gap:2px;margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:4px 12px}
+.mpl-jar{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--text-1);border-top:1px solid var(--border)}
+.mpl-jar:first-child{border-top:0}
+.mpl-jar i{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.mpl-jar span{flex:1;display:flex;flex-direction:column}
+.mpl-jar small{font-size:11px;color:var(--text-3)}
+.mpl-jar b{font-variant-numeric:tabular-nums}
+.mpl-conf{border:1px solid var(--border);border-radius:12px;padding:4px 14px}
+.mpl-conf-row{display:flex;justify-content:space-between;padding:10px 0;font-size:13.5px;color:var(--text-2);border-top:1px solid var(--border)}
+.mpl-conf-row:first-child{border-top:0}
+.mpl-conf-row b{color:var(--text-1);font-variant-numeric:tabular-nums}
+.mpl-conf-row.in b{color:var(--green)}
+.mpl-conf-row.total{border-top:1.5px solid var(--text-1)}
+.mpl-conf-row.total span,.mpl-conf-row.total b{font-weight:700;color:var(--text-1)}
+.mpl-rw{display:flex;flex-direction:column;align-items:center;gap:2px;margin:16px 0 4px;padding:18px 12px;border-radius:14px;background:var(--hero-gradient);color:#fff;text-align:center}
+.mpl-rw span{font-size:12px;color:rgba(255,255,255,.75);display:inline-flex;align-items:center;gap:4px}
+.mpl-rw b{font-size:28px;font-weight:700;letter-spacing:.01em}
+.mpl-rw em{font-style:normal;font-size:11.5px;color:rgba(255,255,255,.65)}
+.mpl-rw .ii{color:#fff;border-color:rgba(255,255,255,.5)}
+.mpl-form{display:flex;flex-direction:column}
+.mpl-cand{margin-top:12px}
+.mpl-cand-h{font-size:12px;color:var(--text-2);margin-bottom:6px;line-height:1.5}
+.mpl-cand .mpl-row{border:1px solid var(--border);border-radius:10px;margin-bottom:6px}
+.mpl-form-btns{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+/* 月底回顧／本月進度：配色全部跟著主題 */
+.rv{padding:0;overflow:hidden;margin-bottom:14px}
+.rv-hero{border-radius:0;padding:20px 20px 18px}
+.rv-k{font-size:12px;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.6);margin-bottom:12px}
+.rv-hero .networth-label{margin-bottom:2px}
+.rv-big{font-size:34px;font-weight:700;letter-spacing:.01em;line-height:1.15}
+.rv-delta{display:inline-flex;align-items:baseline;gap:6px;margin-top:6px;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.14)}
+.rv-delta span{font-size:11px;font-weight:400;opacity:.75}
+.rv-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.16)}
+.rv-flow div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rv-flow span{font-size:11px;color:rgba(255,255,255,.62)}
+.rv-flow b{font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rv-sec{padding:14px 18px 6px}
+.rv-sec + .rv-sec{border-top:1px solid var(--border)}
+.rv-h{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:10px}
+.rv-h span{font-size:11px;font-weight:400;color:var(--text-3)}
+.rv-row{margin-bottom:12px}
+.rv-row-t{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--text-2);margin-bottom:6px}
+.rv-row-t span{display:flex;align-items:baseline;gap:6px}
+.rv-row-t small{font-size:11px;color:var(--text-3)}
+.rv-row-t b{color:var(--text-1);font-variant-numeric:tabular-nums}
+.rv-row-t b em{font-style:normal;font-weight:400;color:var(--text-3);font-size:12px}
+.rv-row-t b.is-over{color:var(--red)}
+.rv-bar{position:relative;height:8px;border-radius:4px;background:var(--surface-2)}
+.rv-bar > span{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--blue);transition:width .4s ease}
+.rv-bar.is-over > span{background:var(--red)}
+.rv-bar > i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;border-radius:1px;background:var(--text-1)}
+.rv-cat{display:grid;grid-template-columns:1fr auto 64px;align-items:baseline;gap:8px;padding:7px 0;font-size:13px;color:var(--text-1);border-top:1px solid var(--border)}
+.rv-cat:first-of-type{border-top:0}
+.rv-cat b{font-variant-numeric:tabular-nums;font-weight:600}
+.rv-cat em{font-style:normal;font-size:11.5px;text-align:right;color:var(--text-3);font-variant-numeric:tabular-nums}
+.rv-cat em.up{color:var(--red)}
+.rv-cat em.down{color:var(--green)}
+.rv-cta{display:flex;justify-content:center;width:calc(100% - 36px);margin:8px 18px 18px;padding:12px}
+.rv-prev-btn{all:unset;display:block;width:100%;text-align:center;font-size:12.5px;color:var(--blue);padding:4px 0 14px;cursor:pointer}
+.hp{padding:14px 16px;margin-top:12px}
+.hp.is-todo{display:flex;align-items:center;gap:12px;border-color:color-mix(in srgb,var(--blue) 35%,var(--border));background:var(--accent-tint)}
+.hp-todo{flex:1;display:flex;flex-direction:column;gap:2px}
+.hp-todo b{font-size:14px;color:var(--text-1)}
+.hp-todo span{font-size:12px;color:var(--text-2)}
+.hp-main{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer}
+.hp-t{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--text-2);margin-bottom:8px}
+.hp-t b{font-size:17px;color:var(--text-1);font-variant-numeric:tabular-nums}
+.hp-t b.is-over,.hp-jar-t b.is-over{color:var(--red)}
+.hp-s{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-3);margin-top:6px;font-variant-numeric:tabular-nums}
+.hp-jars{display:flex;flex-direction:column;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.hp-jar-t{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2);margin-bottom:5px}
+.hp-jar-t span{display:inline-flex;align-items:center;gap:6px}
+.hp-jar-t i{width:8px;height:8px;border-radius:2px}
+.hp-jar-t b{color:var(--text-1);font-variant-numeric:tabular-nums}
+.hp-jar .rv-bar{height:6px}
+.mp-row:has(.mp-fixed-in){flex-wrap:wrap}
+.mp-fixed-in{flex:1 0 100%;margin-top:6px;padding:6px 10px;border-radius:8px;background:var(--surface)}
+.mp-fixed-in div{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--text-2);padding:2px 0}
+.mp-fixed-in small{font-size:10.5px;color:var(--text-3);margin-left:6px}
+.mp-fixed-in b{font-variant-numeric:tabular-nums;font-weight:600;color:var(--text-1)}
+.rec-manual{color:var(--amber);font-weight:600}
+.qa-trip[data-qa-temp]{color:var(--blue)}
+.qa-reuse{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;margin-bottom:8px;border-radius:12px;border:1px solid color-mix(in srgb,var(--blue) 40%,var(--border));background:var(--accent-tint);cursor:pointer;font-size:12.5px;color:var(--text-2)}
+.qa-reuse b{color:var(--blue);margin-left:4px}
+.qa-reuse span:nth-child(2){flex:1}
+.qa-reuse i{font-style:normal;color:var(--blue)}
+.qa-reuse .qc-ico{font-size:18px}
+.bk-led{display:flex;align-items:center;gap:8px;width:100%;font:inherit;font-size:12px;padding:6px 0;border:0;border-top:1px dotted var(--border);background:transparent;text-align:left;color:inherit}
+.bk-led.is-btn{cursor:pointer}
+.bk-led.is-btn:active{background:var(--surface)}
+.bk-led-l{flex:1;min-width:0;color:var(--text-2)}
+.bk-led-d{color:var(--text-3);white-space:nowrap}
+.bk-led i{font-style:normal;color:var(--text-3);margin-left:2px}
+.sp-rw-stat small .ii{vertical-align:middle}
 </style>
 </head>
 <body>
@@ -2148,7 +2317,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
      See db.js v12 comment / roadmap doc for why. ── -->
 <div class="modal-overlay" id="bucketAllocModal">
   <div class="modal">
-    <h2>提撥到存錢目標</h2>
+    <h2 id="bucketAllocTitle">提撥到存錢目標</h2>
     <div id="bucketAllocTargetLabel" style="font-size:13px;font-weight:600;margin-bottom:10px"></div>
     <div class="field-row">
       <div class="modal-field">
@@ -2164,10 +2333,13 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <label>備註</label>
       <input type="text" id="bucketAllocNote" placeholder="">
     </div>
-    <input type="hidden" id="bucketAllocBucketId">
-    <div class="modal-actions">
+    <input type="hidden" id="bucketAllocBucketId"><input type="hidden" id="bucketAllocEditId">
+    <div class="modal-actions" style="justify-content:space-between">
+      <button class="btn btn-ghost" id="bucketAllocModalDelete" style="color:var(--red);display:none">刪除</button>
+      <span style="display:flex;gap:8px;margin-left:auto">
       <button class="btn btn-ghost" id="bucketAllocModalCancel">取消</button>
       <button class="btn btn-primary" id="bucketAllocModalSave">儲存</button>
+      </span>
     </div>
   </div>
 </div>
@@ -2369,7 +2541,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
         <select id="recurringPayType">
           <option value="">不指定</option>
           <option value="cash">現金</option>
-          <option value="account">帳戶自動扣</option>
+          <option value="account">銀行帳戶</option>
           <option value="cc">信用卡</option>
         </select>
       </div>
@@ -2382,6 +2554,12 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
           <label for="recurringCc">信用卡</label>
           <select id="recurringCc"></select>
         </div>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>扣款方式 <button type="button" class="ii" data-tip="自動扣款：到了扣款日自動記帳。手動扣款（例如自己轉帳的房租）：不會自動記，留在排程提醒，付了再按確認，日期可以改。" aria-label="說明">i</button></label>
+      <div class="seg2" role="radiogroup" id="recurringPayMode">
+        <button type="button" role="radio" data-pm="auto">自動扣款</button><button type="button" role="radio" data-pm="manual">手動扣款</button>
       </div>
     </div>
     <div class="modal-field">
@@ -3139,6 +3317,7 @@ import {
   policyEffectiveValue, setCategoryTree, mainCategoryOf, isSavingCategory, buildCategoryTree, calcMoneyFlow, isAnnualItem, calcAnnualReserveTarget,
   calcMonthlyPlan, calcRecurringMonthlyEquivalent, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcAvgLivingSpend, calcRunway, calcAnnualSpend, calcRecentSpend, calcPassiveIncome, passiveCategoryIds, DEFAULT_PASSIVE_CATEGORIES, calcBufferBase, calcStorageChecks, estimateTransferFees, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
+  addMonthsISO, limitedIncomeSchedule, calcMonthDue, simulateRunway, isSpendJar, jarOfCategory, calcJarBudgets, isLivingExpense,
 } from './calc.js';
 
 let db, state = {}, currentView = 'assets';
@@ -3438,15 +3617,24 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.26.1';
+const APP_VERSION = 'v2.27.0';
 const CHANGELOG_LAST_UPDATED = '2026-11-02';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '修正：在紀錄頁選了過去的日期，記完第一筆後日期會跳回今天',
-  '記一筆：標題旁的日期可以點，直接改這一筆的日期',
+  '每月規劃：每個月五步排好——收入、固定支出、投資、生活費、確認，邊排邊看台幣現金可以撐幾個月',
+  '分期付款顯示「已繳 10／12 期」的進度點；有截止日期的固定支出顯示還剩幾期',
+  '投資每個月可以照舊、減半、暫停或自訂；首頁「可以撐多久」改照規劃算，也看得到暫停投資可以撐多久',
+  '月底回顧：計畫 vs 實際、生活費細項跟上個月比，接著規劃下個月',
+  '選一個理財方法，固定支出＋生活費分成幾個罐子，首頁看每罐還剩多少',
+  '分配的決定改成確認才做：不再自動記「超支由預備金支應」、不再依收入百分比自動撥入；舊的自動紀錄已清掉',
+  '固定支出可以設「手動扣款」（例如自己轉帳的房租），不會自動記帳，付了再確認',
+  '記一筆可以標「臨時支出」，從緊急預備金付',
+  '存錢目標的紀錄可以修改、刪除',
+  '收入防呆：新增「失業給付」分類；說明跟以前一樣時沿用上次的分類；勾一次性收入前先確認',
+  '生活預算的類別底下列出對應的固定支出（例如居住底下的房租），不重複計算',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -3826,6 +4014,28 @@ async function migrateCategoryTreeV1() {
   await setSetting(db, 'cat_tree_v1', true);
 }
 
+// v2.27.0 一次性整理（使用者同意）：
+//  ① 刪掉舊版自動產生的分配紀錄——本月超支（shortfall）、沒有收入時由預備金代撥
+//    （ef_fund）、依收入百分比自動提撥（contribution）。這些是「分配的決定」，
+//    改由每月規劃確認。
+//  ② 新增收入分類「失業給付」（不算一次性收入）。
+// 匯入備份後會再跑一次（備份裡是舊資料）。
+async function migrateV227(force = false) {
+  if (!force && await getSetting(db, 'mig_v227', false).catch(() => false)) return;
+  const allocs = await getAll(db, 'bucket_allocations').catch(() => []);
+  const drop = allocs.filter(a => ['shortfall', 'ef_fund', 'contribution'].includes(a.auto_type));
+  if (drop.length) {
+    const t = db.transaction(['bucket_allocations'], 'readwrite');
+    drop.forEach(a => t.objectStore('bucket_allocations').delete(a.id));
+    await new Promise(r => { t.oncomplete = r; t.onerror = r; });
+  }
+  if (!(await getOne(db, 'txn_categories', 'cat_inc_unemp').catch(() => null))) {
+    const d = DEFAULT_CATEGORIES.find(c => c.id === 'cat_inc_unemp');
+    if (d) await putOne(db, 'txn_categories', { ...d });
+  }
+  await setSetting(db, 'mig_v227', true).catch(() => {});
+}
+
 // ── Bootstrap ────────────────────────────────────────────────────────────────
 async function init() {
   db = await openDB();
@@ -3833,6 +4043,7 @@ async function init() {
   // Seed default categories if txn_categories store is empty
   await seedCategoriesIfNeeded(db).catch(()=>{});
   await migrateCategoryTreeV1().catch(e => console.warn('[category tree migrate]', e));
+  await migrateV227().catch(e => console.warn('[v2.27 migrate]', e));
   await refreshCatCache();
   await repairConfirmState().catch(e => console.warn('[repair confirm state]', e));
   // 配色主題 (§十五之四)：套用越早越好，這樣連底下的鎖定畫面都會是選定的主題色，
@@ -4425,6 +4636,9 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
   const today = date || realToday; // v2.19.0：從紀錄頁選了某一天再按「＋記帳」，記在那一天
   const trip = findActiveTrip(projects, today); // v2.24.0：看這筆的日期，不是看今天
   let tripOn = !!trip;
+  // v2.27.0（使用者：國民年金、地價稅這種不是每個月都有的「臨時支出」由緊急預備金付）
+  const efB = (await getAll(db,'buckets').catch(()=>[])).find(b => b.is_emergency_fund && b.status !== 'closed');
+  let tempOn = false;
   const dayLabel = today === realToday ? '今天' : `${Number(today.slice(5, 7))}/${Number(today.slice(8))}`;
 
   const box = el('div', 'card'); box.className = 'card qa';
@@ -4440,7 +4654,8 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
     </div>
     <div class="qa-label">類別</div>
     <div data-catpick></div>
-    ${trip ? `<button type="button" class="qa-trip" role="switch" aria-checked="true" data-qa-trip><span class="qa-trip-box" aria-hidden="true"></span><span>算進旅行「${escHtml(trip.name)}」</span></button>` : ''}`;
+    ${trip ? `<button type="button" class="qa-trip" role="switch" aria-checked="true" data-qa-trip><span class="qa-trip-box" aria-hidden="true"></span><span>算進旅行「${escHtml(trip.name)}」</span></button>` : ''}
+    ${efB ? `<button type="button" class="qa-trip" role="switch" aria-checked="false" data-qa-temp><span class="qa-trip-box" aria-hidden="true"></span><span>臨時支出，從${escHtml(efB.name)}付</span></button>` : ''}`;
 
   const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc');
   const pay = buildPayPair(payOptions, payUse, payV, '付款');
@@ -4449,6 +4664,7 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
     if (!(amount > 0)) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); return; }
     const o = pay.get();
     let bucketId = tripOn ? trip.bucket_id ?? null : null, projectId = tripOn ? trip.id : null;
+    if (tempOn && efB) { bucketId = efB.id; projectId = null; }
     if (!bucketId && o?.accId) {
       const pick = await askEfAccountUse(o.accId, amount);
       if (!pick) return;
@@ -4458,7 +4674,7 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
       payType: o?.payType ?? null, accId: o?.accId ?? null, ccId: o?.ccId ?? null,
       bucketId, projectId, affects: true });
     if (!res.ok) { showToast(res.error); return; }
-    showToast(`✓ 已記 ${catPath(category)} NT$ ${fmt(amount)}${today === realToday ? '' : `（${dayLabel}）`}`);
+    showToast(`✓ 已記 ${catPath(category)} NT$ ${fmt(amount)}${tempOn && efB ? `（從${efB.name}付）` : ''}${today === realToday ? '' : `（${dayLabel}）`}`);
     onDone?.();
     await renderAssets();
   }
@@ -4466,6 +4682,11 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
     const ok = parseFloat(amtIn.value) > 0; if (!ok) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); } return ok; }));
   box.querySelector('[data-qa-trip]')?.addEventListener('click', e => {
     tripOn = !tripOn; e.currentTarget.setAttribute('aria-checked', tripOn);
+    if (tripOn && tempOn) { tempOn = false; box.querySelector('[data-qa-temp]')?.setAttribute('aria-checked', false); }
+  });
+  box.querySelector('[data-qa-temp]')?.addEventListener('click', e => {
+    tempOn = !tempOn; e.currentTarget.setAttribute('aria-checked', tempOn);
+    if (tempOn && tripOn) { tripOn = false; box.querySelector('[data-qa-trip]')?.setAttribute('aria-checked', false); }
   });
   box.querySelector('[data-qa-full]').addEventListener('click', () => {
     const o = pay.get();
@@ -4478,6 +4699,28 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
 
 // v2.19.0（使用者：記帳要能記收入，也要能記支出）：快速記收入——金額＋點類別
 // 就存，存進哪個帳戶記住上次選的。獎金、應收款入帳等特殊情況用「完整表單」。
+// v2.27.0（使用者決定）：收入分類防呆
+//  ・勾「獎金或一次性收入」之前問一次——一次性收入不算進每月規劃。
+//  ・說明跟以前某一筆一樣時，沿用那一筆的分類（同一筆收入不會每次記在不同分類）。
+function askIrregular() {
+  return new Promise(resolve => {
+    const ov = el('div'); ov.className = 'modal-overlay open'; ov.style.zIndex = 400;
+    ov.innerHTML = `<div class="modal" role="alertdialog" aria-labelledby="irrQ"><h2 id="irrQ">這筆是一次性收入嗎？</h2>
+      <p style="font-size:13px;color:var(--text-2);margin:0 0 14px;line-height:1.6">一次性收入（年終、退稅、紅包）不算進每月規劃，可以整筆放進存錢目標。失業給付、薪資這種一段時間內每個月都有的，選「不是」。</p>
+      <div class="modal-actions" style="justify-content:space-between"><button class="btn btn-ghost" data-v="cancel">取消</button><span style="display:flex;gap:8px"><button class="btn btn-ghost" data-v="no">不是</button><button class="btn btn-primary" data-v="yes">是，一次性</button></span></div></div>`;
+    const done = v => { ov.remove(); resolve(v); };
+    ov.querySelector('[data-v=yes]').onclick = () => done(true);
+    ov.querySelector('[data-v=no]').onclick = () => done(false);
+    ov.querySelector('[data-v=cancel]').onclick = () => done(null);
+    ov.onclick = e => { if (e.target === ov) done(null); };
+    document.body.appendChild(ov);
+  });
+}
+function lastIncomeWithDesc(incomeTxns, desc) {
+  const d = (desc || '').trim(); if (!d) return null;
+  return [...incomeTxns].filter(t => (t.description || '').trim() === d && !['cat_receivable', 'cat_dca'].includes(t.category) && catById(t.category))
+    .sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.created_at || '').localeCompare(a.created_at || ''))[0] || null;
+}
 async function buildQuickIncome({ date = null, onDone = null } = {}) {
   const cats = await getAll(db,'txn_categories').catch(()=>[]);
   const incomeTxns = await getAll(db,'income_txns').catch(()=>[]);
@@ -4505,20 +4748,30 @@ async function buildQuickIncome({ date = null, onDone = null } = {}) {
       <button type="button" class="btn btn-ghost btn-sm" data-qi-full>完整表單</button>
     </div>
     <div class="qa-label">類別</div>
+    <div class="qa-reuse-host"></div>
     <div data-catpick></div>`;
   const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc');
   const dep = buildPayPair(inOpts, accUse, accV, '存入');
   box.querySelector('[data-paypair]').replaceWith(dep.node);
   const accSel = { get value() { return dep.get()?.v || ''; } };
-  box.querySelector('[data-catpick]').replaceWith(buildCatPicker('income', incomeTxns, ['cat_receivable','cat_dca','cat_realized'], async catId => {
+  const saveWith = async (catId, irrDefault) => {
     const amount = parseFloat(amtIn.value);
-    const irregular = !!catById(catId)?.irregular_default;
+    let irregular = !!irrDefault;
+    if (irregular) { const yes = await askIrregular(); if (yes == null) return; irregular = yes; }
     const res = await saveIncomeRecord({ date: day, category: catId, description: descIn.value.trim(), amount, accId: accSel.value || null, affects: true, irregular });
     if (!res.ok) { showToast(res.error); return; }
     showToast(`✓ 已記收入 ${catPath(catId)} NT$ ${fmt(amount)}${irregular ? '（一次性收入）' : ''}${day === realToday ? '' : `（${Number(day.slice(5, 7))}/${Number(day.slice(8))}）`}`);
     onDone?.();
     await renderAssets();
-  }, () => { const ok = parseFloat(amtIn.value) > 0; if (!ok) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); } return ok; }));
+  };
+  const amtGuard = () => { const ok = parseFloat(amtIn.value) > 0; if (!ok) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); } return ok; };
+  box.querySelector('[data-catpick]').replaceWith(buildCatPicker('income', incomeTxns, ['cat_receivable','cat_dca','cat_realized'], catId => saveWith(catId, catById(catId)?.irregular_default), amtGuard));
+  const reuseHost = box.querySelector('.qa-reuse-host');
+  descIn.addEventListener('input', () => {
+    const last = lastIncomeWithDesc(incomeTxns, descIn.value);
+    reuseHost.innerHTML = last ? `<button type="button" class="qa-reuse"><span class="qc-ico" aria-hidden="true">${catById(last.category)?.icon || '·'}</span><span>跟上次一樣記到<b>${escHtml(catPath(last.category))}</b></span><i aria-hidden="true">›</i></button>` : '';
+    reuseHost.querySelector('.qa-reuse')?.addEventListener('click', () => { if (amtGuard()) saveWith(last.category, last.irregular); });
+  });
   box.querySelector('[data-qi-full]').addEventListener('click', () => {
     onDone?.();
     openIncomeModal(null, null, null, { date: day, amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), account_id: accSel.value || null });
@@ -4722,6 +4975,16 @@ async function renderHome() {
   const rwActual = calcRecentSpend(expenseTxns || [], accounts || [], fxRates || {});
   const rwPassive = calcPassiveIncome(incomeTxns, await getAll(db,'txn_categories').catch(()=>[])).monthly || 0;
   const rwBasis = await getSetting(db, 'runway_basis', 'both').catch(() => 'both');
+  // v2.27.0（使用者決定）：可撐多久改照每月規劃模擬——台幣現金每個月付固定＋生活＋投資，
+  // 有期限的收入（例如失業給付剩幾次）在預計入帳的月份加回來。
+  const planDraft = await buildPlanDraft(month).catch(e => { console.warn('[plan draft]', e); return null; });
+  const prw = planDraft ? planRunway(planDraft) : null;
+  const planRwHtml = prw && prw.monthlyOut > 0 ? (() => {
+    const off = planDraft.invest.length ? planRunway(planDraft, { investOff: true }) : null;
+    const tip = `台幣現金與活存 NT$ ${fmt(prw.cash)}（已扣信用卡待繳），照${planDraft.saved ? '本月規劃' : '目前的固定支出、投資與近幾個月平均生活費'}每月付 NT$ ${fmt(prw.monthlyOut)}${prw.paymentsLeft ? `；有期限的收入還有 ${prw.paymentsLeft} 次、共 NT$ ${fmt(prw.incomesLeft)}，在預計的月份加回來` : ''}。配息不算。`;
+    return `<div class="sp-rw"><span class="sp-rw-k">台幣現金可撐 ${infoTip(tip)}</span>
+      <span class="sp-rw-v"><span class="sp-rw-stat"><small>${planDraft.saved ? '照規劃' : '照目前'}</small><b>${fmtRw(prw.months)}</b></span>${off && Number.isFinite(off.months) && off.months - prw.months > 0.05 ? `<span class="sp-rw-stat"><small>暫停投資</small><b>${fmtRw(off.months)}</b></span>` : off && !Number.isFinite(off.months) && Number.isFinite(prw.months) ? `<span class="sp-rw-stat"><small>暫停投資</small><b>一直撐下去</b></span>` : ''}</span></div>`;
+  })() : runwayLineHtml({ sp, essentials, actual: rwActual, passiveMonthly: rwPassive, basis: rwBasis });
   const content = document.getElementById('content');
   content.innerHTML = '';
   const root = el('div'); root.className = 'home2';
@@ -4751,13 +5014,14 @@ async function renderHome() {
         + (i === 2 && sp.upcoming.length ? `<ul class="sp-due">${sp.upcoming.map(u => `<li${u.days < 0 ? ' class="late"' : ''}><button type="button" data-due="${u.type}:${u.id}:${u.date}" aria-label="確認「${escHtml(u.label)}」${Number(u.date.slice(5, 7))}/${Number(u.date.slice(8))} 這一期"><span>${escHtml(u.label)}</span><em>${Number(u.date.slice(5, 7))}/${Number(u.date.slice(8))}${u.days < 0 ? ' 未確認' : ''}</em><b>${money(u.amount)}</b><i aria-hidden="true">›</i></button></li>`).join('')}</ul>` : '')).join('')}
       <div class="sp-row sp-total"><span>可自由運用</span><b>${money(sp.free)}</b></div>
     </div>
-    ${runwayLineHtml({ sp, essentials, actual: rwActual, passiveMonthly: rwPassive, basis: rwBasis })}
+    ${planRwHtml}
     ${efLine}${efStoreLine}`;
   hero.querySelectorAll('[data-rw-cycle]').forEach(b => b.addEventListener('click', async () => { await setSetting(db, 'runway_basis', RW_BASIS_NEXT[rwBasis] || 'both').catch(() => {}); renderHome(); }));
   hero.querySelector('.sp-toggle').addEventListener('click', () => { _homeSpendOpen = !_homeSpendOpen; renderHome(); });
   // v2.24.0（使用者決定）：本月還要付跟紀錄頁的排程提醒是同一份清單，點一下就能確認本期
   hero.querySelectorAll('[data-due]').forEach(b => b.addEventListener('click', () => openDueConfirm(...b.dataset.due.split(':'))));
   root.appendChild(hero);
+  root.appendChild(await buildHomePlanCard());
   const fundAlert = await buildDcaFundAlert(); if (fundAlert) root.appendChild(fundAlert);
 
   // 旅行中
@@ -9575,6 +9839,7 @@ document.getElementById('importModalConfirm').addEventListener('click',async()=>
   if(!_importData)return;
   document.getElementById('importModal').classList.remove('open');
   for(const s of BACKUP_STORES){const records=_importData.data[s]??[];if(records.length>0)await putMany(db,s,records).catch(()=>{});}
+  await migrateV227(true).catch(e => console.warn('[v2.27 migrate]', e)); await refreshCatCache().catch(() => {});
   _importData=null;showToast('備份已匯入');await navigate(currentView);
 });
 
@@ -9651,7 +9916,10 @@ async function syncIncomeBuffer() {
   if (!existing || existing.amount !== row.amount || existing.note !== row.note || existing.bucket_id !== row.bucket_id) await putOne(db,'bucket_allocations', row);
 }
 
+// v2.27.0（使用者決定：「真實發生的事自動記，分配的決定要確認」）：不再依收入
+// 百分比自動撥入存錢目標，改在「每月規劃」確認時決定。函式保留給舊程式呼叫。
 async function syncAutoBucketContributions() {
+  return;
   const [buckets, incomeTxns, allocations, planSettings] = await Promise.all([
     getAll(db,'buckets').catch(()=>[]),
     getAll(db,'income_txns').catch(()=>[]),
@@ -9709,7 +9977,10 @@ async function syncAutoBucketContributions() {
 // 'shortfall'，每月一筆、隨時更新）。月中薪水還沒入帳時這筆會先出現，入帳後
 // 自動縮小或消失——它反映的是「到目前為止」的狀況。
 // 需要重算的時機：啟動、收入／支出新增修改刪除、存錢目標變動。
+// v2.27.0：不再自動記「本月超支由緊急預備金支應」——沒有收入的月份每天都會
+// 長出一筆負數，刪掉又重算回來。臨時支出改成記帳時直接歸到緊急預備金。
 async function syncEmergencyFundShortfall() {
+  return;
   const [buckets, incomeTxns, expenseTxns, allocations, accounts, fxRates] = await Promise.all([
     getAll(db,'buckets').catch(()=>[]),
     getAll(db,'income_txns').catch(()=>[]),
@@ -9767,17 +10038,22 @@ async function syncAnnualReserve() {
     b = { ...b, monthly_amount: monthly, target_amount: target };
     await putOne(db, 'buckets', b);
   }
+  // v2.27.0：每月預存改在「每月規劃」確認時撥入（upsertAnnualReserveAlloc），這裡只更新目標金額。
+}
+async function upsertAnnualReserveAlloc(month, on = true) {
+  const [buckets, allocations] = await Promise.all([getAll(db,'buckets').catch(()=>[]), getAll(db,'bucket_allocations').catch(()=>[])]);
+  const b = buckets.find(x => x.is_annual_reserve);
   if (!b) return;
-  const month = currentMonthStr();
+  const target = b.target_amount || 0, monthly = b.monthly_amount || 0;
   const ex = allocations.find(a => a.auto_type === 'annual' && a.auto_month === month && a.bucket_id === b.id);
-  const amount = b.status === 'closed' ? 0 : monthly;
+  const amount = b.status === 'closed' || !on ? 0 : monthly;
   if (!amount) {
     if (ex) { const t = db.transaction(['bucket_allocations'],'readwrite'); t.objectStore('bucket_allocations').delete(ex.id); await new Promise(r => { t.oncomplete = r; t.onerror = r; }); }
     return;
   }
   if (!ex || ex.amount !== amount) {
     await putOne(db, 'bucket_allocations', { id: ex?.id || crypto.randomUUID(), bucket_id: b.id, amount, date: ex?.date || isoDate(new Date()),
-      note: `年度支出預存：年繳項目合計 ${fmt(target)} ÷ 12`, auto: true, auto_type: 'annual', auto_month: month, created_at: ex?.created_at || new Date().toISOString() });
+      note: `${Number(month.slice(5))} 月規劃：年繳項目合計 ${fmt(target)} ÷ 12`, auto: true, auto_type: 'annual', auto_month: month, created_at: ex?.created_at || new Date().toISOString() });
   }
 }
 async function syncPlanAutoRows() {
@@ -10020,6 +10296,24 @@ async function renderMonthlyPlan() {
     root.appendChild(intro);
   }
 
+  // ── v2.27.0：每月規劃。本月還沒規劃 → 上個月回顧＋開始規劃；規劃好了 → 本月進度
+  {
+    const mp = await getMplan(month);
+    const prevYm = shiftMonth(month, -1);
+    const prevHas = expenseTxns.some(t => (t.date || '').slice(0, 7) === prevYm);
+    if (!mp) {
+      if (prevHas) root.appendChild(await buildMonthReview(prevYm, { mode: 'review', onPlan: () => openMonthPlan(month) }));
+      else { const c = await buildHomePlanCard(); root.appendChild(c); }
+    } else {
+      root.appendChild(await buildMonthReview(month, { mode: 'progress', onPlan: () => openMonthPlan(month) }));
+      if (prevHas) {
+        const b = el('button'); b.type = 'button'; b.className = 'rv-prev-btn'; b.textContent = `看 ${monthLabel(prevYm)}回顧`;
+        b.onclick = async () => { const r = await buildMonthReview(prevYm, { mode: 'review' }); b.replaceWith(r); };
+        root.appendChild(b);
+      }
+    }
+  }
+
   // ── 總覽：本月可分配 → 分到哪裡 ──────────────────────────────────────────
   const hero = el('div', 'card'); hero.className = 'card mp-hero';
   // v2.16.0：收入不固定模式
@@ -10057,7 +10351,8 @@ async function renderMonthlyPlan() {
     </div>`;
   hero.querySelector('[data-mp-base]').addEventListener('click', () => openPlanBaseModal(settings));
   hero.querySelector('[data-mp-base2]')?.addEventListener('click', () => openPlanBaseModal({ ...settings, base_mode: 'buffer' }));
-  root.appendChild(hero);
+  // v2.27.0：規劃好的月份，上面的「本月進度」已經回答錢分到哪裡，這張總覽收起來
+  if (!(await getMplan(month))) root.appendChild(hero);
 
   // ── 區塊共用外框 ─────────────────────────────────────────────────────────
   // v2.25.0（使用者決定）：每一區都可以收合，預設收合；標題列看得到金額與佔比，
@@ -10200,6 +10495,14 @@ async function renderMonthlyPlan() {
   const catSum = catSet.reduce((s, r) => s + r.amount, 0);
   catHead.innerHTML = `<span>分到各類別</span><em class="${plan.living.set && catSum > plan.living.total ? 'is-over' : ''}">${plan.living.set ? `已分 ${money(catSum)} ／ ${money(plan.living.total)}` : `已分 ${money(catSum)}`}</em>`;
   lb.appendChild(catHead);
+  // v2.27.0（使用者：房租在居住底下要看得到，但不能重複算）：固定支出依它的分類
+  // 列在對應的主分類底下（唯讀；金額跟著固定支出，付款日在確認時可以改）
+  const fixedByMain = {};
+  plan.fixed.items.forEach(i => {
+    const src = i.kind === 'recurring' ? recurringExpenses.find(r => r.id === i.id) : installments.find(x => x.id === i.id);
+    const m = src?.spend_category ? mainCategoryOf(src.spend_category) : null;
+    if (m) (fixedByMain[m] ||= []).push({ ...i, manual: src?.pay_mode === 'manual' });
+  });
   expenseCats.forEach(c => {
     const rec = resolveBudgetRecord(budgets, c.id, month);
     const cur = rec && (rec.allocation_mode || 'fixed') === 'fixed' ? rec.amount : null;
@@ -10209,6 +10512,7 @@ async function renderMonthlyPlan() {
     const avgC = avgSpend?.byCat?.[c.id] || 0;
     r.innerHTML = `<div class="mp-row-l">${c.icon ?? '·'} ${escHtml(c.label)}<small class="${over ? 'is-over' : ''}">本月 ${money(spent)}${cur != null ? (over ? `・超出 ${money(spent - cur)}` : `・剩 ${money(cur - spent)}`) : ''}${avgC > 0 ? `・平均 ${money(avgC)}` : ''}</small></div>
       <div class="mp-row-r">${avgC > 0 && cur !== avgC ? `<button type="button" class="btn btn-ghost btn-sm mp-avg-btn" data-cat-avg title="用近 ${avgSpend.months} 個月平均 ${money(avgC)}">用平均</button>` : ''}<input type="number" inputmode="decimal" min="0" step="100" value="${cur ?? ''}" placeholder="${avgC > 0 ? fmt(avgC) : '上限'}" aria-label="${escHtml(c.label)} 每月上限"></div>`;
+    if (fixedByMain[c.id]) r.insertAdjacentHTML('beforeend', `<div class="mp-fixed-in">${fixedByMain[c.id].map(f => `<div><span>🔁 ${escHtml(f.name)}<small>固定支出${f.manual ? '・手動扣款' : ''}</small></span><b>${money(f.amount)}</b></div>`).join('')}</div>`);
     r.querySelector('[data-cat-avg]')?.addEventListener('click', async () => {
       await saveBudgetRecord(c.id, { amount: avgC, percent: null, allocation_mode: 'fixed' });
       await syncEmergencyFundShortfall(); await rerender();
@@ -10263,6 +10567,547 @@ function mpCollapsible(card, key) {
   head.addEventListener('click', e => { if (e.target.closest('button,input,a,select')) return; toggle(); });
   head.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   apply();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// 每月規劃（v2.27.0，使用者決定）
+// 每個月一次、五步：收入 → 固定支出 → 投資 → 生活費 → 確認。確認後才會寫入
+// 生活預算、撥入年繳預存、暫停（略過）這個月的定期定額——「真實發生的事自動
+// 記，分配的決定要確認」。規劃存在設定 mplan:YYYY-MM。
+//   ・收入：只算有期限的收入（例如失業給付最多領 6 次，limited_income）跟這個
+//     月其他預計會進來的錢；配息不算（使用者：只拿來再投入）。
+//   ・可撐多久：台幣現金（扣掉信用卡待繳）照規劃每個月付出去，有期限的收入在
+//     預計入帳的月份加回來，模擬到錢不夠付為止（calc.js simulateRunway）。
+// ════════════════════════════════════════════════════════════════════════════
+// v2.27.0（使用者：「已領 3／6 次」也可以用在分期付款等已知次數的付款）：
+// 一格一期的進度點，總期數超過 24 期改成連續的進度條。
+function periodDots(done, total, cls = '') {
+  if (!(total > 0)) return '';
+  const d = Math.min(done, total);
+  if (total > 24) return `<span class="pdots is-bar ${cls}" role="img" aria-label="${d}／${total}"><span style="width:${d / total * 100}%"></span></span>`;
+  return `<span class="pdots ${cls}" role="img" aria-label="${d}／${total}">${Array.from({ length: total }, (_, i) => `<i class="${i < d ? 'on' : ''}"></i>`).join('')}</span>`;
+}
+// 每月的固定支出設了截止日期時，還剩幾期（含本月還沒確認的那一期）
+function recurringLeft(r, today = new Date()) {
+  if (!r?.end_date || r.freq !== 'monthly') return null;
+  const [ey, em] = r.end_date.split('-').map(Number);
+  const y = today.getFullYear(), m = today.getMonth() + 1, ym = `${y}-${String(m).padStart(2, '0')}`;
+  const n = (ey - y) * 12 + (em - m) + ((r.last_confirmed_date || '').slice(0, 7) === ym ? 0 : 1);
+  return Math.max(0, n);
+}
+const mplanKey = ym => `mplan:${ym}`;
+async function getMplan(ym) { return (await getSetting(db, mplanKey(ym), null).catch(() => null)) || null; }
+const shiftMonth = (ym, n) => addMonthsISO(`${ym}-01`, n).slice(0, 7);
+const monthLabel = ym => `${Number(ym.slice(5))} 月`;
+const INVEST_MODES = [['keep', '照舊'], ['half', '減半'], ['pause', '暫停'], ['custom', '自訂']];
+
+async function loadLimitedIncome(incomeTxns) {
+  const srcs = (await getSetting(db, 'limited_income', []).catch(() => [])) || [];
+  return srcs.map(s => {
+    const recs = incomeTxns.filter(t => t.category === s.category);
+    return { ...s, received: recs.length, left: Math.max(0, (s.total || 0) - recs.length) };
+  });
+}
+// 台幣現金與活存（計入總資產的台幣帳戶）－信用卡待繳
+function twdCashOf(accounts, cards) {
+  const cash = accounts.filter(a => a.include_in_total !== false && (a.currency || 'TWD') === 'TWD').reduce((s, a) => s + (a.balance || 0), 0);
+  const due = cards.reduce((s, c) => s + Math.max(0, c.current_balance || 0), 0);
+  return { cash: Math.round(cash), due: Math.round(due), net: Math.round(cash - due) };
+}
+
+// 依目前的資料（加上已存的規劃）組出這個月的規劃草稿
+async function buildPlanDraft(ym = currentMonthStr()) {
+  const ctx = await loadPlanContext();
+  const [transfers, accounts, cards, expenseTxns, budgets] = await Promise.all([
+    getAll(db,'recurring_transfers').catch(()=>[]), getAll(db,'accounts').catch(()=>[]), getAll(db,'credit_cards').catch(()=>[]),
+    getAll(db,'expense_txns').catch(()=>[]), getAll(db,'budgets').catch(()=>[]),
+  ]);
+  const { fxRates, recurringExpenses, installments, dcaSchedules, buckets, incomeTxns } = ctx;
+  const saved = await getMplan(ym);
+  const srcs = await loadLimitedIncome(incomeTxns);
+  const income = srcs.filter(s => s.left > 0).map(s => {
+    const sv = saved?.income?.items?.find(x => x.id === s.id);
+    const inMonth = (s.next_date || '').slice(0, 7) === ym;
+    return { id: s.id, name: s.name, amount: s.amount, received: s.received, total: s.total, left: s.left, next_date: s.next_date,
+      inMonth, expected: inMonth ? (sv ? sv.expected !== false : true) : false };
+  });
+  const other = saved?.income?.other ?? 0;
+  // 固定支出：跟每月計畫同一份（年繳項目由年繳預存每月存）
+  const recById = Object.fromEntries(recurringExpenses.map(r => [r.id, r]));
+  const instById = Object.fromEntries(installments.map(i => [i.id, i]));
+  const reserve = buckets.find(b => b.is_annual_reserve && b.status !== 'closed');
+  const fixed = [
+    ...ctx.plan.fixed.items.map(i => {
+      const r = i.kind === 'recurring' ? recById[i.id] : null, inst = i.kind === 'installment' ? instById[i.id] : null;
+      const left = r ? recurringLeft(r) : null;
+      const tag = [inst ? `已繳 ${inst.paid_periods || 0}／${inst.total_periods} 期` : '', left != null ? `剩 ${left} 期・到 ${fmtDate(r.end_date).slice(0, 7)}` : '', r?.pay_mode === 'manual' ? '手動扣款' : ''].filter(Boolean).join('・');
+      return { key: `${i.kind}:${i.id}`, kind: i.kind, id: i.id, name: i.name, amount: Math.round(i.amount), tag, cat: r?.spend_category || inst?.spend_category || null,
+        dots: inst ? [inst.paid_periods || 0, inst.total_periods] : null };
+    }),
+    ...(reserve && reserve.monthly_amount > 0 ? [{ key: 'annual', kind: 'annual', id: reserve.id, name: '年繳預存', amount: reserve.monthly_amount, tag: '年繳項目 ÷ 12' }] : []),
+  ].map(x => ({ ...x, on: saved?.fixed?.off ? !saved.fixed.off.includes(x.key) : true }));
+  // 投資：定期定額依名稱合併（例如同一檔每月 5、22 日各扣一次），加上換成外幣的定期轉帳
+  const groups = new Map();
+  dcaSchedules.filter(d => !d.is_expired).forEach(d => {
+    const g = groups.get(d.name) || { key: `dca:${d.name}`, kind: 'dca', name: d.name, ids: [], base: 0, days: [] };
+    g.ids.push(d.id); g.base += calcRecurringMonthlyEquivalent(d, fxRates); if (d.billing_day) g.days.push(d.billing_day);
+    groups.set(d.name, g);
+  });
+  const accById = Object.fromEntries(accounts.map(a => [a.id, a]));
+  transfers.filter(t => !t.is_expired).forEach(t => {
+    const fa = accById[t.from_account_id], ta = accById[t.to_account_id];
+    if (!fa || !ta || (fa.currency || 'TWD') !== 'TWD' || (ta.currency || 'TWD') === 'TWD') return;
+    groups.set(`tr:${t.id}`, { key: `tr:${t.id}`, kind: 'transfer', name: t.name, ids: [t.id], base: toTWD(t.amount || 0, t.currency || 'TWD', fxRates) || 0,
+      native: t.amount, currency: t.currency, days: t.billing_day ? [t.billing_day] : [] });
+  });
+  const invest = [...groups.values()].map(g => {
+    const sv = saved?.invest?.[g.key];
+    return { ...g, base: Math.round(g.base), mode: sv?.mode || 'keep', custom: sv?.custom ?? null };
+  });
+  const avg = calcAvgLivingSpend(expenseTxns, accounts, fxRates, 3);
+  const livingBudget = resolveBudget(budgets, null, ym);
+  const living = saved?.living ?? avg?.total ?? livingBudget ?? 0;
+  const method = saved ? (saved.method ?? null) : (ctx.settings.jar_method ?? null);
+  return { ym, saved, ctx, accounts, cards, expenseTxns, income, other, fixed, invest, living, avg, method, srcs };
+}
+const investAmt = g => g.mode === 'pause' ? 0 : g.mode === 'half' ? Math.round(g.base / 2) : g.mode === 'custom' ? Math.max(0, Math.round(g.custom ?? g.base)) : g.base;
+function planTotals(d) {
+  const fixed = d.fixed.filter(x => x.on).reduce((s, x) => s + x.amount, 0);
+  const invest = d.invest.reduce((s, g) => s + investAmt(g), 0);
+  const living = Math.max(0, Math.round(d.living || 0));
+  const incomeIn = d.income.filter(x => x.expected).reduce((s, x) => s + x.amount, 0) + (Number(d.other) || 0);
+  return { fixed, invest, living, out: fixed + invest + living, incomeIn };
+}
+// 照規劃模擬台幣現金可以撐多久。本月只算還沒付的：還沒確認的固定支出、還沒扣的
+// 定期定額（照規劃金額）、生活費剩下的部分。
+function planRunway(d, { investOff = false } = {}) {
+  const t = planTotals(d);
+  const ym = d.ym, today = new Date();
+  const cash = twdCashOf(d.accounts, d.cards).net;
+  const due = calcMonthDue({ recurringExpenses: d.ctx.recurringExpenses, installments: d.ctx.installments, dcaSchedules: d.ctx.dcaSchedules, fxRates: d.ctx.fxRates }, today);
+  const onKeys = new Set(d.fixed.filter(x => x.on).map(x => x.key));
+  // 年繳預存本月只是標記用途（錢還在帳戶裡），之後的月份才當成每月平均付出去
+  const fixedLeft = due.filter(u => (u.type === 'recurring' || u.type === 'installment') && onKeys.has(`${u.type}:${u.id}`)).reduce((s, u) => s + u.amount, 0);
+  const dueDca = new Set(due.filter(u => u.type === 'dca').map(u => u.id));
+  const transfersLeft = d.invest.filter(g => g.kind === 'transfer').map(g => g);
+  let investLeft = 0;
+  if (!investOff) d.invest.forEach(g => {
+    const ratio = g.base > 0 ? investAmt(g) / g.base : 0;
+    if (g.kind === 'dca') g.ids.forEach(id => { const s = d.ctx.dcaSchedules.find(x => x.id === id); if (s && dueDca.has(id)) investLeft += (toTWD(s.amount || 0, s.currency || 'TWD', d.ctx.fxRates) || 0) * ratio; });
+    else { const tr = transfersLeft.find(x => x.key === g.key); const day = tr?.days?.[0]; if (day && today.getDate() <= day) investLeft += investAmt(g); }
+  });
+  const livingSpent = calcLivingSpent(d.expenseTxns, ym, d.accounts, d.ctx.fxRates);
+  const firstOut = fixedLeft + investLeft + Math.max(0, t.living - livingSpent);
+  const monthlyOut = t.fixed + (investOff ? 0 : t.invest) + t.living;
+  const incomes = [];
+  d.income.forEach(x => {
+    const src = d.srcs.find(s => s.id === x.id); if (!src) return;
+    const start = x.inMonth && !x.expected ? addMonthsISO(src.next_date, 1) : src.next_date;
+    // 日期已過還沒記到的（延遲），當成今天以後會進來
+    limitedIncomeSchedule({ ...src, next_date: start }, src.received).forEach(p => incomes.push({ ...p, date: p.date < isoDate(today) ? isoDate(today) : p.date }));
+  });
+  if (Number(d.other) > 0) incomes.push({ date: isoDate(today), amount: Number(d.other) });
+  const r = simulateRunway({ cash, monthlyOut, firstMonthOut: firstOut, incomes, today });
+  return { ...r, cash, monthlyOut, firstOut, incomesLeft: incomes.reduce((s, p) => s + p.amount, 0), paymentsLeft: incomes.length };
+}
+const fmtRw = m => !Number.isFinite(m) ? '一直撐下去' : fmtRunway(m);
+
+// ── 規劃視窗 ─────────────────────────────────────────────────────────────
+let _mplStep = 0;
+async function openMonthPlan(ym = currentMonthStr(), step = 0) {
+  document.getElementById('mplSheet')?.remove();
+  const d = await buildPlanDraft(ym);
+  _mplStep = step;
+  const presets = (await getSetting(db, 'income_allocation_presets', {}).catch(() => ({}))) || {};
+  const jarsOf = k => presets[k]?.jars || INCOME_ALLOCATION_METHODS[k]?.jars || [];
+  const STEPS = ['收入', '固定支出', '投資', '生活費', '確認'];
+  const bg = el('div'); bg.className = 'qa-sheet-bg mpl-bg'; bg.id = 'mplSheet';
+  const panel = el('div'); panel.className = 'qa-sheet mpl';
+  panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-label', `${monthLabel(ym)}規劃`);
+  bg.appendChild(panel);
+  const money = v => `NT$ ${fmt(Math.round(v))}`;
+  const close = () => bg.remove();
+  let editSrc = null; // 正在新增／編輯的有期限收入
+
+  const render = () => {
+    const t = planTotals(d), rw = planRunway(d);
+    panel.innerHTML = `<div class="qa-sheet-grip" aria-hidden="true"></div>
+      <div class="mpl-head"><b>${monthLabel(ym)}規劃</b><button type="button" class="qa-sheet-x" aria-label="關閉">✕</button></div>
+      <ol class="mpl-steps">${STEPS.map((s, i) => `<li class="${i === _mplStep ? 'on' : i < _mplStep ? 'done' : ''}"><button type="button" data-step="${i}" aria-current="${i === _mplStep ? 'step' : 'false'}"><i>${i + 1}</i><span>${s}</span></button></li>`).join('')}</ol>
+      <div class="mpl-body"></div>
+      <div class="mpl-foot">
+        <div class="mpl-live"><span>每月 ${money(t.out)}</span><b>可撐 ${fmtRw(rw.months)}</b></div>
+        <div class="mpl-btns"${editSrc ? ' hidden' : ''}>${_mplStep > 0 ? '<button type="button" class="btn btn-ghost" data-prev>上一步</button>' : '<span></span>'}
+          ${_mplStep < 4 ? '<button type="button" class="btn btn-primary" data-next>下一步</button>' : '<button type="button" class="btn btn-primary" data-save>確認規劃</button>'}</div>
+      </div>`;
+    const body = panel.querySelector('.mpl-body');
+    body.appendChild(stepBody(t, rw));
+    panel.querySelector('.qa-sheet-x').onclick = close;
+    panel.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { _mplStep = +b.dataset.step; editSrc = null; render(); });
+    panel.querySelector('[data-prev]')?.addEventListener('click', () => { _mplStep--; editSrc = null; render(); });
+    panel.querySelector('[data-next]')?.addEventListener('click', () => { _mplStep++; editSrc = null; render(); panel.querySelector('.mpl-body').scrollTop = 0; });
+    panel.querySelector('[data-save]')?.addEventListener('click', save);
+  };
+  // 只更新底部的即時數字（輸入時不重畫整個步驟，游標才不會跳掉）
+  const live = () => {
+    const t = planTotals(d), rw = planRunway(d);
+    panel.querySelector('.mpl-live').innerHTML = `<span>每月 ${money(t.out)}</span><b>可撐 ${fmtRw(rw.months)}</b>`;
+    panel.querySelectorAll('[data-live-total]').forEach(e => { e.textContent = money(t[e.dataset.liveTotal]); });
+    panel.querySelectorAll('[data-live-pause]').forEach(e => { e.textContent = pauseHint(); });
+    panel.querySelector('[data-jars]')?.replaceWith(jarsBox());
+  };
+  const pauseHint = () => {
+    const a = planRunway(d), b = planRunway(d, { investOff: true });
+    if (!Number.isFinite(b.months) || !Number.isFinite(a.months)) return `投資全部暫停：可撐 ${fmtRw(b.months)}`;
+    const diff = b.months - a.months;
+    return diff > 0.05 ? `投資全部暫停：可撐 ${fmtRw(b.months)}（多 ${fmtRw(diff)}）` : `投資全部暫停：可撐 ${fmtRw(b.months)}`;
+  };
+  const jarsBox = () => {
+    const box = el('div'); box.dataset.jars = '';
+    if (!d.method) return box;
+    const t = planTotals(d);
+    const jb = calcJarBudgets(jarsOf(d.method), t.fixed - (d.fixed.find(x => x.key === 'annual' && x.on)?.amount || 0) + t.living);
+    const fixedByJar = {};
+    d.fixed.filter(x => x.on && x.kind !== 'annual').forEach(x => { const k = jarOfCategory(jarsOf(d.method), x.cat ? mainCategoryOf(x.cat) : 'cat_other_out'); fixedByJar[k] = (fixedByJar[k] || 0) + x.amount; });
+    box.className = 'mpl-jars';
+    const pcts = jb.map(j => Math.round(j.share * 100)); if (pcts.length) pcts[pcts.length - 1] = 100 - pcts.slice(0, -1).reduce((a, b) => a + b, 0);
+    box.innerHTML = jb.map((j, ji) => `<div class="mpl-jar"><i style="background:${j.color}"></i><span>${escHtml(j.label)}<small>${pcts[ji]}%${fixedByJar[j.key] ? `・含固定支出 ${fmt(fixedByJar[j.key])}` : ''}</small></span><b>${money(j.budget)}</b></div>`).join('');
+    return box;
+  };
+
+  const stepBody = (t, rw) => {
+    const box = el('div');
+    if (_mplStep === 0) {
+      box.innerHTML = `<div class="mpl-title">這個月會進來的錢 ${infoTip('只算確定會進來、或有期限的收入（例如失業給付最多領 6 次）。配息不算，只拿來再投入。')}</div>`;
+      if (editSrc) { box.appendChild(srcForm()); return box; }
+      d.income.forEach(x => {
+        const c = el('div'); c.className = 'mpl-src';
+        const late = x.next_date && x.next_date < isoDate(new Date()) && x.inMonth;
+        c.innerHTML = `<div class="mpl-src-top"><b>${escHtml(x.name)}</b><span>${money(x.amount)}</span></div>
+          <div class="mpl-count">${periodDots(x.received, x.total)}<em>已領 ${x.received}／${x.total} 次・還有 ${x.left} 次</em></div>
+          <label class="mpl-field"><span>下次預計入帳</span><input type="date" value="${x.next_date || ''}" data-src-date></label>
+          ${x.inMonth ? `<label class="mpl-check"><input type="checkbox" ${x.expected ? 'checked' : ''} data-src-exp><span>${monthLabel(ym)}會入帳${late ? '（日期已過，還沒記到）' : ''}</span></label>` : ''}
+          <button type="button" class="mpl-link" data-src-edit>編輯</button>`;
+        c.querySelector('[data-src-date]').addEventListener('change', async e => {
+          const v = e.target.value || null; x.next_date = v; x.inMonth = (v || '').slice(0, 7) === ym; x.expected = x.inMonth;
+          const s = d.srcs.find(z => z.id === x.id); if (s) s.next_date = v;
+          render();
+        });
+        c.querySelector('[data-src-exp]')?.addEventListener('change', e => { x.expected = e.target.checked; live(); });
+        c.querySelector('[data-src-edit]').addEventListener('click', () => { editSrc = d.srcs.find(z => z.id === x.id) || null; render(); });
+        box.appendChild(c);
+      });
+      // v2.27.0（使用者：不需要為失業給付特別做規劃）：預設只填一個金額；還剩固定次數的收入是選用的
+      const o = el('label'); o.className = 'mpl-field mpl-other';
+      o.innerHTML = `<span>${d.income.length ? '其他預計收入' : '這個月預計進來'}</span><input type="number" inputmode="decimal" min="0" step="100" value="${d.other || ''}" placeholder="0">`;
+      o.querySelector('input').addEventListener('input', e => { d.other = parseFloat(e.target.value) || 0; live(); });
+      box.appendChild(o);
+      const add = el('button'); add.type = 'button'; add.className = 'mpl-link2';
+      add.innerHTML = `＋ 還剩固定次數的收入 ${infoTip('例如補助還能領幾次。記下每次金額跟總次數，之後的月份會自動算進「可以撐多久」，領完就不再算。')}`;
+      add.onclick = e => { if (e.target.closest('.ii')) return; editSrc = {}; render(); };
+      box.appendChild(add);
+      const sum = el('div'); sum.className = 'mpl-sum';
+      sum.innerHTML = `<span>${monthLabel(ym)}預計進來</span><b data-live-total="incomeIn">${money(t.incomeIn)}</b>`;
+      box.appendChild(sum);
+    } else if (_mplStep === 1) {
+      box.innerHTML = `<div class="mpl-title">固定支出 ${infoTip('從固定支出、分期付款自動帶入。年繳的（保費、訂閱、紅包…）每月先存 1/12。不需要的這個月可以取消勾選。')}</div>`;
+      const list = el('div'); list.className = 'mpl-list';
+      d.fixed.forEach(x => {
+        const r = el('label'); r.className = 'mpl-row';
+        r.innerHTML = `<input type="checkbox" ${x.on ? 'checked' : ''}><span class="mpl-row-n">${escHtml(x.name)}${x.dots ? periodDots(...x.dots, 'is-sm') : ''}${x.tag ? `<small>${escHtml(x.tag)}</small>` : ''}</span><b>${money(x.amount)}</b>`;
+        r.querySelector('input').addEventListener('change', e => { x.on = e.target.checked; live(); });
+        list.appendChild(r);
+      });
+      if (!d.fixed.length) list.innerHTML = '<div class="mp-empty">還沒有固定支出。</div>';
+      box.appendChild(list);
+      const sum = el('div'); sum.className = 'mpl-sum'; sum.innerHTML = `<span>固定支出</span><b data-live-total="fixed">${money(t.fixed)}</b>`; box.appendChild(sum);
+    } else if (_mplStep === 2) {
+      box.innerHTML = `<div class="mpl-title">投資 ${infoTip('定期定額與換成外幣的定期轉帳。暫停＝這個月略過、不扣款；減半或自訂＝這個月自動記帳時用這個金額。下個月回到原本設定。')}</div>`;
+      d.invest.forEach(g => {
+        const c = el('div'); c.className = 'mpl-inv';
+        const daysTxt = g.days.length ? `每月 ${[...new Set(g.days)].sort((a, b) => a - b).join('、')} 日` : '';
+        const nativeTxt = g.kind === 'transfer' ? `${g.currency} ${fmt(g.native, { currency: g.currency })}・` : '';
+        c.innerHTML = `<div class="mpl-inv-top"><span>${escHtml(g.name)}<small>${nativeTxt}${daysTxt}</small></span><b data-inv-amt>${money(investAmt(g))}</b></div>
+          <div class="mpl-seg" role="radiogroup" aria-label="${escHtml(g.name)}">${INVEST_MODES.map(([k, l]) => `<button type="button" role="radio" aria-checked="${g.mode === k}" class="${g.mode === k ? 'on' : ''}" data-mode="${k}">${l}</button>`).join('')}</div>
+          ${g.mode === 'custom' ? `<label class="mpl-field"><span>這個月（台幣）</span><input type="number" inputmode="decimal" min="0" step="500" value="${g.custom ?? g.base}" data-inv-custom></label>` : ''}`;
+        c.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => { g.mode = b.dataset.mode; if (g.mode === 'custom' && g.custom == null) g.custom = g.base; render(); }));
+        c.querySelector('[data-inv-custom]')?.addEventListener('input', e => { g.custom = parseFloat(e.target.value) || 0; c.querySelector('[data-inv-amt]').textContent = money(investAmt(g)); live(); });
+        box.appendChild(c);
+      });
+      if (!d.invest.length) box.insertAdjacentHTML('beforeend', '<div class="mp-empty">還沒有定期定額。</div>');
+      const sum = el('div'); sum.className = 'mpl-sum'; sum.innerHTML = `<span>投資</span><b data-live-total="invest">${money(t.invest)}</b>`; box.appendChild(sum);
+      if (d.invest.length) { const h = el('div'); h.className = 'mpl-hint'; h.dataset.livePause = ''; h.textContent = pauseHint(); box.appendChild(h); }
+    } else if (_mplStep === 3) {
+      box.innerHTML = `<div class="mpl-title">生活費 ${infoTip('吃飯、交通、購物這些每天的花費（不含固定支出）。預設用近幾個月的實際平均。')}</div>`;
+      const f = el('div'); f.className = 'mpl-living';
+      f.innerHTML = `<label class="mpl-big"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="500" value="${Math.round(d.living) || ''}" aria-label="這個月生活費"></label>
+        ${d.avg?.total ? `<button type="button" class="mpl-chip${Math.round(d.living) === d.avg.total ? ' on' : ''}" data-avg>近 ${d.avg.months} 個月平均 ${money(d.avg.total)}</button>` : ''}`;
+      f.querySelector('input').addEventListener('input', e => { d.living = parseFloat(e.target.value) || 0; f.querySelector('[data-avg]')?.classList.toggle('on', Math.round(d.living) === d.avg?.total); live(); });
+      f.querySelector('[data-avg]')?.addEventListener('click', () => { d.living = d.avg.total; render(); });
+      box.appendChild(f);
+      const mt = el('div'); mt.className = 'mpl-title is-sub'; mt.innerHTML = `本月規劃方式 ${infoTip('選一個理財方法，固定支出＋生活費依它的比例分到各罐；記帳時每一筆會從它的類別對應的罐子扣，首頁看得到每罐還剩多少。')}`;
+      box.appendChild(mt);
+      const keys = INCOME_ALLOCATION_ALL_KEYS.filter(k => (!INCOME_ALLOCATION_CUSTOM_KEYS.includes(k) || presets[k]) && jarsOf(k).filter(isSpendJar).length > 1);
+      const chips = el('div'); chips.className = 'mpl-chips';
+      chips.innerHTML = [['', '只看生活費總額'], ...keys.map(k => [k, INCOME_ALLOCATION_METHODS[k].label])].map(([k, l]) => `<button type="button" class="mpl-chip${(d.method || '') === k ? ' on' : ''}" data-method="${k}">${l}</button>`).join('');
+      chips.querySelectorAll('[data-method]').forEach(b => b.addEventListener('click', () => { d.method = b.dataset.method || null; render(); }));
+      box.appendChild(chips);
+      box.appendChild(jarsBox());
+    } else {
+      const ex = t.out - t.incomeIn;
+      const prevRw = d.saved?.runway;
+      box.innerHTML = `<div class="mpl-title">${monthLabel(ym)}規劃</div>
+        <div class="mpl-conf">
+          <div class="mpl-conf-row in"><span>預計進來</span><b>${money(t.incomeIn)}</b></div>
+          <div class="mpl-conf-row"><span>固定支出</span><b>${money(t.fixed)}</b></div>
+          <div class="mpl-conf-row"><span>投資</span><b>${money(t.invest)}</b></div>
+          <div class="mpl-conf-row"><span>生活費</span><b>${money(t.living)}</b></div>
+          <div class="mpl-conf-row total"><span>${ex > 0 ? '要動用存款' : '還會多出'}</span><b>${money(Math.abs(ex))}</b></div>
+        </div>
+        <div class="mpl-rw">
+          <span>台幣現金 ${money(rw.cash)} ${infoTip(`台幣現金與活存，扣掉信用卡待繳。之後每個月照這個規劃付 ${money(rw.monthlyOut)}${rw.paymentsLeft ? `，有期限的收入還有 ${rw.paymentsLeft} 次、共 ${money(rw.incomesLeft)} 在預計的月份加回來` : ''}。`)}</span>
+          <b>可撐 ${fmtRw(rw.months)}</b>
+          ${prevRw != null && Number.isFinite(prevRw) && Number.isFinite(rw.months) && Math.abs(rw.months - prevRw) > 0.05 ? `<em>上次規劃 ${fmtRw(prevRw)}</em>` : ''}
+        </div>
+        <div class="mpl-hint">確認後：生活預算設成 ${money(t.living)}${d.fixed.find(x => x.key === 'annual' && x.on) ? `、撥 ${money(d.fixed.find(x => x.key === 'annual').amount)} 到年繳預存` : ''}${d.invest.some(g => g.mode === 'pause') ? `、${d.invest.filter(g => g.mode === 'pause').map(g => g.name).join('、')} 這個月暫停` : ''}。</div>`;
+    }
+    return box;
+  };
+
+  // 新增／編輯有期限的收入。同時列出金額一樣的收入紀錄，勾選的會歸到這個分類
+  // （例如之前記成「薪資」「退稅補助」的失業給付），並取消「一次性收入」。
+  const srcForm = () => {
+    const s = editSrc, isNew = !s.id;
+    const incTxns = d.ctx.incomeTxns;
+    const incCats = _cats.filter(c => c.type === 'income' && c.parent_id && c.active !== false && !['cat_receivable', 'cat_dca', 'cat_realized'].includes(c.id));
+    const f = el('div'); f.className = 'mpl-form';
+    const cand = amt => incTxns.filter(x => amt > 0 && Math.round(x.amount) === Math.round(amt) && x.category !== (f.querySelector('[data-f-cat]')?.value || s.category || 'cat_inc_unemp'))
+      .sort((a, b) => (b.date || '').localeCompare(a.date || '')).slice(0, 8);
+    f.innerHTML = `
+      <label class="mpl-field"><span>名稱</span><input type="text" value="${escHtml(s.name || '失業給付')}" data-f-name></label>
+      <div class="mpl-f2">
+        <label class="mpl-field"><span>每次金額</span><input type="number" inputmode="decimal" min="0" value="${s.amount || ''}" data-f-amt></label>
+        <label class="mpl-field"><span>總共幾次</span><input type="number" inputmode="numeric" min="1" max="60" value="${s.total || 6}" data-f-total></label>
+      </div>
+      <label class="mpl-field"><span>下次預計入帳</span><input type="date" value="${s.next_date || ''}" data-f-date></label>
+      <label class="mpl-field"><span>記在哪個收入分類 ${infoTip('已領幾次＝這個分類的收入紀錄有幾筆。')}</span><select data-f-cat>${incCats.map(c => `<option value="${c.id}">${escHtml(catPath(c.id))}</option>`).join('')}</select></label>
+      <div class="mpl-cand"></div>
+      <div class="mpl-form-btns">${isNew ? '<span></span>' : '<button type="button" class="btn btn-ghost" data-f-del style="color:var(--red)">刪除</button>'}<span><button type="button" class="btn btn-ghost" data-f-cancel>取消</button> <button type="button" class="btn btn-primary" data-f-save>儲存</button></span></div>`;
+    f.querySelector('[data-f-cat]').value = s.category || 'cat_inc_unemp';
+    const drawCand = () => {
+      const list = cand(parseFloat(f.querySelector('[data-f-amt]').value));
+      const host = f.querySelector('.mpl-cand');
+      host.innerHTML = list.length ? `<div class="mpl-cand-h">這幾筆是同一筆收入嗎？勾選的會改記到「${escHtml(catById(f.querySelector('[data-f-cat]').value)?.label || '')}」</div>` + list.map(x => `<label class="mpl-row"><input type="checkbox" value="${x.id}" ${/失業|補助|給付/.test(x.description || '') || x.category === 'cat_inc_refund' || x.irregular ? 'checked' : ''}><span class="mpl-row-n">${fmtDate(x.date)}<small>${escHtml(catPath(x.category))}${x.description ? `・${escHtml(x.description)}` : ''}${x.irregular ? '・一次性' : ''}</small></span><b>${money(x.amount)}</b></label>`).join('') : '';
+    };
+    f.querySelector('[data-f-amt]').addEventListener('input', drawCand);
+    f.querySelector('[data-f-cat]').addEventListener('change', drawCand);
+    drawCand();
+    f.querySelector('[data-f-cancel]').onclick = () => { editSrc = null; render(); };
+    f.querySelector('[data-f-del]')?.addEventListener('click', async () => {
+      const list = ((await getSetting(db, 'limited_income', []).catch(() => [])) || []).filter(z => z.id !== s.id);
+      await setSetting(db, 'limited_income', list);
+      Object.assign(d, await buildPlanDraft(ym), { fixed: d.fixed, invest: d.invest, living: d.living, method: d.method, other: d.other });
+      editSrc = null; render();
+    });
+    f.querySelector('[data-f-save]').onclick = async () => {
+      const name = f.querySelector('[data-f-name]').value.trim(), amount = parseFloat(f.querySelector('[data-f-amt]').value);
+      const total = parseInt(f.querySelector('[data-f-total]').value), next_date = f.querySelector('[data-f-date]').value || null;
+      const category = f.querySelector('[data-f-cat]').value;
+      if (!name || !(amount > 0) || !(total > 0)) { showToast('填好名稱、每次金額、總共幾次'); return; }
+      const list = (await getSetting(db, 'limited_income', []).catch(() => [])) || [];
+      const rec = { ...(s.id ? list.find(z => z.id === s.id) : {}), id: s.id || crypto.randomUUID(), name, amount, total, next_date, category };
+      await setSetting(db, 'limited_income', s.id ? list.map(z => z.id === s.id ? rec : z) : [...list, rec]);
+      const picked = [...f.querySelectorAll('.mpl-cand input:checked')].map(i => i.value);
+      if (picked.length) {
+        const allocs = await getAll(db, 'bucket_allocations').catch(() => []);
+        for (const id of picked) {
+          const tx = await getOne(db, 'income_txns', id); if (!tx) continue;
+          const nx = { ...tx, category, irregular: false }; delete nx.bonus_bucket_id; delete nx.bonus_amount;
+          await putOne(db, 'income_txns', nx);
+          const t2 = db.transaction(['bucket_allocations'], 'readwrite');
+          allocs.filter(a => a.income_txn_id === id && a.auto_type === 'bonus').forEach(a => t2.objectStore('bucket_allocations').delete(a.id));
+          await new Promise(r => { t2.oncomplete = r; t2.onerror = r; });
+        }
+        showToast(`已把 ${picked.length} 筆改記到「${catById(category)?.label || ''}」`);
+      }
+      const keep = { fixed: d.fixed, invest: d.invest, living: d.living, method: d.method, other: d.other };
+      Object.assign(d, await buildPlanDraft(ym), keep);
+      editSrc = null; render();
+    };
+    return f;
+  };
+
+  const save = async () => {
+    const t = planTotals(d), rw = planRunway(d);
+    const btn = panel.querySelector('[data-save]'); if (btn) btn.disabled = true;
+    // 有期限的收入：更新下次預計日期；這個月不會入帳的往後延一個月
+    const list = (await getSetting(db, 'limited_income', []).catch(() => [])) || [];
+    await setSetting(db, 'limited_income', list.map(s => {
+      const x = d.income.find(z => z.id === s.id); if (!x) return s;
+      return { ...s, next_date: x.inMonth && !x.expected && x.next_date ? addMonthsISO(x.next_date, 1) : x.next_date };
+    }));
+    // 定期定額：暫停＝略過這個月還沒扣的那一期；改回其他模式時撤銷這個月的略過
+    for (const g of d.invest.filter(g => g.kind === 'dca')) {
+      for (const id of g.ids) {
+        const s = await getOne(db, 'dca_schedules', id); if (!s) continue;
+        const occ = s.billing_day ? (() => { const [y, m] = ym.split('-').map(Number); const last = new Date(y, m, 0).getDate(); return `${ym}-${pad2x(Math.min(s.billing_day, last))}`; })() : null;
+        if (!occ) continue;
+        const sk = currentSkip('dca_schedules', s);
+        if (g.mode === 'pause') { if (occ > (s.last_confirmed_date || '')) await skipPeriod('dca_schedules', id, occ); }
+        else if (sk && sk.occ === occ) await undoSkipPeriod('dca_schedules', id);
+      }
+    }
+    for (const g of d.invest.filter(g => g.kind === 'transfer')) {
+      const s = await getOne(db, 'recurring_transfers', g.ids[0]); if (!s || !s.billing_day) continue;
+      const [y, m] = ym.split('-').map(Number); const occ = `${ym}-${pad2x(Math.min(s.billing_day, new Date(y, m, 0).getDate()))}`;
+      const sk = currentSkip('recurring_transfers', s);
+      if (g.mode === 'pause') { if (occ > (s.last_confirmed_date || '')) await skipPeriod('recurring_transfers', s.id, occ); }
+      else if (sk && sk.occ === occ) await undoSkipPeriod('recurring_transfers', s.id);
+    }
+    const annualOn = !!d.fixed.find(x => x.key === 'annual' && x.on);
+    await upsertAnnualReserveAlloc(ym, annualOn);
+    if (ym === currentMonthStr()) await saveBudgetRecord(null, { amount: t.living });
+    const settings = (await getSetting(db, 'monthly_plan', null)) || {};
+    await setSetting(db, 'monthly_plan', { ...settings, jar_method: d.method || null, ...(d.method ? { ref_method: d.method } : {}) });
+    const invest = Object.fromEntries(d.invest.map(g => [g.key, { mode: g.mode, custom: g.mode === 'custom' ? g.custom : null, amount: investAmt(g), base: g.base, ids: g.ids, kind: g.kind, name: g.name }]));
+    await setSetting(db, mplanKey(ym), {
+      month: ym, confirmed_at: new Date().toISOString(),
+      income: { items: d.income.map(x => ({ id: x.id, name: x.name, amount: x.amount, expected: x.expected })), other: Number(d.other) || 0, total: t.incomeIn },
+      fixed: { off: d.fixed.filter(x => !x.on).map(x => x.key), total: t.fixed, items: d.fixed.filter(x => x.on).map(x => ({ key: x.key, name: x.name, amount: x.amount, cat: x.cat || null })) },
+      invest, investTotal: t.invest, living: t.living, method: d.method || null, out: t.out, runway: Number.isFinite(rw.months) ? +rw.months.toFixed(2) : null, cash: rw.cash,
+    });
+    close();
+    showToast(`✓ ${monthLabel(ym)}規劃好了`);
+    await navigate(currentView);
+  };
+
+  bg.addEventListener('click', e => { if (e.target === bg) close(); });
+  document.body.appendChild(bg);
+  render();
+  requestAnimationFrame(() => bg.classList.add('open'));
+}
+const pad2x = n => String(n).padStart(2, '0');
+// 這個月定期定額／定期轉帳照規劃的金額（減半、自訂）；沒有規劃或照舊時回傳 null
+async function planInvestOverride(kind, id, date) {
+  const p = await getMplan((date || '').slice(0, 7)); if (!p?.invest) return null;
+  const g = Object.values(p.invest).find(x => x.kind === kind && (x.ids || []).includes(id));
+  if (!g || g.mode === 'keep' || g.mode === 'pause' || !(g.base > 0)) return null;
+  return g.amount / g.base; // 比例：同一組有好幾個排程時各自照比例
+}
+
+// ── 月底回顧／本月進度 ──────────────────────────────────────────────────
+// 使用者核准的內容與順序：① 台幣現金可撐幾個月（跟上個月比）＋進來／花掉／投資
+// ② 計畫 vs 實際（固定支出、生活、臨時支出、投資）③ 生活費細項跟上個月比 ④ 下個月規劃。
+// 配色全部用目前主題的顏色。
+async function buildMonthReview(ym, { mode = 'review', onPlan = null } = {}) {
+  const [expenseTxns, incomeTxns, allocations, accounts, transferLogs, buckets, deposits] = await Promise.all([
+    getAll(db,'expense_txns').catch(()=>[]), getAll(db,'income_txns').catch(()=>[]), getAll(db,'bucket_allocations').catch(()=>[]),
+    getAll(db,'accounts').catch(()=>[]), getAll(db,'transfer_logs').catch(()=>[]), getAll(db,'buckets').catch(()=>[]), getAll(db,'time_deposits').catch(()=>[]),
+  ]);
+  const fxRates = await getFxRates(db).catch(()=>({}));
+  const p = await getMplan(ym), prevP = await getMplan(shiftMonth(ym, -1));
+  const inM = t => (t.date || '').slice(0, 7) === ym;
+  const amt = t => resolveExpenseAmountTwd(t, accounts, fxRates);
+  const ef = buckets.find(b => b.is_emergency_fund && b.status !== 'closed');
+  const reserve = buckets.find(b => b.is_annual_reserve);
+  const exp = expenseTxns.filter(t => inM(t) && t.category !== 'cat_bad_debt_writeoff' && !isSavingCategory(t.category));
+  const fixedA = exp.filter(t => (t.rec_id || t.inst_id) && (!reserve || t.bucket_id !== reserve.id)).reduce((s, t) => s + amt(t), 0)
+    + allocations.filter(a => a.auto_type === 'annual' && a.auto_month === ym).reduce((s, a) => s + a.amount, 0);
+  const livingA = calcLivingSpent(expenseTxns, ym, accounts, fxRates);
+  const tempA = ef ? exp.filter(t => t.bucket_id === ef.id && !t.rec_id && !t.inst_id).reduce((s, t) => s + amt(t), 0) : 0;
+  const from = `${ym}-01`, to = `${ym}-31`;
+  const flow = calcMoneyFlow({ incomeTxns, expenseTxns, allocations, deposits, from, to, accounts, fxRates });
+  const trIds = new Set(Object.values(p?.invest || {}).filter(g => g.kind === 'transfer').flatMap(g => g.ids || []));
+  const trA = transferLogs.filter(l => l.rec_transfer_id && (trIds.size ? trIds.has(l.rec_transfer_id) : l.from_currency === 'TWD' && l.to_currency !== 'TWD') && (l.created_at || '').slice(0, 7) === ym)
+    .reduce((s, l) => s + (l.from_currency === 'TWD' ? l.from_amount : toTWD(l.from_amount, l.from_currency, fxRates) || 0), 0);
+  const investA = flow.parts.invest + trA;
+  const inA = incomeTxns.filter(t => inM(t) && !['cat_receivable', 'cat_dca'].includes(t.category) && !t.dca_spent && mainCategoryOf(t.category) !== 'cat_inc_invest').reduce((s, t) => s + resolveIncomeAmountTwd(t), 0);
+  const annualA = allocations.filter(a => a.auto_type === 'annual' && a.auto_month === ym).reduce((s, a) => s + a.amount, 0);
+  const spentA = fixedA - annualA + livingA + tempA; // 年繳預存只是先存起來，不算花掉
+  // 可撐多久：本月用目前的規劃即時算；過去的月份用那個月規劃時存下的數字
+  let rwNow = null, rwPrev = null;
+  if (mode === 'progress' || ym === shiftMonth(currentMonthStr(), -1)) { const dr = await buildPlanDraft(currentMonthStr()); rwNow = planRunway(dr).months; }
+  rwPrev = mode === 'progress' ? p?.runway : prevP?.runway ?? p?.runway;
+  const money = v => `NT$ ${fmt(Math.round(v))}`;
+  const rows = [
+    ['固定支出', fixedA, p?.fixed?.total],
+    ['生活', livingA, p?.living],
+    ['臨時支出', tempA, null, ef ? '從緊急預備金' : ''],
+    ['投資', investA, p?.investTotal],
+  ];
+  const livingNow = calcLivingSpentByCategory(expenseTxns, ym, accounts, fxRates);
+  const livingPrev = calcLivingSpentByCategory(expenseTxns, shiftMonth(ym, -1), accounts, fxRates);
+  const cats = Object.entries(livingNow).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const card = el('div'); card.className = 'card rv';
+  const delta = rwNow != null && rwPrev != null && Number.isFinite(rwNow) ? rwNow - rwPrev : null;
+  const isCur = ym === currentMonthStr();
+  card.innerHTML = `
+    <div class="networth-card rv-hero">
+      <div class="rv-k">${mode === 'progress' ? `${monthLabel(ym)}進度` : `${monthLabel(ym)}回顧`}</div>
+      ${rwNow != null ? `<div class="networth-label">台幣現金可撐</div><div class="rv-big">${fmtRw(rwNow)}</div>
+      ${delta != null && Math.abs(delta) >= 0.05 ? `<div class="rv-delta ${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '▲' : '▼'} ${fmtRw(Math.abs(delta))}<span>${mode === 'progress' ? '比規劃時' : '比上個月'}</span></div>` : ''}` : ''}
+      <div class="rv-flow">
+        <div><span>進來</span><b>${money(inA)}</b></div>
+        <div><span>花掉</span><b>${money(spentA)}</b></div>
+        <div><span>投資</span><b>${money(investA)}</b></div>
+      </div>
+    </div>
+    <div class="rv-sec"><div class="rv-h">${p ? '計畫 vs 實際' : '實際'}</div>
+      ${rows.map(([l, a, plan, sub]) => {
+        const has = plan != null && plan > 0;
+        // 沒有規劃的月份：長條彼此比大小（以最大的那一項為滿）
+        const max = has ? Math.max(a, plan) : (Math.max(...rows.map(r => r[1])) || 1);
+        const over = has && a > plan;
+        return `<div class="rv-row"><div class="rv-row-t"><span>${l}${sub ? `<small>${sub}</small>` : ''}</span><b class="${over ? 'is-over' : ''}">${money(a)}${has ? `<em> / ${fmt(Math.round(plan))}</em>` : ''}</b></div>
+          <div class="rv-bar${over ? ' is-over' : ''}"><span style="width:${Math.min(100, a / max * 100)}%"></span>${has ? `<i style="left:${Math.min(100, plan / max * 100)}%"></i>` : ''}</div></div>`;
+      }).join('')}
+    </div>
+    ${cats.length ? `<div class="rv-sec"><div class="rv-h">生活費細項<span>跟 ${monthLabel(shiftMonth(ym, -1))}比</span></div>
+      ${cats.map(([id, v]) => { const pv = livingPrev[id] || 0, dv = Math.round(v - pv); const c = catById(id);
+        return `<div class="rv-cat"><span>${c?.icon || '·'} ${escHtml(c?.label || '其他')}</span><b>${money(v)}</b><em class="${dv > 0 ? 'up' : dv < 0 ? 'down' : ''}">${dv === 0 ? '—' : `${dv > 0 ? '▲' : '▼'} ${fmt(Math.abs(dv))}`}</em></div>`; }).join('')}
+    </div>` : ''}
+    ${onPlan ? `<button type="button" class="btn btn-primary rv-cta" data-rv-plan>${mode === 'progress' ? '調整規劃' : `${monthLabel(isCur ? ym : shiftMonth(ym, 1))}規劃 開始`}</button>` : ''}`;
+  card.querySelector('[data-rv-plan]')?.addEventListener('click', onPlan);
+  return card;
+}
+
+// ── 首頁：本月還沒規劃的提示；規劃好之後顯示生活費（分罐）還剩多少 ────────
+async function buildHomePlanCard() {
+  const ym = currentMonthStr();
+  const p = await getMplan(ym);
+  const card = el('div'); card.className = 'card hp';
+  if (!p) {
+    card.classList.add('is-todo');
+    card.innerHTML = `<div class="hp-todo"><b>${monthLabel(ym)}還沒規劃</b><span>收入、固定支出、投資、生活費，五步排好這個月</span></div><button type="button" class="btn btn-primary btn-sm">開始</button>`;
+    card.querySelector('button').onclick = () => openMonthPlan(ym);
+    return card;
+  }
+  const [expenseTxns, accounts] = await Promise.all([getAll(db,'expense_txns').catch(()=>[]), getAll(db,'accounts').catch(()=>[])]);
+  const fxRates = await getFxRates(db).catch(()=>({}));
+  const spent = calcLivingSpent(expenseTxns, ym, accounts, fxRates);
+  const left = p.living - spent;
+  const pct = p.living > 0 ? Math.min(100, spent / p.living * 100) : 0;
+  const dim = new Date(+ym.slice(0, 4), +ym.slice(5), 0).getDate(), dayPct = new Date().getDate() / dim * 100;
+  let jarsHtml = '';
+  if (p.method) {
+    const presets = (await getSetting(db, 'income_allocation_presets', {}).catch(() => ({}))) || {};
+    const jars = presets[p.method]?.jars || INCOME_ALLOCATION_METHODS[p.method]?.jars || [];
+    const jb = calcJarBudgets(jars, (p.fixed?.total || 0) - ((p.fixed?.items || []).find(x => x.key === 'annual')?.amount || 0) + p.living);
+    const byCat = calcLivingSpentByCategory(expenseTxns, ym, accounts, fxRates);
+    const used = {};
+    Object.entries(byCat).forEach(([c, v]) => { const k = jarOfCategory(jars, c); used[k] = (used[k] || 0) + v; });
+    (p.fixed?.items || []).filter(x => x.key !== 'annual').forEach(x => { const k = jarOfCategory(jars, x.cat ? mainCategoryOf(x.cat) : 'cat_other_out'); used[k] = (used[k] || 0) + x.amount; });
+    jarsHtml = `<div class="hp-jars">${jb.map(j => { const u = used[j.key] || 0, l = j.budget - u;
+      return `<div class="hp-jar"><div class="hp-jar-t"><span><i style="background:${j.color}"></i>${escHtml(j.label)}</span><b class="${l < 0 ? 'is-over' : ''}">${l < 0 ? '超出 ' : '剩 '}NT$ ${fmt(Math.abs(Math.round(l)))}</b></div>
+        <div class="rv-bar${l < 0 ? ' is-over' : ''}"><span style="width:${j.budget > 0 ? Math.min(100, u / j.budget * 100) : 100}%;background:${j.color}"></span></div></div>`; }).join('')}</div>`;
+  }
+  card.innerHTML = `<button type="button" class="hp-main" aria-label="看${monthLabel(ym)}進度">
+      <div class="hp-t"><span>${monthLabel(ym)}生活費</span><b class="${left < 0 ? 'is-over' : ''}">${left < 0 ? '超出' : '剩'} NT$ ${fmt(Math.abs(Math.round(left)))}</b></div>
+      <div class="rv-bar${left < 0 ? ' is-over' : ''}"><span style="width:${pct}%"></span><i style="left:${dayPct}%" title="今天"></i></div>
+      <div class="hp-s"><span>已花 NT$ ${fmt(Math.round(spent))}</span><span>預算 NT$ ${fmt(p.living)}</span></div>
+    </button>${jarsHtml}`;
+  card.querySelector('.hp-main').onclick = () => { _planTab = 'plan'; navigate('plan'); };
+  return card;
 }
 
 // 「每月生活費」與緊急預備金月數設定。
@@ -10458,20 +11303,21 @@ async function renderBuckets() {
           return {
             date: a.date, sortKey: a.created_at||a.date, icon: a.auto_type === 'shortfall' ? '🚨' : '↪️',
             label: a.note || (a.auto_type === 'shortfall' ? '本月超支，自動由緊急預備金支應' : '由緊急預備金撥出'),
-            amountLabel: `－NT$ ${fmt(Math.abs(a.amount))}`, color: 'var(--red)',
+            amountLabel: `－NT$ ${fmt(Math.abs(a.amount))}`, color: 'var(--red)', alloc: a,
           };
         }
         if (a.auto_type === 'buffer') {
           return {
             date: a.date, sortKey: a.created_at||a.date, icon: a.amount >= 0 ? '🌊' : '↪️',
             label: a.note || (a.amount >= 0 ? '收入比基準多，存進緩衝' : '收入比基準少，從緩衝補'),
-            amountLabel: `${a.amount >= 0 ? '+' : '－'}NT$ ${fmt(Math.abs(a.amount))}`, color: a.amount >= 0 ? 'var(--blue,#2563EB)' : 'var(--red)',
+            amountLabel: `${a.amount >= 0 ? '+' : '－'}NT$ ${fmt(Math.abs(a.amount))}`, color: a.amount >= 0 ? 'var(--blue,#2563EB)' : 'var(--red)', alloc: a,
           };
         }
+        const neg = a.amount < 0;
         return {
-          date: a.date, sortKey: a.created_at||a.date, icon: a.auto ? '🤖' : '📥',
-          label: a.auto ? `自動提撥${a.note?'・'+a.note:''}` : (a.note ? `提撥・${a.note}` : '提撥'),
-          amountLabel: `+NT$ ${fmt(a.amount)}`, color: a.auto ? 'var(--blue,#2563EB)' : 'var(--green,#16A34A)',
+          date: a.date, sortKey: a.created_at||a.date, icon: neg ? '↪️' : a.auto ? '🤖' : '📥',
+          label: a.auto_type === 'annual' ? (a.note || '每月預存') : a.auto_type === 'bonus' ? `獎金撥入${a.note && a.note !== '獎金撥入' ? '・' + a.note : ''}` : a.auto ? `自動提撥${a.note?'・'+a.note:''}` : (a.note ? `${neg ? '拿出' : '提撥'}・${a.note}` : (neg ? '拿出' : '提撥')),
+          amountLabel: `${neg ? '－' : '+'}NT$ ${fmt(Math.abs(a.amount))}`, color: neg ? 'var(--red)' : a.auto ? 'var(--blue,#2563EB)' : 'var(--green,#16A34A)', alloc: a,
         };
       }),
       ...expenseTxns.filter(t=>t.bucket_id===bucket.id).map(t => ({
@@ -10485,10 +11331,12 @@ async function renderBuckets() {
       const ledgerHead = el('div'); ledgerHead.style.cssText='font-size:12px;font-weight:600;color:var(--text-2);margin:10px 0 6px';
       ledgerHead.textContent = '最近紀錄';
       body.appendChild(ledgerHead);
+      // v2.27.0（使用者：存錢目標的紀錄不能刪也不能改）：撥入／拿出的紀錄點一下可以修改或刪除
       ledgerItems.forEach(item => {
-        const row = el('div');
-        row.style.cssText='display:flex;align-items:center;gap:8px;font-size:12px;padding:5px 0;border-top:1px dotted var(--border)';
-        row.innerHTML = `<span>${item.icon}</span><span style="flex:1;color:var(--text-2)">${item.label}</span><span style="color:var(--text-3)">${fmtDate(item.date)}</span><span style="font-weight:600;color:${item.color}">${item.amountLabel}</span>`;
+        const row = el(item.alloc ? 'button' : 'div'); row.className = 'bk-led' + (item.alloc ? ' is-btn' : '');
+        if (item.alloc) { row.type = 'button'; row.setAttribute('aria-label', `修改這筆：${item.label}`); }
+        row.innerHTML = `<span>${item.icon}</span><span class="bk-led-l">${escHtml(item.label)}</span><span class="bk-led-d">${fmtDate(item.date)}</span><span style="font-weight:600;color:${item.color}">${item.amountLabel}</span>${item.alloc ? '<i aria-hidden="true">›</i>' : ''}`;
+        if (item.alloc) row.addEventListener('click', () => openBucketAllocModal(bucket, null, item.alloc));
         body.appendChild(row);
       });
     }
@@ -10658,29 +11506,45 @@ document.getElementById('bucketModalSave').addEventListener('click',async()=>{
 });
 
 // ── Bucket allocation (提撥) modal ───────────────────────────────────────────
-function openBucketAllocModal(bucket, prefillAmount = null) {
-  document.getElementById('bucketAllocTargetLabel').textContent = `提撥到「${bucket.name}」`;
+function openBucketAllocModal(bucket, prefillAmount = null, edit = null) {
+  document.getElementById('bucketAllocTitle').textContent = edit ? '修改紀錄' : '提撥到存錢目標';
+  document.getElementById('bucketAllocTargetLabel').textContent = edit ? `「${bucket.name}」${edit.amount < 0 ? '拿出' : '撥入'}` : `提撥到「${bucket.name}」`;
   document.getElementById('bucketAllocBucketId').value = bucket.id;
-  document.getElementById('bucketAllocAmount').value = prefillAmount > 0 ? Math.round(prefillAmount) : '';
-  document.getElementById('bucketAllocDate').value = new Date().toISOString().slice(0,10);
-  document.getElementById('bucketAllocNote').value = '';
+  document.getElementById('bucketAllocEditId').value = edit?.id || '';
+  document.getElementById('bucketAllocModalDelete').style.display = edit ? '' : 'none';
+  document.getElementById('bucketAllocAmount').value = edit ? Math.abs(edit.amount) : prefillAmount > 0 ? Math.round(prefillAmount) : '';
+  document.getElementById('bucketAllocDate').value = edit?.date || new Date().toISOString().slice(0,10);
+  document.getElementById('bucketAllocNote').value = edit?.note || '';
   document.getElementById('bucketAllocModal').classList.add('open');
   document.getElementById('bucketAllocAmount').focus();
 }
 document.getElementById('bucketAllocModalCancel').addEventListener('click',()=>document.getElementById('bucketAllocModal').classList.remove('open'));
+document.getElementById('bucketAllocModalDelete').addEventListener('click', async () => {
+  const id = document.getElementById('bucketAllocEditId').value; if (!id) return;
+  const rec = await getOne(db, 'bucket_allocations', id); if (!rec) return;
+  const t = db.transaction(['bucket_allocations'], 'readwrite'); t.objectStore('bucket_allocations').delete(id);
+  await new Promise(r => { t.oncomplete = r; t.onerror = r; });
+  document.getElementById('bucketAllocModal').classList.remove('open');
+  await refreshBucketsContext();
+  showToast('已刪除這筆紀錄', { label: '復原', onClick: async () => { await putOne(db, 'bucket_allocations', rec); await refreshBucketsContext(); showToast('已復原'); } });
+});
 document.getElementById('bucketAllocModal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
 document.getElementById('bucketAllocModalSave').addEventListener('click',async()=>{
   const amt = parseFloat(document.getElementById('bucketAllocAmount').value);
   if (!amt || amt<=0) { document.getElementById('bucketAllocAmount').style.borderColor='var(--red)'; return; }
   const bucketId = document.getElementById('bucketAllocBucketId').value;
   const date = document.getElementById('bucketAllocDate').value || new Date().toISOString().slice(0,10);
+  const editId = document.getElementById('bucketAllocEditId').value;
+  const prev = editId ? await getOne(db, 'bucket_allocations', editId) : null;
+  // 修改時保留原本的正負號（拿出的紀錄是負數）；改過的自動紀錄不再被當成自動產生的
   await putOne(db,'bucket_allocations',{
-    id: crypto.randomUUID(), bucket_id: bucketId, amount: amt, date,
+    ...(prev || {}),
+    id: prev?.id || crypto.randomUUID(), bucket_id: bucketId, amount: prev && prev.amount < 0 ? -amt : amt, date,
     note: document.getElementById('bucketAllocNote').value.trim(),
-    created_at: new Date().toISOString(),
+    ...(prev ? { edited_at: new Date().toISOString() } : { created_at: new Date().toISOString() }),
   });
   document.getElementById('bucketAllocModal').classList.remove('open');
-  showToast(`✓ 已提撥 NT$ ${fmt(amt)}`);
+  showToast(prev ? '已修改' : `✓ 已提撥 NT$ ${fmt(amt)}`);
   await refreshBucketsContext();
 });
 
@@ -10870,9 +11734,7 @@ async function renderInstallment() {
             <span style="color:var(--text-2)">已繳 <strong>${item.paid_periods}</strong>／${item.total_periods} 期${instNextLabel(item) ? '・' + instNextLabel(item) : ''}</span>
             <span style="color:var(--text-3)">剩 ${remaining} 期（NT$ ${fmt(remaining * perAmt)}）</span>
           </div>
-          <div style="height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden">
-            <div style="height:100%;width:${pct}%;background:var(--blue);border-radius:3px;transition:width .3s"></div>
-          </div>
+          ${periodDots(item.paid_periods || 0, item.total_periods, 'is-wide')}
         </div>
         <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
           ${isDue?`<button type="button" class="sched-act" data-confirm-inst="${item.id}">確認本期</button>`:''}
@@ -11479,6 +12341,7 @@ async function runAutoConfirm() {
       try {
         if (it.type === 'recurring') {
           const r = recurringExpenses.find(x => x.id === it.refId); if (!r || it.date <= (r.last_confirmed_date || '')) continue;
+          if (r.pay_mode === 'manual') { done.delete(key); continue; } // v2.27.0：手動扣款不自動記，留在排程提醒等確認
           const acc = r.account_id ? state.accounts.find(a => a.id === r.account_id) : null;
           const payCurr = (r.pay_type === 'account' || r.pay_type === 'cash') ? (acc?.currency || 'TWD') : 'TWD';
           const amt = (r.currency || 'TWD') === payCurr ? r.amount : convertAmt(r.amount, r.currency || 'TWD', payCurr, fxRates);
@@ -11489,14 +12352,17 @@ async function runAutoConfirm() {
           res = await commitInstPeriod(i, it.date, i.per_amount ?? Math.round(i.total_amount / i.total_periods), i.spend_category || await getDefaultExpenseCategoryId());
         } else if (it.type === 'dca') {
           const d = dcaSchedules.find(x => x.id === it.refId); if (!d || it.date <= (d.last_confirmed_date || '')) continue;
-          res = await commitDcaPeriod(d, it.date, d.amount, null);
+          const ratio = await planInvestOverride('dca', d.id, it.date); // v2.27.0：每月規劃減半／自訂
+          res = await commitDcaPeriod(d, it.date, ratio != null ? Math.round(d.amount * ratio) : d.amount, null);
         } else if (it.type === 'transfer') {
           const t = recurringTransfers.find(x => x.id === it.refId); if (!t || it.date <= (t.last_confirmed_date || '')) continue;
           const fromAcc = state.accounts.find(a => a.id === t.from_account_id), toAcc = state.accounts.find(a => a.id === t.to_account_id);
           if (!fromAcc || !toAcc) continue;
           const isCross = fromAcc.currency !== toAcc.currency;
           const refRate = isCross ? (toTWD(1, fromAcc.currency, fxRates) / (toTWD(1, toAcc.currency, fxRates) || 1)) : 1;
-          let fAmt = t.amount, tAmt = t.amount;
+          const tRatio = await planInvestOverride('transfer', t.id, it.date);
+          const tBase = tRatio != null ? +(t.amount * tRatio).toFixed(2) : t.amount;
+          let fAmt = tBase, tAmt = tBase;
           if (isCross) { if (t.currency === toAcc.currency) fAmt = +(tAmt / refRate).toFixed(2); else tAmt = +(fAmt * refRate).toFixed(2); }
           res = await commitTransferPeriod(t, it.date, fAmt, tAmt, isCross);
         }
@@ -12101,6 +12967,7 @@ async function renderRecurring() {
           ${dayLabel?`<span>${dayLabel}</span>`:''}
           ${nextLabel?`<span>${nextLabel}</span>`:''}
           ${payStr?`<span>${payStr}</span>`:''}
+          ${item.pay_mode==='manual'?'<span class="rec-manual">手動扣款</span>':''}
           ${item.spend_category && catById(item.spend_category) ? `<span class="rec-cat">${escHtml(catPath(item.spend_category))}</span>` : '<span class="rec-cat is-none">未選分類</span>'}
           ${endLabel?`<span>${endLabel}</span>`:''}
           ${item.note?`<span>${item.note}</span>`:''}
@@ -12214,6 +13081,7 @@ async function renderRecurring() {
         row.innerHTML = `
           <div style="flex:1;min-width:0">
             <div style="font-weight:500;font-size:13px">${item.name}${done?'　<span style="font-size:10px;background:#F3F4F6;color:#6B7280;padding:1px 6px;border-radius:4px">已繳完</span>':''}</div>
+            ${done ? '' : periodDots(item.paid_periods || 0, item.total_periods, 'is-sm')}
             <div style="color:var(--text-3);margin-top:2px">${done ? `已繳完 ${item.total_periods} 期` : `已繳 ${item.paid_periods||0}／${item.total_periods} 期${instNextLabel(item) ? '・' + instNextLabel(item) : ''}`}${item.note?'・'+escHtml(item.note):''}</div>
           </div>
           <div style="text-align:right;flex-shrink:0">
@@ -12304,6 +13172,13 @@ async function openRecurringModal(item=null) {
 
   const payTypeSel = document.getElementById('recurringPayType');
   payTypeSel.value = item?.pay_type??'';
+  {
+    const pm = document.getElementById('recurringPayMode');
+    pm.dataset.v = item?.pay_mode === 'manual' ? 'manual' : 'auto';
+    const sync = () => pm.querySelectorAll('[data-pm]').forEach(b => { const on = b.dataset.pm === pm.dataset.v; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
+    pm.querySelectorAll('[data-pm]').forEach(b => b.onclick = () => { pm.dataset.v = b.dataset.pm; sync(); });
+    sync();
+  }
 
   const menuAccs = accounts.filter(a=>a.show_in_menu!==false);
   document.getElementById('recurringAcc').innerHTML = menuAccs.map(a=>{
@@ -12410,6 +13285,7 @@ document.getElementById('recurringModalSave').addEventListener('click',async()=>
     end_date:endDate,
     is_expired:isExpired,
     pay_type:payType||null,
+    pay_mode:document.getElementById('recurringPayMode').dataset.v==='manual'?'manual':'auto',
     account_id:payType==='account'?document.getElementById('recurringAcc').value||null:null,
     cc_id:payType==='cc'?document.getElementById('recurringCc').value||null:null,
     currency:document.getElementById('recurringCurrency')?.value||'TWD',
@@ -15564,6 +16440,16 @@ async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null
 
   mountCatGrid('income', document.getElementById('incomeCategory'), 'incomeCatGrid', state.incomeTxns || [], document.getElementById('incomeCategory').value === 'cat_realized' ? [] : ['cat_realized']);
   wireSheetMore('income');
+  // v2.27.0：說明跟以前某一筆一樣時，沿用那一筆的分類
+  document.getElementById('incomeDesc').onchange = txn ? null : () => {
+    const last = lastIncomeWithDesc(state.incomeTxns || [], document.getElementById('incomeDesc').value);
+    const sel = document.getElementById('incomeCategory');
+    if (!last || sel.value === last.category || ![...sel.options].some(o => o.value === last.category)) return;
+    sel.value = last.category; sel.dispatchEvent(new Event('change'));
+    const irr = document.getElementById('incomeIrregular'); irr.checked = !!last.irregular; irr.onchange?.();
+    mountCatGrid('income', sel, 'incomeCatGrid', state.incomeTxns || [], ['cat_realized']);
+    showToast(`沿用上次的分類：${catPath(last.category)}`);
+  };
   document.getElementById('incomeModal').classList.add('open');
   document.getElementById('incomeDesc').focus();
 }
@@ -15738,6 +16624,11 @@ async function saveIncomeRecord(input) {
   // may need to move, and so may any emergency-fund shortfall withdrawal.
   await syncPlanAutoRows();
 
+  // v2.27.0：記到有期限收入（例如失業給付）的分類，下次預計入帳日自動往後一個月
+  if (!editId) {
+    const srcs = (await getSetting(db, 'limited_income', []).catch(() => [])) || [];
+    if (srcs.some(x => x.category === txn.category)) await setSetting(db, 'limited_income', srcs.map(x => x.category === txn.category ? { ...x, next_date: addMonthsISO(txn.date, 1) } : x)).catch(() => {});
+  }
   return { ok:true, txn, deferBalance, clampedFrom, bonusAllocated };
 }
 
@@ -15752,6 +16643,16 @@ document.getElementById('incomeModalSave').addEventListener('click', async () =>
   const fxFieldShown = document.getElementById('incomeFxField').style.display !== 'none';
   const confirmDcaId = document.getElementById('incomeConfirmDcaId').value;
   const confirmOccDate = document.getElementById('incomeConfirmOccDate').value;
+  // v2.27.0（使用者：失業補助被當成獎金）：新勾「獎金或一次性收入」時先確認一次
+  {
+    const irrEl = document.getElementById('incomeIrregular');
+    const wasIrr = editId ? !!(await getOne(db, 'income_txns', editId))?.irregular : false;
+    if (!isDca && !isRecv && irrEl.checked && !wasIrr) {
+      const yes = await askIrregular();
+      if (yes == null) return;
+      if (!yes) { irrEl.checked = false; irrEl.onchange?.(); }
+    }
+  }
 
   const res = await saveIncomeRecord({
     editId: editId || null,

@@ -461,7 +461,7 @@ export const DEFAULT_CATEGORIES = [
   { id:'cat_other_in',   type:'income', label:'其他',       icon:'＋', color:'#6B7280', sort_order:3, is_default:true, parent_id:null },
   ..._sub('cat_inc_active', 'income', [['cat_salary','薪資','💼'],['cat_bonus','獎金','🎉',{ irregular_default:true }],['cat_inc_freelance','兼職接案','🧑‍💻'],['cat_inc_commission','佣金','🤝']]),
   ..._sub('cat_inc_invest', 'income', [['cat_interest','利息','🏧'],['cat_div_tw','股利（台股）','🏦'],['cat_div_us','股息（美股）','🌐'],['cat_inc_rent','租金','🏘️',{ passive:true }],['cat_realized','已實現損益','💹',{ irregular_default:true }],['cat_dca','定期定額成交','🔄']]),
-  ..._sub('cat_other_in', 'income', [['cat_inc_refund','退稅補助','🏛️',{ irregular_default:true }],['cat_inc_gift','紅包贈與','🧧',{ irregular_default:true }],['cat_inc_secondhand','二手變賣','♻️',{ irregular_default:true }],['cat_inc_lottery','發票中獎','🎫',{ irregular_default:true }],['cat_fee_rebate','手續費退回','↩️'],['cat_receivable','應收款入帳','✓']]),
+  ..._sub('cat_other_in', 'income', [['cat_inc_refund','退稅補助','🏛️',{ irregular_default:true }],['cat_inc_unemp','失業給付','🪪'],['cat_inc_gift','紅包贈與','🧧',{ irregular_default:true }],['cat_inc_secondhand','二手變賣','♻️',{ irregular_default:true }],['cat_inc_lottery','發票中獎','🎫',{ irregular_default:true }],['cat_fee_rebate','手續費退回','↩️'],['cat_receivable','應收款入帳','✓']]),
 ];
 // 舊版預設分類的名稱——使用者沒改過名才換成新名稱（改過的保留）。
 export const LEGACY_CATEGORY_LABELS = {
