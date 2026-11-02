@@ -1295,6 +1295,9 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 .mpl-jar span{flex:1;display:flex;flex-direction:column}
 .mpl-jar small{font-size:11px;color:var(--text-3)}
 .mpl-jar b{font-variant-numeric:tabular-nums}
+.mpl-jar.is-keep span,.mpl-jar.is-keep b{color:var(--text-3)}
+.mpl-jar-tag{font-size:12px;color:var(--text-2);line-height:1.6;padding:10px 0 4px}
+.mpl-jar-cmp{font-size:12px;color:var(--text-2);line-height:1.6;padding:10px 0 8px;border-top:1px dashed var(--border-2)}
 .mpl-conf{border:1px solid var(--border);border-radius:12px;padding:4px 14px}
 .mpl-conf-row{display:flex;justify-content:space-between;padding:10px 0;font-size:13.5px;color:var(--text-2);border-top:1px solid var(--border)}
 .mpl-conf-row:first-child{border-top:0}
@@ -3617,24 +3620,16 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.27.0';
+const APP_VERSION = 'v2.27.1';
 const CHANGELOG_LAST_UPDATED = '2026-11-02';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '每月規劃：每個月五步排好——收入、固定支出、投資、生活費、確認，邊排邊看台幣現金可以撐幾個月',
-  '分期付款顯示「已繳 10／12 期」的進度點；有截止日期的固定支出顯示還剩幾期',
-  '投資每個月可以照舊、減半、暫停或自訂；首頁「可以撐多久」改照規劃算，也看得到暫停投資可以撐多久',
-  '月底回顧：計畫 vs 實際、生活費細項跟上個月比，接著規劃下個月',
-  '選一個理財方法，固定支出＋生活費分成幾個罐子，首頁看每罐還剩多少',
-  '分配的決定改成確認才做：不再自動記「超支由預備金支應」、不再依收入百分比自動撥入；舊的自動紀錄已清掉',
-  '固定支出可以設「手動扣款」（例如自己轉帳的房租），不會自動記帳，付了再確認',
-  '記一筆可以標「臨時支出」，從緊急預備金付',
-  '存錢目標的紀錄可以修改、刪除',
-  '收入防呆：新增「失業給付」分類；說明跟以前一樣時沿用上次的分類；勾一次性收入前先確認',
-  '生活預算的類別底下列出對應的固定支出（例如居住底下的房租），不重複計算',
+  '本月規劃方式：所有理財方法都能選——80/20、631、50/30/20、333、4321、六罐子，以及 321、168、自訂',
+  '選了方法後列出每個罐子：花費的罐子分到固定支出＋生活費，儲蓄、投資的罐子照比例換算，跟這個月規劃的投資比',
+  '保險支出歸到「風險規避」罐（631、4321）',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -10762,16 +10757,26 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
     const diff = b.months - a.months;
     return diff > 0.05 ? `投資全部暫停：可撐 ${fmtRw(b.months)}（多 ${fmtRw(diff)}）` : `投資全部暫停：可撐 ${fmtRw(b.months)}`;
   };
+  // v2.27.0（使用者：所有理財方法都要能選）：花費罐（生活、想要、保險…）分到「固定支出＋生活費」，
+  // 每一筆支出依類別從對應的罐子扣；儲蓄、投資罐照比例換算應該是多少，跟這個月規劃的投資比。
   const jarsBox = () => {
     const box = el('div'); box.dataset.jars = '';
     if (!d.method) return box;
-    const t = planTotals(d);
-    const jb = calcJarBudgets(jarsOf(d.method), t.fixed - (d.fixed.find(x => x.key === 'annual' && x.on)?.amount || 0) + t.living);
+    const t = planTotals(d), jars = jarsOf(d.method);
+    const spendTotal = t.fixed - (d.fixed.find(x => x.key === 'annual' && x.on)?.amount || 0) + t.living;
+    const jb = calcJarBudgets(jars, spendTotal);
     const fixedByJar = {};
-    d.fixed.filter(x => x.on && x.kind !== 'annual').forEach(x => { const k = jarOfCategory(jarsOf(d.method), x.cat ? mainCategoryOf(x.cat) : 'cat_other_out'); fixedByJar[k] = (fixedByJar[k] || 0) + x.amount; });
+    d.fixed.filter(x => x.on && x.kind !== 'annual').forEach(x => { const k = jarOfCategory(jars, x.cat ? mainCategoryOf(x.cat) : 'cat_other_out'); fixedByJar[k] = (fixedByJar[k] || 0) + x.amount; });
+    const spendPct = jars.filter(isSpendJar).reduce((s2, j) => s2 + (j.percent || 0), 0);
+    const implied = spendPct > 0 ? spendTotal * 100 / spendPct : 0;
+    const keepAmt = jars.filter(j => !isSpendJar(j)).reduce((s2, j) => s2 + implied * (j.percent || 0) / 100, 0);
     box.className = 'mpl-jars';
-    const pcts = jb.map(j => Math.round(j.share * 100)); if (pcts.length) pcts[pcts.length - 1] = 100 - pcts.slice(0, -1).reduce((a, b) => a + b, 0);
-    box.innerHTML = jb.map((j, ji) => `<div class="mpl-jar"><i style="background:${j.color}"></i><span>${escHtml(j.label)}<small>${pcts[ji]}%${fixedByJar[j.key] ? `・含固定支出 ${fmt(fixedByJar[j.key])}` : ''}</small></span><b>${money(j.budget)}</b></div>`).join('');
+    const m = INCOME_ALLOCATION_METHODS[d.method];
+    box.innerHTML = (m?.tagline ? `<div class="mpl-jar-tag">${escHtml(m.tagline)}</div>` : '') + jars.map(j => {
+      if (isSpendJar(j)) { const x = jb.find(z => z.key === j.key);
+        return `<div class="mpl-jar"><i style="background:${j.color}"></i><span>${escHtml(j.label)}<small>${j.percent}%${fixedByJar[j.key] ? `・含固定支出 ${fmt(fixedByJar[j.key])}` : ''}</small></span><b>${money(x?.budget || 0)}</b></div>`; }
+      return `<div class="mpl-jar is-keep"><i style="background:${j.color}"></i><span>${escHtml(j.label)}<small>${j.percent}%・照比例</small></span><b>${money(implied * (j.percent || 0) / 100)}</b></div>`;
+    }).join('') + (keepAmt > 0 ? `<div class="mpl-jar-cmp">照這個比例，存下來與投資約 ${money(keepAmt)}；這個月規劃投資 ${money(t.invest)}</div>` : '');
     return box;
   };
 
@@ -10847,7 +10852,7 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
       box.appendChild(f);
       const mt = el('div'); mt.className = 'mpl-title is-sub'; mt.innerHTML = `本月規劃方式 ${infoTip('選一個理財方法，固定支出＋生活費依它的比例分到各罐；記帳時每一筆會從它的類別對應的罐子扣，首頁看得到每罐還剩多少。')}`;
       box.appendChild(mt);
-      const keys = INCOME_ALLOCATION_ALL_KEYS.filter(k => (!INCOME_ALLOCATION_CUSTOM_KEYS.includes(k) || presets[k]) && jarsOf(k).filter(isSpendJar).length > 1);
+      const keys = INCOME_ALLOCATION_ALL_KEYS.filter(k => (!INCOME_ALLOCATION_CUSTOM_KEYS.includes(k) || presets[k]) && jarsOf(k).some(isSpendJar));
       const chips = el('div'); chips.className = 'mpl-chips';
       chips.innerHTML = [['', '只看生活費總額'], ...keys.map(k => [k, INCOME_ALLOCATION_METHODS[k].label])].map(([k, l]) => `<button type="button" class="mpl-chip${(d.method || '') === k ? ' on' : ''}" data-method="${k}">${l}</button>`).join('');
       chips.querySelectorAll('[data-method]').forEach(b => b.addEventListener('click', () => { d.method = b.dataset.method || null; render(); }));
@@ -11608,12 +11613,21 @@ const INCOME_ALLOCATION_METHODS = {
     { key:'save',   label:'儲蓄',       percent:33, type:'pool',     color:'#0E7A52', bucketId:null },
     { key:'invest', label:'投資退休',   percent:17, type:'pool',     color:'#7A4FE0', bucketId:null },
   ]},
-  '532':  { label:'532 法則', tagline:'兼顧生活品質與儲蓄的均衡配置', jars:[
+  '8020': { label:'80/20 法則', tagline:'先存 20%，其餘隨便花，最不燒腦。適合剛畢業、很討厭記帳的人', jars:[
+    { key:'life', label:'生活開銷', percent:80, type:'category', color:'#2F6FED', groupId:'grp_all' },
+    { key:'save', label:'先存起來', percent:20, type:'pool',     color:'#0E7A52', bucketId:null },
+  ]},
+  '333':  { label:'333 法則', tagline:'儲蓄、生活、投資平均分配。適合想均衡發展、有一定存錢定力的人', jars:[
+    { key:'life',   label:'生活開銷', percent:34, type:'category', color:'#2F6FED', groupId:'grp_all' },
+    { key:'save',   label:'儲蓄',     percent:33, type:'pool',     color:'#0E7A52', bucketId:null },
+    { key:'invest', label:'投資',     percent:33, type:'pool',     color:'#7A4FE0', bucketId:null },
+  ]},
+  '532':  { label:'50/30/20 法則', tagline:'分成「需要」與「想要」，兼顧生活品質。適合有固定收入、想維持生活情調的人', jars:[
     { key:'need', label:'必要支出', percent:50, type:'category', color:'#2F6FED', groupId:'grp_need_532' },
     { key:'fun',  label:'樂活消費', percent:30, type:'category', color:'#96600E', groupId:'grp_fun_532' },
     { key:'save', label:'儲蓄投資', percent:20, type:'pool',     color:'#0E7A52', bucketId:null },
   ]},
-  '631':  { label:'631 法則', tagline:'新鮮人首選，架構簡單好上手', jars:[
+  '631':  { label:'631 法則', tagline:'6 成生活、3 成儲蓄、1 成保險。適合收入剛起步、想攻守兼備的人', jars:[
     { key:'life', label:'生活開銷', percent:60, type:'category', color:'#2F6FED', groupId:'grp_all' },
     { key:'save', label:'儲蓄投資', percent:30, type:'pool',     color:'#0E7A52', bucketId:null },
     { key:'risk', label:'風險規避', percent:10, type:'pool',     color:'#A8457A', bucketId:null, linkedInsurance:true },
@@ -11623,13 +11637,13 @@ const INCOME_ALLOCATION_METHODS = {
     { key:'fun',    label:'享樂生活', percent:60, type:'category', color:'#2F6FED', groupId:'grp_all' },
     { key:'lock',   label:'強制定存', percent:30, type:'pool',     color:'#0E7A52', bucketId:null, locked:true },
   ]},
-  '4321': { label:'4321 法則', tagline:'投資比重高，適合家庭與高收入族群', jars:[
+  '4321': { label:'4321 法則', tagline:'著重保險配置與中長期家庭規劃。適合有房貸、有小孩或要扶養父母的人', jars:[
     { key:'invest',  label:'投資資產', percent:40, type:'pool',     color:'#7A4FE0', bucketId:null },
     { key:'life',    label:'生活開銷', percent:30, type:'category', color:'#2F6FED', groupId:'grp_life_4321' },
     { key:'reserve', label:'儲蓄備用', percent:20, type:'pool',     color:'#0E7A52', bucketId:null },
     { key:'risk',    label:'風險規避', percent:10, type:'pool',     color:'#A8457A', bucketId:null, linkedInsurance:true },
   ]},
-  'jars6':{ label:'六個錢包法', tagline:'六個獨立用途，最細緻的分配系統', jars:[
+  'jars6':{ label:'六罐子理財法', tagline:'專款專用，精細管理六個罐子。適合想全面提升自我、精準控制金錢的人', jars:[
     { key:'nec',  label:'NEC 必要生活',  percent:55, type:'category', color:'#2F6FED', groupId:'grp_nec_jars6' },
     { key:'ffa',  label:'FFA 財務自由',  percent:10, type:'pool',     color:'#7A4FE0', bucketId:null },
     { key:'ltss', label:'LTSS 長期儲蓄', percent:10, type:'pool',     color:'#0E7A52', bucketId:null },
@@ -11648,7 +11662,7 @@ const INCOME_ALLOCATION_METHODS = {
     { key:'risk', label:'風險規避', percent:10, type:'pool',     color:'#A8457A', bucketId:null, linkedInsurance:true },
   ]},
 };
-const INCOME_ALLOCATION_ALL_KEYS = ['321','532','631','168','4321','jars6','custom1','custom2'];
+const INCOME_ALLOCATION_ALL_KEYS = ['8020','631','532','333','4321','jars6','321','168','custom1','custom2'];
 const INCOME_ALLOCATION_CUSTOM_KEYS = ['custom1','custom2'];
 // ════════════════════════════════════════════════════════════════════════════
 // INSTALLMENT VIEW

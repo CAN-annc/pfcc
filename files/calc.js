@@ -1995,15 +1995,15 @@ export function simulateRunway({ cash = 0, monthlyOut = 0, firstMonthOut = null,
 // 理財方法的「罐子」跟記帳連起來：哪些罐子是拿來花的（類別罐，加上六個錢包的
 // 教育／娛樂／贈與），每個支出主分類歸到哪一個罐子。
 const SPEND_POOL_KEYS = ['play', 'give', 'edu'];
-export function isSpendJar(j) { return j.type === 'category' || SPEND_POOL_KEYS.includes(j.key); }
+export function isSpendJar(j) { return j.type === 'category' || !!j.linkedInsurance || SPEND_POOL_KEYS.includes(j.key); }
 const JAR_PREF = {
-  cat_shopping: ['fun', 'play'], cat_entertain: ['fun', 'play'], cat_social: ['give', 'fun', 'play'], cat_edu: ['edu'],
+  cat_shopping: ['fun', 'play'], cat_entertain: ['fun', 'play'], cat_social: ['give', 'fun', 'play'], cat_edu: ['edu'], cat_insurance: ['risk'],
 };
 export function jarOfCategory(jars = [], mainCatId) {
   const sj = jars.filter(isSpendJar);
   if (!sj.length) return null;
   for (const k of (JAR_PREF[mainCatId] || [])) { const j = sj.find(x => x.key === k); if (j) return j.key; }
-  return (sj.find(x => ['need', 'nec', 'life'].includes(x.key)) || sj.find(x => x.type === 'category') || sj[0]).key;
+  return (sj.find(x => ['need', 'nec', 'life'].includes(x.key)) || sj.find(x => x.type === 'category') || sj.find(x => !x.linkedInsurance) || sj[0]).key;
 }
 // 拿來花的錢（固定支出＋生活費）依罐子的比例分到各罐（只在拿來花的罐子之間
 // 按比例分，加總剛好等於要花的錢）。
