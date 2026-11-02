@@ -1953,3 +1953,62 @@ export function estimateTransferFees(lines = [], { source, accounts = [], transf
     return { ...l, kind: 'fee', fee: source.transfer_fee || 0 };
   });
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+// 每月規劃（v2.27.0，使用者決定）
+// ════════════════════════════════════════════════════════════════════════════
+// 日期加 n 個月，日子超過那個月的天數時取月底。
+export function addMonthsISO(dateStr, n) {
+  if (!dateStr) return null;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const t = new Date(y, m - 1 + n, 1);
+  const last = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate();
+  return `${t.getFullYear()}-${pad2(t.getMonth() + 1)}-${pad2(Math.min(d || 1, last))}`;
+}
+// 有期限的收入（例如失業給付，最多領 N 次）：還沒領的每一次預計哪天入帳。
+// 第一次是使用者填的下次預計日期，之後每個月一次。
+export function limitedIncomeSchedule(src, received = 0) {
+  const left = Math.max(0, (src.total || 0) - received);
+  if (!left || !src.next_date || !(src.amount > 0)) return [];
+  return Array.from({ length: left }, (_, i) => ({ date: addMonthsISO(src.next_date, i), amount: src.amount, name: src.name }));
+}
+// 照規劃模擬台幣現金可以撐幾個月：每個月付出 monthlyOut（固定＋生活＋投資），
+// 預計入帳的收入（incomes）在入帳那個月加回來。本月只算還沒付的部分
+// （firstMonthOut），而且只佔本月剩下的天數。錢不夠付某個月時，用剩下的錢
+// 佔那個月的比例算出小數。
+export function simulateRunway({ cash = 0, monthlyOut = 0, firstMonthOut = null, incomes = [], today = new Date(), maxMonths = 240 }) {
+  if (!(monthlyOut > 0)) return { months: Infinity };
+  let bal = cash, acc = 0;
+  const dim = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  for (let i = 0; i < maxMonths; i++) {
+    const t = new Date(today.getFullYear(), today.getMonth() + i, 1);
+    const ym = `${t.getFullYear()}-${pad2(t.getMonth() + 1)}`;
+    const span = i === 0 ? (dim - today.getDate() + 1) / dim : 1;
+    const out = i === 0 && firstMonthOut != null ? firstMonthOut : monthlyOut;
+    const inc = incomes.filter(x => (x.date || '').slice(0, 7) === ym).reduce((s, x) => s + (x.amount || 0), 0);
+    const net = out - inc;
+    if (net > 0 && bal < net) return { months: acc + span * Math.max(0, bal) / net, endMonth: ym };
+    bal -= net; acc += span;
+  }
+  return { months: Infinity };
+}
+// 理財方法的「罐子」跟記帳連起來：哪些罐子是拿來花的（類別罐，加上六個錢包的
+// 教育／娛樂／贈與），每個支出主分類歸到哪一個罐子。
+const SPEND_POOL_KEYS = ['play', 'give', 'edu'];
+export function isSpendJar(j) { return j.type === 'category' || SPEND_POOL_KEYS.includes(j.key); }
+const JAR_PREF = {
+  cat_shopping: ['fun', 'play'], cat_entertain: ['fun', 'play'], cat_social: ['give', 'fun', 'play'], cat_edu: ['edu'],
+};
+export function jarOfCategory(jars = [], mainCatId) {
+  const sj = jars.filter(isSpendJar);
+  if (!sj.length) return null;
+  for (const k of (JAR_PREF[mainCatId] || [])) { const j = sj.find(x => x.key === k); if (j) return j.key; }
+  return (sj.find(x => ['need', 'nec', 'life'].includes(x.key)) || sj.find(x => x.type === 'category') || sj[0]).key;
+}
+// 拿來花的錢（固定支出＋生活費）依罐子的比例分到各罐（只在拿來花的罐子之間
+// 按比例分，加總剛好等於要花的錢）。
+export function calcJarBudgets(jars = [], spendTotal = 0) {
+  const sj = jars.filter(isSpendJar);
+  const sum = sj.reduce((s, j) => s + (j.percent || 0), 0) || 1;
+  return sj.map(j => ({ key: j.key, label: j.label, color: j.color, percent: j.percent, share: (j.percent || 0) / sum, budget: Math.round(spendTotal * (j.percent || 0) / sum) }));
+}
