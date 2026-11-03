@@ -1345,6 +1345,33 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 .mpl-rw em{font-style:normal;font-size:11.5px;color:rgba(255,255,255,.65)}
 .mpl-rw .ii{color:#fff;border-color:rgba(255,255,255,.5)}
 .mpl-form{display:flex;flex-direction:column}
+/* v2.30.0：沒有去處的錢 → 放進存錢目標（每月規劃確認步驟、月底回顧共用） */
+.gd{display:flex;flex-direction:column;margin-top:8px}
+.gd-row{display:grid;grid-template-columns:minmax(0,1fr) auto 112px;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--border)}
+.gd-row:first-child{border-top:0}
+.gd-n{display:flex;flex-direction:column;min-width:0}
+.gd-n b{font-size:13.5px;font-weight:600;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gd-n small{font-size:11.5px;color:var(--text-3);font-variant-numeric:tabular-nums}
+.gd-fill{border:1px dashed var(--border-2);background:none;color:var(--blue);font:inherit;font-size:11.5px;padding:4px 8px;border-radius:999px;cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums}
+.gd-fill:disabled{color:var(--green);border-style:solid;border-color:transparent;cursor:default}
+.gd-fill:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.gd-in{display:flex;align-items:center;gap:4px;border:1px solid var(--border);border-radius:8px;padding:0 8px;background:var(--card)}
+.gd-in span{font-size:11px;color:var(--text-3)}
+.gd-in input{border:0;background:none;width:100%;min-width:0;padding:8px 0;font:inherit;font-size:14px;text-align:right;font-variant-numeric:tabular-nums;color:var(--text-1)}
+.gd-in input:focus{outline:none}
+.gd-in:focus-within{border-color:var(--blue)}
+.gd-left{margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-size:13px;font-weight:600;color:var(--text-1);font-variant-numeric:tabular-nums}
+.gd-left.is-done{color:var(--green)}
+.gd-left.is-over{color:var(--amber)}
+.mpl-conf-row.is-left b{color:var(--amber)}
+.mpl-conf-row.is-done b{color:var(--green)}
+.rv-left{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 18px;border-top:1px solid var(--border);font-size:13px;color:var(--text-1)}
+.rv-left b{font-variant-numeric:tabular-nums;color:var(--amber)}
+.rv-left .btn{flex-shrink:0}
+.lo-sheet .qa-sheet-head{display:flex;justify-content:space-between;align-items:center}
+.lo-body{padding:0 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.lo-sum{font-size:13px;color:var(--text-2);margin:4px 0 2px}
+.lo-btns{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 .mpl-cand{margin-top:12px}
 .mpl-cand-h{font-size:12px;color:var(--text-2);margin-bottom:6px;line-height:1.5}
 .mpl-cand .mpl-row{border:1px solid var(--border);border-radius:10px;margin-bottom:6px}
@@ -3654,17 +3681,15 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.29.0';
+const APP_VERSION = 'v2.30.0';
 const CHANGELOG_LAST_UPDATED = '2026-11-03';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '手機的返回鍵、瀏覽器上一頁可以回到上一頁，回去時停在原本捲到的位置；有視窗開著時先關視窗',
-  '子頁的返回鍵依你從哪一頁進來顯示，例如從計畫點「管理定期支出」進去，返回鍵是「← 計畫」',
-  '在第一頁按返回鍵：先回到開啟時預設頁面，再按一次才離開',
-  '每月計畫展開過的上月回顧、紀錄頁選的月份與日期，從別頁回來時維持原樣',
+  '每月規劃的確認步驟：收入扣掉固定支出、投資、生活費之後，還沒有去處的錢可以直接放進存錢目標（有目標的可以一鍵補滿），確認規劃時才記進去',
+  '月底回顧顯示那個月實際還有多少錢沒有去處，可以直接放進存錢目標，放錯了可以復原；本月進度顯示規劃時留下的',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -10865,7 +10890,10 @@ async function buildPlanDraft(ym = currentMonthStr()) {
   const livingBudget = resolveBudget(budgets, null, ym);
   const living = saved?.living ?? avg?.total ?? livingBudget ?? 0;
   const method = saved ? (saved.method ?? null) : (ctx.settings.jar_method ?? null);
-  return { ym, saved, ctx, accounts, cards, expenseTxns, income, other, fixed, invest, living, avg, method, srcs };
+  // v2.30.0：沒有去處的錢要放進哪些存錢目標（確認時寫入）。已結束或刪掉的目標不帶回來
+  const goalList = goalDestList({ buckets, allocations: ctx.allocations || [], expenseTxns, accounts, fxRates, excludePlanMonth: ym });
+  const goals = Object.fromEntries(Object.entries(saved?.goals || {}).filter(([id, v]) => v > 0 && goalList.some(g => g.id === id)));
+  return { ym, saved, ctx, accounts, cards, expenseTxns, income, other, fixed, invest, living, avg, method, srcs, goalList, goals };
 }
 const investAmt = g => g.mode === 'pause' ? 0 : g.mode === 'half' ? Math.round(g.base / 2) : g.mode === 'custom' ? Math.max(0, Math.round(g.custom ?? g.base)) : g.base;
 function planTotals(d) {
@@ -10908,6 +10936,114 @@ function planRunway(d, { investOff = false } = {}) {
   return { ...r, cash, monthlyOut, firstOut, incomesLeft: incomes.reduce((s, p) => s + p.amount, 0), paymentsLeft: incomes.length };
 }
 const fmtRw = m => !Number.isFinite(m) ? '一直撐下去' : fmtRunway(m);
+
+// ── v2.30.0：沒有去處的錢 ──────────────────────────────────────────────────
+// 使用者採用「可以留意的錢」拆分的第一項：計畫的漏洞（錢沒有去處）放在做決定的
+// 地方——每月規劃的確認步驟、月底回顧——不另外做首頁卡片。
+//  ・每月規劃：沒有去處＝預計進來 − 固定支出 − 投資 − 生活費 − 放進存錢目標的。
+//    放進存錢目標的金額在「確認規劃」時才寫入（bucket_allocations，plan_month＝
+//    那個月；重新確認會照新的金額更新或刪除，原則 7）。只有本月與以前的月份可以放。
+//  ・月底回顧：實際沒有去處＝進來 − 花掉（不含從預備金付的臨時支出）− 投資 −
+//    撥進存錢目標 − 新存的定存。可以直接放進存錢目標（記在那個月的最後一天，
+//    plan_left_month＝那個月），可復原。本月進度顯示規劃時留下的。
+// 能放的存錢目標：沒有結束、不是收入緩衝與年繳預存（這兩個由系統管）。
+function goalDestList({ buckets = [], allocations = [], expenseTxns = [], accounts = [], fxRates = {}, excludePlanMonth = null }) {
+  const allocs = excludePlanMonth ? allocations.filter(a => a.plan_month !== excludePlanMonth) : allocations;
+  return buckets.filter(b => b.status !== 'closed' && !b.is_income_buffer && !b.is_annual_reserve)
+    .map(b => ({ id: b.id, name: b.name, ef: !!b.is_emergency_fund, target: Number(b.target_amount) || 0,
+      balance: calcBucketAllocated(allocs, b.id) - calcBucketSpent(expenseTxns, b.id, accounts, fxRates) }))
+    .sort((a, b) => (b.ef ? 1 : 0) - (a.ef ? 1 : 0));
+}
+const goalPickSum = picks => Object.values(picks || {}).reduce((s, v) => s + (v > 0 ? Math.round(v) : 0), 0);
+// 每個存錢目標一列：名稱、已存／目標、「補滿」、金額。picks 就地修改；onChange 在每次改動後呼叫
+function buildGoalDest({ goals, amount, picks, onChange, showLeft = true }) {
+  const box = el('div'); box.className = 'gd';
+  box.innerHTML = goals.map(g => {
+    const gap = g.target > 0 ? Math.max(0, Math.round(g.target - g.balance)) : 0;
+    return `<div class="gd-row" data-gd="${g.id}"><div class="gd-n"><b>${escHtml(g.name)}</b><small>${g.target > 0 ? `${fmt(Math.round(g.balance))}／${fmt(Math.round(g.target))}` : `已存 ${fmt(Math.round(g.balance))}`}</small></div>
+      ${gap > 0 ? `<button type="button" class="gd-fill" data-gd-fill="${gap}">補滿</button>` : '<span></span>'}
+      <label class="gd-in"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="100" placeholder="0" value="${picks[g.id] > 0 ? Math.round(picks[g.id]) : ''}" aria-label="放進${escHtml(g.name)}"></label></div>`;
+  }).join('') + (showLeft ? '<div class="gd-left" data-gd-left aria-live="polite"></div>' : '');
+  // 「補滿」顯示按下去會放多少：差額跟還沒有去處的取小的（都放完了就顯示差額）
+  const fillAmt = (gap, cur) => { const v = Math.min(gap, cur + Math.max(0, amount - goalPickSum(picks))); return v <= cur ? gap : v; };
+  const upd = () => {
+    box.querySelectorAll('[data-gd]').forEach(row => { const b = row.querySelector('[data-gd-fill]'); if (!b) return;
+      const cur = picks[row.dataset.gd] || 0, v = fillAmt(+b.dataset.gdFill, cur);
+      b.textContent = v === cur ? '已補滿' : `補滿 ${fmt(Math.round(v))}`; b.disabled = v === cur; });
+    const r = Math.round(amount - goalPickSum(picks)), L = box.querySelector('[data-gd-left]');
+    if (!L) { onChange?.(); return; }
+    L.className = `gd-left${r < 0 ? ' is-over' : r === 0 ? ' is-done' : ''}`;
+    L.textContent = r > 0 ? `還有 NT$ ${fmt(r)} 沒有去處` : r === 0 ? '每一塊錢都有去處了' : `多放了 NT$ ${fmt(-r)}，會用到原本的存款`;
+    onChange?.();
+  };
+  box.querySelectorAll('[data-gd]').forEach(row => {
+    const id = row.dataset.gd, inp = row.querySelector('input');
+    inp.addEventListener('input', () => { picks[id] = parseFloat(inp.value) || 0; upd(); });
+    row.querySelector('[data-gd-fill]')?.addEventListener('click', e => {
+      const cur = picks[id] || 0, v = fillAmt(+e.currentTarget.dataset.gdFill, cur);
+      picks[id] = v; inp.value = Math.round(v); upd();
+    });
+  });
+  upd();
+  return box;
+}
+const lastDayOfYm = ym => `${ym}-${pad2x(new Date(+ym.slice(0, 4), +ym.slice(5), 0).getDate())}`;
+async function upsertPlanGoalAllocs(ym, picks) {
+  const allocations = await getAll(db, 'bucket_allocations').catch(() => []);
+  const ex = allocations.filter(a => a.plan_month === ym);
+  const date = ym === currentMonthStr() ? isoDate(new Date()) : lastDayOfYm(ym);
+  const t = db.transaction(['bucket_allocations'], 'readwrite'), st = t.objectStore('bucket_allocations');
+  ex.filter(a => !(picks[a.bucket_id] > 0)).forEach(a => st.delete(a.id));
+  Object.entries(picks).filter(([, v]) => v > 0).forEach(([id, v]) => {
+    const e = ex.find(a => a.bucket_id === id);
+    st.put({ ...(e || {}), id: e?.id || crypto.randomUUID(), bucket_id: id, amount: Math.round(v), date: e?.date || date,
+      note: `${Number(ym.slice(5))} 月規劃：沒有去處的錢`, plan_month: ym, ...(e ? { edited_at: new Date().toISOString() } : { created_at: new Date().toISOString() }) });
+  });
+  await new Promise(r => { t.oncomplete = r; t.onerror = r; });
+}
+// 月底回顧：把那個月實際沒有去處的錢放進存錢目標
+async function openLeftoverSheet(ym, amount) {
+  document.getElementById('loSheet')?.remove();
+  const [buckets, allocations, expenseTxns, accounts] = await Promise.all([getAll(db,'buckets').catch(()=>[]), getAll(db,'bucket_allocations').catch(()=>[]),
+    getAll(db,'expense_txns').catch(()=>[]), getAll(db,'accounts').catch(()=>[])]);
+  const fxRates = await getFxRates(db).catch(() => ({}));
+  const goals = goalDestList({ buckets, allocations, expenseTxns, accounts, fxRates });
+  const bg = el('div'); bg.className = 'qa-sheet-bg'; bg.id = 'loSheet';
+  const panel = el('div'); panel.className = 'qa-sheet lo-sheet';
+  panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-labelledby', 'loTitle');
+  panel.innerHTML = `<div class="qa-sheet-grip" aria-hidden="true"></div><div class="qa-sheet-head"><b id="loTitle">${monthLabel(ym)}沒有去處的錢</b><button type="button" class="qa-sheet-x" aria-label="關閉">✕</button></div>`;
+  const close = () => bg.remove();
+  const picks = {};
+  const body = el('div'); body.className = 'lo-body'; panel.appendChild(body);
+  if (!goals.length) {
+    body.innerHTML = '<div class="mp-empty">還沒有存錢目標。</div>';
+  } else {
+    const btns = el('div'); btns.className = 'lo-btns';
+    btns.innerHTML = '<button type="button" class="btn btn-ghost" data-lo-cancel>取消</button><button type="button" class="btn btn-primary" data-lo-save disabled>放進去</button>';
+    body.appendChild(buildGoalDest({ goals, amount, picks, onChange: () => { btns.querySelector('[data-lo-save]').disabled = goalPickSum(picks) <= 0; } }));
+    body.appendChild(btns);
+    btns.querySelector('[data-lo-cancel]').onclick = close;
+    btns.querySelector('[data-lo-save]').onclick = async () => {
+      const date = lastDayOfYm(ym), rows = [];
+      for (const [id, v] of Object.entries(picks)) if (v > 0) {
+        const rec = { id: crypto.randomUUID(), bucket_id: id, amount: Math.round(v), date, note: `${monthLabel(ym)}沒有去處的錢`, plan_left_month: ym, created_at: new Date().toISOString() };
+        await putOne(db, 'bucket_allocations', rec); rows.push(rec);
+      }
+      close();
+      await navigate(currentView);
+      showToast(`✓ 已放進存錢目標 NT$ ${fmt(goalPickSum(picks))}`, { label: '復原', onClick: async () => {
+        const t = db.transaction(['bucket_allocations'], 'readwrite'); rows.forEach(r => t.objectStore('bucket_allocations').delete(r.id));
+        await new Promise(r => { t.oncomplete = r; t.onerror = r; });
+        await navigate(currentView); showToast('已復原');
+      } });
+    };
+  }
+  panel.querySelector('.qa-sheet-x').onclick = close;
+  bg.appendChild(panel);
+  bg.addEventListener('click', e => { if (e.target === bg) close(); });
+  document.body.appendChild(bg);
+  requestAnimationFrame(() => bg.classList.add('open'));
+}
 
 // ── 規劃視窗 ─────────────────────────────────────────────────────────────
 let _mplStep = 0;
@@ -11116,20 +11252,49 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
     } else {
       const ex = t.out - t.incomeIn;
       const prevRw = d.saved?.runway;
+      const surplus = Math.max(0, -ex);
+      const canDest = surplus > 0 && ym <= currentMonthStr() && d.goalList.length > 0;
+      if (!canDest) d.goals = {};
+      const gSum = goalPickSum(d.goals);
+      const leftRow = () => {
+        const g2 = goalPickSum(d.goals), r = Math.round(surplus - g2);
+        if (ex > 0) return `<span>要動用存款</span><b>${money(ex)}</b>`;
+        if (r > 0) return `<span>還沒有去處</span><b>${money(r)}</b>`;
+        if (r === 0 && g2 > 0) return `<span>每一塊錢都有去處</span><b>✓</b>`;
+        if (r < 0) return `<span>要動用存款</span><b>${money(-r)}</b>`;
+        return `<span>還會多出</span><b>${money(0)}</b>`;
+      };
+      const leftCls = () => { const r = Math.round(surplus - goalPickSum(d.goals)); return ex <= 0 && r > 0 ? ' is-left' : ex <= 0 && r === 0 && goalPickSum(d.goals) > 0 ? ' is-done' : ''; };
       box.innerHTML = `<div class="mpl-title">${monthLabel(ym)}規劃</div>
         <div class="mpl-conf">
           <div class="mpl-conf-row in"><span>預計進來</span><b>${money(t.incomeIn)}</b></div>
           <div class="mpl-conf-row"><span>固定支出</span><b>${money(t.fixed)}</b></div>
           <div class="mpl-conf-row"><span>投資</span><b>${money(t.invest)}</b></div>
           <div class="mpl-conf-row"><span>生活費</span><b>${money(t.living)}</b></div>
-          <div class="mpl-conf-row total"><span>${ex > 0 ? '要動用存款' : '還會多出'}</span><b>${money(Math.abs(ex))}</b></div>
-        </div>
-        <div class="mpl-rw">
+          ${canDest ? `<div class="mpl-conf-row"><span>放進存錢目標</span><b data-conf-goals>${money(gSum)}</b></div>` : ''}
+          <div class="mpl-conf-row total${leftCls()}" data-conf-left>${leftRow()}</div>
+        </div>`;
+      const confHint = () => {
+        const names = d.goalList.filter(x => d.goals[x.id] > 0).map(x => x.name);
+        return `確認後：生活預算設成 ${money(t.living)}${d.fixed.find(x => x.key === 'annual' && x.on) ? `、撥 ${money(d.fixed.find(x => x.key === 'annual').amount)} 到年繳預存` : ''}${names.length ? `、${money(goalPickSum(d.goals))} 放進${names.join('、')}` : ''}${d.invest.some(g => g.mode === 'pause') ? `、${d.invest.filter(g => g.mode === 'pause').map(g => g.name).join('、')} 這個月暫停` : ''}。`;
+      };
+      if (canDest) {
+        const dt = el('div'); dt.className = 'mpl-title is-sub';
+        dt.innerHTML = `沒有去處的 ${money(surplus)} 要放哪 ${infoTip('放進存錢目標的錢還在帳戶裡，只是先標好用途；確認規劃時才記進去。沒放的就留在帳戶，算在可自由運用。')}`;
+        box.appendChild(dt);
+        box.appendChild(buildGoalDest({ goals: d.goalList, amount: surplus, picks: d.goals, showLeft: false, onChange: () => {
+          const gb = box.querySelector('[data-conf-goals]'); if (gb) gb.textContent = money(goalPickSum(d.goals));
+          const lr = box.querySelector('[data-conf-left]'); if (lr) { lr.className = `mpl-conf-row total${leftCls()}`; lr.innerHTML = leftRow(); }
+          const h = box.querySelector('[data-conf-hint]'); if (h) h.textContent = confHint();
+        } }));
+      }
+      box.insertAdjacentHTML('beforeend', `<div class="mpl-rw">
           <span>台幣現金 ${money(rw.cash)} ${infoTip(`台幣現金與活存，扣掉信用卡待繳。之後每個月照這個規劃付 ${money(rw.monthlyOut)}${rw.paymentsLeft ? `，有期限的收入還有 ${rw.paymentsLeft} 次、共 ${money(rw.incomesLeft)} 在預計的月份加回來` : ''}。`)}</span>
           <b>可撐 ${fmtRw(rw.months)}</b>
           ${prevRw != null && Number.isFinite(prevRw) && Number.isFinite(rw.months) && Math.abs(rw.months - prevRw) > 0.05 ? `<em>上次規劃 ${fmtRw(prevRw)}</em>` : ''}
         </div>
-        <div class="mpl-hint">確認後：生活預算設成 ${money(t.living)}${d.fixed.find(x => x.key === 'annual' && x.on) ? `、撥 ${money(d.fixed.find(x => x.key === 'annual').amount)} 到年繳預存` : ''}${d.invest.some(g => g.mode === 'pause') ? `、${d.invest.filter(g => g.mode === 'pause').map(g => g.name).join('、')} 這個月暫停` : ''}。</div>`;
+        <div class="mpl-hint" data-conf-hint></div>`);
+      box.querySelector('[data-conf-hint]').textContent = confHint();
     }
     return box;
   };
@@ -11226,6 +11391,10 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
     }
     const annualOn = !!d.fixed.find(x => x.key === 'annual' && x.on);
     await upsertAnnualReserveAlloc(ym, annualOn);
+    // v2.30.0：沒有去處的錢放進存錢目標（只有本月與以前的月份）
+    const surplus = Math.max(0, t.incomeIn - t.out);
+    const goals = surplus > 0 && ym <= currentMonthStr() ? Object.fromEntries(Object.entries(d.goals || {}).filter(([, v]) => v > 0).map(([k, v]) => [k, Math.round(v)])) : {};
+    await upsertPlanGoalAllocs(ym, goals);
     if (ym === currentMonthStr()) await saveBudgetRecord(null, { amount: t.living });
     const settings = (await getSetting(db, 'monthly_plan', null)) || {};
     await setSetting(db, 'monthly_plan', { ...settings, jar_method: d.method || null, ...(d.method ? { ref_method: d.method } : {}) });
@@ -11234,6 +11403,7 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
       month: ym, confirmed_at: new Date().toISOString(),
       income: { items: d.income.map(x => ({ id: x.id, name: x.name, amount: x.amount, expected: x.expected })), other: Number(d.other) || 0, total: t.incomeIn },
       fixed: { off: d.fixed.filter(x => !x.on).map(x => x.key), total: t.fixed, items: d.fixed.filter(x => x.on).map(x => ({ key: x.key, name: x.name, amount: x.amount, cat: x.cat || null })) },
+      goals, left: Math.round(t.incomeIn - t.out - goalPickSum(goals)),
       invest, investTotal: t.invest, living: t.living, method: d.method || null, out: t.out, runway: Number.isFinite(rw.months) ? +rw.months.toFixed(2) : null, cash: rw.cash,
     });
     close();
@@ -11284,6 +11454,10 @@ async function buildMonthReview(ym, { mode = 'review', onPlan = null } = {}) {
   const inA = incomeTxns.filter(t => inM(t) && !['cat_receivable', 'cat_dca'].includes(t.category) && !t.dca_spent && mainCategoryOf(t.category) !== 'cat_inc_invest').reduce((s, t) => s + resolveIncomeAmountTwd(t), 0);
   const annualA = allocations.filter(a => a.auto_type === 'annual' && a.auto_month === ym).reduce((s, a) => s + a.amount, 0);
   const spentA = fixedA - annualA + livingA + tempA; // 年繳預存只是先存起來，不算花掉
+  // v2.30.0：沒有去處的錢。回顧看實際：進來的扣掉花掉（從預備金付的臨時支出不算，那是舊的錢）、
+  // 投資、撥進存錢目標（含年繳預存）、新存的定存。本月進度看規劃時留下的。
+  const leftA = Math.round(inA - (spentA - tempA) - investA - flow.parts.goalIn - flow.parts.deposit);
+  const leftShow = mode === 'review' ? leftA : (p?.left ?? null);
   // 可撐多久：本月用目前的規劃即時算；過去的月份用那個月規劃時存下的數字
   let rwNow = null, rwPrev = null;
   if (mode === 'progress' || ym === shiftMonth(currentMonthStr(), -1)) { const dr = await buildPlanDraft(currentMonthStr()); rwNow = planRunway(dr).months; }
@@ -11322,12 +11496,14 @@ async function buildMonthReview(ym, { mode = 'review', onPlan = null } = {}) {
           <div class="rv-bar${over ? ' is-over' : ''}"><span style="width:${Math.min(100, a / max * 100)}%"></span>${has ? `<i style="left:${Math.min(100, plan / max * 100)}%"></i>` : ''}</div></div>`;
       }).join('')}
     </div>
+    ${leftShow != null && leftShow > 0 ? `<div class="rv-left"><span>${mode === 'review' ? '' : '規劃時'}還有 <b>NT$ ${fmt(leftShow)}</b> 沒有去處</span><button type="button" class="btn btn-ghost btn-sm" data-rv-left>放進存錢目標</button></div>` : ''}
     ${cats.length ? `<div class="rv-sec"><div class="rv-h">生活費細項<span>跟 ${monthLabel(shiftMonth(ym, -1))}比</span></div>
       ${cats.map(([id, v]) => { const pv = livingPrev[id] || 0, dv = Math.round(v - pv); const c = catById(id);
         return `<div class="rv-cat"><span>${c?.icon || '·'} ${escHtml(c?.label || '其他')}</span><b>${money(v)}</b><em class="${dv > 0 ? 'up' : dv < 0 ? 'down' : ''}">${dv === 0 ? '—' : `${dv > 0 ? '▲' : '▼'} ${fmt(Math.abs(dv))}`}</em></div>`; }).join('')}
     </div>` : ''}
     ${onPlan ? `<button type="button" class="btn btn-primary rv-cta" data-rv-plan>${mode === 'progress' ? '調整規劃' : `${monthLabel(isCur ? ym : shiftMonth(ym, 1))}規劃 開始`}</button>` : ''}`;
   card.querySelector('[data-rv-plan]')?.addEventListener('click', onPlan);
+  card.querySelector('[data-rv-left]')?.addEventListener('click', () => mode === 'review' ? openLeftoverSheet(ym, leftShow) : openMonthPlan(ym, 4));
   return card;
 }
 
