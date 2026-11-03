@@ -3364,7 +3364,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 </div>
 
 <script type="module">
-import { openDB, seedIfNeeded, seedCategoriesIfNeeded, getAll, getOne, putOne, putMany, getSetting, setSetting, DEFAULT_CATEGORIES, LEGACY_CATEGORY_LABELS } from './db.js';
+import { openDB, seedIfNeeded, seedCategoriesIfNeeded, getAll, getOne, putOne, putMany, getSetting, setSetting, DEFAULT_CATEGORIES, LEGACY_CATEGORY_LABELS, runTx, tGet, tGetAll, tPut, tDel, tClear } from './db.js';
 import { refreshPrices, refreshFxRates, refreshGoldPrice, getFxRates, setManualPrice, SUPPORTED_CURRENCIES } from './market.js';
 import {
   localDate, localMonth,
@@ -3384,6 +3384,46 @@ import {
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
   addMonthsISO, limitedIncomeSchedule, calcMonthDue, simulateRunway, isSpendJar, jarOfCategory, calcJarBudgets, isLivingExpense,
 } from './calc.js';
+
+// ── v2.31.0（R6）：錯誤不再安靜地消失 ─────────────────────────────────────
+// 寫入失敗一律讓整個動作失敗、畫面說清楚「沒有存到」，並記一筆事件紀錄。事件
+// 紀錄放在 localStorage（最多 200 筆），不依賴 IndexedDB——資料庫本身出問題時
+// 也記得下來。設定 › 資料與紀錄 › 錯誤紀錄 可以看，匯出備份時一起帶走。
+const EVENT_LOG_KEY = 'pfcc_event_log';
+function logEvent(kind, action, err) {
+  const msg = String(err?.message || err?.name || err || '').slice(0, 300);
+  console.warn('[pfcc]', kind, action, err);
+  try {
+    const list = JSON.parse(localStorage.getItem(EVENT_LOG_KEY) || '[]');
+    list.push({ at: new Date().toISOString(), kind, action, msg });
+    localStorage.setItem(EVENT_LOG_KEY, JSON.stringify(list.slice(-200)));
+  } catch (e) { /* localStorage 不能用時只留 console */ }
+}
+function readEventLog() { try { return JSON.parse(localStorage.getItem(EVENT_LOG_KEY) || '[]'); } catch (e) { return []; } }
+// 寫入失敗時給使用者看的一句話（細節在事件紀錄）
+function writeFailMsg(err) {
+  const n = err?.name || '';
+  if (n === 'QuotaExceededError') return '沒有存到：裝置空間不足';
+  if (n === 'InvalidStateError' || n === 'VersionError') return '沒有存到：資料庫連線中斷，請重新整理';
+  return '沒有存到，請再試一次';
+}
+// 寫入動作的統一包裝：失敗時記事件、回傳 { ok:false, error }，呼叫端照原本的方式顯示
+async function guardWrite(action, fn) {
+  try { return await fn(); }
+  catch (err) { logEvent('write-failed', action, err); return { ok: false, error: writeFailMsg(err), cause: err }; }
+}
+window.addEventListener('unhandledrejection', e => {
+  logEvent('unhandled', 'promise', e.reason);
+  try { showToast('有一個動作沒有完成，請再試一次'); } catch (err) { /* 畫面還沒好 */ }
+});
+window.addEventListener('pfcc:dbversionchange', () => {
+  logEvent('db', 'versionchange', 'another window upgraded the database');
+  showToast('PFCC 在另一個視窗更新了，這個視窗要重新整理才能繼續', { label: '重新整理', onClick: () => location.reload() });
+});
+window.addEventListener('pfcc:dbblocked', () => {
+  logEvent('db', 'blocked', 'upgrade blocked by another window');
+  showToast('請關閉其他開著 PFCC 的視窗，讓資料庫完成更新');
+});
 
 let db, state = {}, currentView = 'assets';
 
@@ -6273,6 +6313,18 @@ async function renderSystemSettings() {
       setTimeout(() => { if (currentView === 'appsettings') renderSystemSettings(); }, 400);
     });
     row.querySelector('#settingsImportBtn').addEventListener('click', () => document.getElementById('importBtn').click());
+  }
+  // ── v2.31.0（R6）：錯誤紀錄。沒有紀錄時不顯示。
+  {
+    const evs = readEventLog();
+    if (evs.length) {
+      const body = addCollapsible({ key:'eventLog', icon:'🧾', title:'錯誤紀錄',
+        badgeHtml: `<span style="font-size:10px;font-weight:700;min-width:18px;text-align:center;padding:1px 6px;border-radius:10px;background:var(--surface-2);color:var(--text-2)">${evs.length}</span>` });
+      body.innerHTML = `<div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--text-2)">${evs.slice(-30).reverse().map(e =>
+        `<div style="display:grid;grid-template-columns:auto 1fr;gap:2px 10px"><span style="color:var(--text-3);font-variant-numeric:tabular-nums">${escHtml(fmtDateTime(e.at))}</span><b style="color:var(--text-1);font-weight:600">${escHtml(e.action)}</b><span></span><span>${escHtml(e.msg)}</span></div>`).join('')}</div>
+        <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" id="eventLogClear">清除紀錄</button></div>`;
+      body.querySelector('#eventLogClear').onclick = () => { try { localStorage.removeItem(EVENT_LOG_KEY); } catch (e) {} renderSystemSettings(); };
+    }
   }
 
   // ══════════════════════ 關於 ══════════════════════
@@ -10084,8 +10136,8 @@ async function ensureIncomeBuffer() {
 // 支應，見 syncEmergencyFundShortfall 的 earmarked）。
 async function syncIncomeBuffer() {
   const [buckets, incomeTxns, allocations, settings] = await Promise.all([
-    getAll(db,'buckets').catch(()=>[]), getAll(db,'income_txns').catch(()=>[]),
-    getAll(db,'bucket_allocations').catch(()=>[]), getSetting(db,'monthly_plan',null).catch(()=>null),
+    getAll(db,'buckets'), getAll(db,'income_txns'),
+    getAll(db,'bucket_allocations'), getSetting(db,'monthly_plan',null),
   ]);
   const month = currentMonthStr();
   const existing = allocations.find(a => a.auto_type === 'buffer' && a.auto_month === month);
@@ -10214,9 +10266,9 @@ async function syncEmergencyFundShortfall() {
 // 可自由運用會先扣掉它。目標金額、每月金額隨年繳項目自動更新。
 async function syncAnnualReserve() {
   const [rec, buckets, allocations] = await Promise.all([
-    getAll(db,'recurring_expenses').catch(()=>[]), getAll(db,'buckets').catch(()=>[]), getAll(db,'bucket_allocations').catch(()=>[]),
+    getAll(db,'recurring_expenses'), getAll(db,'buckets'), getAll(db,'bucket_allocations'),
   ]);
-  const target = calcAnnualReserveTarget(rec, await getFxRates(db).catch(()=>({})));
+  const target = calcAnnualReserveTarget(rec, await getFxRates(db));
   let b = buckets.find(x => x.is_annual_reserve);
   const monthly = Math.ceil(target / 12);
   if (!b && target > 0) {
@@ -10230,7 +10282,7 @@ async function syncAnnualReserve() {
   // v2.27.0：每月預存改在「每月規劃」確認時撥入（upsertAnnualReserveAlloc），這裡只更新目標金額。
 }
 async function upsertAnnualReserveAlloc(month, on = true) {
-  const [buckets, allocations] = await Promise.all([getAll(db,'buckets').catch(()=>[]), getAll(db,'bucket_allocations').catch(()=>[])]);
+  const [buckets, allocations] = await Promise.all([getAll(db,'buckets'), getAll(db,'bucket_allocations')]);
   const b = buckets.find(x => x.is_annual_reserve);
   if (!b) return;
   const target = b.target_amount || 0, monthly = b.monthly_amount || 0;
@@ -10245,11 +10297,16 @@ async function upsertAnnualReserveAlloc(month, on = true) {
       note: `${Number(month.slice(5))} 月規劃：年繳項目合計 ${fmt(target)} ÷ 12`, auto: true, auto_type: 'annual', auto_month: month, created_at: ex?.created_at || new Date().toISOString() });
   }
 }
+// v2.31.0（R6）：這些函式先讀既有的自動紀錄，再決定更新哪一筆。讀取失敗時原本
+// 會被當成「沒有」而多新增一筆，現在讀取失敗就整個放棄這次同步（下次存檔或啟動
+// 時會再算一次），並記進事件紀錄。回傳 false 代表有一項沒有同步成功。
 async function syncPlanAutoRows() {
-  await syncAnnualReserve().catch(e=>console.warn('[sync annual reserve]', e));
-  await syncIncomeBuffer().catch(e=>console.warn('[sync income buffer]', e));
-  await syncAutoBucketContributions().catch(e=>console.warn('[sync auto buckets]', e));
-  await syncEmergencyFundShortfall().catch(e=>console.warn('[sync emergency fund]', e));
+  let ok = true;
+  for (const [name, fn] of [['annual-reserve', syncAnnualReserve], ['income-buffer', syncIncomeBuffer],
+    ['auto-buckets', syncAutoBucketContributions], ['emergency-fund', syncEmergencyFundShortfall]]) {
+    try { await fn(); } catch (e) { ok = false; logEvent('sync-failed', name, e); }
+  }
+  return ok;
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -10990,7 +11047,7 @@ function buildGoalDest({ goals, amount, picks, onChange, showLeft = true }) {
 }
 const lastDayOfYm = ym => `${ym}-${pad2x(new Date(+ym.slice(0, 4), +ym.slice(5), 0).getDate())}`;
 async function upsertPlanGoalAllocs(ym, picks) {
-  const allocations = await getAll(db, 'bucket_allocations').catch(() => []);
+  const allocations = await getAll(db, 'bucket_allocations');
   const ex = allocations.filter(a => a.plan_month === ym);
   const date = ym === currentMonthStr() ? isoDate(new Date()) : lastDayOfYm(ym);
   const t = db.transaction(['bucket_allocations'], 'readwrite'), st = t.objectStore('bucket_allocations');
@@ -11330,7 +11387,7 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
     drawCand();
     f.querySelector('[data-f-cancel]').onclick = () => { editSrc = null; render(); };
     f.querySelector('[data-f-del]')?.addEventListener('click', async () => {
-      const list = ((await getSetting(db, 'limited_income', []).catch(() => [])) || []).filter(z => z.id !== s.id);
+      const list = ((await getSetting(db, 'limited_income', [])) || []).filter(z => z.id !== s.id);
       await setSetting(db, 'limited_income', list);
       Object.assign(d, await buildPlanDraft(ym), { fixed: d.fixed, invest: d.invest, living: d.living, method: d.method, other: d.other });
       editSrc = null; render();
@@ -11340,7 +11397,7 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
       const total = parseInt(f.querySelector('[data-f-total]').value), next_date = f.querySelector('[data-f-date]').value || null;
       const category = f.querySelector('[data-f-cat]').value;
       if (!name || !(amount > 0) || !(total > 0)) { showToast('填好名稱、每次金額、總共幾次'); return; }
-      const list = (await getSetting(db, 'limited_income', []).catch(() => [])) || [];
+      const list = (await getSetting(db, 'limited_income', [])) || [];
       const rec = { ...(s.id ? list.find(z => z.id === s.id) : {}), id: s.id || crypto.randomUUID(), name, amount, total, next_date, category };
       await setSetting(db, 'limited_income', s.id ? list.map(z => z.id === s.id ? rec : z) : [...list, rec]);
       const picked = [...f.querySelectorAll('.mpl-cand input:checked')].map(i => i.value);
@@ -11363,11 +11420,16 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
     return f;
   };
 
+  // v2.31.0（R6）：任何一步寫入失敗，視窗留著、說清楚沒有存到，按鈕恢復可以再按
   const save = async () => {
+    const r = await guardWrite('month-plan', async () => { await saveInner(); return { ok: true }; });
+    if (!r.ok) { showToast(r.error); const b = panel.querySelector('[data-save]'); if (b) b.disabled = false; }
+  };
+  const saveInner = async () => {
     const t = planTotals(d), rw = planRunway(d);
     const btn = panel.querySelector('[data-save]'); if (btn) btn.disabled = true;
     // 有期限的收入：更新下次預計日期；這個月不會入帳的往後延一個月
-    const list = (await getSetting(db, 'limited_income', []).catch(() => [])) || [];
+    const list = (await getSetting(db, 'limited_income', [])) || [];
     await setSetting(db, 'limited_income', list.map(s => {
       const x = d.income.find(z => z.id === s.id); if (!x) return s;
       return { ...s, next_date: x.inMonth && !x.expected && x.next_date ? addMonthsISO(x.next_date, 1) : x.next_date };
@@ -17073,7 +17135,7 @@ async function saveIncomeRecord(input) {
 
   // v2.27.0：記到有期限收入（例如失業給付）的分類，下次預計入帳日自動往後一個月
   if (!editId) {
-    const srcs = (await getSetting(db, 'limited_income', []).catch(() => [])) || [];
+    const srcs = (await getSetting(db, 'limited_income', [])) || [];
     if (srcs.some(x => x.category === txn.category)) await setSetting(db, 'limited_income', srcs.map(x => x.category === txn.category ? { ...x, next_date: addMonthsISO(txn.date, 1) } : x)).catch(() => {});
   }
   return { ok:true, txn, deferBalance, clampedFrom, bonusAllocated };

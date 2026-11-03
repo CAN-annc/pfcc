@@ -16,10 +16,19 @@ export function openDB() {
     // db.transaction() call, which IndexedDB refuses while an upgrade is
     // already in progress.
     req.onupgradeneeded = (e) => createSchema(e.target.result, e.oldVersion, e.target.transaction);
-    req.onsuccess = (e) => resolve(e.target.result);
+    // v2.31.0（R6）：另一個視窗要升級資料庫時，這裡先關閉連線並通知畫面請使用者
+    // 重新整理；反過來，這個視窗的升級被舊視窗擋住時，也通知畫面。不處理的話，
+    // 之後的每一次讀寫都會失敗。
+    req.onsuccess = (e) => {
+      const d = e.target.result;
+      d.onversionchange = () => { d.close(); notify('pfcc:dbversionchange'); };
+      resolve(d);
+    };
+    req.onblocked = () => notify('pfcc:dbblocked');
     req.onerror   = (e) => reject(e.target.error);
   });
 }
+function notify(name) { try { globalThis.dispatchEvent?.(new Event(name)); } catch (e) { /* 沒有畫面（測試）時忽略 */ } }
 
 function createSchema(db, oldVersion, tx) {
   if (oldVersion < 1) {
@@ -360,10 +369,38 @@ function idbReq(r) {
 function txDone(t) {
   return new Promise((res, rej) => {
     t.oncomplete = res;
-    t.onerror    = () => rej(t.error);
-    t.onabort    = () => rej(t.error);
+    t.onerror    = () => rej(t.error || new Error('資料庫寫入失敗'));
+    t.onabort    = () => rej(t.error || new Error('資料庫交易已取消'));
   });
 }
+
+// ─── 單一交易（v2.31.0，R2）────────────────────────────────────────────────
+// 一次業務操作（記一筆支出、記一筆收入、一次轉帳、匯入備份）會動到的所有 store
+// 放進同一個 read-write 交易：任何一步失敗，整筆放棄，不會出現「紀錄存了、餘額
+// 沒扣」。IndexedDB 也會讓範圍重疊的 read-write 交易依序執行，所以交易裡的
+// 「讀出 → 加減 → 寫回」不會被另一個交易插隊覆蓋（不論同一個或另一個視窗）。
+// 規則：fn(t) 裡只能 await 這個交易自己的請求（tGet／tGetAll／tPut／tDel／
+// tClear）；不能 await 網路、計時器或別的交易，否則交易會提早結束。匯率之類的
+// 資料要在 runTx 之前先取好。
+export async function runTx(db, stores, fn) {
+  const t = db.transaction(stores, 'readwrite');
+  const done = txDone(t);
+  let result;
+  try {
+    result = await fn(t);
+  } catch (err) {
+    try { t.abort(); } catch (e) { /* 已經被取消 */ }
+    await done.catch(() => {});
+    throw err;
+  }
+  await done;
+  return result;
+}
+export const tGet    = (t, store, key) => idbReq(t.objectStore(store).get(key));
+export const tGetAll = (t, store)      => idbReq(t.objectStore(store).getAll());
+export const tPut    = (t, store, rec) => idbReq(t.objectStore(store).put(rec));
+export const tDel    = (t, store, key) => idbReq(t.objectStore(store).delete(key));
+export const tClear  = (t, store)      => idbReq(t.objectStore(store).clear());
 
 export async function getAll(db, store) {
   const t = db.transaction([store], 'readonly');
