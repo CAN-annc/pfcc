@@ -3351,7 +3351,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <h2>從備份匯入</h2>
     <p style="font-size:13px;color:var(--text-2);margin-bottom:16px;line-height:1.6">
       選擇先前匯出的 <code style="background:var(--surface-2);padding:1px 5px;border-radius:3px">.json</code> 備份檔案。
-      <strong>匯入後將覆蓋目前裝置上的所有資料。</strong>
+      <strong>匯入後，目前裝置上的資料會全部換成備份的內容。</strong>匯入前會自動留一份目前的資料，可以在「設定 › 資料與紀錄」還原。
     </p>
     <input type="file" id="importFile" accept=".json"
       style="font-size:13px;color:var(--text-2);border:1px dashed var(--border-2);border-radius:7px;padding:12px;width:100%;cursor:pointer">
@@ -4192,6 +4192,9 @@ async function init() {
   await seedCategoriesIfNeeded(db).catch(()=>{});
   await migrateCategoryTreeV1().catch(e => console.warn('[category tree migrate]', e));
   await migrateV227().catch(e => console.warn('[v2.27 migrate]', e));
+  // v2.31.0（R3）：剛匯入或還原完（頁面重新載入）時，補跑一次 v2.27 遷移（原本匯入後就會跑）
+  let afterImport = false; try { afterImport = sessionStorage.getItem('pfcc_after_import') === '1'; sessionStorage.removeItem('pfcc_after_import'); } catch (e) {}
+  if (afterImport) { await migrateV227(true).catch(e => logEvent('migrate-failed', 'v2.27 after import', e)); setTimeout(() => showToast('✓ 已匯入備份'), 600); }
   await refreshCatCache();
   await repairConfirmState().catch(e => console.warn('[repair confirm state]', e));
   // 配色主題 (§十五之四)：套用越早越好，這樣連底下的鎖定畫面都會是選定的主題色，
@@ -6362,6 +6365,21 @@ async function renderSystemSettings() {
       setTimeout(() => { if (currentView === 'appsettings') renderSystemSettings(); }, 400);
     });
     row.querySelector('#settingsImportBtn').addEventListener('click', () => document.getElementById('importBtn').click());
+  }
+  // ── v2.31.0（R3）：匯入前自動留下的資料，可以還原（還原前也會再留一份現在的）
+  {
+    const rp = await getRestorePoint().catch(e => { logEvent('read-failed', 'restore-point', e); return null; });
+    if (rp) {
+      const row = addRow({ icon:'↩️', title:'匯入前的資料', subtitle:`保留於 ${fmtDateTime(rp.at)}`,
+        rightHtml:'<button class="btn btn-ghost btn-sm" id="restoreBtn">還原</button>' });
+      row.querySelector('#restoreBtn').addEventListener('click', () => {
+        openDeleteModal(`要把目前的資料換回 ${fmtDateTime(rp.at)} 匯入前的樣子嗎？現在的資料會另外保留一份，之後還可以再換回來。`, async () => {
+          const res = await importBackupData(rp.data);
+          if (!res.ok) { showToast(res.error); return; }
+          location.reload();
+        });
+      });
+    }
   }
   // ── v2.31.0（R6）：錯誤紀錄。沒有紀錄時不顯示。
   {
@@ -10084,8 +10102,10 @@ document.getElementById('goldModalSave').addEventListener('click',async()=>{
 const BACKUP_STORES=['banks','accounts','time_deposits','brokerages','holdings','market_prices','gold_holdings','receivables','receivable_payments','fx_rates','settings','transfer_logs','income_txns','asset_snapshots','txn_categories','expense_txns','credit_cards','recurring_expenses','installments','savings_goals','balance_adjustments','recurring_income','budgets','buckets','bucket_allocations','projects','recurring_transfers','dca_schedules','other_assets'];
 
 document.getElementById('exportBtn').addEventListener('click',async()=>{
-  const backup={version:1,exported_at:new Date().toISOString(),data:{}};
-  for(const s of BACKUP_STORES) backup.data[s]=await getAll(db,s).catch(()=>[]);
+  // v2.31.0（R6）：任何一個 store 讀不到就不產生備份（原本會把那一類存成空的，還原時才發現少了）
+  let backup;
+  try { backup = await snapshotCurrentData(); }
+  catch (err) { logEvent('export-failed', 'backup', err); showToast('備份沒有產生：有資料讀不到，請重新整理後再試'); return; }
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`pfcc-backup-${localDate()}.json`;a.click();
@@ -10104,26 +10124,96 @@ document.getElementById('importModalCancel').addEventListener('click',()=>docume
 document.getElementById('importModal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
 
 let _importData=null;
+// ── v2.31.0（R3）：匯入＝真正全量取代、可以還原、失敗就明確失敗 ───────────────
+// 1. 先檢查備份格式（每個 store 是陣列、每筆有主鍵），不對就不動任何資料。
+// 2. 把目前的資料存成「還原點」（另一個資料庫 pfcc_restore，只留最近一份）。
+// 3. 一個交易涵蓋全部 store：先清空再寫入。任何一筆寫不進去，整批放棄、資料不變。
+// 4. 完成後重新載入頁面，讓快取、分類、畫面狀態全部重來；載入後補跑 v2.27 遷移。
+// 備份裡沒有的 store（較舊版本的備份）也會清空——匯入的意思是「變成備份當時的樣子」。
+const BACKUP_KEY_PATH = { settings: 'key', market_prices: 'ticker', fx_rates: 'pair' };
+function validateBackup(parsed) {
+  if (!parsed || typeof parsed !== 'object' || !parsed.version || !parsed.data || typeof parsed.data !== 'object') throw new Error('不是有效的 PFCC 備份檔案');
+  const counts = {}; let total = 0;
+  for (const st of BACKUP_STORES) {
+    const recs = parsed.data[st];
+    if (recs === undefined) { counts[st] = 0; continue; }
+    if (!Array.isArray(recs)) throw new Error(`備份裡的「${st}」格式不對`);
+    const kp = BACKUP_KEY_PATH[st] || 'id';
+    recs.forEach((r, i) => {
+      if (!r || typeof r !== 'object' || Array.isArray(r)) throw new Error(`備份裡的「${st}」第 ${i + 1} 筆格式不對`);
+      const k = r[kp];
+      if (k === undefined || k === null || k === '') throw new Error(`備份裡的「${st}」第 ${i + 1} 筆缺少 ${kp}`);
+    });
+    counts[st] = recs.length; total += recs.length;
+  }
+  if (!total) throw new Error('這個備份檔沒有任何資料');
+  return { counts, total };
+}
+const RESTORE_DB = 'pfcc_restore';
+function openRestoreDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(RESTORE_DB, 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('snap', { keyPath: 'id' });
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+async function snapshotCurrentData() {
+  const data = {};
+  for (const st of BACKUP_STORES) data[st] = await getAll(db, st); // 讀不到就不匯入（不吞錯）
+  return { version: 1, exported_at: new Date().toISOString(), data };
+}
+async function saveRestorePoint(snap) {
+  const rdb = await openRestoreDB();
+  try { await runTx(rdb, ['snap'], tx => tPut(tx, 'snap', { id: 'last', at: snap.exported_at, data: snap })); }
+  finally { rdb.close(); }
+}
+async function getRestorePoint() {
+  const rdb = await openRestoreDB();
+  try { return await new Promise((res, rej) => { const q = rdb.transaction(['snap']).objectStore('snap').get('last'); q.onsuccess = () => res(q.result || null); q.onerror = () => rej(q.error); }); }
+  finally { rdb.close(); }
+}
+// 匯入（也用於還原）。成功後由呼叫端重新載入頁面。
+async function importBackupData(parsed) {
+  return withWriteLock(() => guardWrite('import-backup', async () => {
+    validateBackup(parsed);
+    await saveRestorePoint(await snapshotCurrentData());
+    await runTx(db, BACKUP_STORES, async tx => {
+      for (const st of BACKUP_STORES) {
+        await tClear(tx, st);
+        for (const r of (parsed.data[st] || [])) await tPut(tx, st, r);
+      }
+    });
+    try { sessionStorage.setItem('pfcc_after_import', '1'); } catch (e) {}
+    return { ok: true };
+  }));
+}
 document.getElementById('importFile').addEventListener('change',async e=>{
   const file=e.target.files[0];if(!file)return;
   const statusEl=document.getElementById('importStatus');
   try{
     const parsed=JSON.parse(await file.text());
-    if(!parsed?.version||!parsed?.data)throw new Error('不是有效的 PFCC 備份檔案');
+    const { total } = validateBackup(parsed);
     _importData=parsed;
-    statusEl.style.color='var(--green)';statusEl.textContent=`✓ 備份日期 ${parsed.exported_at?.slice(0,10)??'未知'}`;
+    statusEl.style.color='var(--green)';statusEl.textContent=`✓ 備份日期 ${parsed.exported_at?.slice(0,10)??'未知'}・共 ${fmt(total)} 筆`;
     document.getElementById('importModalConfirm').disabled=false;
   }catch(err){
-    _importData=null;statusEl.style.color='var(--red)';statusEl.textContent=`✗ ${err.message}`;
+    _importData=null;statusEl.style.color='var(--red)';statusEl.textContent=`✗ ${err instanceof SyntaxError ? '檔案不是 JSON 格式' : err.message}`;
     document.getElementById('importModalConfirm').disabled=true;
   }
 });
 document.getElementById('importModalConfirm').addEventListener('click',async()=>{
   if(!_importData)return;
-  document.getElementById('importModal').classList.remove('open');
-  for(const s of BACKUP_STORES){const records=_importData.data[s]??[];if(records.length>0)await putMany(db,s,records).catch(()=>{});}
-  await migrateV227(true).catch(e => console.warn('[v2.27 migrate]', e)); await refreshCatCache().catch(() => {});
-  _importData=null;showToast('備份已匯入');await navigate(currentView);
+  const btn=document.getElementById('importModalConfirm'), statusEl=document.getElementById('importStatus');
+  btn.disabled=true; statusEl.style.color='var(--text-3)'; statusEl.textContent='匯入中…';
+  const res = await importBackupData(_importData);
+  if (!res.ok) {
+    // 格式錯誤顯示原因；寫入錯誤顯示「沒有存到」。兩種情況目前的資料都沒有被改動。
+    const msg = res.cause && !(res.cause instanceof DOMException) && res.cause.message ? res.cause.message : res.error;
+    statusEl.style.color='var(--red)'; statusEl.textContent=`✗ ${msg}；目前的資料沒有變動`;
+    btn.disabled=false; return;
+  }
+  _importData=null;
+  location.reload();
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -18098,7 +18188,7 @@ document.addEventListener('click',e=>{if(!sidebar.contains(e.target)&&!menuBtn.c
 // v2.31.0：自動化回歸測試用。網址帶 ?pfcc-test 時，才把寫入操作掛到 window 讓測試呼叫；
 // 一般使用時不存在。這些函式能做的事跟畫面上的按鈕完全一樣，不多開任何權限。
 if (new URLSearchParams(location.search).has('pfcc-test')) {
-  window.__pfcc = { saveExpenseRecord, saveIncomeRecord, recordTransfer, deleteTxnRecord, runAutoConfirm, readEventLog };
+  window.__pfcc = { saveExpenseRecord, saveIncomeRecord, recordTransfer, deleteTxnRecord, runAutoConfirm, importBackupData, getRestorePoint, readEventLog };
 }
 init().catch(err=>{
   document.getElementById('content').innerHTML=`<div style="color:var(--red);padding:40px"><strong>載入失敗</strong><br><small>${err.message}</small></div>`;

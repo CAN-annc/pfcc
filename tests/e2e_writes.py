@@ -182,6 +182,57 @@ async def e11(c):
     assert r['ok'] is False and await c.acc(pg, 'a1') == 10000 and len(await c.dump(pg, 'transfer_logs')) == 0
 
 
+def backup_of(accounts, extra=None):
+    data = {'accounts': accounts, 'settings': [{'key': 'onboarding_completed', 'value': True}]}
+    data.update(extra or {})
+    return {'version': 1, 'exported_at': '2026-10-01T00:00:00Z', 'data': data}
+
+
+@case('E12', '匯入是全量取代：目前多出的紀錄被移除，餘額等於備份（R3）')
+async def e12(c):
+    pg = await c.page()
+    await pg.evaluate("__pfcc.saveExpenseRecord({ date: '2026-11-03', category: 'cat_food', amount: 120, payType: 'account', accId: 'a1' })")
+    bk = backup_of([{'id': 'a1', 'name': '薪轉', 'currency': 'TWD', 'balance': 5000, 'include_in_total': True}])
+    r = await pg.evaluate("b => __pfcc.importBackupData(b)", bk)
+    assert r['ok'], r
+    assert len(await c.dump(pg, 'expense_txns')) == 0, '匯入前的支出應被移除'
+    accs = await c.dump(pg, 'accounts')
+    assert [a['id'] for a in accs] == ['a1'] and accs[0]['balance'] == 5000
+    assert len(await c.dump(pg, 'credit_cards')) == 0
+
+
+@case('E13', '匯入格式錯誤：顯示原因、資料完全不變（R3）')
+async def e13(c):
+    pg = await c.page()
+    bad = backup_of([{'name': '沒有 id 的帳戶', 'balance': 1}])
+    r = await pg.evaluate("b => __pfcc.importBackupData(b).then(r => ({ ok: r.ok, msg: r.cause && r.cause.message }))", bad)
+    assert r['ok'] is False and '缺少 id' in (r['msg'] or ''), r
+    assert await c.acc(pg, 'a1') == 10000 and len(await c.dump(pg, 'accounts')) == 2
+
+
+@case('E14', '匯入寫到一半失敗：整批放棄，資料完全不變（R3）')
+async def e14(c):
+    pg = await c.page()
+    # 第二筆的 id 不是合法的資料庫主鍵：前面的清空與第一筆寫入都要被撤銷
+    bad = backup_of([{'id': 'a9', 'name': 'x', 'balance': 1}, {'id': {'not': 'a key'}, 'name': 'y', 'balance': 2}])
+    r = await pg.evaluate("b => __pfcc.importBackupData(b).then(r => ({ ok: r.ok }))", bad)
+    assert r['ok'] is False, r
+    accs = await c.dump(pg, 'accounts')
+    assert sorted(a['id'] for a in accs) == ['a1', 'a2'] and await c.acc(pg, 'a1') == 10000
+
+
+@case('E15', '匯入前自動留還原點，用它可以完整還原（R3）')
+async def e15(c):
+    pg = await c.page()
+    await pg.evaluate("__pfcc.saveExpenseRecord({ date: '2026-11-03', category: 'cat_food', amount: 120, payType: 'account', accId: 'a1' })")
+    await pg.evaluate("b => __pfcc.importBackupData(b)", backup_of([{'id': 'a1', 'name': '薪轉', 'currency': 'TWD', 'balance': 5000}]))
+    rp = await pg.evaluate("__pfcc.getRestorePoint()")
+    assert rp and len(rp['data']['data']['expense_txns']) == 1
+    r = await pg.evaluate("__pfcc.getRestorePoint().then(rp => __pfcc.importBackupData(rp.data))")
+    assert r['ok'], r
+    assert await c.acc(pg, 'a1') == 9880 and len(await c.dump(pg, 'expense_txns')) == 1
+
+
 @case('E16', '台北 11/1 早上 7:30：計畫頁是 11 月，不是 10 月（R1）')
 async def e16(c):
     ctx = await c.browser.new_context(viewport={'width': 390, 'height': 844}, service_workers='block', timezone_id='Asia/Taipei')
