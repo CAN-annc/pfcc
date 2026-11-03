@@ -3388,7 +3388,7 @@ import {
 // ── v2.31.0（R6）：錯誤不再安靜地消失 ─────────────────────────────────────
 // 寫入失敗一律讓整個動作失敗、畫面說清楚「沒有存到」，並記一筆事件紀錄。事件
 // 紀錄放在 localStorage（最多 200 筆），不依賴 IndexedDB——資料庫本身出問題時
-// 也記得下來。設定 › 資料與紀錄 › 錯誤紀錄 可以看，匯出備份時一起帶走。
+// 也記得下來。設定 › 資料與紀錄 › 錯誤紀錄 可以看；只存在這台裝置，不會跟著備份匯出。
 const EVENT_LOG_KEY = 'pfcc_event_log';
 function logEvent(kind, action, err) {
   const msg = String(err?.message || err?.name || err || '').slice(0, 300);
