@@ -3367,6 +3367,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 import { openDB, seedIfNeeded, seedCategoriesIfNeeded, getAll, getOne, putOne, putMany, getSetting, setSetting, DEFAULT_CATEGORIES, LEGACY_CATEGORY_LABELS } from './db.js';
 import { refreshPrices, refreshFxRates, refreshGoldPrice, getFxRates, setManualPrice, SUPPORTED_CURRENCIES } from './market.js';
 import {
+  localDate, localMonth,
   calcCashAssets, calcDepositAssets, calcInvestmentAssets,
   calcReceivables, calcNetWorth, calcUpcomingReminders,
   fmt, fmtCurrency, fmtDate, fmtDateTime, fmtDaysLabel, daysUntil, toTWD,
@@ -4213,7 +4214,7 @@ async function migrateSavingsGoalsToBuckets() {
         id: crypto.randomUUID(),
         bucket_id: g.id,
         amount: g.saved_amount,
-        date: new Date().toISOString().slice(0, 10),
+        date: localDate(),
         note: '從舊版「儲蓄目標」資料遷移',
         created_at: new Date().toISOString(),
       });
@@ -6230,7 +6231,7 @@ async function renderSystemSettings() {
       await Promise.all([safe('market_prices'), safe('expense_txns'), safe('income_txns'), safe('recurring_expenses'),
         safe('dca_schedules'), safe('recurring_transfers'), safe('receivables'), safe('receivable_payments'), safe('credit_cards')]);
     const findings = runDataHealthChecks({
-      today: new Date().toISOString().slice(0, 10),
+      today: localDate(),
       accounts: state.accounts ?? [], holdings: state.holdings ?? [], prices,
       expenseTxns, incomeTxns, recurringExpenses, dcaSchedules, recurringTransfers,
       receivables, receivablePayments, creditCards,
@@ -9608,7 +9609,7 @@ async function applyIncomeBalanceEffect(t) {
 // 真正套用到帳戶／信用卡餘額，套用後清掉 defer_balance_effect，之後這筆
 // 紀錄的行為就完全比照一般已生效的紀錄。
 async function applyPendingBalanceEffects() {
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = localDate();
   const [expenseTxns, incomeTxns] = await Promise.all([
     getAll(db, 'expense_txns').catch(() => []),
     getAll(db, 'income_txns').catch(() => []),
@@ -9667,7 +9668,7 @@ document.getElementById('writeOffModalConfirm').addEventListener('click', async 
     const cat = await ensureBadDebtCategory();
     await putOne(db, 'expense_txns', {
       id: crypto.randomUUID(),
-      date: new Date().toISOString().slice(0,10),
+      date: localDate(),
       category: cat.id,
       description: `呆帳沖銷：${recvRecord.name}`,
       amount: pending, account_id: null, currency: 'TWD', fx_rate_twd: 1,
@@ -9679,7 +9680,7 @@ document.getElementById('writeOffModalConfirm').addEventListener('click', async 
   await putOne(db, 'receivables', {
     ...recvRecord,
     is_settled: true, write_off: true,
-    write_off_date: new Date().toISOString().slice(0,10),
+    write_off_date: localDate(),
     write_off_reason: reason || null,
   });
 
@@ -9745,7 +9746,7 @@ document.getElementById('recvModalSave').addEventListener('click',async()=>{
   });
   const delta = existing ? received - existing.received_amount : received;
   if (delta !== 0) {
-    await addReceivablePayment(id, new Date().toISOString().slice(0,10), delta, note || '手動補登／調整已收金額');
+    await addReceivablePayment(id, localDate(), delta, note || '手動補登／調整已收金額');
   }
   document.getElementById('recvModal').classList.remove('open');
   showToast(editId?'應收款已更新':'應收款已新增');
@@ -9769,7 +9770,7 @@ async function openRecvPaymentModal(r, payment = null) {
   document.getElementById('recvPaymentTargetLabel').textContent = `${r.name}　尚未收到：NT$ ${fmt(r.total_amount - r.received_amount)}`;
   document.getElementById('recvPaymentRecvId').value = r.id;
   document.getElementById('recvPaymentEditId').value = payment?.id ?? '';
-  document.getElementById('recvPaymentDate').value = payment?.date ?? new Date().toISOString().slice(0,10);
+  document.getElementById('recvPaymentDate').value = payment?.date ?? localDate();
   document.getElementById('recvPaymentAmount').value = payment ? Math.abs(payment.amount) : '';
   document.getElementById('recvPaymentNote').value = payment?.note ?? '';
 
@@ -9852,7 +9853,7 @@ document.getElementById('recvPaymentModal').addEventListener('click',e=>{if(e.ta
 document.getElementById('recvPaymentModalSave').addEventListener('click', async () => {
   const recvId = document.getElementById('recvPaymentRecvId').value;
   const editId = document.getElementById('recvPaymentEditId').value;
-  const date = document.getElementById('recvPaymentDate').value || new Date().toISOString().slice(0,10);
+  const date = document.getElementById('recvPaymentDate').value || localDate();
   const amount = parseFloat(document.getElementById('recvPaymentAmount').value);
   const note = document.getElementById('recvPaymentNote').value.trim();
   const affects = document.getElementById('recvPaymentAffectsToggle').dataset.on === '1';
@@ -9993,7 +9994,7 @@ document.getElementById('exportBtn').addEventListener('click',async()=>{
   for(const s of BACKUP_STORES) backup.data[s]=await getAll(db,s).catch(()=>[]);
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=`pfcc-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();
+  const a=document.createElement('a');a.href=url;a.download=`pfcc-backup-${localDate()}.json`;a.click();
   URL.revokeObjectURL(url);
   // §四十六：設定頁「匯出／匯入備份」那一列顯示「上次匯出」日期用。
   await setSetting(db,'last_export_at',new Date().toISOString()).catch(()=>{});
@@ -10099,7 +10100,7 @@ async function syncIncomeBuffer() {
   const note = delta >= 0
     ? `本月收入 ${fmt(pi.actual)} 比基準 ${fmt(pi.base)} 多，存進緩衝`
     : `本月收入 ${fmt(pi.actual)} 比基準 ${fmt(pi.base)} 少，從緩衝補${-amount < -delta ? `（緩衝只剩 ${fmt(avail)}，不夠的由緊急預備金支應）` : ''}`;
-  const row = { id: existing?.id || crypto.randomUUID(), bucket_id: buf.id, amount, date: existing?.date || new Date().toISOString().slice(0,10),
+  const row = { id: existing?.id || crypto.randomUUID(), bucket_id: buf.id, amount, date: existing?.date || localDate(),
     note, auto: true, auto_type: 'buffer', auto_month: month, created_at: existing?.created_at || new Date().toISOString() };
   if (!existing || existing.amount !== row.amount || existing.note !== row.note || existing.bucket_id !== row.bucket_id) await putOne(db,'bucket_allocations', row);
 }
@@ -10119,7 +10120,7 @@ async function syncAutoBucketContributions() {
   const income = planIncomeOf(incomeTxns, planSettings, monthStr).income;
   const baseFixed = planSettings?.base_fixed || 0;
   const efBucket = buckets.find(b => b.is_emergency_fund && b.status !== 'closed') || null;
-  const today = new Date().toISOString().slice(0,10);
+  const today = localDate();
   const writes = [], deletes = [];
   for (const bucket of buckets) {
     if (bucket.contribution_mode !== 'percent') continue;
@@ -10190,7 +10191,7 @@ async function syncEmergencyFundShortfall() {
     const row = {
       id: existing?.id || crypto.randomUUID(),
       bucket_id: emergencyBucket.id, amount: -overspend,
-      date: existing?.date || new Date().toISOString().slice(0,10),
+      date: existing?.date || localDate(),
       note: bufDraw > 0
         ? `本月超支：支出 ${fmt(spent)} > 可用 ${fmt(income)}（收入 ${fmt(income - bufDraw)}＋收入緩衝補 ${fmt(bufDraw)}），差額由緊急預備金支應`
         : `本月超支：支出 ${fmt(spent)} > 收入 ${fmt(income)}，差額由緊急預備金支應`,
@@ -10411,7 +10412,7 @@ async function openPaydayModal({ fromIncome = false, sourceAccountId = null } = 
   };
   list.oninput = total; list.onchange = total; total();
   document.getElementById('paydaySave').onclick = async () => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localDate();
     let n = 0, sum = 0; const made = [];
     for (const [i, g] of gaps.entries()) {
       const amt = parseFloat(list.querySelector(`[data-pd-amt="${i}"]`).value) || 0;
@@ -11949,7 +11950,7 @@ function openBucketAllocModal(bucket, prefillAmount = null, edit = null) {
   document.getElementById('bucketAllocEditId').value = edit?.id || '';
   document.getElementById('bucketAllocModalDelete').style.display = edit ? '' : 'none';
   document.getElementById('bucketAllocAmount').value = edit ? Math.abs(edit.amount) : prefillAmount > 0 ? Math.round(prefillAmount) : '';
-  document.getElementById('bucketAllocDate').value = edit?.date || new Date().toISOString().slice(0,10);
+  document.getElementById('bucketAllocDate').value = edit?.date || localDate();
   document.getElementById('bucketAllocNote').value = edit?.note || '';
   document.getElementById('bucketAllocModal').classList.add('open');
   document.getElementById('bucketAllocAmount').focus();
@@ -11969,7 +11970,7 @@ document.getElementById('bucketAllocModalSave').addEventListener('click',async()
   const amt = parseFloat(document.getElementById('bucketAllocAmount').value);
   if (!amt || amt<=0) { document.getElementById('bucketAllocAmount').style.borderColor='var(--red)'; return; }
   const bucketId = document.getElementById('bucketAllocBucketId').value;
-  const date = document.getElementById('bucketAllocDate').value || new Date().toISOString().slice(0,10);
+  const date = document.getElementById('bucketAllocDate').value || localDate();
   const editId = document.getElementById('bucketAllocEditId').value;
   const prev = editId ? await getOne(db, 'bucket_allocations', editId) : null;
   // 修改時保留原本的正負號（拿出的紀錄是負數）；改過的自動紀錄不再被當成自動產生的
@@ -12470,7 +12471,7 @@ async function commitInstPeriod(item, occurrenceDate, amt, cat, recordDate = occ
 // （同樣會標記本期已確認）。
 async function openRecurringExpenseConfirm(item, occDate) {
   await loadData();
-  const occ = occDate || computeNextChargeDate(item) || item.next_date || new Date().toISOString().slice(0,10);
+  const occ = occDate || computeNextChargeDate(item) || item.next_date || localDate();
   const payType = item.pay_type || null;
   const accId = (payType==='account'||payType==='cash') ? (item.account_id||null) : null;
   const ccId = payType==='cc' ? (item.cc_id||null) : null;
@@ -12614,7 +12615,7 @@ async function commitRecurringPeriod(item, occ, amt, cat, bucketId, recordDate =
 // 扣款金額記在 dca_spent，跟原本從收入彈窗確認、收入金額留空時的結果一致。
 async function openDcaConfirm(item, occDate) {
   await loadData();
-  const occ = occDate || computeNextChargeDate(item) || item.next_date || new Date().toISOString().slice(0,10);
+  const occ = occDate || computeNextChargeDate(item) || item.next_date || localDate();
   const h = state.holdings.find(x=>x.id===item.holding_id);
   const acc = item.account_id ? state.accounts.find(a=>a.id===item.account_id) : null;
   const curr = acc?.currency || item.currency || 'TWD';
@@ -12676,7 +12677,7 @@ async function openRecTransferConfirmModal(item, occurDate) {
   if (!fromAcc || !toAcc) { showToast('帳戶資料異常，請重新編輯此排程'); return; }
   const isCross = fromAcc.currency !== toAcc.currency;
   const fxRates = await getFxRates(db).catch(()=>({}));
-  const occ = occurDate ?? computeNextChargeDate(item) ?? item.next_date ?? new Date().toISOString().slice(0,10);
+  const occ = occurDate ?? computeNextChargeDate(item) ?? item.next_date ?? localDate();
   const refRate = isCross ? (toTWD(1, fromAcc.currency, fxRates) / (toTWD(1, toAcc.currency, fxRates) || 1)) : 1;
 
   let fromAmt, toAmt;
@@ -13250,7 +13251,7 @@ async function renderRecurring() {
 
   const mode = currentRecurringMode();
 
-  const today = new Date().toISOString().slice(0,10);
+  const today = localDate();
   const allItemsRaw = await getAll(db,'recurring_expenses').catch(()=>[]);
   // Auto-mark expired — 對「全部」recurring_expenses 做（不分 category），
   // 避免只在其中一個子頁打開過才會被標記過期的不一致狀況。
@@ -13705,7 +13706,7 @@ document.getElementById('recurringModalSave').addEventListener('click',async()=>
   }
   const nextDate = isCustom ? buildDate('recurringNextYear','recurringNextMonth','recurringNextDay') : null;
   const endDate  = buildDate('recurringEndYear','recurringEndMonth','recurringEndDay');
-  const today2   = new Date().toISOString().slice(0,10);
+  const today2   = localDate();
   const isExpired = endDate && endDate < today2;
   // 'weekly' stores billing_weekday instead of the generic billing_day
   // (which has no day-of-month meaning for a weekly cadence) — see
@@ -13873,7 +13874,7 @@ async function renderRecurringTransfers() {
   const content = _activeContentContainer;
   content.innerHTML = '';
 
-  const today = new Date().toISOString().slice(0,10);
+  const today = localDate();
   const allItems = await getAll(db,'recurring_transfers').catch(()=>[]);
   for (const item of allItems) {
     if (item.end_date && item.end_date < today && !item.is_expired) {
@@ -14170,7 +14171,7 @@ document.getElementById('recTransferModalSave').addEventListener('click',async()
   }
   const nextDate = isCustom ? buildDate('recTransferNextYear','recTransferNextMonth','recTransferNextDay') : null;
   const endDate  = buildDate('recTransferEndYear','recTransferEndMonth','recTransferEndDay');
-  const today2   = new Date().toISOString().slice(0,10);
+  const today2   = localDate();
   const isExpired = endDate && endDate < today2;
   const prevRt = editId ? await getOne(db,'recurring_transfers',editId) : null;
   await putOne(db,'recurring_transfers',{
@@ -14206,7 +14207,7 @@ async function renderDcaSchedules() {
   const content = _activeContentContainer;
   content.innerHTML = '';
 
-  const today = new Date().toISOString().slice(0,10);
+  const today = localDate();
   const allItems = await getAll(db,'dca_schedules').catch(()=>[]);
   for (const item of allItems) {
     if (item.end_date && item.end_date < today && !item.is_expired) {
@@ -14459,7 +14460,7 @@ document.getElementById('dcaScheduleModalSave').addEventListener('click',async()
   const endDate = document.getElementById('dcaScheduleEndEnabled').checked
     ? buildDate('dcaScheduleEndYear','dcaScheduleEndMonth','dcaScheduleEndDay')
     : null;
-  const today2   = new Date().toISOString().slice(0,10);
+  const today2   = localDate();
   const isExpired = endDate && endDate < today2;
   // `name` is derived from the selected holding (not user-entered) — kept
   // as its own field, not just computed at render time, so calc.js's
@@ -15980,7 +15981,7 @@ async function openDepositModal(dep=null) {
 
   // Show mature button only if deposit is past maturity date
   const matureBtn = document.getElementById('depositModalMature');
-  const today = new Date().toISOString().slice(0,10);
+  const today = localDate();
   const isMature = dep?.maturity_date && dep.maturity_date <= today && dep?.status !== 'matured';
   if (matureBtn) matureBtn.style.display = isMature ? 'inline-flex' : 'none';
 
@@ -16107,7 +16108,7 @@ document.getElementById('depositMatureConfirm').addEventListener('click', async 
     const intCat  = allCats.find(c=>c.id==='cat_interest'&&c.active!==false)||allCats.find(c=>c.type==='income'&&c.active!==false);
     await putOne(db,'income_txns',{
       id: crypto.randomUUID(),
-      date: new Date().toISOString().slice(0,10),
+      date: localDate(),
       category: intCat?.id??'cat_interest',
       description: `${dep.label} 利息收入`,
       amount: interestTWD,
@@ -16242,7 +16243,7 @@ async function openExpenseModal(txn=null, prefill=null) {
   catSel.innerHTML = catOptionsHtml('expense', txn?.category ?? prefill?.category ?? null, { exclude: ['cat_bad_debt_writeoff'] }) || `<option value="cat_other_out">其他</option>`;
   pairCatSelect(catSel);
 
-  const today = new Date().toISOString().slice(0,10);
+  const today = localDate();
   // prefill: used for a brand-new (non-editing) txn only — either the 資金池
   // "記一筆花費" button (bucket_id/project_id, below) or a 定期支出／月曆
   // "確認本期" action (description/amount/pay_type/account_id/cc_id/category).
@@ -16496,7 +16497,7 @@ async function saveExpenseRecord(input) {
   // :true，交給 applyPendingBalanceEffects() 等那天真的到了才補套用。
   // defer_balance_effect 這個欄位之後只當內部記帳用途，不再對應任何使用者
   // 可見的開關。
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = localDate();
   const isFutureDate = date > todayStr;
   const applyNow = affects && !isFutureDate;
   const deferBalance = affects && isFutureDate;
@@ -16671,7 +16672,7 @@ async function openIncomeModal(txn=null, prefillReceivable=null, prefillDca=null
   const incomeCats = [...catSel.options].map(o => ({ id: o.value }));
 
   // Set all basic fields
-  const today = new Date().toISOString().slice(0,10);
+  const today = localDate();
   // §卅六：原本這裡沒有讀 prefillDca?.date，不管「確認本期」是哪一天到期都
   // 一律用今天——現在補上，跟 openExpenseModal 的 txn?.date ?? prefill?.date
   // ?? today 是同一個寫法。
@@ -16954,7 +16955,7 @@ async function saveIncomeRecord(input) {
   const acc = accId ? await getOne(db, 'accounts', accId) : null;
 
   // §四十二：單一開關決定「要不要」、日期決定「什麼時候」（見 saveExpenseRecord）。
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = localDate();
   const isFutureDate = date > todayStr;
   const applyNow = affects && !isFutureDate;
   const deferBalance = affects && isFutureDate;
@@ -17173,7 +17174,7 @@ async function refreshAfterIncomeSaved() {
 // force=true：即使今天已經記錄過，也重新算一次覆蓋（給上面那顆手動按鈕用，
 // 更新到目前最新的餘額，而不是被「今天已經存過」擋下來什麼都不做）。
 async function recordDailySnapshot(force = false) {
-  const today = new Date().toISOString().slice(0,10);
+  const today = localDate();
   const existing = await getAll(db, 'asset_snapshots').catch(()=>[]);
   const todayRecord = existing.find(s=>s.date===today);
   if (todayRecord && !force) return { ok:true, skipped:true };
@@ -17354,7 +17355,7 @@ async function buildProjectionCard(currentTotal) {
   const { plan, incomeTxns, allocations } = await loadPlanContext();
   const saved = (await getSetting(db, 'goal_projection', null).catch(() => null)) || {};
   const yearAgo = new Date(); yearAgo.setFullYear(yearAgo.getFullYear() - 1);
-  const ya = yearAgo.toISOString().slice(0, 10);
+  const ya = localDate(yearAgo);
   const bonusDefault = Math.round(allocations.filter(a => a.auto_type === 'bonus' && (a.date || '') >= ya).reduce((t, a) => t + a.amount, 0));
   const nextMillion = Math.max(1, Math.ceil((currentTotal + 1) / 1e6)) * 1e6;
   const v = {
@@ -17488,7 +17489,7 @@ async function renderTrend() {
   }
 
   const ranges = [{label:'近 30 天', days:30},{label:'近 90 天', days:90},{label:'近 1 年', days:365},{label:'全部', days:null}];
-  const cutoff = _trendRangeDays ? new Date(Date.now() - _trendRangeDays*86400000).toISOString().slice(0,10) : null;
+  const cutoff = _trendRangeDays ? localDate(new Date(Date.now() - _trendRangeDays*86400000)) : null;
   let points = cutoff ? snapshots.filter(s=>s.date>=cutoff) : snapshots;
   if (points.length < 1) points = snapshots.slice(-2); // range too narrow for the data we have — fall back rather than showing nothing
 

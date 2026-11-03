@@ -5,6 +5,7 @@
   "description": "Personal Finance Command Center — Local-First PWA",
   "scripts": {
     "dev": "npx serve . -p 3000",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "test": "cd .. && TZ=Asia/Taipei node --test tests/*.test.mjs"
   }
 }
