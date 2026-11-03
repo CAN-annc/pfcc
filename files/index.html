@@ -3412,6 +3412,58 @@ async function guardWrite(action, fn) {
   try { return await fn(); }
   catch (err) { logEvent('write-failed', action, err); return { ok: false, error: writeFailMsg(err), cause: err }; }
 }
+function warnSyncFailed() {
+  setTimeout(() => { try { showToast('已存檔，但自動撥入沒有更新；下次存檔或重新開啟時會再算一次'); } catch (e) {} }, 2600);
+}
+
+// ── v2.31.0（R2）：寫入鎖 ─────────────────────────────────────────────────
+// 所有寫入動作排隊執行：同一個視窗裡的自動記帳與使用者操作、以及同時開著的
+// 其他 PFCC 視窗（Web Locks API；不支援的瀏覽器退回只在這個視窗裡排隊）。
+// 鎖只保證「一次一個」，不保證原子性；原子性靠每個操作自己的單一交易（runTx）。
+// 已經在鎖裡的呼叫（例如自動記帳裡記一筆支出）直接執行，不會自己等自己。
+let _writeLockDepth = 0;
+let _localLockTail = Promise.resolve();
+async function withWriteLock(fn) {
+  if (_writeLockDepth > 0) return fn();
+  const run = async () => { _writeLockDepth++; try { return await fn(); } finally { _writeLockDepth--; } };
+  if (navigator.locks?.request) return navigator.locks.request('pfcc-write', run);
+  const p = _localLockTail.then(run, run);
+  _localLockTail = p.catch(() => {});
+  return p;
+}
+
+// ── v2.31.0（R2）：帳戶之間轉帳，一個交易 ───────────────────────────────────
+// 兩邊帳戶餘額、移轉紀錄（transfer_logs）、定期轉帳的確認狀態一起寫入或一起放棄。
+// 帳戶移轉、扣款前補足、發薪後分流、定期轉帳確認本期都走這裡。
+const TRANSFER_TX_STORES = ['accounts', 'transfer_logs', 'recurring_transfers'];
+async function recordTransfer(input) {
+  return withWriteLock(() => guardWrite('record-transfer', () => recordTransferTx(input)));
+}
+async function recordTransferTx({ fromId, toId, fromAmt, toAmt = fromAmt, fee = 0, rate = null, note = null, createdAt = null, recurring = null }) {
+  if (!fromId || !toId) return { ok: false, error: '請選擇來源與目標帳戶' };
+  if (fromId === toId) return { ok: false, error: '來源與目標帳戶不能相同' };
+  if (!(fromAmt > 0) || !(toAmt > 0)) return { ok: false, error: '請輸入有效的金額' };
+  const now = new Date().toISOString();
+  return runTx(db, TRANSFER_TX_STORES, async tx => {
+    const schedule = recurring ? await tGet(tx, 'recurring_transfers', recurring.id) : null;
+    if (recurring && (!schedule || schedule.last_confirmed_date === recurring.occ)) return { ok: true, dup: true };
+    const from = await tGet(tx, 'accounts', fromId), to = await tGet(tx, 'accounts', toId);
+    if (!from || !to) return { ok: false, error: '帳戶資料異常' };
+    await tPut(tx, 'accounts', { ...from, balance: +(from.balance - fromAmt - (fee || 0)).toFixed(6), updated_at: now });
+    await tPut(tx, 'accounts', { ...to, balance: +(to.balance + toAmt).toFixed(6), updated_at: now });
+    const log = {
+      id: crypto.randomUUID(), created_at: createdAt || now,
+      from_account_id: from.id, from_account_name: from.name, from_currency: from.currency, from_amount: fromAmt,
+      to_account_id: to.id, to_account_name: to.name, to_currency: to.currency, to_amount: toAmt,
+      fx_rate: rate, fee: fee || null, ...(note ? { note } : {}),
+      ...(schedule ? { rec_transfer_id: schedule.id, rec_occ_date: recurring.occ, rec_prev_confirmed_date: schedule.last_confirmed_date ?? null } : {}),
+    };
+    await tPut(tx, 'transfer_logs', log);
+    if (schedule) await tPut(tx, 'recurring_transfers', { ...schedule, last_confirmed_date: recurring.occ });
+    return { ok: true, log, from, to };
+  });
+}
+
 window.addEventListener('unhandledrejection', e => {
   logEvent('unhandled', 'promise', e.reason);
   try { showToast('有一個動作沒有完成，請再試一次'); } catch (err) { /* 畫面還沒好 */ }
@@ -5169,12 +5221,9 @@ async function openTopupModal(toAcc, amount) {
   document.getElementById('topupSave').onclick = async () => {
     const amt = parseFloat(document.getElementById('topupAmount').value) || 0, fee = parseFloat(feeIn.value) || 0;
     if (!(amt > 0)) { showToast('請輸入金額'); return; }
-    const from = await getOne(db,'accounts', sel.value), to = await getOne(db,'accounts', toAcc.id);
-    const now = new Date().toISOString();
-    await putOne(db,'accounts',{ ...from, balance: +(from.balance - amt - fee).toFixed(6), updated_at: now });
-    await putOne(db,'accounts',{ ...to, balance: +(to.balance + amt).toFixed(6), updated_at: now });
-    await putOne(db,'transfer_logs',{ id: crypto.randomUUID(), created_at: now, from_account_id: from.id, from_account_name: from.name, from_currency: from.currency, from_amount: amt,
-      to_account_id: to.id, to_account_name: to.name, to_currency: to.currency, to_amount: amt, fx_rate: null, fee: fee || null, note: '扣款前補足' });
+    const res = await recordTransfer({ fromId: sel.value, toId: toAcc.id, fromAmt: amt, fee, note: '扣款前補足' });
+    if (!res.ok) { showToast(res.error); return; }
+    const to = res.to;
     modal.classList.remove('open');
     showToast(`✓ 已記錄轉入 ${to.name} NT$ ${fmt(amt)}`);
     await renderAssets();
@@ -8319,23 +8368,10 @@ async function renderTransfer() {
       if (!rate||rate<=0) { showToast('請輸入匯率'); return; }
     }
 
-    const fromAccDb = await getOne(db,'accounts',fromAccSel.id);
-    const toAccDb   = await getOne(db,'accounts',toAccSel.id);
-    if (!fromAccDb||!toAccDb) return;
-
-    await putOne(db,'accounts',{ ...fromAccDb, balance:+(fromAccDb.balance-fromAmt-fee).toFixed(6), updated_at:new Date().toISOString() });
-    await putOne(db,'accounts',{ ...toAccDb,   balance:+(toAccDb.balance+toAmt).toFixed(6),         updated_at:new Date().toISOString() });
-
-    try {
-      await putOne(db,'transfer_logs',{
-        id:crypto.randomUUID(), created_at:new Date().toISOString(),
-        from_account_id:fromAccSel.id, from_account_name:fromAccDb.name,
-        from_currency:fromAccDb.currency, from_amount:fromAmt,
-        to_account_id:toAccSel.id, to_account_name:toAccDb.name,
-        to_currency:toAccDb.currency, to_amount:toAmt,
-        fx_rate:rate, fee:fee||null,
-      });
-    } catch(e) { console.warn('transfer_logs',e); }
+    // v2.31.0（R2）：兩邊餘額與移轉紀錄一起寫入或一起放棄
+    const res = await recordTransfer({ fromId: fromAccSel.id, toId: toAccSel.id, fromAmt, toAmt, fee, rate });
+    if (!res.ok) { showToast(res.error); return; }
+    const fromAccDb = res.from, toAccDb = res.to;
 
     const summary = isCross
       ? `✓ 轉出 ${fromAmt} ${fromAccDb.currency}，轉入 ${toAmt} ${toAccDb.currency}（匯率 ${rate}）`
@@ -9588,24 +9624,30 @@ function incomeBalanceDelta(t) {
   if (t.dca_brokerage_id != null || t.dca_holding_id != null) return -(t.dca_spent || 0);
   return t.amount || 0;
 }
-async function reverseTxnBalanceEffect(t, isIncome) {
+// v2.31.0（R2）：在呼叫端給的交易裡沖銷一筆紀錄對帳戶／信用卡餘額的效果。
+async function reverseBalanceInTx(tx, t, isIncome) {
   if (t.affects_balance === false || t.defer_balance_effect === true) return;
+  const now = new Date().toISOString();
   if (isIncome) {
     if (!t.account_id) return;
-    const acc = await getOne(db, 'accounts', t.account_id);
+    const acc = await tGet(tx, 'accounts', t.account_id);
     if (!acc) return;
     const delta = incomeBalanceDelta(t);
     if (!delta) return;
-    await putOne(db, 'accounts', { ...acc, balance: +(acc.balance - delta).toFixed(6), updated_at: new Date().toISOString() });
+    await tPut(tx, 'accounts', { ...acc, balance: +(acc.balance - delta).toFixed(6), updated_at: now });
   } else {
     if ((t.pay_type === 'account' || t.pay_type === 'cash') && t.account_id) {
-      const acc = await getOne(db, 'accounts', t.account_id);
-      if (acc) await putOne(db, 'accounts', { ...acc, balance: +(acc.balance + t.amount).toFixed(6), updated_at: new Date().toISOString() });
+      const acc = await tGet(tx, 'accounts', t.account_id);
+      if (acc) await tPut(tx, 'accounts', { ...acc, balance: +(acc.balance + t.amount).toFixed(6), updated_at: now });
     } else if (t.pay_type === 'cc' && t.cc_id) {
-      const cc = await getOne(db, 'credit_cards', t.cc_id);
-      if (cc) await putOne(db, 'credit_cards', { ...cc, current_balance: (cc.current_balance || 0) - t.amount });
+      const cc = await tGet(tx, 'credit_cards', t.cc_id);
+      if (cc) await tPut(tx, 'credit_cards', { ...cc, current_balance: (cc.current_balance || 0) - t.amount });
     }
   }
+}
+// 單獨使用（刪除紀錄等尚未遷移的流程）時，至少這一步本身是一個交易
+async function reverseTxnBalanceEffect(t, isIncome) {
+  await runTx(db, ['accounts', 'credit_cards'], tx => reverseBalanceInTx(tx, t, isIncome));
 }
 
 // §四十之一（2026-09-30）：刪除一筆「從分期付款『確認本期』自動產生」的支出
@@ -10412,22 +10454,19 @@ async function openSplitTransfer({ allocs = [], sourceAccountId = null, includeM
   modal.onclick = e => { if (e.target === modal) modal.classList.remove('open'); };
   document.getElementById('splitSave').onclick = async () => {
     const source = await getOne(db, 'accounts', srcSel.value);
-    let n = 0;
+    // v2.31.0（R2）：每一筆分流是一個交易；某一筆失敗時停下來，說清楚記了幾筆
+    let n = 0, failed = null;
     for (const [i, l] of lines.entries()) {
       if (!list.querySelector(`[data-sp-on="${i}"]`)?.checked) continue;
       const amt = parseFloat(list.querySelector(`[data-sp-amt="${i}"]`).value) || 0;
       if (!(amt > 0)) continue;
-      const from = await getOne(db, 'accounts', source.id), to = await getOne(db, 'accounts', l.toId);
-      if (!from || !to) continue;
-      const fee = l.fee || 0, now = new Date().toISOString();
-      await putOne(db, 'accounts', { ...from, balance: +(from.balance - amt - fee).toFixed(6), updated_at: now });
-      await putOne(db, 'accounts', { ...to, balance: +(to.balance + amt).toFixed(6), updated_at: now });
-      await putOne(db, 'transfer_logs', { id: crypto.randomUUID(), created_at: now, from_account_id: from.id, from_account_name: from.name, from_currency: from.currency, from_amount: amt,
-        to_account_id: to.id, to_account_name: to.name, to_currency: to.currency, to_amount: amt, fx_rate: null, fee: fee || null, note: `分流：${l.parts.join('、')}` });
+      const res = await recordTransfer({ fromId: source.id, toId: l.toId, fromAmt: amt, fee: l.fee || 0, note: `分流：${l.parts.join('、')}` });
+      if (!res.ok) { failed = res; break; }
       n++;
     }
     modal.classList.remove('open');
-    if (n) showToast(`✓ 已記錄 ${n} 筆分流轉帳`);
+    if (failed) showToast(`${failed.error}（已記錄 ${n} 筆，其餘沒有記）`);
+    else if (n) showToast(`✓ 已記錄 ${n} 筆分流轉帳`);
     await refreshAfterIncomeSaved();
   };
   modal.classList.add('open');
@@ -12787,32 +12826,13 @@ async function openRecTransferConfirmModal(item, occurDate) {
   });
 }
 async function commitTransferPeriod(item, occ, fAmt, tAmt, isCross, recordDate = occ) {
-      const schedule = await getOne(db,'recurring_transfers',item.id);
-      if (!schedule) return { ok: true, dup: true };
-      if (schedule.last_confirmed_date === occ) return { ok: true, dup: true };
-      const fromAccDb = await getOne(db,'accounts',schedule.from_account_id);
-      const toAccDb   = await getOne(db,'accounts',schedule.to_account_id);
-      if (!fromAccDb||!toAccDb) return { ok: false, error: '帳戶資料異常' };
-      const rate = isCross ? +(tAmt/fAmt).toFixed(6) : null;
-      await putOne(db,'accounts',{ ...fromAccDb, balance:+(fromAccDb.balance-fAmt).toFixed(6), updated_at:new Date().toISOString() });
-      await putOne(db,'accounts',{ ...toAccDb,   balance:+(toAccDb.balance+tAmt).toFixed(6),   updated_at:new Date().toISOString() });
-      // §四十三之三：記下這筆是哪個排程、哪一期確認產生的，以及確認之前原本的
-      // 確認日期——刪除這筆移轉記錄時，才能把兩邊帳戶餘額還原，並把那一期改回
-      // 「可以再次確認」（見轉帳頁移轉記錄的刪除按鈕）。
-      try {
-        await putOne(db,'transfer_logs',{
-          id:crypto.randomUUID(), created_at:new Date(recordDate+'T12:00:00').toISOString(),
-          from_account_id:fromAccDb.id, from_account_name:fromAccDb.name,
-          from_currency:fromAccDb.currency, from_amount:fAmt,
-          to_account_id:toAccDb.id, to_account_name:toAccDb.name,
-          to_currency:toAccDb.currency, to_amount:tAmt,
-          fx_rate:rate, fee:null, note:`定期轉帳：${schedule.name}`,
-          rec_transfer_id: schedule.id, rec_occ_date: occ,
-          rec_prev_confirmed_date: schedule.last_confirmed_date ?? null,
-        });
-      } catch(e) { console.warn('transfer_logs',e); }
-      await putOne(db,'recurring_transfers',{...schedule, last_confirmed_date: occ});
-      return { ok: true };
+  // v2.31.0（R2）：兩邊餘額、移轉紀錄、這一期的確認狀態在同一個交易裡；
+  // 記下是哪個排程、哪一期確認產生，刪除時才能還原並改回可以再確認。
+  return recordTransfer({
+    fromId: item.from_account_id, toId: item.to_account_id, fromAmt: fAmt, toAmt: tAmt,
+    rate: isCross ? +(tAmt / fAmt).toFixed(6) : null, note: `定期轉帳：${item.name}`,
+    createdAt: new Date(recordDate + 'T12:00:00').toISOString(), recurring: { id: item.id, occ },
+  });
 }
 
 // ── 到期自動記帳（v2.24.0，使用者決定）──────────────────────────────────────
@@ -12822,7 +12842,10 @@ async function commitTransferPeriod(item, occ, fAmt, tAmt, isCross, recordDate =
 // 那一期回到待確認，不會再自動記第二次。信用卡繳款（金額每期不同）不自動記。
 const AUTO_TYPES = ['recurring', 'installment', 'dca', 'transfer'];
 let _autoRunning = false;
-async function runAutoConfirm() {
+// v2.31.0（R2／R5）：整次自動記帳在寫入鎖裡。另一個視窗同時打開時會等這邊做完，
+// 再讀到已處理清單而跳過，不會同一期各記一次。
+async function runAutoConfirm() { return withWriteLock(() => runAutoConfirmInner()); }
+async function runAutoConfirmInner() {
   if (_autoRunning) return 0;
   _autoRunning = true;
   try {
@@ -12913,65 +12936,68 @@ function wireFxPair(fromEl, toEl, rateEl, onSideEdited) {
 // 編輯時 saveIncomeRecord 會先呼叫這裡把舊效果撤銷，再用新值重新套用一次——
 // 跟 §卅九 帳戶餘額「先沖銷再套用」是同一套做法，所以改金額、改股數都不會再
 // 重複累加。
-async function reverseIncomeSideEffects(t) {
+// v2.31.0（R2）：收入紀錄的附帶效果（應收款已收、獎金撥入、定期定額與賣出的股數）
+// 在呼叫端給的交易裡撤銷。
+const INCOME_SIDE_STORES = ['receivables', 'receivable_payments', 'bucket_allocations', 'holdings'];
+async function reverseIncomeSideEffectsInTx(tx, t) {
   if (!t) return;
   if (t.receivable_id) {
-    const payments = (await getAll(db, 'receivable_payments').catch(() => [])).filter(p => p.receivable_id === t.receivable_id);
+    const payments = (await tGetAll(tx, 'receivable_payments')).filter(p => p.receivable_id === t.receivable_id);
     // 新資料：用 income_txn_id 精準對應；v2.3.0 之前的舊資料沒有這個欄位，
     // 退而求其次找「同一天、同金額」的那一筆。
-    let pay = payments.find(p => p.income_txn_id === t.id)
+    const pay = payments.find(p => p.income_txn_id === t.id)
       ?? payments.find(p => !p.income_txn_id && p.date === t.date && Math.abs((p.amount || 0) - (t.amount || 0)) < 1e-6);
     const delta = pay ? pay.amount : (t.amount || 0);
-    if (pay) {
-      const tr = db.transaction(['receivable_payments'], 'readwrite');
-      tr.objectStore('receivable_payments').delete(pay.id);
-      await new Promise((res, rej) => { tr.oncomplete = res; tr.onerror = () => rej(tr.error); });
-    }
-    const recv = await getOne(db, 'receivables', t.receivable_id);
+    if (pay) await tDel(tx, 'receivable_payments', pay.id);
+    const recv = await tGet(tx, 'receivables', t.receivable_id);
     if (recv && delta) {
       const newReceived = Math.max(0, +((recv.received_amount || 0) - delta).toFixed(6));
-      await putOne(db, 'receivables', {
+      await tPut(tx, 'receivables', {
         ...recv, received_amount: newReceived,
         is_settled: !!recv.write_off || (newReceived >= recv.total_amount && recv.total_amount > 0),
       });
     }
   }
   // v2.12.0：這筆收入當初直接撥進存錢目標的獎金，一起撤銷。
-  {
-    const linked = (await getAll(db, 'bucket_allocations').catch(() => [])).filter(a => a.income_txn_id === t.id);
-    if (linked.length) {
-      const tr = db.transaction(['bucket_allocations'], 'readwrite');
-      linked.forEach(a => tr.objectStore('bucket_allocations').delete(a.id));
-      await new Promise((res, rej) => { tr.oncomplete = res; tr.onerror = () => rej(tr.error); });
-    }
-  }
+  for (const a of (await tGetAll(tx, 'bucket_allocations')).filter(a => a.income_txn_id === t.id)) await tDel(tx, 'bucket_allocations', a.id);
   if (t.dca_holding_id && t.dca_shares) {
-    const h = await getOne(db, 'holdings', t.dca_holding_id);
+    const h = await tGet(tx, 'holdings', t.dca_holding_id);
     if (h) {
       const shares = Math.max(0, +((h.shares || 0) - t.dca_shares).toFixed(6));
       // v2.19.0：這筆成交當初加進平均成本的部分一起扣回去
       let cost_basis = h.cost_basis;
       if (t.dca_cost_added && h.cost_basis > 0) cost_basis = shares > 0 ? +(((h.cost_basis * (h.shares || 0)) - t.dca_cost_added) / shares).toFixed(4) : h.cost_basis;
-      await putOne(db, 'holdings', { ...h, shares, cost_basis });
+      await tPut(tx, 'holdings', { ...h, shares, cost_basis });
     }
   }
   // v2.19.0：賣出股票的紀錄刪掉 → 股數加回去
   if (t.sale_holding_id && t.sale_shares) {
-    const h = await getOne(db, 'holdings', t.sale_holding_id);
-    if (h) await putOne(db, 'holdings', { ...h, shares: +((h.shares || 0) + t.sale_shares).toFixed(6) });
+    const h = await tGet(tx, 'holdings', t.sale_holding_id);
+    if (h) await tPut(tx, 'holdings', { ...h, shares: +((h.shares || 0) + t.sale_shares).toFixed(6) });
   }
+}
+async function reverseIncomeSideEffects(t) {
+  if (!t) return;
+  await runTx(db, INCOME_SIDE_STORES, tx => reverseIncomeSideEffectsInTx(tx, t));
 }
 
 // v2.3.0：刪除一筆收入／支出紀錄的唯一入口——收支紀錄頁的清單、帳務報表的
 // 明細都走這裡，確保四件事一次做完：帳戶／信用卡餘額、確認本期標記、應收款與
 // 定期定額股數（收入才有）、資金池自動提撥同步。
 // v2.21.0：儲蓄險保費紀錄刪除／編輯時，把加進保單「累積已繳」的金額扣回去。
+async function reversePolicyPaidInTx(tx, t) {
+  if (!t?.policy_id || !t.policy_paid_add) return;
+  const pol = await tGet(tx, 'other_assets', t.policy_id);
+  if (pol) await tPut(tx, 'other_assets', { ...pol, paid_total: Math.max(0, +((pol.paid_total || 0) - t.policy_paid_add).toFixed(2)) });
+}
 async function reversePolicyPaid(t) {
   if (!t?.policy_id || !t.policy_paid_add) return;
-  const pol = await getOne(db, 'other_assets', t.policy_id);
-  if (pol) await putOne(db, 'other_assets', { ...pol, paid_total: Math.max(0, +((pol.paid_total || 0) - t.policy_paid_add).toFixed(2)) });
+  await runTx(db, ['other_assets'], tx => reversePolicyPaidInTx(tx, t));
 }
-async function deleteTxnRecord(t, isIncome) {
+// v2.31.0（R2）：刪除還不是單一交易（見尚未遷移清單），先放進寫入鎖，至少不會跟
+// 記帳、轉帳同時讀改寫同一個帳戶。
+async function deleteTxnRecord(t, isIncome) { return withWriteLock(() => deleteTxnRecordInner(t, isIncome)); }
+async function deleteTxnRecordInner(t, isIncome) {
   await reverseTxnBalanceEffect(t, isIncome);
   if (!isIncome) await reversePolicyPaid(t);
   await reversePeriodConfirmIfNeeded(t, isIncome);
@@ -16511,7 +16537,16 @@ function wireAffectsToggle(btnId, thumbId, initialOn) {
 // 使用者編輯一筆外幣支出時匯率欄位填錯，會變成舊效果已經被沖銷、新效果卻
 // 沒有套上去就中斷，帳戶餘額因此跑掉。
 const EXPENSE_LINK_KEYS = ['inst_id','inst_occ_ym','rec_id','rec_occ_date','rec_prev_confirmed_date'];
+// v2.31.0（R2）：記一筆支出（新增或編輯）。會動到的 store 全部在同一個交易裡：
+// expense_txns、accounts、credit_cards、other_assets（儲蓄險已繳）、
+// recurring_expenses（確認本期）。任何一步失敗整筆放棄，回傳 { ok:false }。
+// 匯率、分類這些交易外的資料先取好。衍生紀錄（syncPlanAutoRows）在交易完成後
+// 另外同步；同步失敗不影響這筆紀錄，只記事件並提醒。
+const EXPENSE_TX_STORES = ['expense_txns', 'accounts', 'credit_cards', 'other_assets', 'recurring_expenses'];
 async function saveExpenseRecord(input) {
+  return withWriteLock(() => guardWrite('record-expense', () => recordExpense(input)));
+}
+async function recordExpense(input) {
   const {
     editId = null, date, category, description = '', amount, note = '',
     payType = null, accId = null, ccId = null, bucketId = null, projectId = null,
@@ -16520,138 +16555,110 @@ async function saveExpenseRecord(input) {
   if (!date) return { ok:false, error:'請選擇日期' };
   if (!amount || amount <= 0) return { ok:false, error:'請輸入有效金額' };
 
-  // 幣別／匯率快照 — amount is always in whichever account's currency was
-  // selected (credit-card payments and unlinked entries have no currency
-  // of their own, so they're TWD). fx_rate_twd locks in the rate used to
-  // convert this one transaction to TWD, so later monthly totals/budgets
-  // stay historically accurate even after today's live rate moves on —
-  // see calc.js's resolveExpenseAmountTwd. 沒有傳入匯率（例如從「確認本期」
-  // 彈窗存檔）時，自動帶入目前的即時匯率。
-  let currency = 'TWD';
-  if ((payType==='account'||payType==='cash') && accId) {
-    const accForCurr = await getOne(db,'accounts',accId);
-    currency = accForCurr?.currency || 'TWD';
-  }
+  // ── 交易外先準備：幣別、匯率、悠遊卡自動儲值要用的分類 ──
+  // 幣別／匯率快照：amount 一律是所選帳戶的幣別（信用卡與沒有帳戶的是台幣）；
+  // fx_rate_twd 鎖定當下匯率，之後的月份合計不隨即時匯率變動（resolveExpenseAmountTwd）。
+  const isAccPay = (payType === 'account' || payType === 'cash') && accId;
+  const accMeta = isAccPay ? await getOne(db, 'accounts', accId) : null;
+  const currency = accMeta?.currency || 'TWD';
+  const fxRates = await getFxRates(db).catch(() => ({})); // 只用來帶入預設匯率；換不出來時下面會擋
   let rate = 1;
   if (currency !== 'TWD') {
-    rate = fxRateTwd != null ? fxRateTwd : toTWD(1, currency, await getFxRates(db).catch(()=>({})));
+    rate = fxRateTwd != null ? fxRateTwd : toTWD(1, currency, fxRates);
     if (!(rate > 0)) return { ok:false, error:'請輸入有效的換算匯率' };
   }
+  const oldPeek = editId ? await getOne(db, 'expense_txns', editId) : null;
+  const policyId = policyIdIn !== undefined ? policyIdIn : (oldPeek?.policy_id ?? null);
+  const wantsPolicy = !!(policyId && isSavingCategory(category));
+  const maybeTopup = !editId && accMeta?.account_type === 'transit_card' && accMeta.auto_topup_enabled && accMeta.auto_topup_cc_id && accMeta.auto_topup_threshold != null;
+  const topupCatId = maybeTopup ? (catById('cat_transport') ? 'cat_transport' : (_cats.find(c => c.type === 'expense' && c.active !== false && !c.parent_id)?.id || 'cat_transport')) : null;
 
-  // §卅九（2026-09-29）：編輯既有支出紀錄時，先用跟刪除紀錄完全相同的
-  // reverseTxnBalanceEffect()，依「舊紀錄自己存的」pay_type／account_id／
-  // cc_id／affects_balance／amount 把舊效果完整反向沖銷回去，再用「新的」
-  // 金額／付款方式／帳戶／開關重新套用一次。§四十二（2026-10-03）：這同時
-  // 就是「是否影響帳戶餘額」編輯時的對稱處理——開→關（範例 A）、關→開（範例
-  // B）、開關不變只改金額（範例 C）全部走同一套「舊的整筆退回、新的整筆重新
-  // 套用」，不需要分開判斷。範圍限定在「帳戶／信用卡餘額」。
-  let oldTxn = null;
-  if (editId) {
-    oldTxn = await getOne(db, 'expense_txns', editId);
-    if (oldTxn) { await reverseTxnBalanceEffect(oldTxn, false); await reversePolicyPaid(oldTxn); }
-  }
-  // 沖銷之後才讀帳戶，拿到的才是「已經扣掉舊效果」的最新餘額。
-  let acc = null;
-  if ((payType==='account'||payType==='cash') && accId) acc = await getOne(db,'accounts',accId);
-
-  // §四十二：「是否影響帳戶餘額」單一開關決定「要不要」，日期決定「什麼時候」。
-  // 今天或以前的日期立即套用；未來的日期先不套用，記成 defer_balance_effect
-  // :true，交給 applyPendingBalanceEffects() 等那天真的到了才補套用。
-  // defer_balance_effect 這個欄位之後只當內部記帳用途，不再對應任何使用者
-  // 可見的開關。
-  const todayStr = localDate();
-  const isFutureDate = date > todayStr;
+  // §四十二：「是否影響帳戶餘額」決定要不要，日期決定什麼時候：今天或以前立即套用；
+  // 未來的日期記成 defer_balance_effect，由 applyPendingBalanceEffects() 到那天補套用。
+  const isFutureDate = date > localDate();
   const applyNow = affects && !isFutureDate;
   const deferBalance = affects && isFutureDate;
+  const now = new Date().toISOString();
 
-  const txn = {
-    id: editId || crypto.randomUUID(),
-    date, category, description, amount,
-    pay_type: payType||null, account_id: accId, cc_id: ccId, note,
-    bucket_id: bucketId, project_id: projectId,
-    currency, fx_rate_twd: rate, affects_balance: affects,
-    defer_balance_effect: deferBalance,
-    created_at: oldTxn?.created_at ?? new Date().toISOString(),
-  };
-  // 編輯既有紀錄時，保留「這筆是從哪一筆分期付款／定期支出的確認本期產生的」
-  // 關聯欄位——原本編輯存檔會整包覆蓋、把 inst_id 等欄位弄丟，之後刪除這筆
-  // 紀錄就沒辦法回沖那一期的確認狀態。
-  if (oldTxn) for (const k of EXPENSE_LINK_KEYS) if (oldTxn[k] !== undefined) txn[k] = oldTxn[k];
-  if (extraFields) Object.assign(txn, extraFields);
-  // v2.21.0：儲蓄險保費——加進對應保單的「累積已繳」（編輯時沿用原本連結的保單，
-  // 分類改成不是「存下來的」就解除連結）。
-  const policyId = policyIdIn !== undefined ? policyIdIn : (oldTxn?.policy_id ?? null);
-  if (policyId && isSavingCategory(category)) {
-    const pol = await getOne(db, 'other_assets', policyId);
-    if (pol) {
-      const pCur = pol.currency || 'TWD';
-      const add = pCur === currency ? amount : convertAmt(amount, currency, pCur, await getFxRates(db).catch(()=>({})));
-      txn.policy_id = pol.id; txn.policy_paid_add = +(+add).toFixed(2);
-      await putOne(db, 'other_assets', { ...pol, paid_total: +((pol.paid_total || 0) + txn.policy_paid_add).toFixed(2) });
+  const result = await runTx(db, EXPENSE_TX_STORES, async tx => {
+    // §卅九：編輯時先用跟刪除完全相同的方式沖銷舊紀錄的效果，再套用新的。
+    const oldTxn = editId ? await tGet(tx, 'expense_txns', editId) : null;
+    if (oldTxn) { await reverseBalanceInTx(tx, oldTxn, false); await reversePolicyPaidInTx(tx, oldTxn); }
+    // 沖銷之後才讀帳戶，拿到的才是已經扣掉舊效果的餘額
+    let acc = isAccPay ? await tGet(tx, 'accounts', accId) : null;
+
+    const txn = {
+      id: editId || crypto.randomUUID(),
+      date, category, description, amount,
+      pay_type: payType||null, account_id: accId, cc_id: ccId, note,
+      bucket_id: bucketId, project_id: projectId,
+      currency, fx_rate_twd: rate, affects_balance: affects,
+      defer_balance_effect: deferBalance,
+      created_at: oldTxn?.created_at ?? now,
+    };
+    // 編輯時保留「從哪一筆分期／定期支出確認產生」的關聯欄位
+    if (oldTxn) for (const k of EXPENSE_LINK_KEYS) if (oldTxn[k] !== undefined) txn[k] = oldTxn[k];
+    if (extraFields) Object.assign(txn, extraFields);
+
+    // v2.21.0：儲蓄險保費加進保單「累積已繳」
+    if (wantsPolicy) {
+      const pol = await tGet(tx, 'other_assets', policyId);
+      if (pol) {
+        const pCur = pol.currency || 'TWD';
+        const add = pCur === currency ? amount : convertAmt(amount, currency, pCur, fxRates);
+        if (!Number.isFinite(add)) throw new Error(`缺少 ${currency}／${pCur} 匯率，無法換算保單已繳`);
+        txn.policy_id = pol.id; txn.policy_paid_add = +(+add).toFixed(2);
+        await tPut(tx, 'other_assets', { ...pol, paid_total: +((pol.paid_total || 0) + txn.policy_paid_add).toFixed(2) });
+      }
     }
-  }
 
-  // §三十：悠遊卡自動儲值——判斷用「這筆消費發生前」帳戶原本的餘額；儲值
-  // 來源是信用卡（current_balance 增加，另記一筆「交通」支出）；只在「新增」
-  // 且這筆真的立即生效時才檢查觸發，編輯既有交易不重新觸發。
-  let autoTopupAmountApplied = null;
-  if (!editId && applyNow && (payType==='account'||payType==='cash') && acc
-      && acc.account_type==='transit_card' && acc.auto_topup_enabled
-      && acc.auto_topup_cc_id && acc.auto_topup_threshold!=null
-      && acc.balance < acc.auto_topup_threshold) {
-    const topupAmt = acc.auto_topup_amount || 500;
-    const topupCc = await getOne(db,'credit_cards',acc.auto_topup_cc_id);
-    if (topupCc) {
-      await putOne(db,'credit_cards',{...topupCc, current_balance:(topupCc.current_balance||0)+topupAmt});
-      const allCatsForTopup = await getAll(db,'txn_categories').catch(()=>[]);
-      const topupCatId = allCatsForTopup.some(c=>c.id==='cat_transport')
-        ? 'cat_transport'
-        : (allCatsForTopup.find(c=>c.type==='expense'&&c.active!==false)?.id || 'cat_transport');
-      await putOne(db,'expense_txns',{
-        id: crypto.randomUUID(),
-        date, category: topupCatId, description: `${acc.name} 自動儲值`,
-        amount: topupAmt, pay_type:'cc', account_id:null, cc_id: acc.auto_topup_cc_id, note:'',
-        bucket_id:null, project_id:null, currency:'TWD', fx_rate_twd:1, affects_balance:true,
-        created_at: new Date().toISOString(),
-      });
-      acc = {...acc, balance: +(acc.balance + topupAmt).toFixed(6)};
-      autoTopupAmountApplied = topupAmt;
+    // §三十：悠遊卡自動儲值——用這筆消費前的餘額判斷；儲值來源是信用卡（另記一筆交通支出）
+    let autoTopupAmountApplied = null;
+    if (maybeTopup && applyNow && acc && acc.balance < acc.auto_topup_threshold) {
+      const topupAmt = acc.auto_topup_amount || 500;
+      const topupCc = await tGet(tx, 'credit_cards', acc.auto_topup_cc_id);
+      if (topupCc) {
+        await tPut(tx, 'credit_cards', { ...topupCc, current_balance: (topupCc.current_balance || 0) + topupAmt });
+        await tPut(tx, 'expense_txns', {
+          id: crypto.randomUUID(),
+          date, category: topupCatId, description: `${acc.name} 自動儲值`,
+          amount: topupAmt, pay_type:'cc', account_id:null, cc_id: acc.auto_topup_cc_id, note:'',
+          bucket_id:null, project_id:null, currency:'TWD', fx_rate_twd:1, affects_balance:true,
+          created_at: now,
+        });
+        acc = { ...acc, balance: +(acc.balance + topupAmt).toFixed(6) };
+        autoTopupAmountApplied = topupAmt;
+      }
     }
-  }
 
-  // Deduct from account or add to CC balance（affects_balance 關閉時跳過；
-  // 日期在未來時也跳過——留給 applyPendingBalanceEffects() 到期補套用）
-  if (applyNow) {
-    if ((payType==='account'||payType==='cash') && accId) {
-      if (acc) await putOne(db,'accounts',{...acc, balance:+(acc.balance-amount).toFixed(6), updated_at:new Date().toISOString()});
-    } else if (payType==='cc' && ccId) {
-      const cc = await getOne(db,'credit_cards',ccId);
-      if (cc) await putOne(db,'credit_cards',{...cc, current_balance:(cc.current_balance||0)+amount});
+    // 扣帳戶或加到信用卡待繳（關閉影響餘額、或未來日期時跳過）
+    if (applyNow) {
+      if (isAccPay) {
+        if (acc) await tPut(tx, 'accounts', { ...acc, balance: +(acc.balance - amount).toFixed(6), updated_at: now });
+      } else if (payType === 'cc' && ccId) {
+        const cc = await tGet(tx, 'credit_cards', ccId);
+        if (cc) await tPut(tx, 'credit_cards', { ...cc, current_balance: (cc.current_balance || 0) + amount });
+      }
     }
-  }
 
-  // §三十八／§四十三之三：從「定期支出」的「確認本期」存過來的——記下這筆
-  // 支出是哪一筆定期支出、哪一天那一期，連同「確認之前」原本的確認日期一起
-  // 存進這筆紀錄（rec_id／rec_occ_date／rec_prev_confirmed_date），之後刪除
-  // 這筆紀錄時才能精準把那一期改回「可以再次確認」（見
-  // reversePeriodConfirmIfNeeded）。標記用的是原本要確認的那個排定日期，不是
-  // 使用者存檔前可能改過的日期欄位。
-  let recItem = null;
-  if (confirmRecurring?.id) {
-    recItem = await getOne(db,'recurring_expenses',confirmRecurring.id);
-    if (recItem) {
-      txn.rec_id = recItem.id;
-      txn.rec_occ_date = confirmRecurring.occDate || date;
-      txn.rec_prev_confirmed_date = recItem.last_confirmed_date ?? null;
+    // §三十八：從定期支出「確認本期」來的——記下哪一期與確認前的日期，刪除時才能改回待確認
+    let recItem = null;
+    if (confirmRecurring?.id) {
+      recItem = await tGet(tx, 'recurring_expenses', confirmRecurring.id);
+      if (recItem) {
+        txn.rec_id = recItem.id;
+        txn.rec_occ_date = confirmRecurring.occDate || date;
+        txn.rec_prev_confirmed_date = recItem.last_confirmed_date ?? null;
+      }
     }
-  }
+    await tPut(tx, 'expense_txns', txn);
+    if (recItem) await tPut(tx, 'recurring_expenses', { ...recItem, last_confirmed_date: confirmRecurring.occDate || date });
+    return { txn, autoTopupAmountApplied };
+  });
 
-  await putOne(db,'expense_txns',txn);
-
-  if (recItem) await putOne(db,'recurring_expenses',{...recItem, last_confirmed_date: confirmRecurring.occDate || date});
-
-  await syncPlanAutoRows();
-  return { ok:true, txn, deferBalance, autoTopupAmountApplied };
+  const syncOk = await syncPlanAutoRows();
+  if (!syncOk) warnSyncFailed();
+  return { ok:true, txn: result.txn, deferBalance, autoTopupAmountApplied: result.autoTopupAmountApplied, syncOk };
 }
 
 document.getElementById('expenseModalSave').addEventListener('click', async () => {
@@ -16977,7 +16984,15 @@ document.getElementById('incomeModal').addEventListener('click',e=>{if(e.target=
 // holdingId, shares }）, confirmDca（{ id, occDate }） }
 // 回傳：{ ok, error, txn, deferBalance, clampedFrom }
 const INCOME_LINK_KEYS = ['dca_schedule_id','dca_occ_date','dca_prev_confirmed_date'];
+// v2.31.0（R2）：記一筆收入（新增或編輯），所有附帶效果在同一個交易裡：
+// income_txns、accounts、holdings（定期定額股數與成本）、receivables 與
+// receivable_payments（應收款結清）、bucket_allocations（獎金撥入）、
+// dca_schedules（確認本期）、settings（有期限收入的下次日期）。
+const INCOME_TX_STORES = ['income_txns', 'accounts', 'holdings', 'receivables', 'receivable_payments', 'bucket_allocations', 'dca_schedules', 'settings'];
 async function saveIncomeRecord(input) {
+  return withWriteLock(() => guardWrite('record-income', () => recordIncome(input)));
+}
+async function recordIncome(input) {
   const {
     editId = null, date, category, description = '', amount = 0, accId = null, note = '',
     fxRateTwd = null, affects = true, receivableId = null, dca = null, confirmDca = null,
@@ -16985,160 +17000,133 @@ async function saveIncomeRecord(input) {
   } = input;
   if (!date) return { ok:false, error:'請選擇日期' };
 
-  // 幣別／匯率快照 — amount (and, for DCA, dca_spent) is always in whichever
-  // account is selected (TWD when none is). See calc.js's
-  // resolveIncomeAmountTwd for how pre-fix records are told apart. 匯率檢查
-  // 刻意放在「沖銷舊紀錄效果」之前（理由見 saveExpenseRecord 的說明）。
-  let currency = 'TWD';
-  if (accId) {
-    const accForCurr = await getOne(db, 'accounts', accId);
-    currency = accForCurr?.currency || 'TWD';
-  }
+  // ── 交易外先準備：幣別與匯率（amount、dca_spent 都是所選帳戶的幣別，沒有帳戶是台幣）
+  const accMeta = accId ? await getOne(db, 'accounts', accId) : null;
+  const currency = accMeta?.currency || 'TWD';
+  const fxRates = await getFxRates(db).catch(() => ({})); // 只用來帶入預設匯率；換不出來時下面會擋
   let rate = 1;
   if (currency !== 'TWD') {
-    rate = fxRateTwd != null ? fxRateTwd : toTWD(1, currency, await getFxRates(db).catch(()=>({})));
+    rate = fxRateTwd != null ? fxRateTwd : toTWD(1, currency, fxRates);
     if (!(rate > 0)) return { ok:false, error:'請輸入有效的換算匯率' };
   }
-
-  // §卅九／§四十二：編輯既有收入紀錄時，先把舊紀錄自己造成的帳戶效果完整沖銷，
-  // 再用新值重新套用（開→關、關→開、只改金額都走同一套，見 saveExpenseRecord）。
-  // 只處理「帳戶餘額」這一塊，應收款 received_amount、定期定額持倉股數的部分
-  // 不在這個範圍內（既有、範圍外的限制）。
-  let oldTxn = null;
-  if (editId) {
-    oldTxn = await getOne(db, 'income_txns', editId);
-    if (oldTxn) {
-      await reverseTxnBalanceEffect(oldTxn, true);
-      // v2.3.0：應收款已收金額、定期定額股數也一起先撤銷，再由下面用新值重新
-      // 套用——編輯不會再重複累加（見 reverseIncomeSideEffects）。
-      await reverseIncomeSideEffects(oldTxn);
-    }
-  }
-  const acc = accId ? await getOne(db, 'accounts', accId) : null;
-
-  // §四十二：單一開關決定「要不要」、日期決定「什麼時候」（見 saveExpenseRecord）。
-  const todayStr = localDate();
-  const isFutureDate = date > todayStr;
+  const isFutureDate = date > localDate();
   const applyNow = affects && !isFutureDate;
   const deferBalance = affects && isFutureDate;
+  const now = new Date().toISOString();
 
-  const txn = {
-    id: editId || crypto.randomUUID(),
-    date, category, description, amount, account_id: accId, note,
-    currency, fx_rate_twd: rate, affects_balance: affects,
-    defer_balance_effect: deferBalance,
-    created_at: oldTxn?.created_at ?? new Date().toISOString(),
-  };
-  if (oldTxn) for (const k of INCOME_LINK_KEYS) if (oldTxn[k] !== undefined) txn[k] = oldTxn[k];
+  const result = await runTx(db, INCOME_TX_STORES, async tx => {
+    // §卅九／v2.3.0：編輯時先撤銷舊紀錄的帳戶效果、應收款已收、獎金撥入、股數，再用新值套用
+    const oldTxn = editId ? await tGet(tx, 'income_txns', editId) : null;
+    if (oldTxn) { await reverseBalanceInTx(tx, oldTxn, true); await reverseIncomeSideEffectsInTx(tx, oldTxn); }
+    const acc = accId ? await tGet(tx, 'accounts', accId) : null;
 
-  // Receivable link — resolved and clamped BEFORE the account is credited
-  // below, not after (roadmap §十 已知限制，已修). recvRecord is kept around
-  // so the write-back below doesn't need to re-fetch it.
-  let recvRecord = null, clampedFrom = null;
-  if (receivableId !== null && receivableId !== undefined) {
-    txn.receivable_id = receivableId || null;
-    if (txn.receivable_id && txn.amount > 0) {
-      recvRecord = await getOne(db, 'receivables', txn.receivable_id);
-      if (recvRecord) {
-        const remaining = recvRecord.total_amount - recvRecord.received_amount;
-        if (txn.amount > remaining) { clampedFrom = txn.amount; txn.amount = remaining; }
-      }
-    }
-  }
+    const txn = {
+      id: editId || crypto.randomUUID(),
+      date, category, description, amount, account_id: accId, note,
+      currency, fx_rate_twd: rate, affects_balance: affects,
+      defer_balance_effect: deferBalance,
+      created_at: oldTxn?.created_at ?? now,
+    };
+    if (oldTxn) for (const k of INCOME_LINK_KEYS) if (oldTxn[k] !== undefined) txn[k] = oldTxn[k];
 
-  if (dca) {
-    txn.dca_spent        = dca.spent || null;
-    txn.dca_brokerage_id = dca.brokerageId || null;
-    txn.dca_holding_id   = dca.holdingId || null;
-    txn.dca_shares       = dca.shares || null;
-    // Update holding shares
-    if (txn.dca_holding_id && txn.dca_shares) {
-      const holding = await getOne(db, 'holdings', txn.dca_holding_id);
-      if (holding) {
-        const newShares = +((holding.shares || 0) + txn.dca_shares).toFixed(6);
-        // v2.19.0：定期定額買進時一併更新平均成本（加權平均，含手續費），賣出時
-        // 才算得出正確的損益。原本沒填成本、又已經有股數的持倉算不出來，維持不動。
-        let cost_basis = holding.cost_basis;
-        if (txn.dca_spent > 0 && (holding.cost_basis > 0 || !(holding.shares > 0))) {
-          const hCur = holding.currency || (holding.market === 'US' ? 'USD' : 'TWD');
-          const add = hCur === currency ? txn.dca_spent : convertAmt(txn.dca_spent, currency, hCur, await getFxRates(db).catch(()=>({})));
-          if (add > 0) {
-            txn.dca_cost_added = +add.toFixed(4);
-            cost_basis = +((((holding.cost_basis || 0) * (holding.shares || 0)) + add) / newShares).toFixed(4);
-          }
+    // 應收款：先確定並限制金額，再入帳
+    let recvRecord = null, clampedFrom = null;
+    if (receivableId !== null && receivableId !== undefined) {
+      txn.receivable_id = receivableId || null;
+      if (txn.receivable_id && txn.amount > 0) {
+        recvRecord = await tGet(tx, 'receivables', txn.receivable_id);
+        if (recvRecord) {
+          const remaining = recvRecord.total_amount - recvRecord.received_amount;
+          if (txn.amount > remaining) { clampedFrom = txn.amount; txn.amount = remaining; }
         }
-        await putOne(db, 'holdings', { ...holding, shares: newShares, cost_basis });
       }
     }
-    // Deduct spent from account。affects_balance 關閉或日期在未來時跳過（見 §廿六之 f／§四十二）。
-    if (applyNow && acc && txn.dca_spent) {
-      await putOne(db, 'accounts', { ...acc, balance: +(acc.balance - txn.dca_spent).toFixed(6), updated_at: new Date().toISOString() });
-    }
-  } else {
-    // Update account balance (add income amount, in the account's own
-    // currency). Uses txn.amount (already clamped for receivables).
-    if (applyNow && acc && txn.amount > 0) {
-      await putOne(db, 'accounts', { ...acc, balance: +(acc.balance + txn.amount).toFixed(6), updated_at: new Date().toISOString() });
-    }
-  }
 
-  // Receivable link — mark partial/full receipt. Always runs regardless of
-  // affects_balance（應收款自己的已收金額是這筆收入記錄本身的意義）。
-  // account_id 只在真的有影響帳戶時才記錄，否則刪除時會誤以為要反向沖銷一筆
-  // 從未真正入帳的帳戶餘額。
-  if (recvRecord) {
-    const newReceived = Math.min(recvRecord.received_amount + txn.amount, recvRecord.total_amount);
-    await putOne(db, 'receivables', {
-      ...recvRecord, received_amount: newReceived,
-      is_settled: newReceived >= recvRecord.total_amount,
-    });
-    await addReceivablePayment(recvRecord.id, txn.date, newReceived - recvRecord.received_amount, txn.description || '收入記帳結清', applyNow ? (acc?.id ?? null) : null, txn.id);
-  }
-
-  // §卅八／§四十三之三：從「定期定額」的「確認本期」存過來的——記下排程 id、
-  // 這一期的排定日期、確認之前原本的確認日期，刪除這筆紀錄時才能把那一期改回
-  // 「可以再次確認」（見 reversePeriodConfirmIfNeeded）。
-  let dcaItem = null;
-  if (confirmDca?.id) {
-    dcaItem = await getOne(db,'dca_schedules',confirmDca.id);
-    if (dcaItem) {
-      txn.dca_schedule_id = dcaItem.id;
-      txn.dca_occ_date = confirmDca.occDate || date;
-      txn.dca_prev_confirmed_date = dcaItem.last_confirmed_date ?? null;
+    if (dca) {
+      txn.dca_spent        = dca.spent || null;
+      txn.dca_brokerage_id = dca.brokerageId || null;
+      txn.dca_holding_id   = dca.holdingId || null;
+      txn.dca_shares       = dca.shares || null;
+      if (txn.dca_holding_id && txn.dca_shares) {
+        const holding = await tGet(tx, 'holdings', txn.dca_holding_id);
+        if (holding) {
+          const newShares = +((holding.shares || 0) + txn.dca_shares).toFixed(6);
+          // v2.19.0：買進時一併更新加權平均成本（含手續費）；原本沒填成本又已有股數的不動
+          let cost_basis = holding.cost_basis;
+          if (txn.dca_spent > 0 && (holding.cost_basis > 0 || !(holding.shares > 0))) {
+            const hCur = holding.currency || (holding.market === 'US' ? 'USD' : 'TWD');
+            const add = hCur === currency ? txn.dca_spent : convertAmt(txn.dca_spent, currency, hCur, fxRates);
+            if (add > 0) {
+              txn.dca_cost_added = +add.toFixed(4);
+              cost_basis = +((((holding.cost_basis || 0) * (holding.shares || 0)) + add) / newShares).toFixed(4);
+            }
+          }
+          await tPut(tx, 'holdings', { ...holding, shares: newShares, cost_basis });
+        }
+      }
+      if (applyNow && acc && txn.dca_spent) {
+        await tPut(tx, 'accounts', { ...acc, balance: +(acc.balance - txn.dca_spent).toFixed(6), updated_at: now });
+      }
+    } else if (applyNow && acc && txn.amount > 0) {
+      await tPut(tx, 'accounts', { ...acc, balance: +(acc.balance + txn.amount).toFixed(6), updated_at: now });
     }
-  }
 
-  // v2.12.0：獎金／一次性收入。舊的獎金撥入（編輯時）已在上面
-  // reverseIncomeSideEffects 刪掉，這裡依新值重建。撥入金額以台幣計、最多整筆。
-  let bonusAllocated = 0;
-  txn.irregular = !!irregular && !dca && !txn.receivable_id;
-  delete txn.bonus_bucket_id; delete txn.bonus_amount;
-  if (txn.irregular && bonus?.bucketId && bonus.amount > 0) {
-    bonusAllocated = Math.min(Math.round(bonus.amount), Math.round(txn.amount * rate));
-    if (bonusAllocated > 0) {
-      txn.bonus_bucket_id = bonus.bucketId; txn.bonus_amount = bonusAllocated;
-      await putOne(db, 'bucket_allocations', {
-        id: crypto.randomUUID(), bucket_id: bonus.bucketId, amount: bonusAllocated, date,
-        note: `獎金撥入${description ? '：' + description : ''}`, auto_type: 'bonus', income_txn_id: txn.id,
-        created_at: new Date().toISOString(),
+    // 應收款已收金額（不論是否影響帳戶）＋流水帳；account_id 只在真的入帳時記
+    if (recvRecord) {
+      const newReceived = Math.min(recvRecord.received_amount + txn.amount, recvRecord.total_amount);
+      await tPut(tx, 'receivables', { ...recvRecord, received_amount: newReceived, is_settled: newReceived >= recvRecord.total_amount });
+      const payAmt = newReceived - recvRecord.received_amount;
+      if (payAmt) await tPut(tx, 'receivable_payments', {
+        id: crypto.randomUUID(), receivable_id: recvRecord.id, date: txn.date, amount: payAmt,
+        note: txn.description || '收入記帳結清', account_id: applyNow ? (acc?.id ?? null) : null,
+        income_txn_id: txn.id, created_at: now,
       });
     }
-  }
 
-  await putOne(db, 'income_txns', txn);
+    // §卅八：從定期定額「確認本期」來的
+    let dcaItem = null;
+    if (confirmDca?.id) {
+      dcaItem = await tGet(tx, 'dca_schedules', confirmDca.id);
+      if (dcaItem) {
+        txn.dca_schedule_id = dcaItem.id;
+        txn.dca_occ_date = confirmDca.occDate || date;
+        txn.dca_prev_confirmed_date = dcaItem.last_confirmed_date ?? null;
+      }
+    }
 
-  if (dcaItem) await putOne(db,'dca_schedules',{...dcaItem, last_confirmed_date: confirmDca.occDate || date});
+    // v2.12.0：獎金／一次性收入直接撥進存錢目標（台幣計、最多整筆）
+    let bonusAllocated = 0;
+    txn.irregular = !!irregular && !dca && !txn.receivable_id;
+    delete txn.bonus_bucket_id; delete txn.bonus_amount;
+    if (txn.irregular && bonus?.bucketId && bonus.amount > 0) {
+      bonusAllocated = Math.min(Math.round(bonus.amount), Math.round(txn.amount * rate));
+      if (bonusAllocated > 0) {
+        txn.bonus_bucket_id = bonus.bucketId; txn.bonus_amount = bonusAllocated;
+        await tPut(tx, 'bucket_allocations', {
+          id: crypto.randomUUID(), bucket_id: bonus.bucketId, amount: bonusAllocated, date,
+          note: `獎金撥入${description ? '：' + description : ''}`, auto_type: 'bonus', income_txn_id: txn.id,
+          created_at: now,
+        });
+      }
+    }
 
-  // Income changed → this month's percent-mode Bucket auto-contributions
-  // may need to move, and so may any emergency-fund shortfall withdrawal.
-  await syncPlanAutoRows();
+    await tPut(tx, 'income_txns', txn);
+    if (dcaItem) await tPut(tx, 'dca_schedules', { ...dcaItem, last_confirmed_date: confirmDca.occDate || date });
 
-  // v2.27.0：記到有期限收入（例如失業給付）的分類，下次預計入帳日自動往後一個月
-  if (!editId) {
-    const srcs = (await getSetting(db, 'limited_income', [])) || [];
-    if (srcs.some(x => x.category === txn.category)) await setSetting(db, 'limited_income', srcs.map(x => x.category === txn.category ? { ...x, next_date: addMonthsISO(txn.date, 1) } : x)).catch(() => {});
-  }
-  return { ok:true, txn, deferBalance, clampedFrom, bonusAllocated };
+    // v2.27.0：記到有期限收入的分類，下次預計入帳日往後一個月
+    if (!editId) {
+      const rec = await tGet(tx, 'settings', 'limited_income');
+      const srcs = rec?.value || [];
+      if (srcs.some(x => x.category === txn.category)) {
+        await tPut(tx, 'settings', { key: 'limited_income', value: srcs.map(x => x.category === txn.category ? { ...x, next_date: addMonthsISO(txn.date, 1) } : x) });
+      }
+    }
+    return { txn, clampedFrom, bonusAllocated };
+  });
+
+  const syncOk = await syncPlanAutoRows();
+  if (!syncOk) warnSyncFailed();
+  return { ok:true, txn: result.txn, deferBalance, clampedFrom: result.clampedFrom, bonusAllocated: result.bonusAllocated, syncOk };
 }
 
 document.getElementById('incomeModalSave').addEventListener('click', async () => {
@@ -18107,6 +18095,11 @@ menuBtn.addEventListener('click',()=>sidebar.classList.toggle('open'));
 document.addEventListener('click',e=>{if(!sidebar.contains(e.target)&&!menuBtn.contains(e.target))sidebar.classList.remove('open');});
 
 // Start
+// v2.31.0：自動化回歸測試用。網址帶 ?pfcc-test 時，才把寫入操作掛到 window 讓測試呼叫；
+// 一般使用時不存在。這些函式能做的事跟畫面上的按鈕完全一樣，不多開任何權限。
+if (new URLSearchParams(location.search).has('pfcc-test')) {
+  window.__pfcc = { saveExpenseRecord, saveIncomeRecord, recordTransfer, deleteTxnRecord, runAutoConfirm, readEventLog };
+}
 init().catch(err=>{
   document.getElementById('content').innerHTML=`<div style="color:var(--red);padding:40px"><strong>載入失敗</strong><br><small>${err.message}</small></div>`;
   console.error(err);
