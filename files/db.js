@@ -16,8 +16,15 @@ export function openDB() {
     // db.transaction() call, which IndexedDB refuses while an upgrade is
     // already in progress.
     req.onupgradeneeded = (e) => createSchema(e.target.result, e.oldVersion, e.target.transaction);
-    req.onsuccess = (e) => resolve(e.target.result);
+    req.onsuccess = (e) => {
+      const db = e.target.result;
+      // v2.30.0：別的分頁（或新版）要升級資料庫時，這個連線先關掉讓路，
+      // 並通知畫面重新整理；不然新版會一直卡在升級、畫面空白。
+      db.onversionchange = () => { db.close(); window.dispatchEvent(new CustomEvent('pfcc-db-versionchange')); };
+      resolve(db);
+    };
     req.onerror   = (e) => reject(e.target.error);
+    req.onblocked = () => window.dispatchEvent(new CustomEvent('pfcc-db-blocked'));
   });
 }
 
@@ -402,6 +409,68 @@ export async function setSetting(db, key, value) {
   return putOne(db, 'settings', { key, value });
 }
 
+// ─── 單一交易（v2.30.0）────────────────────────────────────────────────────────
+// 一次業務操作（例如轉帳＝扣 A、加 B、寫紀錄）的所有寫入放進同一個交易：
+// 要嘛全部寫入，要嘛全部沒寫（中途失敗或 App 被關掉都不會只記一半）。
+// fn 裡只能 await 這裡提供的 get/getAll/put/del（IndexedDB 交易在等其他非同步
+// 工作時會自動結束）。回傳 fn 的回傳值；交易失敗會丟出錯誤。
+export async function atomic(db, stores, fn) {
+  const t = db.transaction(stores, 'readwrite');
+  const done = txDone(t);
+  const api = {
+    get:    (store, key) => idbReq(t.objectStore(store).get(key)),
+    getAll: (store) => idbReq(t.objectStore(store).getAll()),
+    byIndex:(store, index, value) => idbReq(t.objectStore(store).index(index).getAll(value)),
+    put:    (store, rec) => idbReq(t.objectStore(store).put(rec)),
+    del:    (store, key) => idbReq(t.objectStore(store).delete(key)),
+  };
+  let result;
+  try { result = await fn(api); }
+  catch (err) { try { t.abort(); } catch (_) {} await done.catch(() => {}); throw err; }
+  await done;
+  return result;
+}
+
+// 匯入備份＝整個覆蓋：在同一個交易裡清空每個 store 再寫入。任何一步失敗，
+// 整個交易放棄，原本的資料不會被動到。
+export async function replaceAllStores(db, stores, data) {
+  const t = db.transaction(stores, 'readwrite');
+  const done = txDone(t);
+  for (const name of stores) {
+    const s = t.objectStore(name);
+    s.clear();
+    for (const r of (data[name] || [])) s.put(r);
+  }
+  return done;
+}
+
+// ─── 還原點（v2.30.0）──────────────────────────────────────────────────────────
+// 匯入前自動把目前的資料存一份在另一個資料庫（pfcc-restore），匯入有問題時
+// 可以從設定頁還原。只保留最近一份。
+function openRestoreDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('pfcc-restore', 1);
+    r.onupgradeneeded = (e) => e.target.result.createObjectStore('points', { keyPath: 'id' });
+    r.onsuccess = (e) => res(e.target.result);
+    r.onerror = (e) => rej(e.target.error);
+  });
+}
+export async function saveRestorePoint(backup) {
+  const rdb = await openRestoreDB();
+  try {
+    const t = rdb.transaction(['points'], 'readwrite');
+    t.objectStore('points').put({ id: 'last', saved_at: new Date().toISOString(), backup });
+    await txDone(t);
+  } finally { rdb.close(); }
+}
+export async function loadRestorePoint() {
+  const rdb = await openRestoreDB();
+  try {
+    const t = rdb.transaction(['points'], 'readonly');
+    return (await idbReq(t.objectStore('points').get('last'))) || null;
+  } finally { rdb.close(); }
+}
+
 // ─── Seed ─────────────────────────────────────────────────────────────────────
 // 只設定 app 基本設定，不預填任何個人資料
 // 每個使用者自己在設定頁面新增銀行、帳戶、持股等資料
@@ -471,9 +540,10 @@ export const LEGACY_CATEGORY_LABELS = {
 
 // Seed default categories — called once when txn_categories is empty
 export async function seedCategoriesIfNeeded(db) {
-  const existing = await getAll(db, 'txn_categories').catch(()=>[]);
+  // v2.30.0：讀取失敗不能當成「沒有類別」——不然會用預設值蓋掉使用者改過的類別。
+  const existing = await getAll(db, 'txn_categories');
   if (existing.length > 0) return;
-  await putMany(db, 'txn_categories', DEFAULT_CATEGORIES).catch(()=>{});
+  await putMany(db, 'txn_categories', DEFAULT_CATEGORIES);
 }
 
 function ts() { return new Date().toISOString(); }

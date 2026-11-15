@@ -310,8 +310,14 @@ export function calcReceivables(receivables) {
 // showing what was in effect back then even after a later change.
 // categoryId: null = the total budget. monthStr / rows use 'YYYY-MM'.
 
+// 業務日期一律用裝置本地時間（台灣 00:00～23:59 是同一天）；toISOString() 是
+// UTC，台灣早上 8 點前會變成前一天，只能用在時間戳記。
+export function localISODate(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
 export function currentMonthStr(fromDate = new Date()) {
-  return fromDate.toISOString().slice(0, 7);
+  return localISODate(fromDate).slice(0, 7);
 }
 
 // v2.4.0：同一個月份如果存了好幾筆（例如先在「設定預算」改過、又在快速設定
@@ -1271,7 +1277,7 @@ export function lastOccurrenceOnOrBefore(item, todayStr) {
  */
 export function runDataHealthChecks(data = {}) {
   const {
-    today = new Date().toISOString().slice(0, 10),
+    today = localISODate(new Date()),
     accounts = [], holdings = [], prices = [], expenseTxns = [], incomeTxns = [],
     recurringExpenses = [], dcaSchedules = [], recurringTransfers = [],
     receivables = [], receivablePayments = [], creditCards = [],
