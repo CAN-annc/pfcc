@@ -442,7 +442,7 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .fi-line{display:grid;grid-template-columns:1fr auto 84px;gap:8px;padding:5px 0;font-size:13px;font-variant-numeric:tabular-nums}.fi-line small{text-align:right;color:var(--text-3);font-size:11px}.fi-empty{font-size:12px;color:var(--text-3);padding:4px 0 8px}
 .hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 18px}.hp-method{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 18px}
 .hp-method [role=radio]{height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);font:inherit;font-size:13px;color:var(--text)}.hp-method [aria-checked=true]{border:2px solid #2563EB;background:#F5F8FF;color:#1E40AF;font-weight:600}
-.hp-out{padding:0 18px 10px}.fi-card [data-hp-goal]{margin:0 18px 16px}
+.hp-out{padding:0 18px 10px}.hp-goal-ok{font-size:12px;color:var(--green);margin:0 18px 16px}.fi-card [data-hp-goal]{margin:0 18px 16px}
 .rw-orange{color:#C2410C}.rw-red{color:#DC2626}
 .todo-card{padding:0;overflow:hidden;margin-bottom:12px}.todo-h{display:flex;align-items:center;gap:8px;padding:12px 16px}.todo-h b{font-size:14px}.todo-h>span{font-size:11px;font-weight:700;color:#fff;background:#2563EB;border-radius:99px;padding:1px 7px}.todo-h button{margin-left:auto}
 .todo-row{display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);padding-right:12px}.todo-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left;border:none;background:transparent;font:inherit;color:var(--text);padding:10px 16px;min-height:48px}.todo-main b{font-size:13px}.todo-main span{font-size:12px;color:var(--text-3)}
@@ -454,6 +454,14 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .ck-note{height:32px;border:1px solid var(--border);border-radius:6px;padding:0 8px;font:inherit;font-size:12px;background:var(--card);color:var(--text)}
 .ck-ev{height:48px;border-radius:8px;border:1px solid var(--border);background:var(--card);font:inherit;font-size:14px;color:var(--text);text-align:left;padding:0 14px}.ck-ev-old{font-size:12px;color:var(--text-2);height:40px}
 .sample-banner{position:fixed;top:0;left:0;right:0;z-index:250;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px;padding-top:max(8px,env(safe-area-inset-top));background:#FFFBEB;border-bottom:1px solid #FCD34D;font-size:12px;color:#78350F}.sample-banner .btn{height:32px;background:#fff;border:1px solid #FCD34D;color:#78350F}
+.mp-ref2{display:flex;flex-direction:column;gap:2px;margin:8px 0}.mp-ref2-h,.mp-ref2-row{display:grid;grid-template-columns:minmax(0,1fr) 92px 112px;gap:8px;align-items:baseline}
+.mp-ref2-h{font-size:11px;color:var(--text-3);padding-bottom:4px}.mp-ref2-h span:not(:first-child){text-align:right}
+.mp-ref2-row{padding:8px 0;border-top:1px solid var(--border)}.mp-ref2-n{font-size:13px}.mp-ref2-n small{margin-left:6px;font-size:11px;color:var(--text-3)}
+.mp-ref2-v{text-align:right;font-size:13px;font-variant-numeric:tabular-nums;display:flex;flex-direction:column}.mp-ref2-v small{font-size:11px;color:var(--text-3)}.mp-ref2-v.bad,.mp-ref2-v.bad small{color:#B45309}.mp-ref2-v.good small{color:var(--green)}
+.mp-ref2-bar{grid-column:1/-1;position:relative;height:10px}.mp-ref2-bar i,.mp-ref2-bar b{position:absolute;left:0;height:4px;border-radius:2px}.mp-ref2-bar i{top:0;background:var(--border-strong,#C8CDD8)}.mp-ref2-bar b{top:6px;background:#2563EB}
+.mp-ref2-sum{font-size:12px;color:var(--text-2);margin:4px 0 10px}
+.tm-band{display:flex;align-items:baseline;gap:8px;padding:4px 2px 2px;border-left:4px solid #2563EB;padding-left:10px;margin:4px 0}.tm-band b{font-size:16px}.tm-band span{font-size:12px;color:var(--text-3)}
+.tm-band.is-second{border-left-color:#0E7A52;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 .modal-check{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;margin:4px 0 8px}.modal-check input{width:20px;height:20px;accent-color:var(--accent,#2563EB)}
 .inv-row{margin-top:8px}
 .inv-tk input[data-iv="ticker"]{font-weight:700;font-size:16px}
@@ -1558,13 +1566,9 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <a class="nav-item" href="#" data-view="plan"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>計畫</a>
     <a class="nav-item" href="#" data-view="wealth"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M21 12A9 9 0 1112 3v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z"/></svg>持倉</a>
     <div class="nav-section">管理</div>
-    <a class="nav-item" href="#" data-view="txnmanage">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
-      記帳管理
-    </a>
     <a class="nav-item" href="#" data-view="settings">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      帳戶管理
+      帳戶與記帳
     </a>
     <!-- 2026-09-26（使用者用 AskUserQuestion 確認落點，見 §廿一之六）：「資金
          池」這個獨立側邊欄項目已移除，併入「記帳管理」整合頁的方格選單裡
@@ -1653,11 +1657,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
   <div class="nav-section">管理</div>
   <a class="nav-item" href="#" data-view="settings">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-    帳戶管理
-  </a>
-  <a class="nav-item" href="#" data-view="txnmanage">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
-    記帳管理
+    帳戶與記帳
   </a>
   <a class="nav-item" href="#" data-view="appsettings">
     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -2151,9 +2151,12 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
     <input type="hidden" id="holdingEditId">
     <input type="hidden" id="holdingMarket">
     <input type="hidden" id="holdingCurrency">
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="holdingModalCancel">取消</button>
-      <button class="btn btn-primary" id="holdingModalSave">儲存</button>
+    <div class="modal-actions" style="justify-content:space-between">
+      <button class="btn btn-ghost" id="holdingModalDelete" style="color:var(--red);display:none">刪除持倉</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" id="holdingModalCancel">取消</button>
+        <button class="btn btn-primary" id="holdingModalSave">儲存</button>
+      </div>
     </div>
   </div>
 </div>
@@ -4509,7 +4512,7 @@ async function navigate(view, { fromHistory = false } = {}) {
   // 是 topbar 顯示文字，側邊欄／底部導覽列上的連結文字（資產總覽、收支紀錄）
   // 完全不受影響（navigate() 這裡只處理 topbarTitle 這一個 span，跟 nav-item
   // 的連結文字是兩份獨立的字串，見側邊欄與底部導覽列的 HTML）。
-  const titles = { assets:'手元', plan:'計畫', wealth:'持倉', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'記帳管理', report:'帳務報表', creditcard:'信用卡', recurring:'固定支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢目標', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
+  const titles = { assets:'手元', plan:'計畫', wealth:'持倉', calendar:'雀の涙', trend:'資產趨勢', settings:'帳戶與記帳', appsettings:'設定', transfer:'帳戶移轉', holdings:'投資持倉設定', txnmanage:'帳戶與記帳', report:'帳務報表', creditcard:'信用卡', recurring:'固定支出', recurring_income:'固定收入', rectransfer:'定期轉帳／換匯', dcaschedule:'定期定額排程', installment:'分期付款', goals:'存錢目標', categories:'類別設定', onboarding:'快速設定精靈', budgetplan:'設定預算' };
   document.getElementById('topbarTitle').textContent = titles[view] ?? view;
   syncQaFab();
   document.getElementById('refreshBtn').style.display = (view === 'assets' || view === 'wealth') ? '' : 'none';
@@ -4551,7 +4554,7 @@ let _navCur = null;      // 目前畫面對應的那一筆歷史
 let _navBack = null;     // 子頁返回鍵要顯示的上一頁名稱；null＝這一頁是第一頁
 let _navPending = null;  // navigate() 換頁前算好、畫完才寫進歷史的那一筆
 let _navHome = 'assets'; // 開啟時預設頁面（init 時設定）
-const NAV_LABEL = { assets:'首頁', calendar:'紀錄', report:'帳務報表', plan:'計畫', wealth:'持倉', txnmanage:'記帳管理', settings:'帳戶管理', appsettings:'設定', transfer:'帳戶移轉', onboarding:'快速設定' };
+const NAV_LABEL = { assets:'首頁', calendar:'紀錄', report:'帳務報表', plan:'計畫', wealth:'持倉', txnmanage:'帳戶與記帳', settings:'帳戶與記帳', appsettings:'設定', transfer:'帳戶移轉', onboarding:'快速設定' };
 try { history.scrollRestoration = 'manual'; } catch (e) {}
 function navState() {
   const v = currentView;
@@ -4566,7 +4569,7 @@ function navState() {
 function navLabelOf(s) {
   if (!s || !s.pfcc || s.root) return null;
   if (s.view === 'txnmanage' && s.tm) return (typeof TXN_MANAGE_TABS !== 'undefined' && TXN_MANAGE_TABS.find(t => t.key === s.tm)?.label) || '記帳管理';
-  if (s.view === 'settings' && s.acc) return (typeof ACC_MANAGE_GROUPS !== 'undefined' && ACC_MANAGE_GROUPS.flatMap(g => g.items).find(i => i.key === s.acc)?.label) || '帳戶管理';
+  if (s.view === 'settings' && s.acc) return (typeof ACC_MANAGE_GROUPS !== 'undefined' && ACC_MANAGE_GROUPS.flatMap(g => g.items).find(i => i.key === s.acc)?.label) || '帳戶與記帳';
   return NAV_LABEL[s.view] || null;
 }
 function prepareNav(fromHistory) {
@@ -6255,6 +6258,8 @@ async function buildHousePlanCard() {
   const saved = (await getSetting(db, 'house_plan', null).catch(() => null)) || {};
   const v = { price: saved.price ?? 10000000, down: saved.down ?? 15, fees: saved.fees ?? 250000, reno: saved.reno ?? 300000, rate: saved.rate ?? 2.5, years: saved.years ?? 30, method: saved.method ?? 'annuity' };
   const card = el('div', 'card fi-card'); card.style.marginTop = '12px';
+  const _bs = await getAll(db, 'buckets').catch(() => []);
+  const houseGoal = _bs.find(b => b.house_plan && b.status !== 'closed') || _bs.find(b => /房/.test(b.name) && b.status !== 'closed') || null;
   const draw = () => {
     const downAmt = Math.round(v.price * v.down / 100), need = downAmt + v.fees + v.reno, loan = v.price - downAmt;
     const mg = mortgageCalc({ loan, ratePct: v.rate, years: v.years, method: v.method });
@@ -6277,12 +6282,12 @@ async function buildHousePlanCard() {
         ${mg ? (v.method === 'principal' ? `<div><span>每月房貸</span><b>第一個月 NT$ ${fmt(mg.first)}，最後 NT$ ${fmt(mg.last)}</b></div>` : `<div><span>每月房貸</span><b>NT$ ${fmt(mg.first)}</b></div>`) : ''}
         ${mg ? `<div><span>總共要還</span><b>NT$ ${fmt(mg.total)}</b></div>` : ''}
       </div>
-      <button type="button" class="btn btn-ghost btn-sm" data-hp-goal>把「需要先準備」設成房屋目標</button>
+      ${houseGoal && Math.round(houseGoal.target_amount || 0) === need ? `<div class="hp-goal-ok">房屋目標就是 NT$ ${fmt(need)} ✓</div>` : `<button type="button" class="btn btn-ghost btn-sm" data-hp-goal>${houseGoal ? `房屋目標改成 NT$ ${fmt(need)}（現在 NT$ ${fmt(houseGoal.target_amount || 0)}）` : `新增房屋目標 NT$ ${fmt(need)}`}</button>`}
     </details>`;
     card.querySelector('details').addEventListener('toggle', e => toggleExpanded('house:open', e.target.open));
     card.querySelectorAll('[data-hp]').forEach(x => x.addEventListener('change', () => { v[x.dataset.hp] = parseFloat(x.value) || 0; setSetting(db, 'house_plan', { ...v }).catch(() => {}); draw(); }));
     card.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => { v.method = b.dataset.m; setSetting(db, 'house_plan', { ...v }).catch(() => {}); draw(); }));
-    card.querySelector('[data-hp-goal]').addEventListener('click', async () => {
+    card.querySelector('[data-hp-goal]')?.addEventListener('click', async () => {
       const bs = await getAll(db, 'buckets').catch(() => []);
       const h = bs.find(b => b.house_plan && b.status !== 'closed') || bs.find(b => /房/.test(b.name) && b.status !== 'closed');
       if (h) await putOne(db, 'buckets', { ...h, target_amount: need, house_plan: true });
@@ -8586,7 +8591,7 @@ async function renderSettings() {
   content.appendChild(goldCard);
 
   const payCard = buildPayablesCard(); content.appendChild(payCard);
-  applyAccountManageLayout({ content, toolbar, banks, sections: {
+  await applyAccountManageLayout({ content, toolbar, banks, sections: {
     cash: cashCard, bank: bankCard, recv: recvCard, dep: depCard, other: otherCard, gold: goldCard, pay: payCard,
   } });
 }
@@ -8630,13 +8635,15 @@ function accManageSummary(key) {
   }
   return { count: '', amount: '' };
 }
-function applyAccountManageLayout({ content, toolbar, banks, sections }) {
+async function applyAccountManageLayout({ content, toolbar, banks, sections }) {
   const active = _accManageActiveSection;
   if (!active || !sections[active]) {
     _accManageActiveSection = null;
     toolbar.remove();
     Object.values(sections).forEach(c => { c.hidden = true; });
     const wrap = el('div','tm-wrap');
+    const band = (t, sub) => { const b = el('div','tm-band'); b.innerHTML = `<b>${t}</b><span>${sub}</span>`; return b; };
+    wrap.appendChild(band('帳戶', '錢放在哪裡'));
     for (const g of ACC_MANAGE_GROUPS) {
       const sec = el('section','tm-sec');
       sec.innerHTML = `<h3 class="tm-sec-title">${g.title}</h3>`;
@@ -8658,6 +8665,10 @@ function applyAccountManageLayout({ content, toolbar, banks, sections }) {
       wrap.appendChild(sec);
     }
     content.prepend(wrap);
+    const tmBand = band('記帳', '信用卡、固定的收支');
+    tmBand.classList.add('is-second');
+    wrap.appendChild(tmBand);
+    wrap.appendChild(await buildTxnManageGrid());
     return;
   }
   // 子頁：返回鍵＋只顯示這一張卡片，固定展開。
@@ -8696,7 +8707,7 @@ function applyAccountManageLayout({ content, toolbar, banks, sections }) {
   }
   const backBtn = el('button','btn btn-ghost btn-sm');
   backBtn.style.cssText = 'align-self:flex-start';
-  backBtn.innerHTML = navBackBtnHtml('帳戶管理');
+  backBtn.innerHTML = navBackBtnHtml('帳戶與記帳');
   backBtn.addEventListener('click', () => navBack(() => { _accManageActiveSection = null; navigate('settings'); }));
   content.prepend(backBtn);
 }
@@ -9476,23 +9487,11 @@ async function renderHoldings() {
                 <div class="hold-id"><b>${escHtml(h.ticker)}${holdTag(h.id) ? `<span class="hold-pend">${holdTag(h.id)}</span>` : ''}</b><span>${escHtml(h.name)}</span></div>
                 <div class="hold-num"><b>${Number(h.shares||0).toLocaleString('en-US',{maximumFractionDigits:isUS?4:0})}<small> 股</small></b><span class="${eh.marketValueTWD==null?'is-missing':''}">${valTxt}</span></div>
                 <div class="hold-acts">
-                  <button class="btn btn-ghost btn-sm" style="font-size:11px" data-buy-hold="${h.id}">買進</button>
-                  ${(h.shares || 0) > 0 ? `<button class="btn btn-ghost btn-sm" style="font-size:11px" data-sell-hold="${h.id}">賣出</button>` : ''}
+                  <button class="btn btn-ghost btn-sm" style="font-size:11px" data-buy-hold="${h.id}">買賣</button>
                   <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-hold="${h.id}">編輯</button>
-                  <button class="btn btn-ghost btn-sm" style="font-size:11px;color:var(--red)" data-del-hold="${h.id}">刪除</button>
                 </div>`;
               hRow.querySelector(`[data-edit-hold]`).addEventListener('click', () => openHoldingModal(h, brokerages, banks));
-              hRow.querySelector(`[data-sell-hold]`)?.addEventListener('click', () => openQuickSheet({ prefillTrade: { kind: 'sell', holdingId: h.id } }));
               hRow.querySelector(`[data-buy-hold]`)?.addEventListener('click', () => openQuickSheet({ prefillTrade: { kind: 'buy', holdingId: h.id } }));
-              hRow.querySelector(`[data-del-hold]`).addEventListener('click', () => {
-                openDeleteModal(`確定要刪除持倉「${h.ticker} ${h.name}」嗎？${_trs.some(t => t.holding_id === h.id && t.kind !== 'opening') ? '\n這支的買賣紀錄會留著（帳戶餘額不會變）。' : ''}`, async () => {
-                  await atomic(db, ['holdings', 'stock_trades'], async tx => {
-                    await tx.del('holdings', h.id);
-                    for (const t of _trs.filter(t => t.holding_id === h.id && t.kind === 'opening')) await tx.del('stock_trades', t.id);
-                  });
-                  showToast('持倉已刪除'); await renderHoldings();
-                });
-              });
               bBody.appendChild(hRow);
             });
           });
@@ -10583,6 +10582,8 @@ function openHoldingModal(h=null, brokerages=[], banks=[], defaultBrokId=null) {
   document.getElementById('holdingShares').value = h?.shares??'';
   document.getElementById('holdingManualPrice').value = h?.manual_price??'';
   document.getElementById('holdingCostBasis').value = h?.cost_basis??'';
+  document.getElementById('holdingModalDelete').style.display = h ? 'inline-flex' : 'none';
+  _holdingModalCur = h;
   // v2.30.0：有買賣紀錄就不能直接改股數和成本
   (async () => {
     const trs = h ? await getByIndex(db, 'stock_trades', 'holding_key', h.id).catch(() => []) : [];
@@ -10726,6 +10727,20 @@ function openHoldingModal(h=null, brokerages=[], banks=[], defaultBrokId=null) {
 }
 document.getElementById('holdingModalCancel').addEventListener('click',()=>document.getElementById('holdingModal').classList.remove('open'));
 document.getElementById('holdingModal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
+// v2.30.0：刪除從持倉列表移到編輯視窗裡
+let _holdingModalCur = null;
+document.getElementById('holdingModalDelete').addEventListener('click', async () => {
+  const h = _holdingModalCur; if (!h) return;
+  const trs = await getByIndex(db, 'stock_trades', 'holding_key', h.id).catch(() => []);
+  document.getElementById('holdingModal').classList.remove('open');
+  openDeleteModal(`確定要刪除持倉「${h.ticker} ${h.name}」嗎？${trs.some(t => t.kind !== 'opening') ? '\n這支的買賣紀錄會留著（帳戶餘額不會變）。' : ''}`, async () => {
+    await atomic(db, ['holdings', 'stock_trades'], async tx => {
+      await tx.del('holdings', h.id);
+      for (const t of trs.filter(t => t.kind === 'opening')) await tx.del('stock_trades', t.id);
+    });
+    showToast('持倉已刪除'); await renderHoldings();
+  });
+});
 document.getElementById('holdingModalSave').addEventListener('click',async()=>{
   const brokId = document.getElementById('holdingBrokId').value;
   const ticker = document.getElementById('holdingTicker').value.trim().toUpperCase();
@@ -12216,7 +12231,7 @@ async function renderMonthlyPlan() {
       }).join('')}
     </div>
     <div class="mp-rest ${plan.unassigned < 0 ? 'is-over' : plan.unassigned > 0 ? 'is-free' : 'is-zero'}">
-      ${plan.unassigned > 0 ? `<strong>還有 ${money(plan.unassigned)} 沒有安排用途</strong><span>這就是會變成「閒置資金」的錢——放進存下來、投資或生活預算，讓每一塊錢都有用途。</span>`
+      ${plan.unassigned > 0 ? `<strong>還有 ${money(plan.unassigned)} 沒有安排用途</strong><span>放進存下來、投資或生活預算，讓每一塊錢都有用途。</span>`
         : plan.unassigned < 0 ? `<strong>計畫超出 ${money(-plan.unassigned)}</strong>`
         : `<strong>每一塊錢都有用途了</strong><span>收入剛好分配完。</span>`}
     </div>`;
@@ -12401,22 +12416,48 @@ async function renderMonthlyPlan() {
   const methodKey = settings.ref_method || (await getSetting(db, 'income_allocation_method', null)) || '532';
   const presets = (await getSetting(db, 'income_allocation_presets', {})) || {};
   const refJars = presets[methodKey]?.jars || INCOME_ALLOCATION_METHODS[methodKey]?.jars || [];
-  const ref = planMethodShares(refJars);
-  const mine = { spend: pctOf(plan.fixed.total + plan.living.total), save: pctOf(plan.save.total), invest: pctOf(plan.invest.total) };
+  // v2.30.0：每個法則用它自己的罐子列出來（不再壓成花費／存下來／投資三行——那樣 80/20 和
+  // 50/30/20 看起來一模一樣）。建議金額＝本月可分配 × 比例；「你的」：花的罐子用近 3 個月
+  // 實際花費依類別歸罐（固定支出也算），存的罐子用這個月計畫的存下來／投資。
+  const base = plan.base || 0;
+  const m3 = [1, 2, 3].map(n => shiftMonth(month, -n));
+  const spendByJar = {};
+  expenseTxns.filter(t => m3.includes((t.date || '').slice(0, 7)) && !isSavingCategory(t.category) && !['cat_bad_debt_writeoff', 'cat_dca'].includes(t.category))
+    .forEach(t => { const k = jarOfCategory(refJars, mainCategoryOf(t.category)); if (k) spendByJar[k] = (spendByJar[k] || 0) + resolveExpenseAmountTwd(t, accounts, fxRates) / 3; });
+  const poolJars = refJars.filter(j => !isSpendJar(j));
+  const hasInvestJar = poolJars.some(j => ['invest', 'ffa'].includes(j.key));
+  const mineOf = j => {
+    if (isSpendJar(j)) return Math.round(spendByJar[j.key] || 0);
+    const isInv = ['invest', 'ffa'].includes(j.key);
+    const savePools = poolJars.filter(x => !['invest', 'ffa'].includes(x.key));
+    if (isInv) return Math.round(plan.invest.total / Math.max(1, poolJars.filter(x => ['invest', 'ffa'].includes(x.key)).length));
+    // 沒有投資罐的法則（80/20、50/30/20、631）：存下來＋投資一起算進存的罐子
+    return Math.round(((plan.save.total || 0) + (hasInvestJar ? 0 : (plan.invest.total || 0))) / Math.max(1, savePools.length));
+  };
+  const rows = refJars.map(j => { const want = Math.round(base * (j.percent || 0) / 100), have = mineOf(j); return { j, want, have, diff: have - want }; });
+  const maxV = Math.max(1, ...rows.map(r => Math.max(r.want, r.have)));
+  const worst = [...rows].sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff))[0];
+  const gapTxt = r => r.diff === 0 ? '剛好' : isSpendJar(r.j) ? (r.diff > 0 ? `多花 ${money(r.diff)}` : `還可以花 ${money(-r.diff)}`) : (r.diff > 0 ? `多存 ${money(r.diff)}` : `少存 ${money(-r.diff)}`);
   const refCard = el('div', 'card'); refCard.className = 'card mp-sec';
   refCard.innerHTML = `<div class="mp-sec-head"><span class="mp-ico" style="background:var(--surface-2)">🫙</span>
-    <div class="mp-sec-title"><b>比例參考</b><span>拿理財法則的建議比例，跟你的計畫比一比（只是參考，不會改任何數字）</span></div></div>
+    <div class="mp-sec-title"><b>比例參考</b><span>照這個法則，本月 ${money(base)} 該怎麼分</span></div></div>
     <div class="mp-sec-body">
       <div class="mp-chips">${INCOME_ALLOCATION_ALL_KEYS.filter(k => (!INCOME_ALLOCATION_CUSTOM_KEYS.includes(k) || presets[k]) && (k !== '168' || methodKey === '168')).map(k => `<button type="button" class="mp-chip${k === methodKey ? ' on' : ''}" data-mp-ref="${k}">${INCOME_ALLOCATION_METHODS[k].label}</button>`).join('')}</div>
-      <div class="mp-ref">
-        ${[['spend','花費（固定＋生活）'],['save','存下來'],['invest','投資']].map(([k, l]) => `
-          <div class="mp-ref-row"><span>${l}</span>
-            <div class="mp-ref-bars"><div><i style="width:${ref[k]}%"></i><em>建議 ${ref[k]}%</em></div><div class="is-mine"><i style="width:${Math.min(100, mine[k] ?? 0)}%"></i><em>你的 ${mine[k] != null ? mine[k] + '%' : '—'}</em></div></div>
-          </div>`).join('')}
-      </div>
       <div class="mp-src">${INCOME_ALLOCATION_METHODS[methodKey]?.tagline ?? ''}</div>
+      <div class="mp-ref2">
+        <div class="mp-ref2-h"><span></span><span>建議</span><span>你的 ${infoTip('花的部分：近 3 個月實際花費（含固定支出），依類別歸到各罐。存的部分：這個月計畫的存下來和投資；法則沒有分投資時，兩個加在一起。')}</span></div>
+        ${rows.map(r => `<div class="mp-ref2-row">
+          <span class="mp-ref2-n">${escHtml(r.j.label)}<small>${r.j.percent}%</small></span>
+          <span class="mp-ref2-v">${money(r.want)}</span>
+          <span class="mp-ref2-v ${Math.abs(r.diff) > base * 0.05 ? (isSpendJar(r.j) === (r.diff > 0) ? 'bad' : 'good') : ''}">${money(r.have)}<small>${gapTxt(r)}</small></span>
+          <div class="mp-ref2-bar"><i style="width:${r.want / maxV * 100}%"></i><b style="width:${Math.min(100, r.have / maxV * 100)}%"></b></div>
+        </div>`).join('')}
+      </div>
+      ${base > 0 && worst && Math.abs(worst.diff) > base * 0.05 ? `<div class="mp-ref2-sum">差最多的是「${escHtml(worst.j.label)}」：${gapTxt(worst)}</div>` : ''}
+      <button type="button" class="btn btn-ghost btn-sm" data-mp-use>用這個法則規劃本月 ${infoTip('打開每月規劃，生活費會照這個法則分成幾個罐子，記帳時自動歸罐，首頁看得到每罐還剩多少。')}</button>
     </div>`;
   refCard.querySelectorAll('[data-mp-ref]').forEach(b => b.addEventListener('click', async () => { await setSetting(db, 'monthly_plan', { ...settings, ref_method: b.dataset.mpRef }); await rerender(); }));
+  refCard.querySelector('[data-mp-use]').addEventListener('click', async e => { if (e.target.closest('.ii')) return; await setSetting(db, 'monthly_plan', { ...settings, ref_method: methodKey, jar_method: methodKey }); openMonthPlan(month); });
   mpCollapsible(refCard, 'ref');
   root.appendChild(refCard);
 
@@ -17303,6 +17344,36 @@ let _txnManageActiveTab = null;
 // 「返回」按鈕）。「資金池」這次沒有一併併入這個方格（見廿一之六，使用者
 // 只確認了落點、動工方式還沒查證，維持獨立側邊欄項目，這批不動它）。
 let _txnManageRenderToken = 0;
+// v2.30.0：記帳類的方格（信用卡、固定支出…），放在「帳戶與記帳」頁的下半部
+async function buildTxnManageGrid() {
+  const groups = [
+    { title:'支出', keys:['creditcard','recurring','installment'] },
+    { title:'轉帳與收入', keys:['rectransfer','recurring_income','dcaschedule'] },
+  ];
+  const listed = new Set(groups.flatMap(g => g.keys));
+  const leftovers = TXN_MANAGE_TABS.filter(t => !listed.has(t.key) && !['budgetplan','incomeAllocation','plan','goals'].includes(t.key)).map(t => t.key);
+  if (leftovers.length) groups[groups.length-1].keys.push(...leftovers);
+  const summaries = await Promise.all(TXN_MANAGE_TABS.map(t => t.summary().catch(() => '')));
+  const sumOf = Object.fromEntries(TXN_MANAGE_TABS.map((t,i) => [t.key, summaries[i]]));
+  const frag = document.createDocumentFragment();
+  for (const g of groups) {
+    const sec = el('section','tm-sec');
+    sec.innerHTML = `<h3 class="tm-sec-title">${g.title}</h3>`;
+    const grid = el('div','tm-grid');
+    for (const key of g.keys) {
+      const tab = TXN_MANAGE_TABS.find(t => t.key === key);
+      if (!tab) continue;
+      const cell = el('button','tm-tile'); cell.type = 'button';
+      const summaryText = sumOf[key] || '';
+      const muted = /^0 |尚未設定|^0個/.test(summaryText);
+      cell.innerHTML = `<span class="tm-ico">${tab.icon}</span><span class="tm-label">${tab.label}</span><span class="tm-sum${muted?' muted':''}">${summaryText}</span>`;
+      cell.addEventListener('click', () => { _txnManageActiveTab = tab.key; navigate('txnmanage'); });
+      grid.appendChild(cell);
+    }
+    sec.appendChild(grid); frag.appendChild(sec);
+  }
+  return frag;
+}
 async function renderTxnManage() {
   const content = document.getElementById('content');
   content.innerHTML = '';
@@ -17311,47 +17382,8 @@ async function renderTxnManage() {
     _planTab = _txnManageActiveTab === 'goals' ? 'goals' : 'plan'; _txnManageActiveTab = null; return navigate('plan');
   }
 
-  if (!_txnManageActiveTab) {
-    // v2.3.0（使用者要求：11 個區塊要不用上下滑動就能一次看完）：從 2 欄改成
-    // 3 欄、方塊縮小，並依用途分三組（支出／收入與轉帳／規劃）。iPhone 寬度
-    // 下整頁高度約 520px，扣掉上方標題列與底部導覽列仍有餘裕。
-    const groups = [
-      { title:'支出', keys:['creditcard','recurring','installment'] },
-      { title:'轉帳與收入', keys:['rectransfer','recurring_income','dcaschedule'] },
-    ];
-    const listed = new Set(groups.flatMap(g => g.keys));
-    const leftovers = TXN_MANAGE_TABS.filter(t => !listed.has(t.key)).map(t => t.key);
-    if (leftovers.length) groups[groups.length-1].keys.push(...leftovers);
-    const token = ++_txnManageRenderToken;
-    const summaries = await Promise.all(TXN_MANAGE_TABS.map(t => t.summary().catch(() => '')));
-    // 連點兩下（或其他地方同時觸發重畫）時，只讓最後一次畫面生效，避免方塊重複出現兩份。
-    if (token !== _txnManageRenderToken) return;
-    const sumOf = Object.fromEntries(TXN_MANAGE_TABS.map((t,i) => [t.key, summaries[i]]));
-    const wrap = el('div','tm-wrap');
-    for (const g of groups) {
-      const sec = el('section','tm-sec');
-      sec.innerHTML = `<h3 class="tm-sec-title">${g.title}</h3>`;
-      const grid = el('div','tm-grid');
-      for (const key of g.keys) {
-        const tab = TXN_MANAGE_TABS.find(t => t.key === key);
-        if (!tab) continue;
-        const cell = el('button','tm-tile');
-        cell.type = 'button';
-        const summaryText = sumOf[key] || '';
-        const muted = /^0 |尚未設定|^0個/.test(summaryText);
-        cell.innerHTML = `
-          <span class="tm-ico">${tab.icon}</span>
-          <span class="tm-label">${tab.label}</span>
-          <span class="tm-sum${muted?' muted':''}">${summaryText}</span>`;
-        cell.addEventListener('click', () => { _txnManageActiveTab = tab.key; navigate('txnmanage'); });
-        grid.appendChild(cell);
-      }
-      sec.appendChild(grid);
-      wrap.appendChild(sec);
-    }
-    content.appendChild(wrap);
-    return;
-  }
+  // v2.30.0：記帳管理的方格併進「帳戶與記帳」頁
+  if (!_txnManageActiveTab) return navigate('settings');
 
   // 已選了某個子頁：頂端一顆「← 記帳管理」返回按鈕回到方格選單，下面接著畫
   // 該子頁原本的內容（子頁函式本身完全不用改——一樣透過
@@ -17359,8 +17391,8 @@ async function renderTxnManage() {
   const backBtn = el('button','btn btn-ghost btn-sm');
   backBtn.style.cssText = 'margin-bottom:12px';
   // v2.29.0：返回鍵顯示並回到「從哪一頁進來」（例如從計畫進來就是「← 計畫」，回去時捲動位置不變）
-  backBtn.innerHTML = navBackBtnHtml('記帳管理');
-  backBtn.addEventListener('click', () => navBack(() => { _txnManageActiveTab = null; navigate('txnmanage'); }));
+  backBtn.innerHTML = navBackBtnHtml('帳戶與記帳');
+  backBtn.addEventListener('click', () => navBack(() => { _txnManageActiveTab = null; navigate('settings'); }));
   content.appendChild(backBtn);
 
   const subContainer = el('div');
