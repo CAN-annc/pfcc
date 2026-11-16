@@ -91,3 +91,13 @@ test('階段目標：前一個存滿才輪到下一個', () => {
   assert.equal(calcBucketPlanContribution({ monthly_amount: 1000, stage_queued: true }, 0).amount, 0);
   assert.equal(calcBucketPlanContribution({ monthly_amount: 1000, stage_split: true }, 0).amount, 500);
 });
+
+import { calcMonthCalendarItems } from '../files/calc.js';
+test('分期：開始月份之前、已付過的月份都不出現', () => {
+  const inst = [{ id: 'n', name: '明年保費', due_day: 12, total_periods: 12, paid_periods: 0, start_date: '2027-01-12' },
+                { id: 'o', name: '今年保費', due_day: 12, total_periods: 12, paid_periods: 11, last_paid_ym: '2026-11' }];
+  const items = (y, m) => calcMonthCalendarItems({ installments: inst }, y, m).filter(x => x.type === 'installment').map(x => x.id);
+  assert.deepEqual(items(2026, 11), []);
+  assert.deepEqual(items(2026, 12), ['o']);
+  assert.deepEqual(items(2027, 1), ['n', 'o']);
+});

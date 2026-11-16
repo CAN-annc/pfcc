@@ -937,6 +937,7 @@ export function calcUpcomingReminders(
     if (!i.due_day || (i.paid_periods || 0) >= i.total_periods) continue;
     const days = daysToMonthDay(i.due_day);
     if (days == null || days > windowDays) continue;
+    if (i.start_date && isoDateAfterDays(days) < i.start_date.slice(0, 7) + '-01') continue;
     // §卅九（2026-09-29，使用者回報手機版「確認本期」仍重複出現，追查後發現
     // 這裡跟下面 calcMonthCalendarItems 的分期付款分支都漏掉了這個檢查）：
     // 分期付款用「確認本期付款」確認時，寫的是 last_paid_ym（年-月，不是完整
@@ -1085,7 +1086,8 @@ export function calcMonthCalendarItems(
   for (const i of installments) {
     if (!i.due_day || (i.paid_periods || 0) >= i.total_periods) continue;
     const date = monthlyDateInMonth(i.due_day, year, month);
-    if (!date || monthPrefix === i.last_paid_ym) continue;
+    // v2.30.0：還沒開始的分期（例如明年度的保費）不會出現在開始月份之前；已付過的月份也不再出現
+    if (!date || (i.last_paid_ym && monthPrefix <= i.last_paid_ym) || (i.start_date && monthPrefix < i.start_date.slice(0, 7))) continue;
     items.push({ date, type: 'installment', id: i.id, refId: i.id, label: `${i.name} 分期`,
       amountLabel: `NT$ ${fmt(i.per_amount ?? Math.round(i.total_amount / i.total_periods))}` });
   }
@@ -1589,7 +1591,7 @@ export function calcMonthDue({ recurringExpenses = [], installments = [], dcaSch
     dates.filter(d => d > (r.last_confirmed_date || '')).forEach(d => push('recurring', r.id, d, r.name, amt));
   }
   for (const i of installments) {
-    if (!i.due_day || (i.paid_periods || 0) >= i.total_periods || i.last_paid_ym === ym) continue;
+    if (!i.due_day || (i.paid_periods || 0) >= i.total_periods || (i.last_paid_ym && ym <= i.last_paid_ym) || (i.start_date && ym < i.start_date.slice(0, 7))) continue;
     const d = monthlyDateInMonth(i.due_day, y, m);
     if (d) push('installment', i.id, d, `${i.name} 分期`, i.per_amount ?? Math.round(i.total_amount / i.total_periods));
   }
