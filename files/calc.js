@@ -1065,7 +1065,8 @@ export function calcMonthCalendarItems(
     else if (r.freq === 'yearly') { const dt = yearlyDateInMonth(r.billing_month, r.billing_day, year, month); if (dt) dates = [dt]; }
     else if (r.freq === 'weekly') { dates = weeklyDatesInMonth(r.billing_weekday, year, month); }
     else if (r.freq === 'custom') { const dt = customDateInMonth(r.next_date, r.custom_months, year, month); if (dt) dates = [dt]; }
-    dates.filter(date => date !== r.last_confirmed_date).forEach(date => items.push({ date, type: 'recurring', id: r.id, refId: r.id, label: r.name,
+    // v2.30.0：「最後一期」之後不再出現
+    dates.filter(date => date !== r.last_confirmed_date && !(r.end_date && date > r.end_date)).forEach(date => items.push({ date, type: 'recurring', id: r.id, refId: r.id, label: r.name,
       amountLabel: r.amount != null ? fmtCurrency(r.amount, r.currency || 'TWD') : null }));
   }
 
@@ -1101,7 +1102,7 @@ export function calcMonthCalendarItems(
     let date = null;
     if (t.freq === 'monthly') date = monthlyDateInMonth(t.billing_day, year, month);
     else if (t.freq === 'custom') date = customDateInMonth(t.next_date, t.custom_months, year, month);
-    if (!date || date === t.last_confirmed_date) continue;
+    if (!date || date === t.last_confirmed_date || (t.end_date && date > t.end_date)) continue;
     items.push({ date, type: 'transfer', id: t.id, refId: t.id, label: t.name,
       amountLabel: t.amount != null ? fmtCurrency(t.amount, t.currency || 'TWD') : null });
   }
@@ -1112,7 +1113,7 @@ export function calcMonthCalendarItems(
     let date = null;
     if (s.freq === 'monthly') date = monthlyDateInMonth(s.billing_day, year, month);
     else if (s.freq === 'custom') date = customDateInMonth(s.next_date, s.custom_months, year, month);
-    if (!date || date === s.last_confirmed_date) continue;
+    if (!date || date === s.last_confirmed_date || (s.end_date && date > s.end_date)) continue;
     items.push({ date, type: 'dca', id: s.id, refId: s.id, label: `${s.name} 定期定額`,
       amountLabel: s.amount != null ? fmtCurrency(s.amount, s.currency || 'TWD') : null });
   }
@@ -2106,4 +2107,49 @@ export function calcPositionFromTrades(trades = [], method = 'avg') {
     }
   }
   return { shares, totalCost: costKnown ? cost : null, avgCost: costKnown && shares > 0 ? cost / shares : null, realized };
+}
+
+// ── 信用卡帳單期（v2.30.0）────────────────────────────────────────────────
+// 一筆刷卡算在哪一期：交易日在結帳日（含）之前 → 這個月結帳，否則下個月結帳。
+// 期別一律用「繳款月份」（跟 ccPeriodStatus 一致）：繳款日比結帳日小 → 結帳的下個月繳。
+// 使用者可以手動把一筆改到別期（t.cc_pay_period）。
+export function ccCloseDateFor(card, closeYm) {
+  const [y, m] = closeYm.split('-').map(Number);
+  return monthlyDateInMonth(card?.billing_day, y, m);
+}
+export function ccPayYmOfDate(card, date) {
+  if (!card?.billing_day || !date) return null;
+  const ym = date.slice(0, 7);
+  const close = ccCloseDateFor(card, ym);
+  const closeYm = date <= close ? ym : _ymShift(ym, 1);
+  return card.due_day && card.due_day > card.billing_day ? closeYm : _ymShift(closeYm, 1);
+}
+export function ccCloseYmOfPayYm(card, payYm) {
+  return card?.due_day && card.due_day > card.billing_day ? payYm : _ymShift(payYm, -1);
+}
+export function ccPeriodOfTxn(card, t) { return t.cc_pay_period || ccPayYmOfDate(card, t.date); }
+// 某一期（繳款月份）的明細與合計；near＝結帳日前 7 天內刷的（銀行可能晚幾天入帳，算到下一期）。
+export function ccStatementOf(card, expenses, payYm) {
+  const closeYm = ccCloseYmOfPayYm(card, payYm);
+  const close = ccCloseDateFor(card, closeYm);
+  const nearFrom = close ? _ymd(new Date(new Date(close + 'T00:00:00').getTime() - 6 * 86400000)) : null;
+  const mine = expenses.filter(t => t.pay_type === 'cc' && t.cc_id === card.id && t.affects_balance !== false);
+  const items = mine.filter(t => ccPeriodOfTxn(card, t) === payYm).sort((a, b) => a.date.localeCompare(b.date));
+  // 「可能算下期」：這期結帳日前 7 天內刷的，或原本屬於這期、被移到下期的
+  const near = mine.filter(t => close && t.date >= nearFrom && t.date <= close)
+    .map(t => ({ t, next: ccPeriodOfTxn(card, t) !== payYm })).sort((a, b) => a.t.date.localeCompare(b.t.date));
+  const total = +items.reduce((s, t) => s + (Number(t.amount) || 0), 0).toFixed(2);
+  return { payYm, closeYm, close, due: ccDueDateFor(card, payYm), items, near, total };
+}
+// 目前的「本期帳單」（已結帳、還沒繳）與「未出帳」（還沒結帳）。
+export function ccCurrentPeriods(card, expenses, fromDate = new Date()) {
+  if (!card?.billing_day) return null;
+  const today = _ymd(fromDate);
+  const openPayYm = ccPayYmOfDate(card, today);          // 還沒結帳的那期
+  const billedPayYm = _ymShift(openPayYm, -1);            // 最近一次結帳的那期
+  const paidUpTo = card.last_paid_period ?? '';
+  return {
+    billed: paidUpTo >= billedPayYm ? null : ccStatementOf(card, expenses, billedPayYm),
+    open: ccStatementOf(card, expenses, openPayYm),
+  };
 }

@@ -56,3 +56,23 @@ test('分割與配股', () => {
   const p = C.calcPositionFromTrades(t, 'avg');
   assert.equal(p.shares, 42); assert.equal(p.totalCost, 1000);
 });
+
+import { ccPayYmOfDate, ccStatementOf, ccCurrentPeriods } from '../files/calc.js';
+test('信用卡帳單期：結帳 27、繳款 12', () => {
+  const card = { id: 'c', billing_day: 27, due_day: 12 };
+  assert.equal(ccPayYmOfDate(card, '2026-10-27'), '2026-11');
+  assert.equal(ccPayYmOfDate(card, '2026-10-28'), '2026-12');
+  const ex = [
+    { id: 1, date: '2026-10-05', amount: 100, pay_type: 'cc', cc_id: 'c' },
+    { id: 2, date: '2026-10-25', amount: 500, pay_type: 'cc', cc_id: 'c', cc_pay_period: '2026-12' },
+    { id: 3, date: '2026-10-29', amount: 40, pay_type: 'cc', cc_id: 'c' },
+  ];
+  const s = ccStatementOf(card, ex, '2026-11');
+  assert.equal(s.total, 100);
+  assert.equal(s.near.length, 1); assert.equal(s.near[0].next, true);
+  const p = ccCurrentPeriods({ ...card, last_paid_period: '2026-10' }, ex, new Date(2026, 10, 1));
+  assert.equal(p.billed.payYm, '2026-11'); assert.equal(p.open.total, 540);
+});
+test('信用卡帳單期：繳款日大於結帳日 → 同月繳', () => {
+  assert.equal(ccPayYmOfDate({ billing_day: 5, due_day: 20 }, '2026-10-03'), '2026-10');
+});

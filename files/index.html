@@ -396,6 +396,39 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .txn-neutral-title .tk{font-size:14px;font-weight:700}
 .txn-neutral-sub{font-size:11px;color:var(--text-3);margin-top:2px}
 .txn-neutral-amt{text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-2);flex-shrink:0}
+.inv-kinds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-bottom:10px}
+.inv-kinds button{font:inherit;font-size:12px;padding:8px 0;border-radius:18px;border:1px solid var(--border-2);background:var(--card);color:var(--text-2);cursor:pointer;min-height:36px}
+.inv-kinds button[aria-checked="true"]{border:2px solid var(--blue);color:var(--blue);font-weight:600;background:var(--accent-tint, var(--surface-2))}
+.pn .pn-body{padding:0 16px 20px;display:flex;flex-direction:column;gap:12px}
+.rc-sec{border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--card)}
+.rc-lbl{font-size:13px;font-weight:600}
+.rc-amt{display:flex;align-items:center;gap:8px;height:52px;border:1px solid var(--border-strong,var(--border));border-radius:8px;padding:0 12px}
+.rc-amt span{color:var(--text-2)}.rc-amt input{flex:1;min-width:0;border:none;outline:none;background:transparent;font:inherit;font-size:22px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
+.rc-sum{display:flex;flex-direction:column;gap:6px;font-size:13px;font-variant-numeric:tabular-nums}.rc-sum>div{display:flex;justify-content:space-between}.rc-sum span{color:var(--text-2)}
+.rc-diff{border-top:1px solid var(--border);padding-top:6px;color:#B45309}.rc-diff.ok{color:var(--green)}
+.rc-list{padding:0;gap:0;overflow:hidden}.rc-h{display:flex;align-items:center;gap:8px;font-size:14px}.rc-list .rc-h{padding:12px 12px 6px}
+.rc-hint{font-size:12px;color:var(--text-2);padding:0 12px 8px}
+.rc-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--border);font-size:13px}
+.rc-d{width:40px;color:var(--text-3);font-size:12px;font-variant-numeric:tabular-nums}.rc-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rc-a{font-weight:600;font-variant-numeric:tabular-nums}
+.rc-tg{height:36px;min-width:56px;padding:0 10px;border-radius:18px;border:1px solid var(--border);background:var(--card);font:inherit;font-size:12px;color:var(--text)}
+.rc-tg.next{border:2px solid #2563EB;background:#F5F8FF;color:#1E40AF;font-weight:600}
+.rc-more{width:100%;height:44px;border:none;border-top:1px solid var(--border);background:transparent;font:inherit;font-size:13px;color:#2563EB}
+.rc-empty{padding:8px 12px 12px;font-size:12px;color:var(--text-3)}
+.rc-warn{background:#FFFBEB;border-color:#FCD34D;font-size:12px;line-height:1.6}.rc-warn b{font-size:14px}
+.rc-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rc-done{height:48px}
+.cc-stm{margin:0 18px 12px;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cc-stm-row{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:13px;font-variant-numeric:tabular-nums}.cc-stm-row+.cc-stm-row{border-top:1px solid var(--border)}
+.cc-stm-row>span:first-child{flex:1;display:flex;flex-direction:column;gap:2px}.cc-stm-row small{font-size:11px;color:var(--text-3)}.cc-stm-gap{width:64px}
+.cc-stm-near{padding:8px 12px;font-size:12px;color:#B45309;background:#FFFBEB;border-top:1px solid var(--border)}
+.qa-inst{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.qa-inst-n{display:flex;align-items:center;gap:6px;font-size:13px}.qa-inst-n input{width:64px;height:40px;border:1px solid var(--border);border-radius:8px;text-align:right;padding:0 8px;font:inherit;background:var(--card);color:var(--text)}.qa-inst-n small{color:var(--text-3)}
+.modal-check{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;margin:4px 0 8px}.modal-check input{width:20px;height:20px;accent-color:var(--accent,#2563EB)}
+.inv-row{margin-top:8px}
+.inv-tk input[data-iv="ticker"]{font-weight:700;font-size:16px}
+.inv-sum{margin-top:10px;border-radius:8px;background:var(--surface-2);padding:10px 12px;display:flex;flex-direction:column;gap:6px;font-size:12px}
+.inv-sum>div{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.inv-sum span{color:var(--text-3)}
+.inv-sum b{font-variant-numeric:tabular-nums;color:var(--text-1);text-align:right}
+.inv-sum select{max-width:62%;font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--border-2);border-radius:6px;background:var(--card);color:var(--text-1)}
 .tf-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:6px}
 .tf .qa-amt{flex:none;width:100%;box-sizing:border-box}
 .tf-bal{font-size:11px;color:var(--text-3);margin-top:4px;font-variant-numeric:tabular-nums;min-height:14px}
@@ -2766,7 +2799,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       </div>
     </div>
     <div class="modal-field">
-      <label>截止日期（到期後自動標記結束）</label>
+      <label>最後一期（過了就顯示已結束）</label>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
         <input type="number" id="recTransferEndYear" placeholder="年" min="2020" max="2099">
         <input type="number" id="recTransferEndMonth" placeholder="月 1-12" min="1" max="12">
@@ -2857,7 +2890,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <div class="modal-field">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0">
           <input type="checkbox" id="dcaScheduleEndEnabled" style="margin:0;cursor:pointer">
-          設定截止日期
+          設定最後一期
         </label>
         <div id="dcaScheduleEndDateFields" class="ymd3" style="display:none;margin-top:8px">
           <input type="number" id="dcaScheduleEndYear" placeholder="年" min="2020" max="2099" aria-label="年">
@@ -2911,6 +2944,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <label>目前待繳金額</label>
       <input type="number" id="ccBalance" inputmode="decimal" placeholder="0" min="0" step="1" value="0">
     </div>
+    <label class="modal-check"><input type="checkbox" id="ccAutoPay"> 每月自動扣繳全額 <button type="button" class="ii" data-tip="繳款日當天，PFCC 會從繳款帳戶記一筆這期帳單的金額。對過帳就用帳單金額，沒對過就用 PFCC 記到的這期合計。" aria-label="說明">i</button></label>
     <input type="hidden" id="ccEditId">
     <div class="modal-actions" style="justify-content:space-between">
       <button class="btn btn-ghost" id="ccModalDelete" style="color:var(--red);display:none">刪除信用卡</button>
@@ -3041,6 +3075,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
         <select id="depositMaturityAccount"><option value="">── 不指定 ──</option></select>
       </div>
     </div>
+    <label class="modal-check"><input type="checkbox" id="depositAutoRenew" checked> 到期自動續存（本金加利息） <button type="button" class="ii" data-tip="到期那天，PFCC 會把本金加上利息再存一期（同樣長度），利息記成一筆收入，首頁會提醒你對一下實際利息。" aria-label="說明">i</button></label>
     <div class="modal-field" id="depositSourceAccountRow">
       <label>扣款帳戶 <button type="button" class="ii" data-tip="選擇後，本金會從該帳戶餘額扣除，並記錄為資產移轉（顯示在「移轉記錄」，不計入支出）。若這筆定存本來就沒有對應的現金帳戶（例如補登舊資料），請留空。" aria-label="說明">i</button></label>
       <select id="depositSourceAccount"><option value="">── 不指定（不異動任何帳戶）──</option></select>
@@ -3375,6 +3410,7 @@ import {
   calcMonthlyPlan, calcRecurringMonthlyEquivalent, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcAvgLivingSpend, calcRunway, calcAnnualSpend, calcRecentSpend, calcPassiveIncome, passiveCategoryIds, DEFAULT_PASSIVE_CATEGORIES, calcBufferBase, calcStorageChecks, estimateTransferFees, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
   addMonthsISO, limitedIncomeSchedule, calcMonthDue, simulateRunway, isSpendJar, jarOfCategory, calcJarBudgets, isLivingExpense,
+  localISODate, TW_HOLIDAYS_FALLBACK, isBusinessDay, addBusinessDays, nextBusinessDay, settleDateFor, twFee, estimateShares, calcPositionFromTrades, ccPayYmOfDate, ccStatementOf, ccCurrentPeriods, ccCloseDateFor, ccPeriodOfTxn
 } from './calc.js';
 
 let db, state = {}, currentView = 'assets';
@@ -4091,7 +4127,7 @@ async function migrateV230(force = false) {
   for (const step of MIGRATIONS_V230) await step();
   await setSetting(db, 'mig_v230', true);
 }
-const MIGRATIONS_V230 = [migrateCategoriesV230];
+const MIGRATIONS_V230 = [migrateCategoriesV230, migrateTradesV230];
 
 // v2.30.0 類別樹（使用者 2026-11-11 勾選確認）。舊類別合併時，所有引用它的紀錄
 // 一起搬過去：支出／收入紀錄、固定支出與分期的分類、預算、固定次數收入設定。
@@ -4251,7 +4287,11 @@ async function init() {
     // v2.3.0（使用者要求）：第二個選項從「記帳管理」改成「收支紀錄」
     // （calendar）。舊版存過 'txnmanage' 的使用者一律視為新的「收支紀錄」。
     // v2.24.0：先把今天以前到期的排程自動記帳，再畫第一頁
+    await loadTwHolidays().catch(e => console.warn('[holidays]', e));
+    await applyPendingTrades().catch(e => console.warn('[pending trades]', e));
     await runAutoConfirm().catch(e => console.warn('[auto confirm]', e));
+    await runDepositRollover().catch(e => console.warn('[deposit rollover]', e));
+    await runCardAutoPay().catch(e => console.warn('[card autopay]', e));
     const homeView = await getSetting(db, 'home_view', 'assets').catch(() => 'assets');
     _navHome = (homeView === 'calendar' || homeView === 'txnmanage') ? 'calendar' : 'assets';
     await navigate(_navHome);
@@ -4260,7 +4300,11 @@ async function init() {
     document.addEventListener('visibilitychange', async () => {
       if (document.visibilityState !== 'visible' || isoDate(new Date()) === _autoDay) return;
       _autoDay = isoDate(new Date());
-      if (await runAutoConfirm().catch(() => 0)) await navigate(currentView);
+      const a = await applyPendingTrades().catch(() => 0);
+      const b = await runAutoConfirm().catch(() => 0);
+      const c = await runDepositRollover().catch(() => 0);
+      const d = await runCardAutoPay().catch(() => 0);
+      if (a || b || c || d) await navigate(currentView);
     });
   }
   // 2026-09-24：頁面（重新）載入時視為使用者主動開啟，強制抓最新匯率，
@@ -4927,9 +4971,15 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
     <div class="qa-label">類別</div>
     <div data-catpick></div>
     ${trip ? `<button type="button" class="qa-trip" role="switch" aria-checked="true" data-qa-trip><span class="qa-trip-box" aria-hidden="true"></span><span>算進旅行「${escHtml(trip.name)}」</span></button>` : ''}
-    ${efB ? `<button type="button" class="qa-trip" role="switch" aria-checked="false" data-qa-temp><span class="qa-trip-box" aria-hidden="true"></span><span>臨時支出，從${escHtml(efB.name)}付</span></button>` : ''}`;
+    ${efB ? `<button type="button" class="qa-trip" role="switch" aria-checked="false" data-qa-temp><span class="qa-trip-box" aria-hidden="true"></span><span>臨時支出，從${escHtml(efB.name)}付</span></button>` : ''}
+    ${cards.length ? `<div class="qa-inst"><button type="button" class="qa-trip" role="switch" aria-checked="false" data-qa-inst><span class="qa-trip-box" aria-hidden="true"></span><span>刷卡分期</span></button><label class="qa-inst-n" hidden>分 <input type="number" inputmode="numeric" min="2" max="60" step="1" value="6" aria-label="期數"> 期<small></small></label></div>` : ''}`;
 
   const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc');
+  let instOn = false;
+  const instBox = box.querySelector('.qa-inst-n'), instIn = instBox?.querySelector('input');
+  const instHint = () => { if (!instBox) return; const a = parseFloat(amtIn.value), n = parseInt(instIn.value); instBox.querySelector('small').textContent = a > 0 && n >= 2 ? `・每期約 NT$ ${fmt(Math.ceil(a / n))}` : ''; };
+  box.querySelector('[data-qa-inst]')?.addEventListener('click', e => { instOn = !instOn; e.currentTarget.setAttribute('aria-checked', instOn); instBox.hidden = !instOn; instHint(); });
+  amtIn.addEventListener('input', instHint); instIn?.addEventListener('input', instHint);
   const pay = buildPayPair(payOptions, payUse, payV, '付款');
   box.querySelector('[data-paypair]').replaceWith(pay.node);
   async function quickSave(category, amount, description) {
@@ -4941,6 +4991,21 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
       const pick = await askEfAccountUse(o.accId, amount);
       if (!pick) return;
       bucketId = pick.bucketId;
+    }
+    if (instOn) {
+      const n = parseInt(instIn.value);
+      if (o?.payType !== 'cc') { showToast('分期要選信用卡付款', { error: true }); return; }
+      if (!(n >= 2)) { instIn.focus(); showToast('請輸入期數（2 期以上）', { error: true }); return; }
+      const per = Math.ceil(amount / n), first = amount - per * (n - 1);
+      const instId = crypto.randomUUID(), ym = today.slice(0, 7);
+      await putOne(db, 'installments', { id: instId, name: description || catPath(category), total_amount: amount, total_periods: n, per_amount: per,
+        paid_periods: 1, last_paid_ym: ym, start_date: today, due_day: Number(today.slice(8)), pay_type: 'cc', account_id: null, cc_id: o.ccId,
+        spend_category: category, is_insurance: false, note: '', created_at: new Date().toISOString() });
+      const r1 = await saveExpenseRecord({ date: today, category, description: `${description || catPath(category)}（分期 1／${n}）`, amount: first,
+        payType: 'cc', accId: null, ccId: o.ccId, bucketId, projectId, affects: true, extraFields: { inst_id: instId, inst_occ_ym: ym } });
+      if (!r1.ok) { showToast(r1.error, { error: true }); return; }
+      showToast(`✓ 已記分期 ${n} 期，這期 NT$ ${fmt(first)}，之後每期 NT$ ${fmt(per)}`);
+      onDone?.(); await renderAssets(); return;
     }
     const res = await saveExpenseRecord({ date: today, category, description: description || '', amount,
       payType: o?.payType ?? null, accId: o?.accId ?? null, ccId: o?.ccId ?? null,
@@ -5247,6 +5312,607 @@ function openTransferEdit(log) {
   closeQuickSheet();
   _qaKind = 'transfer';
   openQuickSheet({ editTransfer: log });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// 投資交易（v2.30.0，第 2、3、6 項）
+// ════════════════════════════════════════════════════════════════════════════
+// 每一筆買進／賣出／配股／分割都是一筆 stock_trades，持股（holdings）的股數與平均成本
+// 由交易紀錄算出（台股平均成本、美股先進先出，跟券商 App 一致）。
+//  ・買進輸入「支出金額」（實際扣款、含手續費），成交價自動算。
+//  ・台股 T+2 交割（跳過週末與休市日），交割日前顯示「待交割」、可自由運用先扣；
+//    美股（複委託）下單就圈存，交易日當天扣。
+//  ・定期定額自動記一筆估算的買進（台股股數無條件捨去、美股 5 位小數），首頁提醒確認成交股數。
+//  ・股利記成收入（被動、一次性），入帳淨額；不影響平均成本。
+let _twHolidays = new Set();
+async function loadTwHolidays() {
+  const y = new Date().getFullYear();
+  const all = new Set();
+  for (const year of [y - 1, y, y + 1]) {
+    let list = await getSetting(db, `tw_holidays_${year}`, null).catch(() => null);
+    if (!list && year >= y && navigator.onLine !== false) {
+      try {
+        const r = await fetch(`/api/holidays?year=${year}`, { signal: AbortSignal.timeout(6000) });
+        if (r.ok) { const j = await r.json(); if (Array.isArray(j.closed) && j.closed.length) { list = j.closed; await setSetting(db, `tw_holidays_${year}`, list).catch(() => {}); } }
+      } catch (_) {}
+    }
+    (list || TW_HOLIDAYS_FALLBACK[year] || []).forEach(d => all.add(d));
+  }
+  _twHolidays = all;
+}
+const costMethodOf = market => market === 'TW' ? 'avg' : 'fifo';
+function fmtShares(v) { const n = Number(v) || 0; return Number.isInteger(n) ? fmt(n) : n.toLocaleString('en-US', { maximumFractionDigits: 5 }); }
+function fmtMoneyCur(v, cur) { return (cur || 'TWD') === 'TWD' ? 'NT$ ' + fmt(v) : fmtCurrency(v, cur); }
+function guessMarket(ticker) { return /^\d/.test(String(ticker || '')) ? 'TW' : 'US'; }
+// 券商的交割帳戶：帳戶設了這家券商、幣別相同的優先
+function settleAccountFor(brokerageId, currency) {
+  const accs = state.accounts || [];
+  return accs.find(a => a.brokerage_id === brokerageId && (a.currency || 'TWD') === currency)
+    || accs.find(a => a.brokerage_id === brokerageId)
+    || accs.find(a => (a.currency || 'TWD') === currency && /交割/.test(a.name || ''))
+    || null;
+}
+// 同一個交易裡：依交易紀錄重算一檔持股，並更新每筆賣出的已實現損益（含連動的收入紀錄）
+async function syncHoldingInTx(tx, holdingId) {
+  const h = await tx.get('holdings', holdingId); if (!h) return null;
+  const trades = await tx.byIndex('stock_trades', 'holding_key', holdingId);
+  const pos = calcPositionFromTrades(trades, costMethodOf(h.market));
+  const next = { ...h, shares: pos.shares, cost_basis: pos.avgCost != null ? +pos.avgCost.toFixed(6) : (trades.length ? null : h.cost_basis ?? null) };
+  await tx.put('holdings', next);
+  for (const t of trades) {
+    if (t.kind !== 'sell' || pos.realized[t.id] == null) continue;
+    const r = pos.realized[t.id];
+    if (t.realized !== r) await tx.put('stock_trades', { ...t, realized: r });
+    if (t.income_txn_id) { const inc = await tx.get('income_txns', t.income_txn_id); if (inc && inc.amount !== r) await tx.put('income_txns', { ...inc, amount: r }); }
+  }
+  return next;
+}
+function tradeAccountDelta(t) {
+  if (!t.account_id || t.paid_with === 'points') return 0;
+  if (t.kind === 'buy') return -(Number(t.total_cost) || 0);
+  if (t.kind === 'sell') return +(Number(t.proceeds) || 0);
+  return 0;
+}
+async function recordStockTrade(input) {
+  const { editId = null, kind, holdingId = null, brokerageId, ticker, name = '', market = null, currency = null,
+    date, settleDate = null, shares = 0, totalCost = null, fee = 0, tax = 0, proceeds = null, ratio = null,
+    accountId = null, estimated = false, dca = null, paidWith = 'account', note = '' } = input;
+  if (!date) throw new Error('請選擇日期');
+  if (!ticker) throw new Error('請輸入標的');
+  if (['buy', 'sell', 'stock_dividend', 'opening'].includes(kind) && !(shares > 0)) throw new Error('請輸入股數');
+  if (kind === 'buy' && !(totalCost > 0) && paidWith !== 'points') throw new Error('請輸入支出金額');
+  if (kind === 'sell' && !(proceeds > 0)) throw new Error('請輸入實收金額');
+  if (kind === 'split' && !(ratio > 0)) throw new Error('請輸入分割比例');
+  const mk = market || guessMarket(ticker), cur = currency || (mk === 'TW' ? 'TWD' : 'USD');
+  const today = isoDate(new Date());
+  const fxRates = await getFxRates(db).catch(() => ({}));
+  return atomic(db, ['stock_trades', 'holdings', 'accounts', 'income_txns', 'dca_schedules'], async (tx) => {
+    const now = new Date().toISOString();
+    const old = editId ? await tx.get('stock_trades', editId) : null;
+    const accs = {};
+    const bump = async (id, d) => { if (!id || !d) return; const a = accs[id] ?? await tx.get('accounts', id); if (!a) throw new Error('找不到扣款帳戶'); accs[id] = { ...a, balance: +((a.balance || 0) + d).toFixed(6), updated_at: now }; };
+    if (old?.balance_applied) await bump(old.account_id, -tradeAccountDelta(old));
+    // 找持股（同券商同代號），沒有就建
+    let h = holdingId ? await tx.get('holdings', holdingId) : null;
+    if (!h) {
+      const all = await tx.getAll('holdings');
+      h = all.find(x => x.brokerage_id === brokerageId && String(x.ticker).toUpperCase() === String(ticker).toUpperCase()) || null;
+    }
+    if (!h) {
+      if (kind === 'sell') throw new Error('這家券商沒有這檔持股');
+      h = { id: crypto.randomUUID(), brokerage_id: brokerageId, ticker: String(ticker).toUpperCase(), name: name || String(ticker).toUpperCase(),
+        market: mk, asset_type: 'stock', currency: cur, shares: 0, manual_price: null, cost_basis: null, created_at: now };
+      await tx.put('holdings', h);
+    }
+    if (kind === 'sell') {
+      const others = (await tx.byIndex('stock_trades', 'holding_key', h.id)).filter(t => t.id !== editId && t.date <= date);
+      const pos = calcPositionFromTrades(others, costMethodOf(h.market));
+      if (shares > pos.shares + 1e-9) throw new Error(`股數超過持有的 ${fmtShares(pos.shares)} 股`);
+    }
+    const sd = settleDate || (['buy', 'sell'].includes(kind) ? settleDateFor(h.market, date, _twHolidays) : date);
+    const t = { ...(old || {}), id: editId || crypto.randomUUID(), kind, holding_id: h.id, holding_key: h.id, brokerage_id: h.brokerage_id,
+      ticker: h.ticker, name: h.name, market: h.market, currency: h.currency || cur, date, settle_date: sd,
+      shares: ['buy', 'sell', 'stock_dividend', 'opening'].includes(kind) ? +shares : null,
+      total_cost: kind === 'buy' || kind === 'opening' ? (totalCost != null ? +totalCost : null) : null,
+      fee: +fee || 0, tax: +tax || 0, proceeds: kind === 'sell' ? +proceeds : null, ratio: kind === 'split' ? +ratio : null,
+      price: kind === 'buy' && shares > 0 && totalCost > 0 ? +((totalCost - (+fee || 0)) / shares).toFixed(4)
+           : kind === 'sell' && shares > 0 ? +((proceeds + (+fee || 0) + (+tax || 0)) / shares).toFixed(4) : (old?.price ?? null),
+      account_id: ['buy', 'sell'].includes(kind) && paidWith !== 'points' ? accountId : null,
+      paid_with: paidWith, points_used: paidWith === 'points' ? (+totalCost || 0) : null,
+      estimated: !!estimated, note, created_at: old?.created_at || now, updated_at: now };
+    if (dca && !old) { t.dca_schedule_id = dca.scheduleId; t.dca_occ_date = dca.occ; }
+    // 交割日到了才動帳戶；還沒到的是「待交割」
+    const delta = tradeAccountDelta(t);
+    t.balance_applied = !!(delta && sd <= today);
+    t.pending_settle = !!(delta && sd > today);
+    if (t.balance_applied) await bump(t.account_id, delta);
+    // 賣出：已實現損益記成一筆收入（一次性、不動帳戶，帳戶由交易本身處理）
+    if (kind === 'sell') {
+      const incId = old?.income_txn_id || crypto.randomUUID();
+      const prev = await tx.get('income_txns', incId);
+      await tx.put('income_txns', { ...(prev || {}), id: incId, date: sd <= today ? date : date, category: 'cat_realized', description: `${h.ticker} 賣出損益`,
+        amount: prev?.amount ?? 0, account_id: t.account_id, note: '', currency: t.currency, fx_rate_twd: t.currency === 'TWD' ? 1 : toTWD(1, t.currency, fxRates),
+        affects_balance: false, defer_balance_effect: false, irregular: true, trade_id: t.id, created_at: prev?.created_at || now });
+      t.income_txn_id = incId;
+    }
+    // 定期定額：標記這一期已處理（刪除這筆交易時改回）
+    if (t.dca_schedule_id && !old) {
+      const sch = await tx.get('dca_schedules', t.dca_schedule_id);
+      if (sch) { t.dca_prev_confirmed_date = sch.last_confirmed_date || null; if ((sch.last_confirmed_date || '') < t.dca_occ_date) await tx.put('dca_schedules', { ...sch, last_confirmed_date: t.dca_occ_date }); }
+    }
+    for (const a of Object.values(accs)) await tx.put('accounts', a);
+    await tx.put('stock_trades', t);
+    if (old && old.holding_id !== h.id) await syncHoldingInTx(tx, old.holding_id);
+    await syncHoldingInTx(tx, h.id);
+    return t;
+  });
+}
+async function deleteStockTrade(id) {
+  return atomic(db, ['stock_trades', 'holdings', 'accounts', 'income_txns', 'dca_schedules'], async (tx) => {
+    const t = await tx.get('stock_trades', id); if (!t) return;
+    if (t.balance_applied && t.account_id) {
+      const a = await tx.get('accounts', t.account_id);
+      if (a) await tx.put('accounts', { ...a, balance: +((a.balance || 0) - tradeAccountDelta(t)).toFixed(6), updated_at: new Date().toISOString() });
+    }
+    if (t.income_txn_id) await tx.del('income_txns', t.income_txn_id);
+    if (t.dca_schedule_id) {
+      const sch = await tx.get('dca_schedules', t.dca_schedule_id);
+      if (sch && sch.last_confirmed_date === t.dca_occ_date) await tx.put('dca_schedules', { ...sch, last_confirmed_date: t.dca_prev_confirmed_date || null });
+    }
+    await tx.del('stock_trades', id);
+    await syncHoldingInTx(tx, t.holding_id);
+  });
+}
+// 交割日到了的待交割交易，補動帳戶（啟動與跨日回到前景時）
+async function applyPendingTrades() {
+  const today = isoDate(new Date());
+  const due = (await getAll(db, 'stock_trades').catch(() => [])).filter(t => t.pending_settle && !t.balance_applied && t.settle_date <= today);
+  if (!due.length) return 0;
+  await atomic(db, ['stock_trades', 'accounts'], async (tx) => {
+    const now = new Date().toISOString();
+    for (const t of due) {
+      const d = tradeAccountDelta(t);
+      if (d && t.account_id) { const a = await tx.get('accounts', t.account_id); if (a) await tx.put('accounts', { ...a, balance: +((a.balance || 0) + d).toFixed(6), updated_at: now }); }
+      await tx.put('stock_trades', { ...t, balance_applied: true, pending_settle: false });
+    }
+  });
+  return due.length;
+}
+// 待交割的買進（台幣）：可自由運用要先扣
+async function pendingSettleTwd() {
+  const fx = state.fxRates || {};
+  return (await getAll(db, 'stock_trades').catch(() => [])).filter(t => t.pending_settle && !t.balance_applied)
+    .reduce((s, t) => s - toTWD(tradeAccountDelta(t), t.currency || 'TWD', fx), 0);
+}
+// v2.30.0 遷移：現有持股各轉成一筆「期初」，不補歷史；舊的定期定額收入紀錄標記為已轉換（不再顯示）
+async function migrateTradesV230() {
+  const [holdings, trades, inc] = await Promise.all(['holdings', 'stock_trades', 'income_txns'].map(n => getAll(db, n)));
+  const has = new Set(trades.map(t => t.holding_id));
+  const today = isoDate(new Date()), now = new Date().toISOString();
+  await atomic(db, ['stock_trades', 'income_txns'], async (tx) => {
+    for (const h of holdings) {
+      if (has.has(h.id) || !(Number(h.shares) > 0)) continue;
+      const cb = h.cost_basis != null && h.cost_basis !== '' ? Number(h.cost_basis) : null;
+      await tx.put('stock_trades', { id: crypto.randomUUID(), kind: 'opening', holding_id: h.id, holding_key: h.id, brokerage_id: h.brokerage_id,
+        ticker: h.ticker, name: h.name, market: h.market, currency: h.currency || 'TWD', date: today, settle_date: today,
+        shares: Number(h.shares), total_cost: cb != null ? +(cb * Number(h.shares)).toFixed(6) : null, price: cb, fee: 0, tax: 0,
+        account_id: null, balance_applied: false, pending_settle: false, created_at: now, note: '期初（v2.30.0 由持股轉換）' });
+    }
+    for (const t of inc) if (t.dca_schedule_id && !t.migrated_to_trade) await tx.put('income_txns', { ...t, migrated_to_trade: true });
+  });
+}
+
+// 定期定額這一期：記一筆估算的買進（取代舊版的「定期定額」收入紀錄）
+async function commitDcaPeriod(item, occ, amt, shares, recordDate = occ) {
+  const fresh = await getOne(db, 'dca_schedules', item.id);
+  if (fresh && fresh.last_confirmed_date && fresh.last_confirmed_date >= occ) return { ok: true, dup: true };
+  const h = (state.holdings || []).find(x => x.id === item.holding_id);
+  if (!h) return { ok: false, error: '找不到這個定期定額的持股，請編輯排程' };
+  const points = item.pay_with === 'points';
+  const priceRec = await getOne(db, 'market_prices', h.ticker).catch(() => null);
+  const price = Number(h.manual_price) || Number(priceRec?.price) || null;
+  const fee = h.market === 'TW' ? (points ? 0 : 1) : +(amt * 0.002).toFixed(2);
+  const est = shares == null;
+  const sh = est ? estimateShares({ amount: amt, price, fee, market: h.market }) : shares;
+  if (!(sh > 0)) return { ok: false, error: '還沒有股價可以估算股數，請手動輸入成交股數' };
+  try {
+    await recordStockTrade({ kind: 'buy', holdingId: h.id, brokerageId: h.brokerage_id, ticker: h.ticker, date: recordDate,
+      settleDate: recordDate, shares: sh, totalCost: amt, fee, accountId: points ? null : (item.account_id || null),
+      estimated: est, dca: { scheduleId: item.id, occ }, paidWith: points ? 'points' : 'account' });
+    return { ok: true };
+  } catch (e) { return { ok: false, error: e?.message || String(e) }; }
+}
+
+// ＋記帳 › 投資：買進｜賣出｜股利（更多：配股、分割）
+async function buildQuickInvest({ date = null, onDone = null, edit = null, prefill = null } = {}) {
+  const realToday = isoDate(new Date());
+  const holdings = state.holdings || [], brokers = state.brokerages || [];
+  let kind = edit?.kind || prefill?.kind || 'buy';
+  const h0 = edit ? holdings.find(h => h.id === edit.holding_id) : prefill?.holdingId ? holdings.find(h => h.id === prefill.holdingId) : null;
+  const box = el('div'); box.className = 'card qa tf inv';
+  const kinds = [['buy', '買進'], ['sell', '賣出'], ['dividend', '股利'], ['stock_dividend', '配股'], ['split', '分割']];
+  box.innerHTML = `
+    <div class="inv-kinds" role="radiogroup" aria-label="交易種類">${kinds.map(([k, l]) => `<button type="button" role="radio" data-k="${k}">${l}</button>`).join('')}</div>
+    <div class="tf-pair inv-tk">
+      <label class="tf-field"><span>標的</span><input type="text" data-iv="ticker" list="invTickers" autocapitalize="characters" placeholder="代號" value="${escHtml(edit?.ticker || h0?.ticker || '')}"></label>
+      <label class="tf-field"><span>名稱</span><input type="text" data-iv="name" value="${escHtml(edit?.name || h0?.name || '')}"></label>
+    </div>
+    <datalist id="invTickers">${[...new Map(holdings.map(h => [h.ticker, h])).values()].map(h => `<option value="${escHtml(h.ticker)}">${escHtml(h.name || '')}</option>`).join('')}</datalist>
+    <label class="tf-field inv-row"><span>券商</span><select data-iv="broker">${brokers.map(b => `<option value="${b.id}">${escHtml(b.name)}${b.market_label ? '・' + escHtml(b.market_label) : ''}</option>`).join('')}</select></label>
+    <div class="tf-pair inv-row">
+      <label class="tf-field"><span data-iv-lab="date">交易日</span><input type="date" data-iv="date" value="${edit?.date || date || realToday}"></label>
+      <label class="tf-field" data-show="buy sell"><span>交割日 ${infoTip('台股 T+2：交易日後第 2 個營業日，自動跳過週末與證交所休市日；颱風假等臨時休市可以自己改。美股（複委託）下單就圈存，交易日當天扣款。')}</span><input type="date" data-iv="settle" class="is-calc"></label>
+    </div>
+    <div class="tf-pair inv-row" data-show="buy sell stock_dividend">
+      <label class="tf-field"><span>股數</span><input type="number" inputmode="decimal" min="0" step="any" data-iv="shares" value="${edit?.shares ?? ''}"></label>
+      <label class="tf-field" data-show="buy sell"><span>手續費</span><input type="number" inputmode="decimal" min="0" step="any" data-iv="fee" value="${edit?.fee ?? ''}"></label>
+    </div>
+    <label class="tf-field inv-row" data-show="sell"><span>交易稅</span><input type="number" inputmode="decimal" min="0" step="any" data-iv="tax" value="${edit?.tax ?? ''}"></label>
+    <label class="tf-field inv-row" data-show="split"><span>分割比例（1 股變成幾股）</span><input type="number" inputmode="decimal" min="0" step="any" data-iv="ratio" value="${edit?.ratio ?? ''}"></label>
+    <div class="qa-label" data-show="buy sell dividend" data-iv-lab="amt">支出金額（實際扣款，含手續費）</div>
+    <label class="qa-amt tf-amt" data-show="buy sell dividend"><span data-iv-cur>NT$</span><input type="number" inputmode="decimal" min="0" step="any" data-iv="amt" value="${edit ? (edit.kind === 'sell' ? edit.proceeds : edit.total_cost) ?? '' : ''}"></label>
+    <div class="inv-sum" data-show="buy sell dividend">
+      <div data-show="buy sell"><span>成交價</span><b data-iv-out="price">—</b></div>
+      <div><span data-iv-lab="acc">扣款帳戶</span><select data-iv="acc"></select></div>
+      <div data-show="buy sell"><span>扣款時間</span><b data-iv-out="when">—</b></div>
+    </div>
+    <button type="button" class="btn btn-primary tf-save">${edit ? '儲存修改' : '儲存'}</button>`;
+  const q = k => box.querySelector(`[data-iv="${k}"]`);
+  if (h0) q('broker').value = h0.brokerage_id; else if (edit) q('broker').value = edit.brokerage_id;
+  let feeTouched = !!edit, settleTouched = !!edit;
+  if (edit) q('settle').value = edit.settle_date || '';
+  const holdingNow = () => holdings.find(h => h.brokerage_id === q('broker').value && String(h.ticker).toUpperCase() === q('ticker').value.trim().toUpperCase());
+  const curNow = () => holdingNow()?.currency || ((brokers.find(b => b.id === q('broker').value)?.market === 'US' || guessMarket(q('ticker').value) === 'US') ? 'USD' : 'TWD');
+  const marketNow = () => holdingNow()?.market || (curNow() === 'TWD' ? 'TW' : 'US');
+  const fillAcc = () => {
+    const cur = curNow(), cur0 = q('acc').value;
+    const list = (state.accounts || []).filter(a => (a.currency || 'TWD') === cur);
+    const def = settleAccountFor(q('broker').value, cur);
+    q('acc').innerHTML = list.map(a => `<option value="${a.id}">${escHtml(accLabel(a))}</option>`).join('');
+    q('acc').value = edit?.account_id && list.some(a => a.id === edit.account_id) ? edit.account_id : (list.some(a => a.id === cur0) ? cur0 : (def?.id || list[0]?.id || ''));
+  };
+  const recalc = () => {
+    const cur = curNow(), mk = marketNow();
+    box.querySelector('[data-iv-cur]').textContent = cur === 'TWD' ? 'NT$' : cur;
+    if (!settleTouched && q('date').value) q('settle').value = settleDateFor(mk, q('date').value, _twHolidays);
+    const sh = parseFloat(q('shares').value), amt = parseFloat(q('amt').value);
+    if (!feeTouched && (kind === 'buy' || kind === 'sell') && sh > 0 && amt > 0) {
+      q('fee').value = mk === 'TW' ? twFee(amt) : +(amt * 0.005).toFixed(2);
+      if (kind === 'sell' && mk === 'TW' && !q('tax').value) { const h = holdingNow(); q('tax').value = Math.floor(amt * (h?.asset_type === 'etf' || /^00/.test(q('ticker').value) ? 0.001 : 0.003)); }
+    }
+    const fee = parseFloat(q('fee').value) || 0, tax = parseFloat(q('tax').value) || 0;
+    const price = sh > 0 && amt > 0 ? (kind === 'buy' ? (amt - fee) / sh : (amt + fee + tax) / sh) : null;
+    box.querySelector('[data-iv-out="price"]').textContent = price ? (cur === 'TWD' ? price.toFixed(2) : price.toFixed(4)) : '—';
+    const sd = q('settle').value;
+    box.querySelector('[data-iv-out="when"]').textContent = !sd ? '—' : sd > realToday ? `${fmtDate(sd)} 交割，之前顯示「待交割」` : `${fmtDate(sd)}（已交割）`;
+  };
+  const setKind = k => {
+    kind = k;
+    box.querySelectorAll('.inv-kinds button').forEach(b => b.setAttribute('aria-checked', b.dataset.k === k ? 'true' : 'false'));
+    box.querySelectorAll('[data-show]').forEach(n => { n.hidden = !n.dataset.show.split(' ').includes(k); });
+    box.querySelector('[data-iv-lab="amt"]').textContent = k === 'sell' ? '實收金額（扣掉手續費和交易稅）' : k === 'dividend' ? '入帳金額（實際入帳的淨額）' : '支出金額（實際扣款，含手續費）';
+    box.querySelector('[data-iv-lab="acc"]').textContent = k === 'buy' ? '扣款帳戶' : '入帳帳戶';
+    box.querySelector('[data-iv-lab="date"]').textContent = k === 'dividend' ? '入帳日' : k === 'buy' || k === 'sell' ? '交易日' : '日期';
+    fillAcc(); recalc();
+  };
+  box.querySelectorAll('.inv-kinds button').forEach(b => b.addEventListener('click', () => { if (!edit) setKind(b.dataset.k); }));
+  q('ticker').addEventListener('change', () => { const h = holdings.find(x => String(x.ticker).toUpperCase() === q('ticker').value.trim().toUpperCase()); if (h) { if (!q('name').value) q('name').value = h.name || ''; if (!holdingNow()) q('broker').value = h.brokerage_id; } fillAcc(); recalc(); });
+  q('broker').addEventListener('change', () => { fillAcc(); recalc(); });
+  ['shares', 'amt', 'tax'].forEach(k => q(k).addEventListener('input', recalc));
+  q('fee').addEventListener('input', () => { feeTouched = true; recalc(); });
+  q('date').addEventListener('change', recalc);
+  q('settle').addEventListener('change', () => { settleTouched = true; recalc(); });
+  setKind(kind);
+  box.querySelector('.tf-save').addEventListener('click', async () => {
+    const ticker = q('ticker').value.trim().toUpperCase();
+    try {
+      if (kind === 'dividend') {
+        const cur = curNow(); const h = holdingNow();
+        const res = await saveIncomeRecord({ date: q('date').value, category: cur === 'TWD' ? 'cat_div_tw' : 'cat_div_us', description: `${ticker} 股利`,
+          amount: parseFloat(q('amt').value) || 0, accId: q('acc').value || null, note: '', affects: true, irregular: true });
+        if (!res?.ok) throw new Error(res?.error || '儲存失敗');
+        if (h && res.txn?.id) { const r = await getOne(db, 'income_txns', res.txn.id).catch(() => null); if (r) await putOne(db, 'income_txns', { ...r, div_holding_id: h.id }); }
+      } else {
+        const amt = parseFloat(q('amt').value);
+        const holdingsForSplit = kind === 'split' ? holdings.filter(h => String(h.ticker).toUpperCase() === ticker) : [];
+        if (kind === 'split' && holdingsForSplit.length > 1 && !edit) {
+          for (const h of holdingsForSplit) await recordStockTrade({ kind, holdingId: h.id, brokerageId: h.brokerage_id, ticker, date: q('date').value, ratio: parseFloat(q('ratio').value) });
+        } else {
+          await recordStockTrade({ editId: edit?.id || null, kind, brokerageId: q('broker').value, ticker, name: q('name').value.trim(), market: marketNow(), currency: curNow(),
+            date: q('date').value, settleDate: q('settle').value || null, shares: parseFloat(q('shares').value) || 0,
+            totalCost: kind === 'buy' ? amt : null, proceeds: kind === 'sell' ? amt : null, fee: parseFloat(q('fee').value) || 0, tax: parseFloat(q('tax').value) || 0,
+            ratio: parseFloat(q('ratio').value) || null, accountId: q('acc').value || null, estimated: false,
+            paidWith: edit?.paid_with || 'account' });
+        }
+      }
+      showToast(`✓ 已記錄 ${ticker}`);
+      onDone?.(); await loadData(); await navigate(currentView);
+    } catch (e) { showToast(e?.message || String(e), { error: true }); }
+  });
+  return box;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// v2.30.0 信用卡：繳卡費記成一筆轉帳（帳戶 → 信用卡），同一個交易寫入帳戶、
+// 信用卡、轉帳紀錄；自動扣繳在繳款日當天記一筆帳單全額。
+// ════════════════════════════════════════════════════════════════════════════
+async function recordCardPayment({ cardId, period = null, date, amount, accId = null, auto = false, editLogId = null }) {
+  if (!date) throw new Error('請選擇日期');
+  if (date > isoDate(new Date())) throw new Error('繳款日期不能是未來');
+  if (!(amount >= 0)) throw new Error('請輸入金額');
+  return atomic(db, ['accounts', 'credit_cards', 'transfer_logs'], async (tx) => {
+    const now = new Date().toISOString();
+    let card = await tx.get('credit_cards', cardId);
+    if (!card) throw new Error('找不到信用卡');
+    if (editLogId) card = await reverseCardPaymentIn(tx, card, editLogId);
+    const paymentId = crypto.randomUUID();
+    const logId = editLogId || crypto.randomUUID();
+    let acc = null;
+    if (accId && amount > 0) {
+      acc = await tx.get('accounts', accId);
+      if (!acc) throw new Error('找不到扣款帳戶');
+      await tx.put('accounts', { ...acc, balance: +((acc.balance || 0) - amount).toFixed(6), updated_at: now });
+    }
+    const payment = { id: paymentId, period, date, amount, account_id: accId, log_id: accId ? logId : null, auto,
+      prev_last_paid_period: card.last_paid_period ?? null, prev_actual_due_date: card.actual_due_date ?? null, created_at: now };
+    const lastPaid = period && period > (card.last_paid_period ?? '') ? period : (card.last_paid_period ?? null);
+    await tx.put('credit_cards', { ...card,
+      current_balance: Math.max(0, +((card.current_balance || 0) - amount).toFixed(2)),
+      last_paid_period: lastPaid,
+      actual_due_date: card.actual_due_date && lastPaid && card.actual_due_date.slice(0, 7) <= lastPaid ? null : (card.actual_due_date ?? null),
+      payments: [...(card.payments || []), payment], balance_updated_at: now });
+    if (accId) {
+      await tx.put('transfer_logs', { id: logId, date, created_at: now, updated_at: now,
+        from_account_id: accId, from_account_name: acc?.name || '', from_currency: 'TWD', from_amount: amount,
+        to_account_id: null, to_account_name: card.name, to_currency: 'TWD', to_amount: amount,
+        card_payment_card_id: card.id, card_payment_id: paymentId, card_period: period, auto_pay: auto || undefined,
+        note: auto ? '自動扣繳' : '' });
+    }
+    return payment;
+  });
+}
+// 在同一個交易裡沖銷一筆繳款：帳戶加回、待繳加回、期別回到記錄前。回傳更新後的卡片。
+async function reverseCardPaymentIn(tx, card, logOrPaymentId) {
+  const now = new Date().toISOString();
+  const p = (card.payments || []).find(x => x.log_id === logOrPaymentId || x.id === logOrPaymentId);
+  const log = await tx.get('transfer_logs', p?.log_id || logOrPaymentId);
+  const amount = p?.amount ?? log?.from_amount ?? 0;
+  const accId = p?.account_id ?? log?.from_account_id ?? null;
+  if (accId && amount > 0) {
+    const acc = await tx.get('accounts', accId);
+    if (acc) await tx.put('accounts', { ...acc, balance: +((acc.balance || 0) + amount).toFixed(6), updated_at: now });
+  }
+  if (log) await tx.del('transfer_logs', log.id);
+  if (!p) return { ...card, current_balance: +((card.current_balance || 0) + amount).toFixed(2) };
+  const rest = (card.payments || []).filter(x => x.id !== p.id);
+  const isLatest = !rest.some(x => (x.created_at ?? '') > (p.created_at ?? ''));
+  const next = { ...card,
+    current_balance: +((card.current_balance || 0) + (p.amount || 0)).toFixed(2),
+    last_paid_period: isLatest ? (p.prev_last_paid_period ?? null) : card.last_paid_period,
+    actual_due_date: isLatest && !card.actual_due_date ? (p.prev_actual_due_date ?? null) : card.actual_due_date,
+    payments: rest, balance_updated_at: now };
+  // 自動扣繳被刪掉：這期不再自動扣（不然下次打開又扣一次）
+  if (p.auto && p.period) next.autopay_skip = [...new Set([...(card.autopay_skip || []), p.period])];
+  return next;
+}
+async function deleteCardPayment(cardId, logOrPaymentId) {
+  return atomic(db, ['accounts', 'credit_cards', 'transfer_logs', 'balance_adjustments'], async (tx) => {
+    const card = await tx.get('credit_cards', cardId); if (!card) return;
+    const p = (card.payments || []).find(x => x.log_id === logOrPaymentId || x.id === logOrPaymentId);
+    if (p?.adj_id) await tx.del('balance_adjustments', p.adj_id);   // 舊版的繳款紀錄
+    await tx.put('credit_cards', await reverseCardPaymentIn(tx, card, logOrPaymentId));
+  });
+}
+// 這期要繳多少：對過帳就用帳單金額，沒對過就用 PFCC 記到的這期合計。
+async function cardBillAmount(card, payYm, expenses = null) {
+  const st = await getOne(db, 'card_statements', `${card.id}_${payYm}`).catch(() => null);
+  if (st?.bill_amount != null) return st.bill_amount;
+  expenses ??= await getAll(db, 'expense_txns').catch(() => []);
+  return card.billing_day ? ccStatementOf(card, expenses, payYm).total : (card.current_balance || 0);
+}
+// 自動扣繳：繳款日到了（含當天）、這期還沒記錄繳款 → 用帳單全額記一筆。
+// 只處理開啟自動扣繳之後的期別（autopay_from），刪掉的那期不再補扣。
+async function runCardAutoPay() {
+  const cards = await getAll(db, 'credit_cards').catch(() => []);
+  const today = isoDate(new Date());
+  let n = 0;
+  const expenses = await getAll(db, 'expense_txns').catch(() => []);
+  for (const card of cards) {
+    if (!card.auto_pay || !card.pay_account_id || !card.due_day) continue;
+    for (let back = 2; back >= 0; back--) {
+      const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - back);
+      const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const due = ccDueDateFor(card, ym);
+      const fresh = await getOne(db, 'credit_cards', card.id);
+      if (!due || due > today || (fresh.last_paid_period ?? '') >= ym) continue;
+      if (card.autopay_from && ym < card.autopay_from) continue;
+      if ((fresh.autopay_skip || []).includes(ym)) continue;
+      const amount = await cardBillAmount(fresh, ym, expenses);
+      try { await recordCardPayment({ cardId: card.id, period: ym, date: due, amount: Math.max(0, amount), accId: card.pay_account_id, auto: true }); n++; }
+      catch (e) { console.warn('[autopay]', e); }
+    }
+  }
+  if (n) { await loadData(); showToast(`已自動記錄 ${n} 筆卡費扣款`); }
+  return n;
+}
+// 從紀錄列表編輯一筆繳卡費：用原本的繳款彈窗，帶入原本的期別、日期、金額、帳戶。
+async function openCardPaymentEdit(log) {
+  const card = await getOne(db, 'credit_cards', log.card_payment_card_id);
+  if (!card) { showToast('找不到這張信用卡', { error: true }); return; }
+  await openCcPayModal(card, { edit: log });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// v2.30.0 定存到期自動續存：本金加上利息再存一期（同樣長度），利息記一筆收入
+// （不動帳戶餘額，錢還在定存裡），首頁提醒對一下實際利息。
+// ════════════════════════════════════════════════════════════════════════════
+function depTermMonths(dep) {
+  if (!dep.start_date || !dep.maturity_date) return null;
+  const [y1, m1, d1] = dep.start_date.split('-').map(Number), [y2, m2, d2] = dep.maturity_date.split('-').map(Number);
+  const months = (y2 - y1) * 12 + (m2 - m1) + (d2 >= d1 ? 0 : -1);
+  return months > 0 ? months : null;
+}
+function depRoundInterest(v, cur) { return cur === 'TWD' || cur === 'JPY' ? Math.round(v) : +v.toFixed(2); }
+async function runDepositRollover() {
+  const deps = await getAll(db, 'time_deposits').catch(() => []);
+  const today = isoDate(new Date());
+  const fxRates = await getFxRates(db).catch(() => ({}));
+  let n = 0;
+  for (const dep0 of deps) {
+    let dep = dep0;
+    if (dep.status !== 'active' || dep.auto_renew === false || !dep.maturity_date || dep.maturity_date > today) continue;
+    const term = depTermMonths(dep);
+    if (!term) continue;
+    // 很久沒開也能一期一期補上
+    for (let guard = 0; guard < 60 && dep.maturity_date <= today; guard++) {
+      const est = calcExpectedInterest(dep.principal, dep.interest_rate, dep.start_date, dep.maturity_date);
+      const interest = depRoundInterest(dep.expected_interest ?? est ?? 0, dep.currency);
+      const incId = crypto.randomUUID();
+      const next = { ...dep,
+        principal: +(dep.principal + interest).toFixed(2),
+        start_date: dep.maturity_date, maturity_date: addMonthsISO(dep.maturity_date, term),
+        expected_interest: null,
+        interest_unconfirmed: { date: dep.maturity_date, amount: interest, income_id: interest > 0 ? incId : null },
+        renew_history: [...(dep.renew_history || []), { date: dep.maturity_date, principal: dep.principal, interest }] };
+      await atomic(db, ['time_deposits', 'income_txns'], async (tx) => {
+        if (interest > 0) await tx.put('income_txns', { id: incId, date: dep.maturity_date, category: 'cat_interest',
+          description: `定存利息・${dep.label || ''}`, amount: interest, account_id: null, currency: dep.currency || 'TWD',
+          fx_rate_twd: (dep.currency || 'TWD') === 'TWD' ? 1 : toTWD(1, dep.currency, fxRates),
+          affects_balance: false, defer_balance_effect: false, deposit_id: dep.id, created_at: new Date().toISOString() });
+        await tx.put('time_deposits', next);
+      });
+      dep = next; n++;
+    }
+  }
+  if (n) await loadData();
+  return n;
+}
+// 對一下實際利息：改利息 → 本金和那筆利息收入一起改。
+async function confirmDepositInterest(depId, actual) {
+  return atomic(db, ['time_deposits', 'income_txns'], async (tx) => {
+    const dep = await tx.get('time_deposits', depId); const u = dep?.interest_unconfirmed; if (!u) return;
+    const diff = +(actual - u.amount).toFixed(2);
+    if (u.income_id) {
+      const inc = await tx.get('income_txns', u.income_id);
+      if (inc) { if (actual > 0) await tx.put('income_txns', { ...inc, amount: actual }); else await tx.del('income_txns', inc.id); }
+    } else if (actual > 0) {
+      await tx.put('income_txns', { id: crypto.randomUUID(), date: u.date, category: 'cat_interest', description: `定存利息・${dep.label || ''}`,
+        amount: actual, account_id: null, currency: dep.currency || 'TWD', fx_rate_twd: 1, affects_balance: false, deposit_id: dep.id, created_at: new Date().toISOString() });
+    }
+    const hist = [...(dep.renew_history || [])]; if (hist.length) hist[hist.length - 1] = { ...hist[hist.length - 1], interest: actual };
+    await tx.put('time_deposits', { ...dep, principal: +(dep.principal + diff).toFixed(2), interest_unconfirmed: null, renew_history: hist });
+  });
+}
+
+// ── 通用的面板（v2.30.0）：對帳、檢查清單、應付款等新畫面共用 ────────────────
+function openPanel(title, { onClose = null, id = 'pfccPanel' } = {}) {
+  document.getElementById(id)?.remove();
+  const bg = el('div'); bg.className = 'qa-sheet-bg'; bg.id = id;
+  const panel = el('div'); panel.className = 'qa-sheet pn';
+  panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-label', title);
+  panel.innerHTML = `<div class="qa-sheet-grip" aria-hidden="true"></div><div class="qa-sheet-head"><b class="pn-title"></b><span style="flex:1"></span><button type="button" class="qa-sheet-x" aria-label="關閉">✕</button></div><div class="pn-body"></div>`;
+  panel.querySelector('.pn-title').textContent = title;
+  const close = () => { bg.remove(); onClose?.(); };
+  bg.addEventListener('click', e => { if (e.target === bg) close(); });
+  panel.querySelector('.qa-sheet-x').addEventListener('click', close);
+  bg.appendChild(panel); document.body.appendChild(bg);
+  requestAnimationFrame(() => bg.classList.add('open'));
+  return { body: panel.querySelector('.pn-body'), close, setTitle: t => { panel.querySelector('.pn-title').textContent = t; } };
+}
+const mdShort = d => d ? `${Number(d.slice(5, 7))}/${Number(d.slice(8, 10))}` : '';
+const ymNext = (ym, n = 1) => { const [y, m] = ym.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
+
+// ── 信用卡對帳（v2.30.0）：① 帳單金額 ② 結帳前 7 天內的那幾筆算這期還是下期 ③ 還差多少 ──
+// 不需要提供明細：只填帳單上的總金額。
+async function openCardRecon(cardId, payYm) {
+  let card = await getOne(db, 'credit_cards', cardId); if (!card) return;
+  const stId = `${card.id}_${payYm}`;
+  const saved = await getOne(db, 'card_statements', stId).catch(() => null);
+  let bill = saved?.bill_amount ?? null;
+  let showAll = false;
+  const pnl = openPanel(`${card.name}・${ccPeriodLabel(payYm)}帳單`, { onClose: () => { if (currentView === 'creditcard') renderCreditCard(); } });
+  const draw = async () => {
+    const expenses = await getAll(db, 'expense_txns').catch(() => []);
+    const s = ccStatementOf(card, expenses, payYm);
+    const diff = bill == null ? null : +(bill - s.total).toFixed(2);
+    const row = (t, next) => `<div class="rc-row"><span class="rc-d">${mdShort(t.date)}</span><span class="rc-n">${escHtml(t.description || catLabel(t.category) || '（沒寫名稱）')}</span><span class="rc-a">${fmt(t.amount)}</span>
+      <button type="button" class="rc-tg${next ? ' next' : ''}" data-move="${t.id}" aria-pressed="${next}">${next ? '下期' : '這期'}</button></div>`;
+    const others = s.items.filter(t => !s.near.some(x => x.t.id === t.id));
+    pnl.body.innerHTML = `
+      <div class="rc-sec">
+        <label class="rc-lbl" for="rcBill">帳單金額（照銀行 App 上的填）</label>
+        <div class="rc-amt"><span>NT$</span><input id="rcBill" type="number" inputmode="decimal" value="${bill ?? ''}" placeholder="0"></div>
+        <div class="rc-sum">
+          <div><span>PFCC 記到的這期</span><b>${fmt(s.total)}</b></div>
+          ${diff == null ? '' : `<div class="rc-diff ${diff === 0 ? 'ok' : ''}"><span>${diff === 0 ? '和帳單一致' : '和帳單還差'}</span><b>${diff === 0 ? '✓' : diff > 0 ? `帳單多 ${fmt(diff)}` : `PFCC 多 ${fmt(-diff)}`}</b></div>`}
+        </div>
+      </div>
+      <div class="rc-sec rc-list">
+        <div class="rc-h"><b>① 這幾筆算這期還是下期？</b>${infoTip('結帳日前 7 天內刷的，銀行可能晚幾天才入帳，就會算到下一期。帳單上沒有的，按一下改成「下期」。')}</div>
+        <div class="rc-hint">結帳日 ${mdShort(s.close)} 前 7 天內刷的</div>
+        ${s.near.length ? s.near.map(x => row(x.t, x.next)).join('') : '<div class="rc-empty">沒有</div>'}
+        ${others.length ? `<button type="button" class="rc-more" data-all>${showAll ? '收起' : `其他日期的也要移？（這期另外 ${others.length} 筆）`}</button>${showAll ? others.map(t => row(t, false)).join('') : ''}` : ''}
+      </div>
+      <div class="rc-sec">
+        <div class="rc-h"><b>② 少記了？</b></div>
+        <button type="button" class="btn btn-ghost btn-sm" data-add>＋ 補記一筆</button>
+      </div>
+      ${diff ? `<div class="rc-sec rc-warn"><b>③ 還差 NT$ ${fmt(Math.abs(diff))}，找不到原因？</b><span>可以再找找，或把差額記成一筆「對帳差額」，讓這期和帳單一致。</span>
+        <div class="rc-2"><button type="button" class="btn btn-ghost" data-later>再找找</button><button type="button" class="btn btn-primary" data-adj>差額記為調整</button></div></div>` : ''}
+      <button type="button" class="btn btn-primary rc-done" data-done ${diff === 0 ? '' : 'disabled'}>${diff === 0 ? '完成對帳' : '完成對帳（差額為 0 才能按）'}</button>`;
+    const billIn = pnl.body.querySelector('#rcBill');
+    billIn.addEventListener('change', () => { bill = billIn.value === '' ? null : +billIn.value; draw(); });
+    pnl.body.querySelectorAll('[data-move]').forEach(b => b.addEventListener('click', async () => {
+      const t = expenses.find(x => x.id === b.dataset.move); if (!t) return;
+      const toNext = ccPeriodOfTxn(card, t) === payYm;
+      const target = toNext ? ymNext(payYm) : payYm;
+      const natural = ccPayYmOfDate(card, t.date);
+      await putOne(db, 'expense_txns', { ...t, cc_pay_period: target === natural ? null : target });
+      draw();
+    }));
+    pnl.body.querySelector('[data-all]')?.addEventListener('click', () => { showAll = !showAll; draw(); });
+    pnl.body.querySelector('[data-add]').addEventListener('click', () => { pnl.close(); openQuickSheet(); });
+    pnl.body.querySelector('[data-later]')?.addEventListener('click', async () => {
+      if (bill != null) await putOne(db, 'card_statements', { ...(saved || {}), id: stId, card_id: card.id, period: payYm, bill_amount: bill, reconciled_at: null, updated_at: new Date().toISOString() });
+      pnl.close();
+    });
+    pnl.body.querySelector('[data-adj]')?.addEventListener('click', async () => {
+      try {
+        await atomic(db, ['expense_txns', 'credit_cards'], async tx => {
+          const c = await tx.get('credit_cards', card.id);
+          await tx.put('expense_txns', { id: crypto.randomUUID(), date: s.close || isoDate(new Date()), category: 'cat_recon_diff', description: `對帳差額・${ccPeriodLabel(payYm)}`,
+            amount: diff, pay_type: 'cc', cc_id: card.id, account_id: null, note: '', bucket_id: null, project_id: null, currency: 'TWD', fx_rate_twd: 1,
+            affects_balance: true, defer_balance_effect: false, cc_pay_period: payYm, recon_diff: true, created_at: new Date().toISOString() });
+          await tx.put('credit_cards', { ...c, current_balance: +((c.current_balance || 0) + diff).toFixed(2), balance_updated_at: new Date().toISOString() });
+        });
+        card = await getOne(db, 'credit_cards', card.id);
+        draw();
+      } catch (e) { showToast(e?.message || String(e), { error: true }); }
+    });
+    pnl.body.querySelector('[data-done]').addEventListener('click', async () => {
+      if (diff !== 0) return;
+      await putOne(db, 'card_statements', { ...(saved || {}), id: stId, card_id: card.id, period: payYm, bill_amount: bill, reconciled_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+      showToast(`✓ ${ccPeriodLabel(payYm)}對帳完成`);
+      pnl.close();
+    });
+  };
+  await draw();
+}
+function catLabel(id) { return catById(id)?.label || ''; }
+function infoTip(t) { return `<button type="button" class="ii" data-tip="${escHtml(t)}" aria-label="說明">i</button>`; }
+// 信用卡頁每張卡的「本期帳單／未出帳」
+function cardStatementHtml(card, expenses, statements) {
+  const p = ccCurrentPeriods(card, expenses); if (!p) return '';
+  const md = mdShort;
+  const billed = p.billed, open = p.open;
+  const st = billed ? statements.find(x => x.id === `${card.id}_${billed.payYm}`) : null;
+  const billAmt = st?.bill_amount ?? billed?.total;
+  const nearNext = (billed || open).near.filter(x => !x.next).length;
+  return `<div class="cc-stm">
+    ${billed ? `<div class="cc-stm-row"><span>本期帳單<small>結帳 ${md(billed.close)}・${md(billed.due)} ${card.auto_pay ? '自動扣款' : '繳款'}</small></span><b>NT$ ${fmt(billAmt)}</b><button type="button" class="btn btn-ghost btn-sm" data-recon="${billed.payYm}">${st?.reconciled_at ? '已對帳 ✓' : '對帳'}</button></div>` : ''}
+    <div class="cc-stm-row"><span>未出帳<small>${md(open.close)} 結帳</small></span><b>NT$ ${fmt(open.total)}</b><span class="cc-stm-gap"></span></div>
+    ${billed && nearNext ? `<div class="cc-stm-near">本期有 ${nearNext} 筆在結帳日前 7 天內刷的，可能算下期</div>` : ''}
+  </div>`;
 }
 
 let _qaKind = 'expense';
@@ -12833,22 +13499,6 @@ async function openDcaConfirm(item, occDate) {
   });
 }
 
-async function commitDcaPeriod(item, occ, amt, shares, recordDate = occ) {
-  const fresh = await getOne(db,'dca_schedules',item.id);
-  if (fresh && fresh.last_confirmed_date === occ) return { ok: true, dup: true };
-  const h = state.holdings.find(x=>x.id===item.holding_id);
-  const label = h ? `${h.ticker} 定期定額` : (item.note || '定期定額');
-  const allCats = await getAll(db,'txn_categories').catch(()=>[]);
-  const dcaCat = allCats.find(c=>c.type==='income'&&c.active!==false&&String(c.label).includes('定期定額'))
-    || allCats.find(c=>c.id==='cat_dca');
-  if (!dcaCat) return { ok: false, error: '找不到「定期定額」收入分類，請改用完整記帳視窗' };
-  return saveIncomeRecord({
-    date: recordDate, category: dcaCat.id, description: label, amount: 0,
-    accId: item.account_id || null, note: '', affects: true,
-    dca: { spent: amt, brokerageId: h?.brokerage_id ?? null, holdingId: item.holding_id || null, shares: shares ?? null },
-    confirmDca: { id: item.id, occDate: occ },
-  });
-}
 
 // ── 定期轉帳／換匯 ─────────────────────────────────────────────────────────
 // §四十九之四：幣別不同時用銀行 App 風格的雙向試算——轉出金額、轉入金額、
@@ -12987,8 +13637,12 @@ async function runAutoConfirm() {
           res = await commitInstPeriod(i, it.date, i.per_amount ?? Math.round(i.total_amount / i.total_periods), i.spend_category || await getDefaultExpenseCategoryId());
         } else if (it.type === 'dca') {
           const d = dcaSchedules.find(x => x.id === it.refId); if (!d || it.date <= (d.last_confirmed_date || '')) continue;
+          // v2.30.0：扣款日遇休市順延到下一個交易日（台股用證交所休市日，美股只跳週末）
+          const dh = state.holdings.find(x => x.id === d.holding_id);
+          const recDate = nextBusinessDay(it.date, dh?.market === 'TW' ? _twHolidays : new Set());
+          if (recDate > today) { done.delete(key); continue; }
           const ratio = await planInvestOverride('dca', d.id, it.date); // v2.27.0：每月規劃減半／自訂
-          res = await commitDcaPeriod(d, it.date, ratio != null ? Math.round(d.amount * ratio) : d.amount, null);
+          res = await commitDcaPeriod(d, it.date, ratio != null ? Math.round(d.amount * ratio) : d.amount, null, recDate);
         } else if (it.type === 'transfer') {
           const t = recurringTransfers.find(x => x.id === it.refId); if (!t || it.date <= (t.last_confirmed_date || '')) continue;
           const fromAcc = state.accounts.find(a => a.id === t.from_account_id), toAcc = state.accounts.find(a => a.id === t.to_account_id);
@@ -14567,8 +15221,9 @@ async function openDcaScheduleModal(item=null) {
     const listToShow = taggedAccs.length > 0 ? taggedAccs : menuAccs;
     const accSel = document.getElementById('dcaScheduleAccount');
     accSel.innerHTML = `<option value="">── 不指定 ──</option>` +
-      listToShow.map(a=>{const b=bankMap[a.bank_id];return`<option value="${a.id}">${b?b.name+' · ':''}${a.name}</option>`;}).join('');
-    accSel.value = item?.account_id ?? '';
+      listToShow.map(a=>{const b=bankMap[a.bank_id];return`<option value="${a.id}">${b?b.name+' · ':''}${a.name}</option>`;}).join('') +
+      `<option value="__points">點數（不扣任何帳戶）</option>`;
+    accSel.value = item?.pay_with === 'points' ? '__points' : (item?.account_id ?? '');
     const hintEl = document.getElementById('dcaScheduleAccountHint');
     hintEl.textContent = (brokId && taggedAccs.length === 0)
       ? '這家券商還沒有標記任何交割戶帳戶，先列出全部帳戶——可以到「帳戶管理」把某個帳戶標記為這家券商的交割戶。'
@@ -14665,7 +15320,8 @@ document.getElementById('dcaScheduleModalSave').addEventListener('click',async()
     holding_id:holdingId,
     name: holdingForName ? `${holdingForName.ticker} ${holdingForName.name}` : '定期定額',
     amount, currency:document.getElementById('dcaScheduleCurrency').value||'TWD',
-    account_id:document.getElementById('dcaScheduleAccount').value||null,
+    account_id:(v => v === '__points' ? null : (v || null))(document.getElementById('dcaScheduleAccount').value),
+    pay_with: document.getElementById('dcaScheduleAccount').value === '__points' ? 'points' : 'account',
     freq,
     billing_day:!isCustom?(parseInt(document.getElementById('dcaScheduleDay').value)||null):null,
     custom_months:isCustom?(parseInt(document.getElementById('dcaScheduleCustomMonths').value)||null):null,
@@ -15127,7 +15783,7 @@ function buildNeutralTxnRow(t, scope, accountMap) {
   row.querySelector('[data-del]').addEventListener('click', () => {
     openDeleteModal(`確定要刪除這筆${t._kind === 'trade' ? '投資交易' : (t.card_payment_card_id ? '繳卡費' : '轉帳')}紀錄嗎？帳戶餘額會一起改回去。`, async () => {
       try {
-        if (t._kind === 'trade') await deleteStockTrade(t.id); else await deleteTransfer(t.id);
+        if (t._kind === 'trade') await deleteStockTrade(t.id); else if (t.card_payment_card_id) await deleteCardPayment(t.card_payment_card_id, t.id); else await deleteTransfer(t.id);
         showToast('已刪除'); await loadData(); await renderCalendar();
       } catch (e) { showToast(e?.message || String(e), { error: true }); }
     });
@@ -15873,6 +16529,8 @@ async function renderCreditCard() {
 
   const today = new Date();
   const todayDay = today.getDate();
+  const ccExpenses = await getAll(db, 'expense_txns').catch(() => []);
+  const ccStatements = await getAll(db, 'card_statements').catch(() => []);
 
   cards.forEach(card => {
     const payAcc = accMap[card.pay_account_id];
@@ -15914,7 +16572,8 @@ async function renderCreditCard() {
           <div style="font-size:20px;font-weight:600;color:${(card.current_balance||0)>0?'var(--red)':'var(--green)'}">${(card.current_balance||0)>0?'-':''}NT$ ${fmt(Math.abs(card.current_balance||0))}</div>
         </div>
       </div>
-      ${st.overdue ? `
+      ${cardStatementHtml(card, ccExpenses, ccStatements)}
+      ${st.overdue && !card.auto_pay ? `
       <div class="cc-overdue">
         <div><strong>${ccPeriodLabel(st.overdue.ym)}（${md(st.overdue.due)}）還沒記錄繳款</strong><span>已經繳了就補記，日期會記在實際繳款那天；還沒繳請盡快繳款。</span></div>
         <button class="btn btn-primary btn-sm" data-pay-overdue="${card.id}">補記繳款</button>
@@ -15930,6 +16589,7 @@ async function renderCreditCard() {
       </div>`;
 
     cardEl.querySelector('[data-pay-overdue]')?.addEventListener('click', () => openCcPayModal(card, { ym: st.overdue.ym }));
+    cardEl.querySelector('[data-recon]')?.addEventListener('click', e => openCardRecon(card.id, e.currentTarget.dataset.recon));
     cardEl.querySelector('[data-cc-all]')?.addEventListener('click', () => openCcHistory(card, accMap, bankMap));
     cardEl.querySelectorAll('[data-undo-pay]').forEach(btn => btn.addEventListener('click', () => {
       const p = recent.find(x => x.id === btn.dataset.undoPay);
@@ -15960,6 +16620,7 @@ async function openCcModal(card=null) {
   const staleActual = card?.actual_due_date && card.actual_due_date.slice(0, 7) <= (card.last_paid_period ?? '');
   document.getElementById('ccActualDueDate').value = staleActual ? '' : (card?.actual_due_date ?? '');
   document.getElementById('ccBalance').value = card?.current_balance ?? 0;
+  document.getElementById('ccAutoPay').checked = !!card?.auto_pay;
 
   const payAccSel = document.getElementById('ccPayAccount');
   payAccSel.innerHTML = `<option value="">── 不指定 ──</option>` +
@@ -15992,6 +16653,8 @@ document.getElementById('ccModalSave').addEventListener('click', async () => {
   const name    = document.getElementById('ccName').value.trim();
   if (!name) { document.getElementById('ccName').style.borderColor='var(--red)'; return; }
   const editId  = document.getElementById('ccEditId').value;
+  const prevCard = editId ? await getOne(db,'credit_cards',editId) : null;
+  const autoOn = document.getElementById('ccAutoPay').checked;
   await putOne(db,'credit_cards',{
     id: editId||crypto.randomUUID(),
     name,
@@ -16000,10 +16663,13 @@ document.getElementById('ccModalSave').addEventListener('click', async () => {
     actual_due_date: document.getElementById('ccActualDueDate').value||null,
     pay_account_id: document.getElementById('ccPayAccount').value||null,
     current_balance: parseFloat(document.getElementById('ccBalance').value)||0,
+    auto_pay: autoOn,
     // v2.7.4：期別紀錄與繳款紀錄不在這個彈窗編輯，存檔時原樣保留。
-    ...(editId ? (({ last_paid_period, payments, created_at }) => ({ last_paid_period, payments, created_at }))(await getOne(db,'credit_cards',editId) ?? {}) : { created_at: new Date().toISOString() }),
+    ...(editId ? (({ last_paid_period, payments, created_at, autopay_from, autopay_skip }) => ({ last_paid_period, payments, created_at, autopay_from, autopay_skip }))(await getOne(db,'credit_cards',editId) ?? {}) : { created_at: new Date().toISOString() }),
     // §四十七：資料健檢第 6 項用來判斷「待繳金額多久沒變動」。
     balance_updated_at: new Date().toISOString(),
+    // 剛打開自動扣繳：從下一個還沒到的繳款日開始，不回頭補扣以前的期別
+    ...(autoOn && !prevCard?.auto_pay ? { autopay_from: ccPeriodStatus({ ...(prevCard || {}), due_day: parseInt(document.getElementById('ccDueDay').value)||null, current_balance: 0 }).upcoming?.ym ?? null } : {}),
   });
   document.getElementById('ccModal').classList.remove('open');
   showToast(editId?'信用卡已更新':'信用卡已新增');
@@ -16048,8 +16714,18 @@ async function openCcPayModal(card, opts = {}) {
       .map(a => { const b = bankMap[a.bank_id]; return `<option value="${a.id}">${b ? b.name + ' · ' : ''}${escHtml(a.name)}</option>`; }).join('')
     + `<option value="">不扣帳戶（帳戶餘額已另外調整過，只標記這期已繳）</option>`;
   fromSel.value = card.pay_account_id && state.accounts.some(a => a.id === card.pay_account_id) ? card.pay_account_id : (fromSel.options[0]?.value ?? '');
-  document.getElementById('ccPayTitle').textContent = `記錄繳款：${card.name}`;
-  _ccPayCtx = { card };
+  document.getElementById('ccPayTitle').textContent = `${opts.edit ? '編輯' : '記錄'}繳款：${card.name}`;
+  if (opts.edit) {
+    const lg = opts.edit;
+    if (lg.card_period && !periods.some(p => p.ym === lg.card_period)) perSel.insertAdjacentHTML('afterbegin', `<option value="${lg.card_period}">${ccPeriodLabel(lg.card_period)}</option>`);
+    perSel.value = lg.card_period || perSel.value;
+    document.getElementById('ccPayDate').value = lg.date;
+    document.getElementById('ccPayAmount').value = lg.from_amount;
+    fromSel.value = lg.from_account_id || '';
+  } else if (card.billing_day && perSel.value) {
+    document.getElementById('ccPayAmount').value = await cardBillAmount(card, perSel.value);
+  }
+  _ccPayCtx = { card, editLogId: opts.edit?.id || null };
   document.getElementById('ccPayModal').classList.add('open');
 }
 document.getElementById('ccPayCancel').addEventListener('click', () => document.getElementById('ccPayModal').classList.remove('open'));
@@ -16062,32 +16738,9 @@ document.getElementById('ccPaySave').addEventListener('click', async () => {
   const amount = Math.max(0, parseFloat(document.getElementById('ccPayAmount').value) || 0);
   const accId = document.getElementById('ccPayFrom').value || null;
   if (!date) { document.getElementById('ccPayDate').style.borderColor = 'var(--red)'; return; }
-  const paymentId = crypto.randomUUID();
-  let adjId = null;
-  if (accId && amount > 0) {
-    const acc = await getOne(db, 'accounts', accId);
-    if (acc) {
-      const newBal = +((acc.balance || 0) - amount).toFixed(6);
-      adjId = crypto.randomUUID();
-      await putOne(db, 'accounts', { ...acc, balance: newBal, updated_at: new Date().toISOString() });
-      await putOne(db, 'balance_adjustments', {
-        id: adjId, account_id: accId, old_balance: acc.balance, new_balance: newBal, diff: -amount,
-        note: `💳 繳信用卡：${card.name}${period ? `（${ccPeriodLabel(period)}）` : ''}`,
-        created_at: new Date(`${date}T12:00:00`).toISOString(), cc_payment_id: paymentId,
-      });
-    }
-  }
-  const payment = { id: paymentId, period, date, amount, account_id: accId, adj_id: adjId,
-    prev_last_paid_period: card.last_paid_period ?? null, prev_actual_due_date: card.actual_due_date ?? null, created_at: new Date().toISOString() };
-  const lastPaid = period && period > (card.last_paid_period ?? '') ? period : (card.last_paid_period ?? null);
-  await putOne(db, 'credit_cards', {
-    ...card,
-    current_balance: Math.max(0, +((card.current_balance || 0) - amount).toFixed(2)),
-    last_paid_period: lastPaid,
-    actual_due_date: card.actual_due_date && lastPaid && card.actual_due_date.slice(0, 7) <= lastPaid ? null : (card.actual_due_date ?? null),
-    payments: [...(card.payments || []), payment],
-    balance_updated_at: new Date().toISOString(),
-  });
+  try { await recordCardPayment({ cardId: card.id, period, date, amount, accId, editLogId: _ccPayCtx.editLogId }); }
+  catch (e) { showToast(e?.message || String(e), { error: true }); return; }
+  await loadData();
   document.getElementById('ccPayModal').classList.remove('open');
   showToast(`✓ 已記錄${period ? ccPeriodLabel(period) : ''}繳款 NT$ ${fmt(amount)}`);
   if (currentView === 'calendar') await renderCalendar();
@@ -16115,23 +16768,8 @@ document.getElementById('ccHistModal').addEventListener('click', e => { if (e.ta
 
 // 復原一筆繳款：帳戶加回、刪掉那筆帳戶變動紀錄、信用卡待繳加回、期別回到記錄前。
 async function undoCcPayment(cardId, paymentId) {
-  const card = await getOne(db, 'credit_cards', cardId);
-  const p = card?.payments?.find(x => x.id === paymentId);
-  if (!p) return;
-  if (p.account_id && p.amount > 0) {
-    const acc = await getOne(db, 'accounts', p.account_id);
-    if (acc) await putOne(db, 'accounts', { ...acc, balance: +((acc.balance || 0) + p.amount).toFixed(6), updated_at: new Date().toISOString() });
-    if (p.adj_id) { const t = db.transaction(['balance_adjustments'], 'readwrite'); t.objectStore('balance_adjustments').delete(p.adj_id); await new Promise(r => { t.oncomplete = r; t.onerror = r; }); }
-  }
-  const rest = card.payments.filter(x => x.id !== paymentId);
-  const isLatest = !rest.some(x => (x.created_at ?? '') > (p.created_at ?? ''));
-  await putOne(db, 'credit_cards', {
-    ...card,
-    current_balance: +((card.current_balance || 0) + (p.amount || 0)).toFixed(2),
-    last_paid_period: isLatest ? (p.prev_last_paid_period ?? null) : card.last_paid_period,
-    actual_due_date: isLatest && !card.actual_due_date ? (p.prev_actual_due_date ?? null) : card.actual_due_date,
-    payments: rest, balance_updated_at: new Date().toISOString(),
-  });
+  try { await deleteCardPayment(cardId, paymentId); } catch (e) { showToast(e?.message || String(e), { error: true }); return; }
+  await loadData();
   showToast('已復原這筆繳款');
   await renderCreditCard();
 }
@@ -16152,6 +16790,7 @@ async function openDepositModal(dep=null) {
   document.getElementById('depositStart').value = dep?.start_date ?? '';
   document.getElementById('depositExpectedInterest').value = dep?.expected_interest ?? '';
   document.getElementById('depositMaturity').value = dep?.maturity_date ?? '';
+  document.getElementById('depositAutoRenew').checked = dep ? dep.auto_renew !== false : true;
 
   const bankSel = document.getElementById('depositBankId');
   bankSel.innerHTML = `<option value="">── 請選擇 ──</option>` +
@@ -16412,8 +17051,11 @@ document.getElementById('depositModalSave').addEventListener('click', async () =
   if (!maturity) { document.getElementById('depositMaturity').style.borderColor='var(--red)'; return; }
   if (!principal || principal <= 0) { document.getElementById('depositPrincipal').style.borderColor='var(--red)'; return; }
 
+  const prevDep = editId ? await getOne(db, 'time_deposits', editId) : null;
   await putOne(db, 'time_deposits', {
+    ...(prevDep || {}),
     id: editId || crypto.randomUUID(),
+    auto_renew: document.getElementById('depositAutoRenew').checked,
     bank_id: bankId, label, currency, principal,
     interest_rate: rate,
     expected_interest: expInterest,
@@ -16421,7 +17063,7 @@ document.getElementById('depositModalSave').addEventListener('click', async () =
     maturity_date: maturity,
     maturity_account_id: matAccId,
     status: 'active',
-    note: '',
+    note: prevDep?.note ?? '',
   });
 
   // New deposit funded from an existing cash account: move the principal
