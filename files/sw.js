@@ -36,9 +36,9 @@
  * 伺服器要最新版本。
  */
 
-const CACHE_NAME  = 'pfcc-shell-v54'; // 2026-11-03：v2.29.0（返回鍵接上瀏覽器歷史），index.html 異動。
+const CACHE_NAME  = 'pfcc-shell-v55'; // 2026-11-16：v2.30.0（交易、對帳、目標、檢查清單），index.html／calc.js／db.js 異動，新增 sample.js。
 // （上一版 v15，2026-10-02：「新增收入」轉入帳戶／「應收款入帳」選擇帳戶新增「顯示外幣帳戶」勾選（預設只顯示台幣）＋「新增現金帳戶」快速新增捷徑，index.html 異動，版本號照約定往上跳一碼。）
-const SHELL_URLS  = ['/', '/index.html', '/db.js', '/market.js', '/calc.js', '/manifest.json'];
+const SHELL_URLS  = ['/', '/index.html', '/db.js', '/market.js', '/calc.js', '/sample.js', '/manifest.json'];
 
 // 把 SHELL_URLS 轉成帶 {cache:'reload'} 的 Request 物件——理由見上方檔頭註解。
 function shellRequests() {

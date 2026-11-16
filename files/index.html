@@ -416,7 +416,7 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .rc-more{width:100%;height:44px;border:none;border-top:1px solid var(--border);background:transparent;font:inherit;font-size:13px;color:#2563EB}
 .rc-empty{padding:8px 12px 12px;font-size:12px;color:var(--text-3)}
 .rc-warn{background:#FFFBEB;border-color:#FCD34D;font-size:12px;line-height:1.6}.rc-warn b{font-size:14px}
-.rc-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rc-done{height:48px}
+.rc-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rc-done{height:48px}.rc-done:disabled{background:var(--border);border-color:var(--border);color:var(--text-3)}
 .cc-stm{margin:0 18px 12px;border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .cc-stm-row{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:13px;font-variant-numeric:tabular-nums}.cc-stm-row+.cc-stm-row{border-top:1px solid var(--border)}
 .cc-stm-row>span:first-child{flex:1;display:flex;flex-direction:column;gap:2px}.cc-stm-row small{font-size:11px;color:var(--text-3)}.cc-stm-gap{width:64px}
@@ -428,7 +428,7 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .cc-line{display:grid;grid-template-columns:1fr auto 64px;gap:10px;align-items:baseline;padding:6px 0;font-size:13px;font-variant-numeric:tabular-nums}.cc-line b.bad{color:#B45309}.cc-line small{color:var(--text-3);font-size:11px;text-align:right}
 .pay-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:12px 18px;border-top:1px solid var(--border)}.pay-main{display:flex;flex-direction:column;gap:2px;min-width:0}.pay-main b{font-size:14px}.pay-main span{font-size:12px;color:var(--text-3)}.pay-main .bad{color:var(--red)}.pay-main .warn{color:#B45309}
 .pay-amt{font-weight:600;font-variant-numeric:tabular-nums;text-align:right}.pay-acts{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
-.goal-stage{font-size:10.5px;font-weight:600;color:#1E40AF;background:#EFF4FF;border:1px solid #C7D7FB;padding:1px 8px;border-radius:99px;margin-left:6px}
+.goal-stage{white-space:nowrap;font-size:10.5px;font-weight:600;color:#1E40AF;background:#EFF4FF;border:1px solid #C7D7FB;padding:1px 8px;border-radius:99px;margin-left:6px}
 .goal-queued-btn{width:100%;min-height:44px;border:1px dashed var(--border);border-radius:10px;background:transparent;font:inherit;font-size:13px;color:var(--text-2);margin:4px 0 12px;text-align:left;padding:0 14px}
 .br-row{display:grid;grid-template-columns:96px 1fr 1fr 32px;gap:6px;align-items:center;margin-bottom:6px}.br-row select,.br-row input{height:40px;min-width:0}
 .fi-card{padding:0;overflow:hidden}.fi-h{display:flex;align-items:center;gap:8px;padding:14px 18px;font-size:14px;cursor:pointer;list-style:none}.fi-h::-webkit-details-marker{display:none}
@@ -443,6 +443,17 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 18px}.hp-method{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 18px}
 .hp-method [role=radio]{height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);font:inherit;font-size:13px;color:var(--text)}.hp-method [aria-checked=true]{border:2px solid #2563EB;background:#F5F8FF;color:#1E40AF;font-weight:600}
 .hp-out{padding:0 18px 10px}.fi-card [data-hp-goal]{margin:0 18px 16px}
+.rw-orange{color:#C2410C}.rw-red{color:#DC2626}
+.todo-card{padding:0;overflow:hidden;margin-bottom:12px}.todo-h{display:flex;align-items:center;gap:8px;padding:12px 16px}.todo-h b{font-size:14px}.todo-h>span{font-size:11px;font-weight:700;color:#fff;background:#2563EB;border-radius:99px;padding:1px 7px}.todo-h button{margin-left:auto}
+.todo-row{display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);padding-right:12px}.todo-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left;border:none;background:transparent;font:inherit;color:var(--text);padding:10px 16px;min-height:48px}.todo-main b{font-size:13px}.todo-main span{font-size:12px;color:var(--text-3)}
+.todo-empty{border-top:1px solid var(--border);padding:12px 16px;font-size:12px;color:var(--text-3)}
+.ck-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--border);border-radius:8px;padding:4px}.ck-tabs button{height:40px;border:none;border-radius:6px;background:transparent;font:inherit;font-size:13px;color:var(--text-2)}.ck-tabs [aria-selected=true]{background:var(--card);font-weight:600;color:var(--text);box-shadow:0 1px 2px rgba(15,27,45,.12)}
+.ck-body{display:flex;flex-direction:column;gap:12px}.ck-card{border:1px solid var(--border);border-radius:10px;overflow:hidden}.ck-h{padding:12px 14px;border-bottom:1px solid var(--border)}.ck-h>div{display:flex;flex-direction:column;gap:2px}.ck-h span{font-size:12px;color:var(--text-3)}
+.ck-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border)}.ck-item>input{width:20px;height:20px;margin:2px 0 0;accent-color:#2563EB;flex-shrink:0}
+.ck-txt{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}.ck-txt b{font-size:13px}.ck-txt>span{font-size:12px;color:var(--text-2);line-height:1.5}.ck-txt>span.warn{color:#B45309}.ck-txt .btn{align-self:flex-start}
+.ck-note{height:32px;border:1px solid var(--border);border-radius:6px;padding:0 8px;font:inherit;font-size:12px;background:var(--card);color:var(--text)}
+.ck-ev{height:48px;border-radius:8px;border:1px solid var(--border);background:var(--card);font:inherit;font-size:14px;color:var(--text);text-align:left;padding:0 14px}.ck-ev-old{font-size:12px;color:var(--text-2);height:40px}
+.sample-banner{position:fixed;top:0;left:0;right:0;z-index:250;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px;padding-top:max(8px,env(safe-area-inset-top));background:#FFFBEB;border-bottom:1px solid #FCD34D;font-size:12px;color:#78350F}.sample-banner .btn{height:32px;background:#fff;border:1px solid #FCD34D;color:#78350F}
 .modal-check{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;margin:4px 0 8px}.modal-check input{width:20px;height:20px;accent-color:var(--accent,#2563EB)}
 .inv-row{margin-top:8px}
 .inv-tk input[data-iv="ticker"]{font-weight:700;font-size:16px}
@@ -3749,17 +3760,26 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.29.0';
-const CHANGELOG_LAST_UPDATED = '2026-11-03';
+const APP_VERSION = 'v2.30.0';
+const CHANGELOG_LAST_UPDATED = '2026-11-16';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '手機的返回鍵、瀏覽器上一頁可以回到上一頁，回去時停在原本捲到的位置；有視窗開著時先關視窗',
-  '子頁的返回鍵依你從哪一頁進來顯示，例如從計畫點「管理定期支出」進去，返回鍵是「← 計畫」',
-  '在第一頁按返回鍵：先回到開啟時預設頁面，再按一次才離開',
-  '每月計畫展開過的上月回顧、紀錄頁選的月份與日期，從別頁回來時維持原樣',
+  '匯入備份改成真正覆蓋，匯入前自動留一份，有問題可以在設定頁還原',
+  '日期一律用台灣時間，早上記帳不會跑到前一天',
+  '＋記帳多了「轉帳」和「投資」：轉帳可以算手續費；換匯只能在同一家銀行',
+  '投資：買進、賣出、股利、配股、分割；台股自動算交割日（跳過假日），交割前顯示「待交割」',
+  '定期定額先記大約的股數，首頁提醒你對一下實際股數；可以設定最後一期、用點數扣款',
+  '信用卡：本期帳單和未出帳分開，結帳前 7 天內刷的可以改到下期；填帳單金額就能對帳；可以設定自動扣繳全額、刷卡分期',
+  '定存到期自動續存，利息記成收入，首頁提醒你對一下實際利息',
+  '應付款（欠別人的錢）：從總資產和可自由運用扣掉',
+  '存錢目標可以設成階段目標（一個存好才存下一個）、自訂提醒、暫停；刪除時會問錢要放到哪裡',
+  '計畫頁：財務自由進度（台股、美股分開）、買房試算',
+  '投資比例檢查：持有最多的單一公司、個股合計',
+  '首頁「待處理」與檢查清單（每月、每年、事件）',
+  '類別整理：日用品、美容美髮保養、刷卡回饋等',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -4258,6 +4278,7 @@ async function init() {
   await migrateCategoryTreeV1().catch(e => console.warn('[category tree migrate]', e));
   await migrateV227().catch(e => console.warn('[v2.27 migrate]', e));
   await migrateV230().catch(e => { console.error('[v2.30 migrate]', e); showToast(`資料升級失敗：${e?.message || e}`, { error: true }); });
+  const sampleOn = await maybeLoadSample().catch(e => { console.warn('[sample]', e); return false; });
   await refreshCatCache();
   await repairConfirmState().catch(e => console.warn('[repair confirm state]', e));
   // 配色主題 (§十五之四)：套用越早越好，這樣連底下的鎖定畫面都會是選定的主題色，
@@ -4332,6 +4353,7 @@ async function init() {
     await runDepositRollover().catch(e => console.warn('[deposit rollover]', e));
     await runCardAutoPay().catch(e => console.warn('[card autopay]', e));
     await syncGoalStages().catch(e => console.warn('[goal stages]', e));
+    if (sampleOn) showSampleBanner();
     const homeView = await getSetting(db, 'home_view', 'assets').catch(() => 'assets');
     _navHome = (homeView === 'calendar' || homeView === 'txnmanage') ? 'calendar' : 'assets';
     await navigate(_navHome);
@@ -4470,7 +4492,7 @@ async function navigate(view, { fromHistory = false } = {}) {
   else if (view === 'trend')        await renderTrend();
   else if (view === 'settings')     await renderSettings();
   else if (view === 'appsettings')  await renderSystemSettings();
-  else if (view === 'transfer')     await renderTransfer();
+  else if (view === 'transfer')     { await navigate('calendar'); return; }
   else if (view === 'holdings')     await renderHoldings();
   else if (view === 'txnmanage')    await renderTxnManage();
   else if (view === 'creditcard')   await renderCreditCard();
@@ -6243,6 +6265,222 @@ async function buildHousePlanCard() {
   return card;
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// v2.30.0 檢查清單：每月、每年（第 12 個月薪水入帳或 12 月底）、事件（發生時按一下）
+// 進度存在 checklists：id = monthly_YYYY-MM／yearly_YYYY／event_<key>_<日期>
+// ════════════════════════════════════════════════════════════════════════════
+const EVENT_LISTS = {
+  job: { label: '有新工作了', items: ['薪資帳戶換了的話，改「每月規劃」的收入和存入帳戶', '勞健保、團保轉過去了嗎', '想一下勞退要不要自提（最多 6%，可以少繳一點稅）', '固定支出有沒有變（通勤、午餐）', '更新重要財務資料清單'] },
+  move: { label: '要搬家了', items: ['銀行、信用卡、保險、券商改通訊地址', '戶籍要不要遷', '房租或房貸、管理費設成固定支出', '水電瓦斯、網路過戶或停用', '搬家、家具的花費先開一個專案'] },
+  baby: { label: '家裡要多一個人了', items: ['建立育兒基金（目標 NT$ 20 萬），目前的階段目標改成存一半', '開一個「懷孕到坐月子」專案，產檢、月子的花費記在這裡', '查一下生育補助、育兒津貼怎麼申請', '保險受益人、寶寶的保險', '想一下育嬰假那幾個月的收入'] },
+};
+const YEARLY_EXTRA = ['5 月報綜合所得稅', '看一下勞退要不要自提', '查一次自己的信用報告（聯徵，每年免費一次）', '保險受益人還是對的人嗎'];
+async function checklistAuto() {
+  const [trades, statements, expenses, recurring, buckets, allocs, deposits] = await Promise.all(['stock_trades', 'card_statements', 'expense_txns', 'recurring_expenses', 'buckets', 'bucket_allocations', 'time_deposits'].map(n => getAll(db, n).catch(() => [])));
+  const lastExport = await getSetting(db, 'last_export_at', null).catch(() => null);
+  const conc = calcConcentration(state.inv);
+  const cards = state.cards || [];
+  const unrecon = cards.map(c => ({ c, p: ccCurrentPeriods(c, expenses) })).filter(x => x.p?.billed && !statements.some(s => s.id === `${x.c.id}_${x.p.billed.payYm}` && s.reconciled_at));
+  const recTotal = recurring.filter(r => !r.is_expired).reduce((s, r) => s + calcRecurringMonthlyEquivalent(r, state.fxRates || {}), 0);
+  const yearAgo = isoDate(new Date(Date.now() - 365 * 86400000));
+  const recon = expenses.filter(t => t.category === 'cat_recon_diff' && t.date >= yearAgo).reduce((s, t) => s + (t.amount || 0), 0);
+  const spend = calcAnnualSpend(state.expenseTxns || [], state.accounts || [], state.fxRates || {});
+  const idle = (state.accounts || []).filter(a => (a.balance || 0) < 1000 && (a.updated_at || '') < isoDate(new Date(Date.now() - 182 * 86400000)) && a.bank_id);
+  const { bal } = await bucketBalances();
+  const goals = buckets.filter(b => b.status !== 'closed' && !b.stage_queued && b.target_amount > 0).map(b => `${b.name} ${Math.round(bal(b) / b.target_amount * 100)}%`);
+  return {
+    backup: lastExport ? `上次匯出：${fmtDate(String(lastExport).slice(0, 10))}` : '還沒匯出過',
+    recon: unrecon.length ? `${unrecon.map(x => x.c.name).join('、')} 還沒對帳` : '都對過了',
+    shares: trades.filter(t => t.estimated).length ? `${trades.filter(t => t.estimated).length} 筆定期定額要確認股數` : '沒有要確認的',
+    dep: deposits.filter(d => d.interest_unconfirmed).length ? `${deposits.filter(d => d.interest_unconfirmed).length} 筆定存利息要對` : '沒有要對的',
+    conc: conc ? `個股 ${Math.round(conc.stockPct * 100)}%（目標 ≤ 50%）・${conc.top[0] ? `${conc.top[0].name} ${Math.round(conc.top[0].pct * 100)}%（≤ 30%）` : ''}` : '還沒有投資',
+    concBad: conc ? conc.stockPct > 0.5 || (conc.top[0]?.pct || 0) > 0.3 : false,
+    goals: goals.length ? goals.join('・') : '還沒有目標',
+    recurring: `${recurring.filter(r => !r.is_expired).length} 項・每月合計約 NT$ ${fmt(Math.round(recTotal))}`,
+    ef: spend ? `最近 ${spend.months} 個月平均每月支出 NT$ ${fmt(spend.monthly)}` : '',
+    idle: idle.length ? idle.map(a => `${accLabel(a)} 餘額 NT$ ${fmt(a.balance || 0)}`).join('、') + '・超過 6 個月沒動' : '沒有',
+    reconSum: `最近一年合計 NT$ ${fmt(Math.round(recon))}`,
+  };
+}
+function monthlyItems(a) {
+  return [
+    { k: 'backup', t: '匯出備份', auto: a.backup, act: ['匯出', () => navigate('appsettings')] },
+    { k: 'recon', t: '信用卡對帳', auto: a.recon, act: ['去對帳', () => navigate('creditcard')] },
+    { k: 'shares', t: '確認定期定額的成交股數', auto: a.shares },
+    { k: 'dep', t: '定存利息', auto: a.dep },
+    { k: 'review', t: '看一下這個月的花費和規劃', auto: '', act: ['每月規劃', () => navigate('plan')] },
+  ];
+}
+function yearlyItems(a) {
+  return [
+    { k: 'conc', t: '投資比例', auto: a.conc, warn: a.concBad },
+    { k: 'goals', t: '各目標進度', auto: a.goals },
+    { k: 'recurring', t: '固定支出與訂閱', auto: a.recurring },
+    { k: 'insurance', t: '保險保障夠不夠', auto: '' },
+    { k: 'ef', t: '預備金的金額還合適嗎', auto: a.ef },
+    { k: 'idle', t: '整理用不到的帳戶', auto: a.idle },
+    { k: 'reconsum', t: '信用卡對帳差額', auto: a.reconSum },
+    { k: 'docs', t: '更新重要財務資料清單', auto: '帳戶、保單、券商放在哪裡，家人找得到' },
+    { k: 'fi', t: '財務自由試算', auto: '存一筆今年的預估', act: ['去存', () => navigate('plan')] },
+    ...YEARLY_EXTRA.map((t, i) => ({ k: `x${i}`, t, auto: '' })),
+  ];
+}
+async function getChecklist(id) { return (await getOne(db, 'checklists', id).catch(() => null)) || { id, done: {}, notes: {}, custom: [] }; }
+async function openChecklists(tab = 'monthly') {
+  const pnl = openPanel('檢查');
+  const draw = async () => {
+    const now = new Date(), ym = isoDate(now).slice(0, 7), y = now.getFullYear();
+    pnl.body.innerHTML = `<div class="ck-tabs" role="tablist">${[['monthly', '每月'], ['yearly', '每年'], ['event', '事件']].map(([k, l]) => `<button type="button" role="tab" aria-selected="${tab === k}" data-tab="${k}">${l}</button>`).join('')}</div><div class="ck-body"></div>`;
+    pnl.body.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { tab = b.dataset.tab; draw(); }));
+    const body = pnl.body.querySelector('.ck-body');
+    if (tab === 'event') {
+      const evs = await getAll(db, 'checklists').catch(() => []);
+      body.innerHTML = `<div class="rc-sec"><span style="font-size:12px;color:var(--text-2)">發生的時候按一下，會跳出對應的清單</span>
+        ${Object.entries(EVENT_LISTS).map(([k, e]) => `<button type="button" class="ck-ev" data-ev="${k}">${e.label}</button>`).join('')}</div>
+        ${evs.filter(x => x.id.startsWith('event_')).sort((a, b) => b.id.localeCompare(a.id)).map(x => `<button type="button" class="ck-ev ck-ev-old" data-open="${x.id}">${EVENT_LISTS[x.event]?.label || ''}・${fmtDate(x.started)}（${Object.values(x.done || {}).filter(Boolean).length}／${EVENT_LISTS[x.event]?.items.length || 0}）</button>`).join('')}`;
+      body.querySelectorAll('[data-ev]').forEach(b => b.addEventListener('click', async () => {
+        const id = `event_${b.dataset.ev}_${isoDate(new Date())}`;
+        const ex = await getOne(db, 'checklists', id).catch(() => null);
+        if (!ex) await putOne(db, 'checklists', { id, kind: 'event', event: b.dataset.ev, started: isoDate(new Date()), done: {}, notes: {}, custom: [] });
+        if (b.dataset.ev === 'baby') await startNewbornFund();
+        await drawList(body, id, EVENT_LISTS[b.dataset.ev].items.map((t, i) => ({ k: `e${i}`, t, auto: '' })), EVENT_LISTS[b.dataset.ev].label);
+      }));
+      body.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', async () => {
+        const x = await getChecklist(b.dataset.open);
+        await drawList(body, x.id, EVENT_LISTS[x.event].items.map((t, i) => ({ k: `e${i}`, t, auto: '' })), EVENT_LISTS[x.event].label);
+      }));
+      return;
+    }
+    const a = await checklistAuto();
+    if (tab === 'monthly') await drawList(body, `monthly_${ym}`, monthlyItems(a), `${Number(ym.slice(5))} 月檢查`);
+    else await drawList(body, `yearly_${y}`, yearlyItems(a), `${y} 年度檢查`, '第 12 個月薪水入帳或 12 月底');
+  };
+  const drawList = async (body, id, items, title, sub = '') => {
+    const cl = await getChecklist(id);
+    const all = [...items, ...(cl.custom || []).map(c => ({ k: c.k, t: c.t, auto: '', custom: true }))];
+    const n = all.filter(i => cl.done?.[i.k]).length;
+    body.innerHTML = `<section class="ck-card"><div class="ck-h"><div><b>${escHtml(title)}</b><span>${sub ? escHtml(sub) + '・' : ''}完成 ${n} / ${all.length}</span></div></div>
+      ${all.map(i => `<label class="ck-item"><input type="checkbox" data-k="${i.k}" ${cl.done?.[i.k] ? 'checked' : ''}><span class="ck-txt"><b>${escHtml(i.t)}</b>${i.auto ? `<span class="${i.warn ? 'warn' : ''}">${escHtml(i.auto)}</span>` : ''}
+        <input class="ck-note" data-note="${i.k}" value="${escHtml(cl.notes?.[i.k] || '')}" placeholder="備註">${i.act ? `<button type="button" class="btn btn-ghost btn-sm" data-act="${i.k}">${i.act[0]}</button>` : ''}</span></label>`).join('')}
+      <button type="button" class="rc-more" data-add>＋ 新增檢查項目</button></section>`;
+    const save = async patch => { const cur = await getChecklist(id); await putOne(db, 'checklists', { ...cur, ...patch(cur), updated_at: new Date().toISOString() }); };
+    body.querySelectorAll('[data-k]').forEach(x => x.addEventListener('change', async () => { await save(c => ({ done: { ...(c.done || {}), [x.dataset.k]: x.checked } })); drawList(body, id, items, title, sub); }));
+    body.querySelectorAll('[data-note]').forEach(x => { x.addEventListener('click', e => e.preventDefault()); x.addEventListener('change', () => save(c => ({ notes: { ...(c.notes || {}), [x.dataset.note]: x.value } }))); });
+    body.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', e => { e.preventDefault(); const it = all.find(i => i.k === b.dataset.act); pnl.close(); it.act[1](); }));
+    body.querySelector('[data-add]').addEventListener('click', async () => {
+      const t = prompt('新增檢查項目'); if (!t?.trim()) return;
+      await save(c => ({ custom: [...(c.custom || []), { k: 'c' + Date.now(), t: t.trim() }] })); drawList(body, id, items, title, sub);
+    });
+  };
+  await draw();
+}
+// 迎接新成員：建立育兒基金（20 萬），目前的階段目標改存一半，另外一半存進育兒基金
+async function startNewbornFund() {
+  const bs = await getAll(db, 'buckets').catch(() => []);
+  let f = bs.find(b => b.split_half_from_stage && b.status !== 'closed');
+  if (!f) {
+    f = { id: crypto.randomUUID(), name: '育兒基金', target_amount: 200000, goal_kind: 'independent', split_half_from_stage: true, contribution_mode: 'fixed', monthly_amount: null,
+      status: 'active', reminders: [{ type: 'full' }], created_at: new Date().toISOString(), note: '迎接新成員：目前的階段目標改存一半，另一半存在這裡' };
+    await putOne(db, 'buckets', f);
+    await putOne(db, 'projects', { id: crypto.randomUUID(), bucket_id: f.id, name: '懷孕到坐月子', status: 'active', created_at: new Date().toISOString() });
+  }
+  await syncGoalStages();
+  showToast('✓ 已建立育兒基金，目前的階段目標改存一半');
+}
+
+// ── 首頁「待處理」────────────────────────────────────────────────────────────
+async function buildTodoCard() {
+  const items = [];
+  const [trades, deposits, expenses, statements] = await Promise.all(['stock_trades', 'time_deposits', 'expense_txns', 'card_statements'].map(n => getAll(db, n).catch(() => [])));
+  for (const t of trades.filter(t => t.estimated)) items.push({ t: `確認成交股數：${t.ticker} ${fmtDate(t.date)}`, sub: `先記了大約 ${fmtShares(t.shares)} 股，對一下券商 App 的實際股數`, go: () => openQuickSheet({ editTrade: { ...t, _kind: 'trade' } }) });
+  for (const d of deposits.filter(d => d.interest_unconfirmed)) items.push({ t: `定存續存了：${d.label || ''}`, sub: `利息先記 ${d.currency || 'TWD'} ${fmt(d.interest_unconfirmed.amount)}，對一下銀行的實際利息`, go: () => openDepositInterest(d) });
+  for (const c of state.cards || []) {
+    const p = ccCurrentPeriods(c, expenses);
+    if (p?.billed && !statements.some(s => s.id === `${c.id}_${p.billed.payYm}` && s.bill_amount != null)) items.push({ t: `${c.name} ${ccPeriodLabel(p.billed.payYm)}帳單出來了`, sub: '填一下帳單金額，對一下有沒有漏記', go: () => openCardRecon(c.id, p.billed.payYm) });
+  }
+  const today = isoDate(new Date());
+  for (const p of state.payables || []) if (p.due_date && daysBetweenISO(today, p.due_date) <= 7) items.push({ t: `${p.due_date < today ? '已過期' : '快到期'}：還 ${p.name}`, sub: `${fmtDate(p.due_date)} 前・${p.currency || 'TWD'} ${fmt(p.amount)}`, go: () => openPayablePay(p) });
+  // 股價突然只剩成本的四成以下，又沒記過分割：可能是股票分割
+  const splitDone = new Set(trades.filter(t => t.kind === 'split').map(t => String(t.ticker).toUpperCase()));
+  for (const h of (state.inv?.enriched || [])) {
+    const avg = Number(h.cost_basis), px = h.shares > 0 && h.marketValueLocal != null ? h.marketValueLocal / h.shares : null;
+    const dismissed = (await getSetting(db, 'split_dismissed', []).catch(() => [])) || [];
+    if (avg > 0 && px > 0 && px < avg * 0.4 && !splitDone.has(String(h.ticker).toUpperCase()) && !dismissed.includes(h.id))
+      items.push({ t: `${h.ticker} 的價格比成本低很多`, sub: '是不是股票分割了？是的話記一筆「分割」，股數和成本會跟著調整', go: () => openQuickSheet({ prefillTrade: { kind: 'split', holdingId: h.id } }),
+        dismiss: async () => setSetting(db, 'split_dismissed', [...dismissed, h.id]) });
+  }
+  for (const r of await dueGoalReminders()) items.push({ t: r.text, sub: '', go: null, dismiss: () => dismissGoalReminder(r.bucket.id, r.key) });
+  const now = new Date(), ym = today.slice(0, 7);
+  const mcl = await getChecklist(`monthly_${ym}`);
+  if (now.getDate() >= 25 && !Object.values(mcl.done || {}).filter(Boolean).length) items.push({ t: '這個月的檢查', sub: '匯出備份、對帳、確認股數', go: () => openChecklists('monthly') });
+  if (now.getMonth() === 11 && now.getDate() >= 20) { const y = await getChecklist(`yearly_${now.getFullYear()}`); if (!Object.values(y.done || {}).filter(Boolean).length) items.push({ t: `${now.getFullYear()} 年度檢查`, sub: '一年一次，看一下整體', go: () => openChecklists('yearly') }); }
+  if (now.getMonth() === 4) { const y = await getChecklist(`yearly_${now.getFullYear()}`); if (!y.done?.x0) items.push({ t: '5 月報稅', sub: '綜合所得稅申報，5/31 截止', go: () => openChecklists('yearly') }); }
+  const card = el('div', 'card todo-card');
+  card.innerHTML = `<div class="todo-h"><b>待處理</b>${items.length ? `<span>${items.length}</span>` : ''}<button type="button" class="btn btn-ghost btn-sm" data-ck>檢查清單</button></div>
+    ${items.length ? items.map((it, i) => `<div class="todo-row"><button type="button" class="todo-main" data-i="${i}"><b>${escHtml(it.t)}</b>${it.sub ? `<span>${escHtml(it.sub)}</span>` : ''}</button>${it.dismiss ? `<button type="button" class="btn btn-ghost btn-sm" data-ok="${i}">知道了</button>` : ''}</div>`).join('') : '<div class="todo-empty">目前沒有要處理的</div>'}`;
+  card.querySelector('[data-ck]').addEventListener('click', () => openChecklists());
+  card.querySelectorAll('[data-i]').forEach(b => b.addEventListener('click', () => items[+b.dataset.i].go?.()));
+  card.querySelectorAll('[data-ok]').forEach(b => b.addEventListener('click', async () => { await items[+b.dataset.ok].dismiss(); renderHome(); }));
+  return card;
+}
+function openDepositInterest(d) {
+  const pnl = openPanel(`對一下利息：${d.label || ''}`);
+  const u = d.interest_unconfirmed;
+  pnl.body.innerHTML = `<div class="rc-sum"><div><span>${fmtDate(u.date)} 續存</span><b>本金 ${d.currency || 'TWD'} ${fmt(d.principal)}</b></div></div>
+    <label class="tf-field"><span>實際利息（${d.currency || 'TWD'}）</span><input type="number" inputmode="decimal" data-f value="${u.amount}"></label>
+    <button type="button" class="btn btn-primary rc-done" data-ok>確認</button>`;
+  pnl.body.querySelector('[data-ok]').addEventListener('click', async () => {
+    const v = parseFloat(pnl.body.querySelector('[data-f]').value); if (!(v >= 0)) return;
+    await confirmDepositInterest(d.id, v); pnl.close(); showToast('✓ 已更新利息'); await loadData(); renderHome();
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// v2.30.0 預覽版的範例資料：只在預覽網址、資料庫還是空的時候自動載入，
+// 頂端顯示「範例資料」與「清空範例」。正式版不會載入。
+// ════════════════════════════════════════════════════════════════════════════
+function isPreviewHost() { return /-git-preview-|localhost|127\.0\.0\.1/.test(location.hostname) || new URLSearchParams(location.search).has('sample'); }
+async function maybeLoadSample() {
+  if (!isPreviewHost()) return false;
+  if (await getSetting(db, 'sample_dismissed', false).catch(() => false)) return false;
+  if (await getSetting(db, 'sample_mode', false).catch(() => false)) return true;
+  const [accs, banks] = await Promise.all([getAll(db, 'accounts').catch(() => []), getAll(db, 'banks').catch(() => [])]);
+  if (accs.length || banks.length) return false;
+  const { buildSampleData } = await import('./sample.js');
+  const data = buildSampleData(new Date());
+  delete data._cardPaidUpTo;
+  // 信用卡：過去的期別當作已經繳了，待繳＝還沒繳的那幾期
+  const today = isoDate(new Date());
+  for (const c of data.credit_cards) {
+    let paid = null;
+    for (let back = 0; back <= 3; back++) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - back); const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; if (ccDueDateFor(c, ym) <= today) { paid = ym; break; } }
+    c.last_paid_period = paid;
+    c.current_balance = data.expense_txns.filter(t => t.cc_id === c.id && (ccPayYmOfDate(c, t.date) || '') > (paid || '')).reduce((s, t) => s + t.amount, 0);
+    c.autopay_from = paid ? ymNext(paid) : null;
+  }
+  const stores = Object.keys(data);
+  await atomic(db, [...stores, 'settings'], async tx => {
+    for (const s of stores) for (const row of data[s]) await tx.put(s, row);
+    await tx.put('settings', { key: 'sample_mode', value: true });
+    await tx.put('settings', { key: 'onboarding_completed', value: true });
+  });
+  return true;
+}
+async function clearSampleData() {
+  const keep = (await getAll(db, 'txn_categories').catch(() => []));
+  await replaceAllStores(db, BACKUP_STORES, { txn_categories: keep, settings: [{ key: 'mig_v230', value: true }, { key: 'onboarding_completed', value: false }, { key: 'sample_dismissed', value: true }, { key: 'seeded_v1', value: true }, { key: 'base_currency', value: 'TWD' }] });
+  location.reload();
+}
+function showSampleBanner() {
+  if (document.getElementById('sampleBanner')) return;
+  const b = el('div'); b.id = 'sampleBanner'; b.className = 'sample-banner';
+  b.innerHTML = `<span><b>範例資料</b>・這是預覽版，數字都是編的</span><button type="button" class="btn btn-sm">清空範例</button>`;
+  b.querySelector('button').addEventListener('click', () => openDeleteModal('清空範例資料？清空後是空白的 App，可以匯入自己的備份來試（不會影響正式版）。', clearSampleData));
+  document.body.appendChild(b);
+  const fit = () => { document.body.style.paddingTop = b.offsetHeight + 'px'; };
+  fit(); addEventListener('resize', fit);
+}
+
 let _qaKind = 'expense';
 
 // ── ＋記帳（v2.19.0，使用者決定）────────────────────────────────────────
@@ -6456,7 +6694,7 @@ async function renderHome() {
     const off = planDraft.invest.length ? planRunway(planDraft, { investOff: true }) : null;
     const tip = `台幣現金與活存 NT$ ${fmt(prw.cash)}（已扣信用卡待繳），照${planDraft.saved ? '本月規劃' : '目前的固定支出、投資與近幾個月平均生活費'}每月付 NT$ ${fmt(prw.monthlyOut)}${prw.paymentsLeft ? `；有期限的收入還有 ${prw.paymentsLeft} 次、共 NT$ ${fmt(prw.incomesLeft)}，在預計的月份加回來` : ''}。配息不算。`;
     return `<div class="sp-rw"><span class="sp-rw-k">台幣現金可撐 ${infoTip(tip)}</span>
-      <span class="sp-rw-v"><span class="sp-rw-stat"><small>${planDraft.saved ? '照規劃' : '照目前'}</small><b>${fmtRw(prw.months)}</b></span>${off && Number.isFinite(off.months) && off.months - prw.months > 0.05 ? `<span class="sp-rw-stat"><small>暫停投資</small><b>${fmtRw(off.months)}</b></span>` : off && !Number.isFinite(off.months) && Number.isFinite(prw.months) ? `<span class="sp-rw-stat"><small>暫停投資</small><b>一直撐下去</b></span>` : ''}</span></div>`;
+      <span class="sp-rw-v"><span class="sp-rw-stat"><small>${planDraft.saved ? '照規劃' : '照目前'}</small><b class="${rwTone(prw.months)}">${fmtRw(prw.months)}</b></span>${off && Number.isFinite(off.months) && off.months - prw.months > 0.05 ? `<span class="sp-rw-stat"><small>暫停投資</small><b class="${rwTone(off.months)}">${fmtRw(off.months)}</b></span>` : off && !Number.isFinite(off.months) && Number.isFinite(prw.months) ? `<span class="sp-rw-stat"><small>暫停投資</small><b>一直撐下去</b></span>` : ''}</span></div>${usdRunwayHtml(prw.monthlyOut)}`;
   })() : runwayLineHtml({ sp, essentials, actual: rwActual, passiveMonthly: rwPassive, basis: rwBasis });
   const content = document.getElementById('content');
   content.innerHTML = '';
@@ -6496,6 +6734,7 @@ async function renderHome() {
   // v2.24.0（使用者決定）：本月還要付跟紀錄頁的排程提醒是同一份清單，點一下就能確認本期
   hero.querySelectorAll('[data-due]').forEach(b => b.addEventListener('click', () => openDueConfirm(...b.dataset.due.split(':'))));
   root.appendChild(hero);
+  root.appendChild(await buildTodoCard().catch(e => { console.warn('[todo]', e); return el('div'); }));
   root.appendChild(await buildHomePlanCard());
   const fundAlert = await buildDcaFundAlert(); if (fundAlert) root.appendChild(fundAlert);
 
@@ -12346,6 +12585,17 @@ function planRunway(d, { investOff = false } = {}) {
   return { ...r, cash, monthlyOut, firstOut, incomesLeft: incomes.reduce((s, p) => s + p.amount, 0), paymentsLeft: incomes.length };
 }
 const fmtRw = m => !Number.isFinite(m) ? '一直撐下去' : fmtRunway(m);
+// v2.30.0：少於 6 個月橘色、少於 3 個月紅色（中間漸層）
+const rwTone = m => !Number.isFinite(m) ? '' : m < 3 ? 'rw-red' : m < 6 ? 'rw-orange' : '';
+// 美金另外算：美金現金與活存（不含定存、黃金），換成台幣付生活費可以再撐多久。
+function usdRunwayHtml(monthlyOutTwd) {
+  const accs = (state.accounts || []).filter(a => a.currency === 'USD' && a.include_in_total !== false && !a.exclude_from_runway);
+  const usd = accs.reduce((s, a) => s + (Number(a.balance) || 0), 0);
+  if (!(usd > 0) || !(monthlyOutTwd > 0)) return '';
+  const twd = toTWD(usd, 'USD', state.fxRates || {}) || 0;
+  const m = twd / monthlyOutTwd;
+  return `<div class="sp-rw"><span class="sp-rw-k">美金另外可撐 ${infoTip(`美金現金與活存 USD ${usd.toLocaleString('en-US', { maximumFractionDigits: 2 })}，用現在的匯率換成台幣、照同樣的每月花費算。美金沒有算進上面的台幣數字。`)}</span><span class="sp-rw-v"><span class="sp-rw-stat"><small>USD ${usd.toLocaleString('en-US', { maximumFractionDigits: 0 })}</small><b>${fmtRw(m)}</b></span></span></div>`;
+}
 
 // ── 規劃視窗 ─────────────────────────────────────────────────────────────
 let _mplStep = 0;
@@ -12903,7 +13153,7 @@ async function renderBuckets() {
     const isPercentMode = bucket.contribution_mode === 'percent';
 
     const card = el('div','card'); card.style.marginBottom='12px';
-    const stageTag = bucket.goal_kind === 'stage' && !closed ? `<span class="goal-stage">${bucket.stage_queued ? '之後' : achieved ? '已存好' : bucket.paused ? '暫停中' : '現在存這個'}・第 ${bucket.stage_order ?? '?'} 階段</span>` : bucket.paused && !closed ? '<span class="goal-stage">暫停中</span>' : '';
+    const stageTag = bucket.goal_kind === 'stage' && !closed ? `<span class="goal-stage">第 ${bucket.stage_order ?? '?'} 階段・${bucket.stage_queued ? '之後' : achieved ? '已存好' : bucket.paused ? '暫停' : '現在存'}</span>` : bucket.paused && !closed ? '<span class="goal-stage">暫停中</span>' : '';
 
     const header = el('div');
     header.style.cssText = 'padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer';
@@ -16847,9 +17097,7 @@ const TXN_MANAGE_TABS = [
     summary: async () => `${(await getAll(db,'recurring_expenses').catch(()=>[])).filter(i=>!i.is_expired).length} 筆` },
   { key:'recurring_income', label:'固定收入',       icon:'💵', render: () => renderRecurringIncome(),
     summary: async () => `${(await getAll(db,'recurring_income').catch(()=>[])).length} 筆` },
-  // v2.4.0（使用者要求）：「帳戶移轉」從側邊欄／「更多」選單移進這裡。
-  { key:'transfer',         label:'帳戶移轉',       icon:'🔀', render: () => renderTransfer(),
-    summary: async () => { const n = (await getAll(db,'transfer_logs').catch(()=>[])).length; return n ? `${n} 筆紀錄` : '手動轉帳'; } },
+  // v2.30.0：「帳戶移轉」頁拿掉——轉帳改在「＋記帳 › 轉帳」記，紀錄列在「紀錄」裡。
   { key:'rectransfer',      label:'定期轉帳／換匯', icon:'🔄', render: () => renderRecurringTransfers(),
     summary: async () => `${(await getAll(db,'recurring_transfers').catch(()=>[])).length} 筆` },
   { key:'dcaschedule',      label:'定期定額排程',   icon:'📈', render: () => renderDcaSchedules(),
@@ -16889,7 +17137,7 @@ async function renderTxnManage() {
     // 下整頁高度約 520px，扣掉上方標題列與底部導覽列仍有餘裕。
     const groups = [
       { title:'支出', keys:['creditcard','recurring','installment'] },
-      { title:'轉帳與收入', keys:['transfer','rectransfer','recurring_income','dcaschedule'] },
+      { title:'轉帳與收入', keys:['rectransfer','recurring_income','dcaschedule'] },
     ];
     const listed = new Set(groups.flatMap(g => g.keys));
     const leftovers = TXN_MANAGE_TABS.filter(t => !listed.has(t.key)).map(t => t.key);
