@@ -6434,12 +6434,12 @@ async function buildTodoCard() {
   }
   const today = isoDate(new Date());
   for (const p of state.payables || []) if (p.due_date && daysBetweenISO(today, p.due_date) <= 7) items.push({ t: `${p.due_date < today ? '已過期' : '快到期'}：還 ${p.name}`, sub: `${fmtDate(p.due_date)} 前・${p.currency || 'TWD'} ${fmt(p.amount)}`, go: () => openPayablePay(p) });
-  // 股價突然只剩成本的四成以下，又沒記過分割：可能是股票分割
+  // 股價只剩成本的三成以下，又沒記過分割：可能是股票分割
   const splitDone = new Set(trades.filter(t => t.kind === 'split').map(t => String(t.ticker).toUpperCase()));
   for (const h of (state.inv?.enriched || [])) {
     const avg = Number(h.cost_basis), px = h.shares > 0 && h.marketValueLocal != null ? h.marketValueLocal / h.shares : null;
     const dismissed = (await getSetting(db, 'split_dismissed', []).catch(() => [])) || [];
-    if (avg > 0 && px > 0 && px < avg * 0.4 && !splitDone.has(String(h.ticker).toUpperCase()) && !dismissed.includes(h.id))
+    if (avg > 0 && px > 0 && px < avg * 0.3 && !splitDone.has(String(h.ticker).toUpperCase()) && !dismissed.includes(h.id))
       items.push({ t: `${h.ticker} 的價格比成本低很多`, sub: '是不是股票分割了？是的話記一筆「分割」，股數和成本會跟著調整', go: () => openQuickSheet({ prefillTrade: { kind: 'split', holdingId: h.id } }),
         dismiss: async () => setSetting(db, 'split_dismissed', [...dismissed, h.id]) });
   }
