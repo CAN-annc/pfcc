@@ -6468,7 +6468,7 @@ function openDepositInterest(d) {
 // v2.30.0 預覽版的範例資料：只在預覽網址、資料庫還是空的時候自動載入，
 // 頂端顯示「範例資料」與「清空範例」。正式版不會載入。
 // ════════════════════════════════════════════════════════════════════════════
-function isPreviewHost() { return /-git-preview-|localhost|127\.0\.0\.1/.test(location.hostname) || new URLSearchParams(location.search).has('sample'); }
+function isPreviewHost() { const h = location.hostname; return (/\.vercel\.app$/.test(h) && h !== 'pfcc-psi.vercel.app') || /^(localhost|127\.0\.0\.1)$/.test(h) || new URLSearchParams(location.search).has('sample'); }
 async function maybeLoadSample() {
   if (!isPreviewHost()) return false;
   if (await getSetting(db, 'sample_dismissed', false).catch(() => false)) return false;
