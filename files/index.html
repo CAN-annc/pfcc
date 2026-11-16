@@ -5674,7 +5674,7 @@ async function buildQuickInvest({ date = null, onDone = null, edit = null, prefi
     if (!settleTouched && q('date').value) q('settle').value = settleDateFor(mk, q('date').value, _twHolidays);
     const sh = parseFloat(q('shares').value), amt = parseFloat(q('amt').value);
     if (!feeTouched && (kind === 'buy' || kind === 'sell') && sh > 0 && amt > 0) {
-      q('fee').value = mk === 'TW' ? twFee(amt) : +(amt * 0.005).toFixed(2);
+      q('fee').value = mk === 'TW' ? twFee(amt, sh) : +(amt * 0.005).toFixed(2);
       if (kind === 'sell' && mk === 'TW' && !q('tax').value) { const h = holdingNow(); q('tax').value = Math.floor(amt * (h?.asset_type === 'etf' || /^00/.test(q('ticker').value) ? 0.001 : 0.003)); }
     }
     const fee = parseFloat(q('fee').value) || 0, tax = parseFloat(q('tax').value) || 0;
@@ -14752,10 +14752,10 @@ async function ensureRealizedCategory() {
   await putOne(db, 'txn_categories', cat);
   return cat;
 }
-function estimateSellCosts(h, gross) {
+function estimateSellCosts(h, gross, shares = 1000) {
   const isTW = (h.market || 'TW') !== 'US';
   if (!isTW || !(gross > 0)) return { fee: 0, tax: 0 };
-  const fee = Math.max(20, Math.floor(gross * 0.001425));
+  const fee = twFee(gross, shares);
   const tax = Math.floor(gross * (h.asset_type === 'etf' ? 0.001 : 0.003));
   return { fee, tax };
 }
@@ -14860,7 +14860,7 @@ async function openSellModal(h, txn = null) {
   $('sellTax').oninput = () => { taxTouched = true; render(); };
   function render() {
     const shares = parseFloat($('sellShares').value) || 0, price = parseFloat($('sellPrice').value) || 0;
-    const est = estimateSellCosts(h, shares * price);
+    const est = estimateSellCosts(h, shares * price, shares);
     if (!feeTouched) $('sellFee').value = est.fee || (hCur === 'TWD' ? '' : 0);
     if (!taxTouched) $('sellTax').value = est.tax || (hCur === 'TWD' ? '' : 0);
     const r = calcSale({ shares, price, fee: parseFloat($('sellFee').value) || 0, tax: parseFloat($('sellTax').value) || 0, costPerShare: parseFloat($('sellCost').value) || 0 });

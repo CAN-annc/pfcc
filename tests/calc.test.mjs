@@ -22,6 +22,10 @@ test('估算股數：台股整數、美股 5 位小數', () => {
   assert.equal(C.estimateShares({ amount: 100, price: 603.21, fee: 0.2, market: 'US' }), 0.16544);
   assert.equal(C.twFee(4630), 20);
   assert.equal(C.twFee(100000), 142);
+  // 零股：2301 10 股 × 213.5 → 3；2330 2 股 × 2240 → 6（台新 11/18 交割款 6,624）
+  assert.equal(C.twFee(2135, 10), 3);
+  assert.equal(C.twFee(4480, 2), 6);
+  assert.equal(2135 + 4480 + C.twFee(2135, 10) + C.twFee(4480, 2), 6624);
 });
 
 test('平均成本法：買、買、賣', () => {

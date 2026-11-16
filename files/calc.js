@@ -2061,7 +2061,8 @@ export function settleDateFor(market, tradeDate, holidays = new Set()) {
   return market === 'TW' ? addBusinessDays(tradeDate, 2, holidays) : tradeDate;
 }
 // 台股手續費預設：0.1425%，最低 20 元
-export function twFee(gross) { return gross > 0 ? Math.max(20, Math.floor(gross * 0.001425)) : 0; }
+// 零股（不到 1,000 股）最低 1 元、整股最低 20 元（台新等多數券商；使用者 2026-11-16 實際交割款核對）
+export function twFee(gross, shares = 1000) { return gross > 0 ? Math.max(shares > 0 && shares < 1000 ? 1 : 20, Math.floor(gross * 0.001425)) : 0; }
 // 定期定額估算股數：台股無條件捨去到整數；美股保留到小數第 5 位
 export function estimateShares({ amount, price, fee = 0, market }) {
   if (!(amount > 0) || !(price > 0)) return null;
