@@ -1950,7 +1950,7 @@ export function calcStorageChecks({ buckets = [], allocations = [], expenseTxns 
 export function estimateTransferFees(lines = [], { source, accounts = [], transferLogs = [], month }) {
   const bankOf = id => accounts.find(a => a.id === id)?.bank_id ?? null;
   const isCross = toId => !(source.bank_id && bankOf(toId) === source.bank_id);
-  const usedCross = transferLogs.filter(l => l.from_account_id === source.id && String(l.created_at || l.date || '').slice(0, 7) === month && isCross(l.to_account_id)).length;
+  const usedCross = transferLogs.filter(l => l.from_account_id === source.id && String(l.date || l.created_at || '').slice(0, 7) === month && isCross(l.to_account_id)).length;
   let remaining = source.free_transfers != null ? source.free_transfers - usedCross : null;
   return lines.map(l => {
     if (!isCross(l.toId)) return { ...l, kind: source.same_bank_free === false ? 'fee' : 'same', fee: source.same_bank_free === false ? (source.transfer_fee || 0) : 0 };
@@ -2017,4 +2017,93 @@ export function calcJarBudgets(jars = [], spendTotal = 0) {
   const sj = jars.filter(isSpendJar);
   const sum = sj.reduce((s, j) => s + (j.percent || 0), 0) || 1;
   return sj.map(j => ({ key: j.key, label: j.label, color: j.color, percent: j.percent, share: (j.percent || 0) / sum, budget: Math.round(spendTotal * (j.percent || 0) / sum) }));
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// 投資交易（v2.30.0，第 2～3 項）
+// ════════════════════════════════════════════════════════════════════════════
+// 證交所休市日的備用清單（API 抓不到時用；颱風假等臨時休市由使用者改交割日）。
+export const TW_HOLIDAYS_FALLBACK = {
+  2026: ['2026-01-01','2026-02-12','2026-02-13','2026-02-16','2026-02-17','2026-02-18','2026-02-19','2026-02-20','2026-02-27',
+         '2026-04-03','2026-04-06','2026-05-01','2026-06-19','2026-09-25','2026-09-28','2026-10-09','2026-10-26','2026-12-25'],
+  2027: ['2027-01-01'],
+};
+function isoAdd(dateStr, days) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const t = new Date(y, m - 1, d + days);
+  return `${t.getFullYear()}-${pad2(t.getMonth() + 1)}-${pad2(t.getDate())}`;
+}
+export function isBusinessDay(dateStr, holidays = new Set()) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const wd = new Date(y, m - 1, d).getDay();
+  return wd !== 0 && wd !== 6 && !holidays.has(dateStr);
+}
+export function addBusinessDays(dateStr, n, holidays = new Set()) {
+  let cur = dateStr, left = n;
+  while (left > 0) { cur = isoAdd(cur, 1); if (isBusinessDay(cur, holidays)) left--; }
+  return cur;
+}
+// 遇到休市順延到下一個交易日（定期定額扣款日用）
+export function nextBusinessDay(dateStr, holidays = new Set()) {
+  let cur = dateStr;
+  while (!isBusinessDay(cur, holidays)) cur = isoAdd(cur, 1);
+  return cur;
+}
+// 台股 T+2 交割（跳過週末與休市日）；美股（複委託）下單就圈存，交易日當天扣。
+export function settleDateFor(market, tradeDate, holidays = new Set()) {
+  return market === 'TW' ? addBusinessDays(tradeDate, 2, holidays) : tradeDate;
+}
+// 台股手續費預設：0.1425%，最低 20 元
+export function twFee(gross) { return gross > 0 ? Math.max(20, Math.floor(gross * 0.001425)) : 0; }
+// 定期定額估算股數：台股無條件捨去到整數；美股保留到小數第 5 位
+export function estimateShares({ amount, price, fee = 0, market }) {
+  if (!(amount > 0) || !(price > 0)) return null;
+  const raw = (amount - fee) / price;
+  return market === 'TW' ? Math.max(0, Math.floor(raw)) : Math.floor(raw * 1e5) / 1e5;
+}
+const r6 = v => Math.round(v * 1e6) / 1e6;
+// 由交易紀錄算出持股：股數、總成本（含買進手續費）、平均成本、每筆賣出的已實現損益。
+// method：'avg'（台股券商用平均成本）｜'fifo'（美股複委託多用先進先出）。
+// 交易依日期、再依建立時間排序；期初（opening）當作一筆買進。
+export function calcPositionFromTrades(trades = [], method = 'avg') {
+  const list = [...trades].filter(t => t && t.kind !== 'dividend')
+    .sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.kind === 'opening' ? -1 : b.kind === 'opening' ? 1 : 0) || String(a.created_at || '').localeCompare(String(b.created_at || '')));
+  let shares = 0, cost = 0, costKnown = true;
+  const lots = [];             // fifo：{ shares, cost }
+  const realized = {};         // tradeId → 已實現損益
+  for (const t of list) {
+    const sh = Number(t.shares) || 0;
+    if (t.kind === 'opening' || t.kind === 'buy') {
+      const c = t.total_cost != null ? Number(t.total_cost) : null;
+      if (c == null || !Number.isFinite(c)) costKnown = false;
+      shares = r6(shares + sh); cost = r6(cost + (c || 0));
+      lots.push({ shares: sh, cost: c || 0 });
+    } else if (t.kind === 'stock_dividend') {
+      shares = r6(shares + sh); lots.push({ shares: sh, cost: 0 });
+    } else if (t.kind === 'split') {
+      const ratio = Number(t.ratio) || 1;
+      shares = r6(shares * ratio); lots.forEach(l => { l.shares = r6(l.shares * ratio); });
+    } else if (t.kind === 'sell') {
+      const sell = Math.min(sh, shares);
+      let removed = 0;
+      if (method === 'fifo') {
+        let left = sell;
+        while (left > 1e-9 && lots.length) {
+          const l = lots[0];
+          const take = Math.min(left, l.shares);
+          const part = l.shares > 0 ? l.cost * (take / l.shares) : 0;
+          removed += part; l.cost = r6(l.cost - part); l.shares = r6(l.shares - take); left = r6(left - take);
+          if (l.shares <= 1e-9) lots.shift();
+        }
+      } else {
+        removed = shares > 0 ? cost * (sell / shares) : 0;
+        // 平均成本法：剩下的批次同比例縮小，之後切回 fifo 也一致
+        const k = shares > 0 ? (shares - sell) / shares : 0; lots.forEach(l => { l.shares = r6(l.shares * k); l.cost = r6(l.cost * k); });
+      }
+      shares = r6(shares - sell); cost = r6(Math.max(0, cost - removed));
+      if (t.proceeds != null) realized[t.id] = Math.round((Number(t.proceeds) - removed) * 100) / 100;
+      if (shares <= 1e-9) { shares = 0; cost = 0; lots.length = 0; }
+    }
+  }
+  return { shares, totalCost: costKnown ? cost : null, avgCost: costKnown && shares > 0 ? cost / shares : null, realized };
 }

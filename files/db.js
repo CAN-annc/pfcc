@@ -5,7 +5,7 @@
  */
 
 const DB_NAME = 'pfcc';
-const DB_VERSION = 16;
+const DB_VERSION = 17;
 
 export function openDB() {
   return new Promise((resolve, reject) => {
@@ -353,6 +353,23 @@ function createSchema(db, oldVersion, tx) {
     const snap = db.createObjectStore('asset_snapshots', { keyPath: 'id' });
     snap.createIndex('date', 'date');
   }
+
+  // Version 17（v2.30.0）：
+  //  ・stock_trades：每一筆買進／賣出／股利／配股／分割／期初，持股股數與平均成本由它算出
+  //  ・payables：應付款（欠別人、錢暫時放在自己帳戶）
+  //  ・card_statements：信用卡每一期帳單（帳單金額、對帳結果、繳款）
+  //  ・checklists：每月／每年／事件檢查清單的紀錄
+  if (!db.objectStoreNames.contains('stock_trades')) {
+    const st = db.createObjectStore('stock_trades', { keyPath: 'id' });
+    st.createIndex('holding_key', 'holding_key');
+    st.createIndex('date', 'date');
+  }
+  if (!db.objectStoreNames.contains('payables')) db.createObjectStore('payables', { keyPath: 'id' });
+  if (!db.objectStoreNames.contains('card_statements')) {
+    const cs = db.createObjectStore('card_statements', { keyPath: 'id' });
+    cs.createIndex('card_id', 'card_id');
+  }
+  if (!db.objectStoreNames.contains('checklists')) db.createObjectStore('checklists', { keyPath: 'id' });
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -499,7 +516,8 @@ export const DEFAULT_CATEGORIES = [
   { id:'cat_housing',    type:'expense', label:'居住',     icon:'🏠', color:'#0F766E', sort_order:2,  is_default:true, parent_id:null },
   { id:'cat_transport',  type:'expense', label:'交通',     icon:'🚌', color:'#0369A1', sort_order:3,  is_default:true, parent_id:null },
   { id:'cat_shopping',   type:'expense', label:'購物',     icon:'🛍️', color:'#DB2777', sort_order:4,  is_default:true, parent_id:null },
-  { id:'cat_daily',      type:'expense', label:'生活用品', icon:'🧴', color:'#65A30D', sort_order:5,  is_default:true, parent_id:null },
+  { id:'cat_daily',      type:'expense', label:'日用品',   icon:'🧴', color:'#65A30D', sort_order:5,  is_default:true, parent_id:null },
+  { id:'cat_beauty',     type:'expense', label:'美容美髮保養', icon:'💄', color:'#C026D3', sort_order:5.5, is_default:true, parent_id:null },
   { id:'cat_digital',    type:'expense', label:'數位',     icon:'📱', color:'#4F46E5', sort_order:6,  is_default:true, parent_id:null },
   { id:'cat_entertain',  type:'expense', label:'娛樂',     icon:'🎬', color:'#D97706', sort_order:7,  is_default:true, parent_id:null },
   { id:'cat_edu',        type:'expense', label:'教育',     icon:'📚', color:'#7C3AED', sort_order:8,  is_default:true, parent_id:null },
@@ -508,29 +526,28 @@ export const DEFAULT_CATEGORIES = [
   { id:'cat_social',     type:'expense', label:'人情',     icon:'🎁', color:'#BE185D', sort_order:11, is_default:true, parent_id:null },
   { id:'cat_tax',        type:'expense', label:'稅費',     icon:'🧾', color:'#57534E', sort_order:12, is_default:true, parent_id:null },
   { id:'cat_other_out',  type:'expense', label:'其他',     icon:'➖', color:'#6B7280', sort_order:13, is_default:true, parent_id:null },
-  { id:'cat_saving',     type:'expense', label:'存下來的', icon:'🏦', color:'#15803D', sort_order:14, is_default:true, parent_id:null, group:'save' },
   // ── 支出：子分類 ──
   ..._sub('cat_food', 'expense', [['cat_food_breakfast','早餐','🥐'],['cat_food_lunch','午餐','🍱'],['cat_food_dinner','晚餐','🍲'],['cat_food_supper','宵夜','🌙'],['cat_food_snack','點心','🍰'],['cat_food_drink','飲料','🧋'],['cat_food_party','聚餐','🍻'],['cat_food_grocery','買菜','🥬']]),
   ..._sub('cat_housing', 'expense', [['cat_house_rent','房租／房貸','🔑'],['cat_bill','水電瓦斯','💡'],['cat_house_mgmt','管理費','🏢'],['cat_house_net','網路','🌐'],['cat_house_repair','修繕','🔧']]),
   ..._sub('cat_transport', 'expense', [['cat_tr_hsr','高鐵','🚄'],['cat_tr_tra','台鐵','🚆'],['cat_tr_mrt','捷運','🚇'],['cat_tr_bus','公車','🚌'],['cat_tr_taxi','計程車','🚕'],['cat_tr_fuel','加油','⛽'],['cat_tr_park','停車','🅿️'],['cat_tr_service','汽機車保養','🛠️']]),
-  ..._sub('cat_shopping', 'expense', [['cat_shop_clothes','服飾','👕'],['cat_shop_makeup','化妝品','💄'],['cat_shop_skin','保養品','🧴'],['cat_shop_3c','3C 家電','💻']]),
+  ..._sub('cat_shopping', 'expense', [['cat_shop_clothes','服飾','👕'],['cat_shop_3c','3C 與配件','💻'],['cat_shop_home','居家布置','🪴']]),
+  ..._sub('cat_beauty', 'expense', [['cat_beauty_hair','美髮','💇'],['cat_shop_skin','保養品','🧴'],['cat_shop_makeup','化妝品','💄']]),
   ..._sub('cat_daily', 'expense', [['cat_daily_clean','清潔用品','🧽'],['cat_daily_hygiene','衛生用品','🧻']]),
   ..._sub('cat_digital', 'expense', [['cat_dig_phone','電信費','📶'],['cat_dig_app','App 訂閱','📲'],['cat_dig_stream','影音串流','📺']]),
   ..._sub('cat_entertain', 'expense', [['cat_ent_movie','電影','🎞️'],['cat_ent_ktv','唱歌','🎤'],['cat_ent_travel','旅遊','✈️'],['cat_ent_hobby','興趣','🎨']]),
-  ..._sub('cat_edu', 'expense', [['cat_edu_course','課程','🎓'],['cat_edu_book','書籍','📖'],['cat_edu_gym','健身','🏋️']]),
+  ..._sub('cat_edu', 'expense', [['cat_edu_book','書籍','📖'],['cat_edu_course','課程','🎓'],['cat_edu_gym','健身','🏋️'],['cat_edu_stationery','文具','✏️'],['cat_edu_expo','展覽','🖼️']]),
   ..._sub('cat_medical', 'expense', [['cat_med_clinic','看診','🩺'],['cat_med_drug','藥品','💊'],['cat_med_supp','保健食品','🫙']]),
-  ..._sub('cat_insurance', 'expense', [['cat_ins_health','健康險','❤️'],['cat_ins_accident','意外險','🩹'],['cat_ins_vehicle','汽機車險','🚗']]),
+  ..._sub('cat_insurance', 'expense', [['cat_ins_pension','國民年金','🪪'],['cat_ins_accident','意外險','🩹'],['cat_ins_health','健康險','❤️'],['cat_ins_vehicle','汽機車險','🚗'],['cat_savings_ins','儲蓄險','🏦',{ group:'save' }]]),
   ..._sub('cat_social', 'expense', [['cat_soc_envelope','紅白包','🧧'],['cat_soc_gift','禮物','🎁']]),
   ..._sub('cat_tax', 'expense', [['cat_tax_income','所得稅','🧾'],['cat_tax_license','牌照稅','🚘'],['cat_tax_fuel','燃料稅','⛽'],['cat_tax_land','地價稅','🗺️'],['cat_tax_house','房屋稅','🏠']]),
-  ..._sub('cat_other_out', 'expense', [['cat_bad_debt_writeoff','呆帳沖銷','🗑️']]),
-  ..._sub('cat_saving', 'expense', [['cat_invest_out','投資','📈',{ group:'save' }],['cat_savings_ins','儲蓄險','🏦',{ group:'save' }]]),
+  ..._sub('cat_other_out', 'expense', [['cat_fee','手續費','🏦'],['cat_bad_debt_writeoff','呆帳沖銷','🗑️'],['cat_recon_diff','對帳差額','⚖️']]),
   // ── 收入 ──
   { id:'cat_inc_active', type:'income', label:'主動收入',   icon:'💼', color:'#059669', sort_order:1, is_default:true, parent_id:null },
   { id:'cat_inc_invest', type:'income', label:'投資與被動', icon:'📈', color:'#0369A1', sort_order:2, is_default:true, parent_id:null },
   { id:'cat_other_in',   type:'income', label:'其他',       icon:'＋', color:'#6B7280', sort_order:3, is_default:true, parent_id:null },
   ..._sub('cat_inc_active', 'income', [['cat_salary','薪資','💼'],['cat_bonus','獎金','🎉',{ irregular_default:true }],['cat_inc_freelance','兼職接案','🧑‍💻'],['cat_inc_commission','佣金','🤝']]),
-  ..._sub('cat_inc_invest', 'income', [['cat_interest','利息','🏧'],['cat_div_tw','股利（台股）','🏦'],['cat_div_us','股息（美股）','🌐'],['cat_inc_rent','租金','🏘️',{ passive:true }],['cat_realized','已實現損益','💹',{ irregular_default:true }],['cat_dca','定期定額成交','🔄']]),
-  ..._sub('cat_other_in', 'income', [['cat_inc_refund','退稅補助','🏛️',{ irregular_default:true }],['cat_inc_unemp','失業給付','🪪'],['cat_inc_gift','紅包贈與','🧧',{ irregular_default:true }],['cat_inc_secondhand','二手變賣','♻️',{ irregular_default:true }],['cat_inc_lottery','發票中獎','🎫',{ irregular_default:true }],['cat_fee_rebate','手續費退回','↩️'],['cat_receivable','應收款入帳','✓']]),
+  ..._sub('cat_inc_invest', 'income', [['cat_interest','利息','🏧'],['cat_div_tw','股利（台股）','🏦'],['cat_div_us','股息（美股）','🌐'],['cat_inc_rent','租金','🏘️',{ passive:true }],['cat_realized','已實現損益','💹',{ irregular_default:true }],['cat_fee_rebate','手續費退款','↩️',{ irregular_default:true }]]),
+  ..._sub('cat_other_in', 'income', [['cat_inc_refund','退稅/補助','🏛️',{ irregular_default:true }],['cat_inc_gift','紅包贈與','🧧',{ irregular_default:true }],['cat_inc_secondhand','二手變賣','♻️',{ irregular_default:true }],['cat_inc_lottery','發票中獎','🎫',{ irregular_default:true }],['cat_inc_cashback','刷卡回饋','💳',{ irregular_default:true }],['cat_receivable','應收款入帳','✓']]),
 ];
 // 舊版預設分類的名稱——使用者沒改過名才換成新名稱（改過的保留）。
 export const LEGACY_CATEGORY_LABELS = {

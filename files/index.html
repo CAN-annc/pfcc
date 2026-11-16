@@ -357,7 +357,7 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .qa-sheet-head .qa-date{position:relative;flex:1;display:inline-flex;align-items:center;gap:4px;font-size:12.5px;color:var(--blue);cursor:pointer}
 .qa-sheet-head .qa-date .qa-date-t{flex:0 0 auto;font-size:12.5px;color:var(--blue);font-weight:600}
 .qa-sheet-head .qa-date input{position:absolute;inset:-8px 0;opacity:0;width:100%;cursor:pointer}
-.qa-kind{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:0 16px 4px;padding:3px;border-radius:10px;background:var(--surface-2)}
+.qa-kind{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:0 16px 4px;padding:3px;border-radius:10px;background:var(--surface-2)}
 .qa-kind button{font:inherit;font-size:13px;font-weight:600;padding:7px;border:none;border-radius:8px;background:transparent;color:var(--text-2);cursor:pointer}
 .qa-kind button.on{background:var(--card);color:var(--text-1);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .qa-sheet-x{border:none;background:var(--surface-2);color:var(--text-2);width:32px;height:32px;border-radius:50%;font-size:13px;cursor:pointer;flex-shrink:0;align-self:center}
@@ -389,6 +389,26 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .qa-cell.is-more{background:transparent;border-style:dashed;color:var(--text-2)}
 .qa-cell.is-sub{background:var(--card)}
 .qa-cell:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.txn-neutral{display:flex;align-items:center;gap:10px;padding:11px 12px 11px 16px;border-top:1px solid var(--border)}
+.txn-neutral-ico{width:34px;height:34px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.txn-neutral-main{flex:1;min-width:0}
+.txn-neutral-title{font-size:13px;font-weight:500;color:var(--text-1)}
+.txn-neutral-title .tk{font-size:14px;font-weight:700}
+.txn-neutral-sub{font-size:11px;color:var(--text-3);margin-top:2px}
+.txn-neutral-amt{text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-2);flex-shrink:0}
+.tf-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:6px}
+.tf .qa-amt{flex:none;width:100%;box-sizing:border-box}
+.tf-bal{font-size:11px;color:var(--text-3);margin-top:4px;font-variant-numeric:tabular-nums;min-height:14px}
+.tf-lab{display:flex;align-items:center;gap:6px}
+.tf-field{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text-3);min-width:0}
+.tf-field>span{display:flex;align-items:center;gap:4px;min-height:18px;font-weight:600}
+.tf-field input,.tf-field select{font-size:15px;padding:8px 10px;border:1px solid var(--border-2);border-radius:8px;background:var(--card);color:var(--text-1);min-width:0;width:100%;box-sizing:border-box;font-variant-numeric:tabular-nums}
+.tf-field.is-calc input{background:var(--accent-tint, var(--surface-2))}
+.tf-hint{font-size:11px;color:var(--text-3);margin-top:4px;min-height:14px}
+.tf-more{margin-top:10px;font-size:12px;color:var(--text-2)}
+.tf-more summary{cursor:pointer;padding:6px 0}
+.tf-save{width:100%;margin-top:14px;min-height:44px}
+.tf-fx{margin-top:4px}
 .qa-paypair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:6px;flex:1;min-width:0}
 .qa-chip{font:inherit;font-size:12.5px;padding:7px 11px;border-radius:999px;border:1px solid var(--border-2);background:var(--card);color:var(--text-1);cursor:pointer}
 .qa-chip:active{transform:scale(.96)}
@@ -3945,7 +3965,8 @@ function catOptionsHtml(type, selected = null, { exclude = [], emptyLabel = null
 // （收支紀錄、轉帳紀錄上記的「確認的是哪一期」）找回最近確認的那一期補回去。
 // 只往後補、不往前改；用「略過本期」略過的那幾期沒有留下紀錄，找不回來。
 async function repairConfirmState() {
-  const [rec, dca, rt, inst, exp, inc, logs] = await Promise.all(['recurring_expenses','dca_schedules','recurring_transfers','installments','expense_txns','income_txns','transfer_logs'].map(st => getAll(db, st).catch(() => [])));
+  const [rec, dca, rt, inst, exp, inc0, logs, trades] = await Promise.all(['recurring_expenses','dca_schedules','recurring_transfers','installments','expense_txns','income_txns','transfer_logs','stock_trades'].map(st => getAll(db, st).catch(() => [])));
+  const inc = [...inc0, ...trades]; // v2.30.0：定期定額改成投資交易紀錄（同樣有 dca_schedule_id／dca_occ_date）
   const maxBy = (list, idKey, dateKey) => { const m = {}; list.forEach(t => { const id = t[idKey], d = t[dateKey]; if (id && d && (!m[id] || d > m[id])) m[id] = d; }); return m; };
   const fixDates = async (store, items, latest) => {
     let n = 0;
@@ -4059,10 +4080,7 @@ async function migrateV227(force = false) {
     drop.forEach(a => t.objectStore('bucket_allocations').delete(a.id));
     await new Promise(r => { t.oncomplete = r; t.onerror = r; });
   }
-  if (!(await getOne(db, 'txn_categories', 'cat_inc_unemp').catch(() => null))) {
-    const d = DEFAULT_CATEGORIES.find(c => c.id === 'cat_inc_unemp');
-    if (d) await putOne(db, 'txn_categories', { ...d });
-  }
+  // v2.30.0：「失業給付」已併入「退稅/補助」，不再補建。
   await setSetting(db, 'mig_v227', true).catch(() => {});
 }
 
@@ -4073,7 +4091,73 @@ async function migrateV230(force = false) {
   for (const step of MIGRATIONS_V230) await step();
   await setSetting(db, 'mig_v230', true);
 }
-const MIGRATIONS_V230 = [];
+const MIGRATIONS_V230 = [migrateCategoriesV230];
+
+// v2.30.0 類別樹（使用者 2026-11-11 勾選確認）。舊類別合併時，所有引用它的紀錄
+// 一起搬過去：支出／收入紀錄、固定支出與分期的分類、預算、固定次數收入設定。
+async function remapCategoryRefs(map) {
+  if (!Object.keys(map).length) return;
+  const [ex, inc, rec, inst, bud, recInc] = await Promise.all(['expense_txns','income_txns','recurring_expenses','installments','budgets','recurring_income'].map(n => getAll(db, n)));
+  await atomic(db, ['expense_txns','income_txns','recurring_expenses','installments','budgets','recurring_income','settings'], async (tx) => {
+    for (const t of ex)  if (map[t.category]) await tx.put('expense_txns', { ...t, category: map[t.category] });
+    for (const t of inc) if (map[t.category]) await tx.put('income_txns', { ...t, category: map[t.category] });
+    for (const r of rec)  if (map[r.spend_category]) await tx.put('recurring_expenses', { ...r, spend_category: map[r.spend_category] });
+    for (const r of inst) if (map[r.spend_category]) await tx.put('installments', { ...r, spend_category: map[r.spend_category] });
+    for (const r of recInc) if (map[r.category]) await tx.put('recurring_income', { ...r, category: map[r.category] });
+    for (const b of bud) if (map[b.category_id]) await tx.put('budgets', { ...b, category_id: map[b.category_id] });
+    const li = await tx.get('settings', 'limited_income');
+    if (li && Array.isArray(li.value) && li.value.some(x => map[x.category]))
+      await tx.put('settings', { key: 'limited_income', value: li.value.map(x => map[x.category] ? { ...x, category: map[x.category] } : x) });
+  });
+}
+async function migrateCategoriesV230() {
+  const cats = await getAll(db, 'txn_categories');
+  const byId = Object.fromEntries(cats.map(c => [c.id, c]));
+  const def = Object.fromEntries(DEFAULT_CATEGORIES.map(c => [c.id, c]));
+  const findTop = (type, label, notId) => cats.find(c => c.type === type && !c.parent_id && c.label === label && c.id !== notId);
+  const map = {};      // 舊 id → 新 id（紀錄要搬）
+  const del = new Set();
+  const put = {};      // 要寫回的類別
+  const upd = (id, patch) => { put[id] = { ...(put[id] || byId[id] || def[id]), ...patch }; };
+  // ① 使用者自己建的「日用品」主分類併入 cat_daily（改名日用品）
+  const userDaily = findTop('expense', '日用品', 'cat_daily');
+  if (userDaily) { map[userDaily.id] = 'cat_daily'; del.add(userDaily.id);
+    cats.filter(c => c.parent_id === userDaily.id).forEach(c => upd(c.id, { parent_id: 'cat_daily' })); }
+  if (byId.cat_daily) upd('cat_daily', { label: '日用品' });
+  // ② 美容美髮保養：沿用使用者已有的主分類，沒有就建
+  const userBeauty = findTop('expense', '美容美髮保養', 'cat_beauty');
+  const beautyId = byId.cat_beauty ? 'cat_beauty' : (userBeauty ? userBeauty.id : 'cat_beauty');
+  if (!byId[beautyId]) upd(beautyId, {});
+  for (const id of ['cat_shop_skin', 'cat_shop_makeup']) if (byId[id]) upd(id, { parent_id: beautyId });
+  // ③ 改名
+  if (byId.cat_shop_3c) upd('cat_shop_3c', { label: '3C 與配件' });
+  if (byId.cat_div_tw) upd('cat_div_tw', { label: '股利（台股）', parent_id: 'cat_inc_invest' });
+  if (byId.cat_div_us) upd('cat_div_us', { label: '股息（美股）', parent_id: 'cat_inc_invest' });
+  if (byId.cat_inc_refund) upd('cat_inc_refund', { label: '退稅/補助' });
+  // ④ 失業給付併入退稅/補助；cat_fee_rebate 舊版被改名成「失業補助」的紀錄也一起搬
+  if (byId.cat_inc_unemp) { map.cat_inc_unemp = 'cat_inc_refund'; del.add('cat_inc_unemp'); }
+  if (byId.cat_fee_rebate && /失業/.test(byId.cat_fee_rebate.label || '')) map.cat_fee_rebate = 'cat_inc_refund';
+  upd('cat_fee_rebate', { label: '手續費退款', parent_id: 'cat_inc_invest', icon: '↩️', irregular_default: true });
+  // ⑤ 儲蓄險移到保險；「存下來的 › 投資」不再使用（投資改成投資交易紀錄）
+  if (byId.cat_savings_ins) upd('cat_savings_ins', { parent_id: 'cat_insurance' });
+  const used = new Set();
+  for (const n of ['expense_txns','recurring_expenses','installments']) (await getAll(db, n)).forEach(t => used.add(t.category || t.spend_category));
+  for (const id of ['cat_invest_out', 'cat_saving']) if (byId[id]) { if (used.has(id)) upd(id, { active: false }); else del.add(id); }
+  if (byId.cat_dca) upd('cat_dca', { active: false });
+  // ⑥ 補上新類別（使用者有同名的就不重複建）
+  for (const c of DEFAULT_CATEGORIES) {
+    if (byId[c.id] || put[c.id] || del.has(c.id)) continue;
+    const parent = c.parent_id === 'cat_beauty' ? beautyId : c.parent_id;
+    if (cats.some(x => x.type === c.type && x.label === c.label && (x.parent_id || null) === (parent || null))) continue;
+    if (c.id === 'cat_beauty' && beautyId !== 'cat_beauty') continue;
+    put[c.id] = { ...c, parent_id: parent };
+  }
+  await remapCategoryRefs(map);
+  await atomic(db, ['txn_categories'], async (tx) => {
+    for (const c of Object.values(put)) if (!del.has(c.id)) await tx.put('txn_categories', c);
+    for (const id of del) await tx.del('txn_categories', id);
+  });
+}
 
 // v2.30.0：沒被接住的錯誤一律顯示出來，不要畫面看起來正常、其實沒存到。
 window.addEventListener('unhandledrejection', (e) => {
@@ -4966,6 +5050,205 @@ async function buildQuickIncome({ date = null, onDone = null } = {}) {
   });
   return box;
 }
+// ════════════════════════════════════════════════════════════════════════════
+// 轉帳（v2.30.0，第 1 項）
+// ════════════════════════════════════════════════════════════════════════════
+// ＋記帳的「轉帳」分頁。規則（使用者決定）：
+//  ・台幣轉台幣（同幣別）可以轉到任何銀行；台幣與外幣互轉（不同幣別）只在同一家銀行。
+//  ・跨行手續費自動帶入（依帳戶分流設定），手續費記成一筆支出「其他 › 手續費」。
+//  ・信用卡不能當轉出來源；轉帳不算收支，紀錄頁當天明細用中性色顯示。
+//  ・所有寫入（兩邊帳戶、轉帳紀錄、手續費支出）放在同一個交易。
+function transferDate(l) { return l.date || (l.created_at ? isoDate(new Date(l.created_at)) : ''); }
+function accLabel(a) {
+  if (!a) return '（已刪除的帳戶）';
+  const b = (state.banks || []).find(x => x.id === a.bank_id);
+  return `${b ? b.name + ' ' : ''}${a.name}`;
+}
+async function recordTransfer({ editId = null, date, fromId, toId, amount, toAmount = null, rate = null, fee = 0, note = '', extra = null }) {
+  if (!date) throw new Error('請選擇日期');
+  if (date > isoDate(new Date())) throw new Error('轉帳日期不能是未來');
+  if (!(amount > 0)) throw new Error('請輸入金額');
+  if (!fromId || !toId) throw new Error('請選擇轉出和轉入帳戶');
+  if (fromId === toId) throw new Error('轉出和轉入不能是同一個帳戶');
+  const fxRates = await getFxRates(db).catch(() => ({}));
+  return atomic(db, ['accounts', 'transfer_logs', 'expense_txns'], async (tx) => {
+    const now = new Date().toISOString();
+    const accs = {};
+    const acc = async id => (accs[id] ??= await tx.get('accounts', id));
+    const bump = async (id, delta) => { const a = await acc(id); if (!a) throw new Error('找不到帳戶'); accs[id] = { ...a, balance: +((a.balance || 0) + delta).toFixed(6), updated_at: now }; };
+    let old = null;
+    if (editId) {
+      old = await tx.get('transfer_logs', editId);
+      if (old) await reverseTransferIn(tx, old, bump);
+    }
+    const from = await acc(fromId), to = await acc(toId);
+    if (!from || !to) throw new Error('找不到帳戶');
+    const fc = from.currency || 'TWD', tc = to.currency || 'TWD';
+    if (fc !== tc && (from.bank_id || null) !== (to.bank_id || null)) throw new Error('換匯只能在同一家銀行');
+    const inAmt = fc === tc ? amount : +(toAmount ?? 0);
+    if (!(inAmt > 0)) throw new Error('請輸入轉入金額');
+    await bump(fromId, -amount);
+    await bump(toId, inAmt);
+    const id = editId || crypto.randomUUID();
+    let feeExpenseId = null;
+    if (fee > 0) {
+      feeExpenseId = (old?.fee_expense_id) || crypto.randomUUID();
+      await bump(fromId, -fee);
+      await tx.put('expense_txns', { id: feeExpenseId, date, category: 'cat_fee', description: '轉帳手續費', amount: fee,
+        pay_type: from.bank_id ? 'account' : 'cash', account_id: fromId, cc_id: null, note: '', bucket_id: null, project_id: null,
+        currency: fc, fx_rate_twd: fc === 'TWD' ? 1 : toTWD(1, fc, fxRates), affects_balance: true, defer_balance_effect: false,
+        transfer_log_id: id, created_at: now });
+    }
+    for (const a of Object.values(accs)) await tx.put('accounts', a);
+    const log = { ...(old || {}), ...(extra || {}), id, date, created_at: old?.created_at || now, updated_at: now,
+      from_account_id: fromId, from_account_name: from.name, from_currency: fc, from_amount: amount,
+      to_account_id: toId, to_account_name: to.name, to_currency: tc, to_amount: inAmt,
+      fx_rate: fc === tc ? null : (rate || null), fee: fee || null, fee_expense_id: feeExpenseId, note };
+    await tx.put('transfer_logs', log);
+    return log;
+  });
+}
+// 沖銷一筆轉帳的帳戶效果（同一個交易裡呼叫）。舊版紀錄的手續費直接從轉出帳戶扣、
+// 沒有對應的支出紀錄（fee_expense_id）。
+async function reverseTransferIn(tx, log, bump) {
+  if (log.from_account_id) await bump(log.from_account_id, +(log.from_amount || 0)).catch(() => {});
+  if (log.to_account_id) await bump(log.to_account_id, -(log.to_amount || 0)).catch(() => {});
+  if (log.fee_expense_id) {
+    const fe = await tx.get('expense_txns', log.fee_expense_id);
+    if (fe) { if (fe.affects_balance !== false && fe.account_id) await bump(fe.account_id, +(fe.amount || 0)).catch(() => {}); await tx.del('expense_txns', fe.id); }
+  } else if (log.fee > 0 && log.from_account_id) await bump(log.from_account_id, +log.fee).catch(() => {});
+}
+async function deleteTransfer(logId) {
+  return atomic(db, ['accounts', 'transfer_logs', 'expense_txns'], async (tx) => {
+    const log = await tx.get('transfer_logs', logId); if (!log) return;
+    const now = new Date().toISOString(); const accs = {};
+    const bump = async (id, d) => { const a = accs[id] ?? await tx.get('accounts', id); if (!a) return; accs[id] = { ...a, balance: +((a.balance || 0) + d).toFixed(6), updated_at: now }; };
+    await reverseTransferIn(tx, log, bump);
+    for (const a of Object.values(accs)) await tx.put('accounts', a);
+    await tx.del('transfer_logs', logId);
+  });
+}
+
+// ＋記帳 › 轉帳
+async function buildQuickTransfer({ date = null, onDone = null, edit = null } = {}) {
+  const accounts = (state.accounts || []).filter(a => a.account_type !== 'transit_card' || true);
+  const banks = state.banks || [];
+  const logs = await getAll(db, 'transfer_logs').catch(() => []);
+  const fxRates = await getFxRates(db).catch(() => ({}));
+  const bankName = id => banks.find(b => b.id === id)?.name || '現金';
+  const bankIds = [...new Set(accounts.map(a => a.bank_id || ''))];
+  // 預設最常用的路線（近 180 天）
+  const since = new Date(); since.setDate(since.getDate() - 180); const s0 = isoDate(since);
+  const pairs = {}; logs.filter(l => transferDate(l) >= s0 && l.from_account_id && l.to_account_id).forEach(l => { const k = l.from_account_id + '>' + l.to_account_id; pairs[k] = (pairs[k] || 0) + 1; });
+  const topPair = Object.entries(pairs).sort((a, b) => b[1] - a[1])[0]?.[0]?.split('>') || [];
+  let fromId = edit?.from_account_id || (accounts.some(a => a.id === topPair[0]) ? topPair[0] : accounts[0]?.id);
+  let toId = edit?.to_account_id || (accounts.some(a => a.id === topPair[1]) ? topPair[1] : accounts.find(a => a.id !== fromId)?.id);
+  const realToday = isoDate(new Date());
+  const box = el('div'); box.className = 'card qa tf';
+  box.innerHTML = `
+    <div class="qa-label">轉出金額</div>
+    <label class="qa-amt tf-amt"><span data-tf-cur>NT$</span><input type="number" inputmode="decimal" min="0" step="any" placeholder="金額" aria-label="轉出金額" value="${edit ? edit.from_amount : ''}"></label>
+    <div class="qa-label">從</div>
+    <div class="tf-pair"><select class="qa-pay" data-tf="fromBank" aria-label="轉出銀行"></select><select class="qa-pay" data-tf="from" aria-label="轉出帳戶"></select></div>
+    <div class="tf-bal" data-tf-bal="from"></div>
+    <div class="qa-label tf-lab">到 ${infoTip('同幣別可以轉到任何銀行；換成不同幣別（例如台幣換美金）只能在同一家銀行，所以選了不同幣別的帳戶時，銀行固定是同一家。')}</div>
+    <div class="tf-pair"><select class="qa-pay" data-tf="toBank" aria-label="轉入銀行"></select><select class="qa-pay" data-tf="to" aria-label="轉入帳戶"></select></div>
+    <div class="tf-bal" data-tf-bal="to"></div>
+    <div class="tf-fx" hidden>
+      <div class="tf-pair">
+        <label class="tf-field"><span data-tf-ratelab>匯率</span><input type="number" inputmode="decimal" min="0" step="any" data-tf="rate"></label>
+        <label class="tf-field is-calc"><span>轉入金額 <b data-tf-tocur></b></span><input type="number" inputmode="decimal" min="0" step="any" data-tf="toAmt"></label>
+      </div>
+    </div>
+    <div class="tf-pair">
+      <label class="tf-field"><span>日期</span><input type="date" data-tf="date" max="${realToday}" value="${edit ? transferDate(edit) : (date || realToday)}"></label>
+      <label class="tf-field"><span>手續費</span><input type="number" inputmode="decimal" min="0" step="1" data-tf="fee" value="${edit ? (edit.fee || 0) : 0}"></label>
+    </div>
+    <div class="tf-hint" data-tf-feehint></div>
+    <details class="tf-more"${edit?.note ? ' open' : ''}><summary>更多</summary><label class="tf-field"><span>備註</span><input type="text" data-tf="note" value="${escHtml(edit?.note || '')}"></label></details>
+    <button type="button" class="btn btn-primary tf-save">${edit ? '儲存修改' : '儲存'}</button>`;
+  const q = k => box.querySelector(`[data-tf="${k}"]`);
+  const amtIn = box.querySelector('.tf-amt input');
+  let feeTouched = !!edit;
+  const accOf = id => accounts.find(a => a.id === id);
+  const fillBank = (sel, ids, v) => { sel.innerHTML = ids.map(id => `<option value="${id}">${escHtml(bankName(id))}</option>`).join(''); sel.value = v; };
+  const fillAcc = (sel, list, v) => { sel.innerHTML = list.map(a => `<option value="${a.id}">${escHtml(a.name)}${(a.currency || 'TWD') !== 'TWD' ? `（${a.currency}）` : ''}</option>`).join(''); sel.value = list.some(a => a.id === v) ? v : (list[0]?.id || ''); return sel.value; };
+  const sync = () => {
+    const from = accOf(fromId) || accounts[0]; fromId = from?.id;
+    fillBank(q('fromBank'), bankIds, from?.bank_id || '');
+    fromId = fillAcc(q('from'), accounts.filter(a => (a.bank_id || '') === (from?.bank_id || '')), fromId);
+    const fc = accOf(fromId)?.currency || 'TWD';
+    // 「到」：同幣別任何銀行；不同幣別只列同一家銀行
+    let to = accOf(toId);
+    const toBanks = bankIds.filter(id => accounts.some(a => (a.bank_id || '') === id && a.id !== fromId && ((a.currency || 'TWD') === fc || id === (from?.bank_id || ''))));
+    let tb = to && toBanks.includes(to.bank_id || '') ? (to.bank_id || '') : toBanks[0] ?? '';
+    fillBank(q('toBank'), toBanks, tb);
+    const toList = accounts.filter(a => (a.bank_id || '') === tb && a.id !== fromId && ((a.currency || 'TWD') === fc || tb === (from?.bank_id || '')));
+    toId = fillAcc(q('to'), toList, toId);
+    to = accOf(toId);
+    const tc = to?.currency || 'TWD';
+    box.querySelector('[data-tf-cur]').textContent = fc === 'TWD' ? 'NT$' : fc;
+    box.querySelector('[data-tf-bal="from"]').textContent = from ? `餘額 ${fc === 'TWD' ? 'NT$ ' + fmt(accOf(fromId).balance || 0) : fmtCurrency(accOf(fromId).balance || 0, fc)}` : '';
+    box.querySelector('[data-tf-bal="to"]').textContent = to ? `餘額 ${tc === 'TWD' ? 'NT$ ' + fmt(to.balance || 0) : fmtCurrency(to.balance || 0, tc)}` : '';
+    const fxBox = box.querySelector('.tf-fx'); fxBox.hidden = fc === tc;
+    if (fc !== tc) {
+      const foreign = fc === 'TWD' ? tc : fc;
+      box.querySelector('[data-tf-ratelab]').textContent = (fc === 'TWD' || tc === 'TWD') ? `匯率（1 ${foreign} ＝ 台幣）` : `匯率（1 ${fc} ＝ ${tc}）`;
+      box.querySelector('[data-tf-tocur]').textContent = tc;
+      if (!q('rate').value) {
+        const r = (fc === 'TWD' || tc === 'TWD') ? toTWD(1, foreign, fxRates) : convertAmt(1, fc, tc, fxRates);
+        q('rate').value = r ? +r.toFixed(4) : '';
+      }
+      if (edit && fc !== tc && !q('toAmt').value) q('toAmt').value = edit.to_amount;
+      calcTo();
+    }
+    // 手續費
+    const src = accOf(fromId);
+    let hint = '';
+    if (src && to) {
+      const [e] = estimateTransferFees([{ toId }], { source: src, accounts, transferLogs: logs.filter(l => l.id !== edit?.id), month: (q('date').value || realToday).slice(0, 7) });
+      if (e.kind === 'same') hint = '同行轉帳・免費';
+      else if (e.kind === 'free') hint = `跨行轉帳・本月免費次數這次用掉後剩 ${e.left} 次`;
+      else if (e.kind === 'fee') hint = `跨行轉帳・手續費 NT$ ${fmt(e.fee)}`;
+      else if (src.bank_id && to.bank_id !== src.bank_id) hint = '跨行轉帳';
+      if (!feeTouched) q('fee').value = e.fee || 0;
+    }
+    box.querySelector('[data-tf-feehint]').textContent = hint;
+  };
+  const calcTo = () => {
+    const fc = accOf(fromId)?.currency || 'TWD', tc = accOf(toId)?.currency || 'TWD';
+    const a = parseFloat(amtIn.value), r = parseFloat(q('rate').value);
+    if (!(a > 0) || !(r > 0) || fc === tc) return;
+    const v = fc === 'TWD' ? a / r : (tc === 'TWD' ? a * r : a * r);
+    q('toAmt').value = tc === 'TWD' ? Math.round(v) : +v.toFixed(2);
+  };
+  q('fromBank').addEventListener('change', () => { fromId = accounts.find(a => (a.bank_id || '') === q('fromBank').value)?.id; q('rate').value = ''; sync(); });
+  q('from').addEventListener('change', () => { fromId = q('from').value; q('rate').value = ''; sync(); });
+  q('toBank').addEventListener('change', () => { toId = accounts.find(a => (a.bank_id || '') === q('toBank').value && a.id !== fromId)?.id; q('rate').value = ''; sync(); });
+  q('to').addEventListener('change', () => { toId = q('to').value; q('rate').value = ''; sync(); });
+  amtIn.addEventListener('input', calcTo); q('rate').addEventListener('input', calcTo);
+  q('fee').addEventListener('input', () => { feeTouched = true; });
+  q('date').addEventListener('change', sync);
+  sync();
+  box.querySelector('.tf-save').addEventListener('click', async () => {
+    const fc = accOf(fromId)?.currency || 'TWD', tc = accOf(toId)?.currency || 'TWD';
+    try {
+      const log = await recordTransfer({ editId: edit?.id || null, date: q('date').value, fromId, toId, amount: parseFloat(amtIn.value),
+        toAmount: fc === tc ? null : parseFloat(q('toAmt').value), rate: parseFloat(q('rate').value) || null,
+        fee: parseFloat(q('fee').value) || 0, note: q('note').value.trim() });
+      showToast(`✓ 已記錄 ${accLabel(accOf(fromId))} → ${accLabel(accOf(toId))} ${fc === 'TWD' ? 'NT$ ' + fmt(log.from_amount) : fmtCurrency(log.from_amount, fc)}`);
+      onDone?.();
+      await loadData(); await navigate(currentView);
+    } catch (e) { showToast(e?.message || String(e), { error: true }); }
+  });
+  return box;
+}
+function openTransferEdit(log) {
+  closeQuickSheet();
+  _qaKind = 'transfer';
+  openQuickSheet({ editTransfer: log });
+}
+
 let _qaKind = 'expense';
 
 // ── ＋記帳（v2.19.0，使用者決定）────────────────────────────────────────
@@ -4984,8 +5267,11 @@ function syncQaFab() {
   }
   fab.hidden = QA_FAB_HIDDEN.has(currentView);
 }
-async function openQuickSheet() {
+async function openQuickSheet(opts = {}) {
   closeQuickSheet();
+  const editTransfer = opts?.editTransfer || null, editTrade = opts?.editTrade || null;
+  if (editTransfer) _qaKind = 'transfer';
+  if (editTrade) _qaKind = 'invest';
   // v2.26.1（使用者：補記過去的日期）：標題旁的日期可以點，直接改這一筆的日期
   let date = currentView === 'calendar' && _calendarSelectedDate ? _calendarSelectedDate : null;
   const bg = el('div'); bg.className = 'qa-sheet-bg'; bg.id = 'qaSheet';
@@ -4993,11 +5279,15 @@ async function openQuickSheet() {
   panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-label', '記一筆');
   const mdOf = d => !d || d === isoDate(new Date()) ? '今天' : `${Number(d.slice(5, 7))}/${Number(d.slice(8))}（${WEEKDAY_LABELS[new Date(d + 'T00:00:00').getDay()]}）`;
   panel.innerHTML = `<div class="qa-sheet-grip" aria-hidden="true"></div><div class="qa-sheet-head"><b>記一筆</b><label class="qa-date"><span class="qa-date-t">${mdOf(date)}</span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><input type="date" class="qa-date-in" value="${date || isoDate(new Date())}" aria-label="這一筆的日期"></label><button type="button" class="qa-sheet-x" aria-label="關閉">✕</button></div>
-    <div class="qa-kind" role="tablist">${[['expense','支出'],['income','收入']].map(([k, l]) => `<button type="button" role="tab" data-qa-kind="${k}" aria-selected="${_qaKind === k}" class="${_qaKind === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <div class="qa-kind" role="tablist">${[['expense','支出'],['income','收入'],['transfer','轉帳'],['invest','投資']].map(([k, l]) => `<button type="button" role="tab" data-qa-kind="${k}" aria-selected="${_qaKind === k}" class="${_qaKind === k ? 'on' : ''}">${l}</button>`).join('')}</div>
     <div class="qa-kind-body"></div>`;
   const body = panel.querySelector('.qa-kind-body');
   const fill = async () => {
-    body.replaceChildren(_qaKind === 'income' ? await buildQuickIncome({ date, onDone: closeQuickSheet }) : await buildQuickAdd({ date, onDone: closeQuickSheet }));
+    body.replaceChildren(
+      _qaKind === 'income' ? await buildQuickIncome({ date, onDone: closeQuickSheet })
+      : _qaKind === 'transfer' ? await buildQuickTransfer({ date, onDone: closeQuickSheet, edit: editTransfer })
+      : _qaKind === 'invest' ? await buildQuickInvest({ date, onDone: closeQuickSheet, edit: editTrade })
+      : await buildQuickAdd({ date, onDone: closeQuickSheet }));
     panel.querySelectorAll('[data-qa-kind]').forEach(b => { const on = b.dataset.qaKind === _qaKind; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
     body.querySelector('.qa-amt input')?.focus({ preventScroll: true });
   };
@@ -9166,7 +9456,7 @@ async function refreshCategoriesView() {
 //   所以帳戶餘額、報表總額都不受影響。不想動到舊紀錄的話，「停用」仍然在。
 // - 應收款入帳／定期定額成交／呆帳沖銷是 App 流程本身會用到的系統類別（收入
 //   彈窗靠這兩個類別判斷要不要顯示應收款／定期定額欄位），只能停用、不能刪除。
-const SYSTEM_CATEGORY_IDS = ['cat_receivable', 'cat_dca', 'cat_bad_debt_writeoff', 'cat_realized'];
+const SYSTEM_CATEGORY_IDS = ['cat_receivable', 'cat_dca', 'cat_bad_debt_writeoff', 'cat_realized', 'cat_recon_diff'];
 async function openCategoryHardDelete(cat, allCats) {
   const [inc, exp, budgets] = await Promise.all([
     getAll(db,'income_txns').catch(()=>[]), getAll(db,'expense_txns').catch(()=>[]), getAll(db,'budgets').catch(()=>[]),
@@ -9995,7 +10285,7 @@ document.getElementById('goldModalSave').addEventListener('click',async()=>{
 // ════════════════════════════════════════════════════════════════════════════
 // IMPORT / EXPORT
 // ════════════════════════════════════════════════════════════════════════════
-const BACKUP_STORES=['banks','accounts','time_deposits','brokerages','holdings','market_prices','gold_holdings','receivables','receivable_payments','fx_rates','settings','transfer_logs','income_txns','asset_snapshots','txn_categories','expense_txns','credit_cards','recurring_expenses','installments','savings_goals','balance_adjustments','recurring_income','budgets','buckets','bucket_allocations','projects','recurring_transfers','dca_schedules','other_assets'];
+const BACKUP_STORES=['banks','accounts','time_deposits','brokerages','holdings','market_prices','gold_holdings','receivables','receivable_payments','fx_rates','settings','transfer_logs','income_txns','asset_snapshots','txn_categories','expense_txns','credit_cards','recurring_expenses','installments','savings_goals','balance_adjustments','recurring_income','budgets','buckets','bucket_allocations','projects','recurring_transfers','dca_schedules','other_assets','stock_trades','payables','card_statements','checklists'];
 
 document.getElementById('exportBtn').addEventListener('click',async()=>{
   const backup={version:1,exported_at:new Date().toISOString(),data:{}};
@@ -11226,7 +11516,7 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
       <label class="mpl-field"><span>記在哪個收入分類 ${infoTip('已領幾次＝這個分類的收入紀錄有幾筆。')}</span><select data-f-cat>${incCats.map(c => `<option value="${c.id}">${escHtml(catPath(c.id))}</option>`).join('')}</select></label>
       <div class="mpl-cand"></div>
       <div class="mpl-form-btns">${isNew ? '<span></span>' : '<button type="button" class="btn btn-ghost" data-f-del style="color:var(--red)">刪除</button>'}<span><button type="button" class="btn btn-ghost" data-f-cancel>取消</button> <button type="button" class="btn btn-primary" data-f-save>儲存</button></span></div>`;
-    f.querySelector('[data-f-cat]').value = s.category || 'cat_inc_unemp';
+    f.querySelector('[data-f-cat]').value = s.category || 'cat_inc_refund';
     const drawCand = () => {
       const list = cand(parseFloat(f.querySelector('[data-f-amt]').value));
       const host = f.querySelector('.mpl-cand');
@@ -14801,6 +15091,49 @@ window.addEventListener('resize', () => { if (currentView === 'calendar') fitCal
 // 點了月曆上某一天，就只列那一天。原本跟月曆互斥切換的甜甜圈圖
 // （renderTxnDonutCard）已移除，改由獨立的「帳務報表」頁（renderReport）取代。
 // ════════════════════════════════════════════════════════════════════════════
+// v2.30.0：轉帳／繳卡費／投資交易的明細列——中性色，不算收入或支出。
+function buildNeutralTxnRow(t, scope, accountMap) {
+  const row = el('div'); row.className = 'txn-neutral';
+  const icon = t._kind === 'trade' ? (t.kind === 'sell' ? '📤' : t.kind === 'dividend' ? '💰' : '📈') : (t.card_payment_card_id ? '💳' : '⇄');
+  let title, sub, amt;
+  if (t._kind === 'transfer') {
+    const fa = accountMap[t.from_account_id], ta = accountMap[t.to_account_id];
+    const cardName = t.card_payment_card_id ? (state.cards?.find?.(c => c.id === t.card_payment_card_id)?.name || '信用卡') : null;
+    title = cardName ? `繳卡費・${escHtml(cardName)}` : '轉帳';
+    sub = `${escHtml(accLabel(fa) || t.from_account_name || '')} → ${escHtml(cardName || accLabel(ta) || t.to_account_name || '')}${t.fee ? `・手續費 ${fmt(t.fee)}` : ''}${t.note ? '・' + escHtml(t.note) : ''}`;
+    amt = (t.from_currency || 'TWD') === 'TWD' ? 'NT$ ' + fmt(t.from_amount) : fmtCurrency(t.from_amount, t.from_currency);
+    if ((t.to_currency || 'TWD') !== (t.from_currency || 'TWD')) amt += `<div class="txn-neutral-sub">→ ${(t.to_currency || 'TWD') === 'TWD' ? 'NT$ ' + fmt(t.to_amount) : fmtCurrency(t.to_amount, t.to_currency)}</div>`;
+  } else {
+    const kindLabel = { buy: '買進', sell: '賣出', dividend: '股利', stock_dividend: '配股', split: '分割' }[t.kind] || '投資';
+    title = `${kindLabel}・<b class="tk">${escHtml(t.ticker)}</b> ${escHtml(t.name || '')}`;
+    const br = (state.brokerages || []).find(b => b.id === t.brokerage_id);
+    sub = `${br ? escHtml(br.name) : ''}${t.shares ? `・${fmtShares(t.shares)} 股` : ''}${t.estimated ? '・待確認股數' : ''}${t.pending_settle ? `・${fmtDate(t.settle_date)} 交割` : ''}`;
+    const cur = t.currency || 'TWD';
+    const v = t.kind === 'dividend' ? t.net_amount : t.kind === 'sell' ? t.proceeds : t.total_cost;
+    amt = v != null ? (cur === 'TWD' ? 'NT$ ' + fmt(v) : fmtCurrency(v, cur)) : '';
+  }
+  row.innerHTML = `<div class="txn-neutral-ico" aria-hidden="true">${icon}</div>
+    <div class="txn-neutral-main"><div class="txn-neutral-title">${title}</div><div class="txn-neutral-sub">${scope.date ? '' : fmtDate(t.date) + '・'}${sub}</div></div>
+    <div class="txn-neutral-amt">${amt}</div>
+    <div class="txn-acts">
+      <button type="button" class="icon-act" data-edit aria-label="編輯" title="編輯"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>
+      <button type="button" class="icon-act danger" data-del aria-label="刪除" title="刪除"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg></button>
+    </div>`;
+  row.querySelector('[data-edit]').addEventListener('click', () => {
+    if (t._kind === 'trade') openQuickSheet({ editTrade: t });
+    else if (t.card_payment_card_id) openCardPaymentEdit(t);
+    else openQuickSheet({ editTransfer: t });
+  });
+  row.querySelector('[data-del]').addEventListener('click', () => {
+    openDeleteModal(`確定要刪除這筆${t._kind === 'trade' ? '投資交易' : (t.card_payment_card_id ? '繳卡費' : '轉帳')}紀錄嗎？帳戶餘額會一起改回去。`, async () => {
+      try {
+        if (t._kind === 'trade') await deleteStockTrade(t.id); else await deleteTransfer(t.id);
+        showToast('已刪除'); await loadData(); await renderCalendar();
+      } catch (e) { showToast(e?.message || String(e), { error: true }); }
+    });
+  });
+  return row;
+}
 async function renderTxnMergedList(content, scope = {}) {
   const allCats = await getAll(db,'txn_categories').catch(()=>[]);
   const catMap = Object.fromEntries(allCats.map(c=>[c.id,c]));
@@ -14820,9 +15153,13 @@ async function renderTxnMergedList(content, scope = {}) {
   const projectTagMap = Object.fromEntries(projectsForTag.map(p=>[p.id,p]));
 
   const inScope = t => scope.date ? t.date === scope.date : (scope.month ? t.date?.startsWith(scope.month) : true);
+  // v2.30.0：轉帳、繳卡費、投資交易也列在明細（中性色、不算收支）
+  const tLogs = (await getAll(db, 'transfer_logs').catch(() => [])).map(l => ({ ...l, date: transferDate(l), _kind: 'transfer' })).filter(inScope);
+  const trades = (await getAll(db, 'stock_trades').catch(() => [])).filter(t => t.kind !== 'opening').map(t => ({ ...t, _kind: 'trade' })).filter(inScope);
   const merged = [
-    ...(state.incomeTxns || []).filter(inScope).map(t => ({...t, _kind:'income'})),
+    ...(state.incomeTxns || []).filter(inScope).filter(t => !(t.dca_schedule_id && t.migrated_to_trade)).map(t => ({...t, _kind:'income'})),
     ...(state.expenseTxns || []).filter(inScope).map(t => ({...t, _kind:'expense'})),
+    ...tLogs, ...trades,
   ].sort((a,b)=> b.date.localeCompare(a.date) || String(b.created_at??'').localeCompare(String(a.created_at??'')));
 
   const sumIncome  = merged.filter(t=>t._kind==='income').reduce((s,t)=>s+resolveIncomeAmountTwd(t),0);
@@ -14860,6 +15197,7 @@ async function renderTxnMergedList(content, scope = {}) {
   }
 
   merged.forEach(t => {
+    if (t._kind === 'transfer' || t._kind === 'trade') { card.appendChild(buildNeutralTxnRow(t, scope, accountMap)); return; }
     const isIncome = t._kind === 'income';
     const cat = isIncome ? getCat(t.category, '＋', '其他收入') : getCat(t.category, '➖', t.category);
     const catDisabled = cat.active === false;
