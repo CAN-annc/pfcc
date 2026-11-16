@@ -10444,6 +10444,33 @@ async function buildAccountHistoryEvents(accountId) {
         resultingBalance: adj.new_balance,
       };
     });
+  // v2.30.0（使用者：帳戶互轉、繳卡費、還款也要在這個帳戶的明細裡看得到，不要另外一頁）
+  const logs = await getAll(db, 'transfer_logs').catch(() => []);
+  const accs = await getAll(db, 'accounts').catch(() => []);
+  const cards = await getAll(db, 'credit_cards').catch(() => []);
+  const nameOf = id => { const a = accs.find(x => x.id === id); return a ? a.name : ''; };
+  for (const l of logs) {
+    const out = l.from_account_id === accountId, inn = l.to_account_id === accountId;
+    if (!out && !inn) continue;
+    const when = l.date ? `${l.date}T12:00:00` : l.created_at;
+    if (out) {
+      const other = l.card_payment_card_id ? `繳卡費・${cards.find(c => c.id === l.card_payment_card_id)?.name || l.to_account_name || '信用卡'}`
+        : l.payable_id ? `還款・${l.note || l.to_account_name || ''}` : `轉出 → ${nameOf(l.to_account_id) || l.to_account_name || ''}`;
+      events.push({ date: when, title: other, amountLabel: fmt(-(l.from_amount || 0), { currency: acc.currency, showSign: true }), detailColor: 'var(--red)', resultingBalance: null,
+        sub: [l.fee ? `手續費 ${fmt(l.fee)}` : '', l.auto_pay ? '自動扣繳' : '', !l.payable_id && l.note ? l.note : ''].filter(Boolean).join('・') });
+    }
+    if (inn) {
+      events.push({ date: when, title: `轉入 ← ${nameOf(l.from_account_id) || l.from_account_name || ''}`, amountLabel: fmt(l.to_amount || 0, { currency: acc.currency, showSign: true }), detailColor: 'var(--green)', resultingBalance: null,
+        sub: [l.fx_rate ? `匯率 ${l.fx_rate}` : '', l.note || ''].filter(Boolean).join('・') });
+    }
+  }
+  // 股票買賣的交割扣款／入帳
+  const trades = await getAll(db, 'stock_trades').catch(() => []);
+  for (const t of trades.filter(t => t.account_id === accountId && ['buy', 'sell'].includes(t.kind))) {
+    const v = t.kind === 'buy' ? -(t.total_cost || 0) : (t.proceeds || 0);
+    events.push({ date: `${t.settle_date || t.date}T12:00:00`, title: `${t.kind === 'buy' ? '買進' : '賣出'} ${t.ticker} ${t.name || ''}`, amountLabel: fmt(v, { currency: acc.currency, showSign: true }),
+      detailColor: v >= 0 ? 'var(--green)' : 'var(--red)', resultingBalance: null, sub: `${fmtShares(t.shares)} 股${t.pending_settle ? '・待交割' : ''}` });
+  }
   // 只有 created_at 有值的帳戶（這次改動之後才新建的，或之後被編輯存檔過一次
   // 而補上了這個欄位）才會有這筆「新建帳戶」事件；更早以前就存在的帳戶沒有
   // 這個欄位，沒辦法回推真正的建立時間，就不補這筆事件，不影響其他事件。
@@ -10489,7 +10516,7 @@ async function openAccountDetailModal(accId) {
   if (events.length === 0) {
     const empty = el('div');
     empty.style.cssText = 'padding:16px 0;text-align:center;color:var(--text-3);font-size:13px';
-    empty.textContent = '目前還沒有任何變動記錄——手動調整餘額時會自動記錄在這裡。';
+    empty.textContent = '還沒有紀錄。調整餘額、轉帳、繳卡費、股票交割都會列在這裡。';
     listEl.appendChild(empty);
   } else {
     events.forEach((ev, i) => {
@@ -10497,10 +10524,10 @@ async function openAccountDetailModal(accId) {
       row.style.cssText = `padding:10px 0;font-size:12px;${i>0?'border-top:1px solid var(--border)':''}`;
       row.innerHTML = `
         <div style="display:flex;justify-content:space-between;gap:8px">
-          <span style="font-weight:500">${ev.title}</span>
+          <span style="font-weight:500">${escHtml(ev.title)}</span>
           <span style="color:${ev.detailColor}">${ev.amountLabel}</span>
         </div>
-        <div style="margin-top:2px;color:var(--text-3);font-size:11px">${fmtDateTime(ev.date)}　餘額 ${fmt(ev.resultingBalance,{currency:acc.currency})}</div>`;
+        <div style="margin-top:2px;color:var(--text-3);font-size:11px">${ev.resultingBalance == null ? fmtDate(String(ev.date).slice(0, 10)) : fmtDateTime(ev.date)}${ev.resultingBalance != null ? `　餘額 ${fmt(ev.resultingBalance,{currency:acc.currency})}` : ''}${ev.sub ? `　${escHtml(ev.sub)}` : ''}</div>`;
       listEl.appendChild(row);
     });
   }
