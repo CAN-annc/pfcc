@@ -76,3 +76,14 @@ test('信用卡帳單期：結帳 27、繳款 12', () => {
 test('信用卡帳單期：繳款日大於結帳日 → 同月繳', () => {
   assert.equal(ccPayYmOfDate({ billing_day: 5, due_day: 20 }, '2026-10-03'), '2026-10');
 });
+
+import { goalStages, calcBucketPlanContribution } from '../files/calc.js';
+test('階段目標：前一個存滿才輪到下一個', () => {
+  const bs = [{ id: 'car', goal_kind: 'stage', stage_order: 2, target_amount: 100 }, { id: 'ef', goal_kind: 'stage', stage_order: 1, target_amount: 50 }, { id: 'trip' }];
+  let g = goalStages(bs, b => ({ ef: 10, car: 0 })[b.id] || 0);
+  assert.equal(g.current.id, 'ef'); assert.ok(g.queued.has('car'));
+  g = goalStages(bs, b => ({ ef: 50, car: 0 })[b.id] || 0);
+  assert.equal(g.current.id, 'car'); assert.ok(g.filled.has('ef'));
+  assert.equal(calcBucketPlanContribution({ monthly_amount: 1000, stage_queued: true }, 0).amount, 0);
+  assert.equal(calcBucketPlanContribution({ monthly_amount: 1000, stage_split: true }, 0).amount, 500);
+});

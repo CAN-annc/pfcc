@@ -679,6 +679,9 @@ export function calcMonthlyIncomeTotal(incomeTxns, monthStr, excludeCategories =
  * 是收入百分比模式時，沒有收入的月份就是 0（不能自己撥給自己）。
  */
 export function calcBucketPlanContribution(bucket, income, baseFixed = 0) {
+  // v2.30.0：暫停、或還沒輪到的階段目標，這個月不存；「迎接新成員」時目前的階段目標只存一半
+  if (bucket.paused || bucket.stage_queued) return { amount: 0, fromEf: false, basis: null };
+  if (bucket.stage_split) { const r = calcBucketPlanContribution({ ...bucket, stage_split: false }, income, baseFixed); return { ...r, amount: r.amount / 2 }; }
   if (bucket.contribution_mode === 'percent') {
     const pct = bucket.income_percent || 0;
     if (!(pct > 0)) return { amount: 0, fromEf: false, basis: null };
@@ -1602,7 +1605,7 @@ export function calcMonthDue({ recurringExpenses = [], installments = [], dcaSch
 }
 
 export function calcSpendable({ accounts = [], fxRates = {}, cards = [], recurringExpenses = [], installments = [],
-  dcaSchedules = [], buckets = [], allocations = [], expenseTxns = [], essentials = 0, emergencyMonths = 6, today = new Date() }) {
+  dcaSchedules = [], buckets = [], allocations = [], expenseTxns = [], essentials = 0, emergencyMonths = 6, today = new Date(), pendingSettle = 0, payablesDue = 0 }) {
   const liquidAccounts = accounts.filter(a => a.include_in_total !== false);
   const liquid = liquidAccounts.reduce((s, a) => s + (toTWD(a.balance || 0, a.currency || 'TWD', fxRates) || 0), 0);
   const cardsDue = cards.reduce((s, c) => s + Math.max(0, c.current_balance || 0), 0);
@@ -1617,13 +1620,16 @@ export function calcSpendable({ accounts = [], fxRates = {}, cards = [], recurri
   const ef = { exists: !!efBucket, have: efHave, target: efTarget, suggested, gap: Math.max(0, efTarget - efHave), protect: Math.max(efHave, efTarget), months: essentials > 0 ? efHave / essentials : null };
   const goals = active.filter(b => !b.is_emergency_fund).map(b => ({ id: b.id, name: b.name, amount: Math.max(0, bal(b)) })).filter(g => g.amount > 0);
   const goalsTotal = goals.reduce((s, g) => s + g.amount, 0);
-  const raw = liquid - cardsDue - upcomingTotal - ef.protect - goalsTotal;
+  // v2.30.0：買了還沒交割的股票（交割日會扣款）、欠別人的錢，也要先扣掉
+  const owed = Math.max(0, pendingSettle || 0) + Math.max(0, payablesDue || 0);
+  const raw = liquid - cardsDue - upcomingTotal - ef.protect - goalsTotal - owed;
   return {
+    pendingSettle: Math.round(Math.max(0, pendingSettle || 0)), payablesDue: Math.round(Math.max(0, payablesDue || 0)),
     liquid: Math.round(liquid), cardsDue: Math.round(cardsDue), upcoming, upcomingTotal: Math.round(upcomingTotal),
     ef, goals, goalsTotal: Math.round(goalsTotal),
     free: Math.max(0, Math.round(raw)), shortfall: raw < 0 ? Math.round(-raw) : 0,
     // 不保留預備金時能動用的上限（緊急時才看）：現金活存扣掉必付與其他目標
-    beforeReserve: Math.round(liquid - cardsDue - upcomingTotal - goalsTotal),
+    beforeReserve: Math.round(liquid - cardsDue - upcomingTotal - goalsTotal - owed),
   };
 }
 
@@ -2152,4 +2158,20 @@ export function ccCurrentPeriods(card, expenses, fromDate = new Date()) {
     billed: paidUpTo >= billedPayYm ? null : ccStatementOf(card, expenses, billedPayYm),
     open: ccStatementOf(card, expenses, openPayYm),
   };
+}
+
+// ── 階段目標（v2.30.0）：照順序一個一個存，前一個存滿才開始下一個 ────────────
+// balOf(b) 回傳目前已存的金額。回傳 { current, queued:Set, filled:Set }。
+export function goalStages(buckets, balOf) {
+  const st = buckets.filter(b => b.goal_kind === 'stage' && b.status !== 'closed')
+    .sort((a, b) => (a.stage_order ?? 99) - (b.stage_order ?? 99) || (a.created_at || '').localeCompare(b.created_at || ''));
+  const queued = new Set(), filled = new Set(); let current = null;
+  for (const b of st) {
+    const full = b.target_amount > 0 && balOf(b) >= b.target_amount;
+    if (current) { queued.add(b.id); continue; }
+    if (full) { filled.add(b.id); continue; }
+    if (b.paused) continue;
+    current = b;
+  }
+  return { current, queued, filled, ordered: st };
 }

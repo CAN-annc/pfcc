@@ -202,7 +202,8 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hold-row{grid-column:2;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;
   padding:8px 12px 8px 12px;border-top:1px solid var(--border);font-size:12px;background:color-mix(in srgb,var(--type-c) 6%,var(--card))}
 .hold-id{display:flex;flex-direction:column;min-width:0;gap:1px}
-.hold-id b{font-weight:700;font-variant-numeric:tabular-nums;font-size:13px}
+.hold-id b{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px}
+.hold-pend{display:inline-block;margin-left:6px;font-size:10px;font-weight:600;color:#B45309;background:#FFFBEB;border:1px solid #FCD34D;border-radius:4px;padding:0 4px;vertical-align:1px}
 .hold-id span{color:var(--text-3);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hold-num{display:flex;flex-direction:column;align-items:flex-end;gap:1px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .hold-num b{font-weight:600;color:var(--text-1)}
@@ -421,6 +422,27 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .cc-stm-row>span:first-child{flex:1;display:flex;flex-direction:column;gap:2px}.cc-stm-row small{font-size:11px;color:var(--text-3)}.cc-stm-gap{width:64px}
 .cc-stm-near{padding:8px 12px;font-size:12px;color:#B45309;background:#FFFBEB;border-top:1px solid var(--border)}
 .qa-inst{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.qa-inst-n{display:flex;align-items:center;gap:6px;font-size:13px}.qa-inst-n input{width:64px;height:40px;border:1px solid var(--border);border-radius:8px;text-align:right;padding:0 8px;font:inherit;background:var(--card);color:var(--text)}.qa-inst-n small{color:var(--text-3)}
+.cc-h{display:flex;align-items:center;gap:8px;padding:14px 18px;cursor:pointer;min-height:48px}.cc-h b{font-size:14px}.cc-h-st{margin-left:auto;font-size:12px}.cc-h-st.bad{color:#B45309}.cc-h-st.ok{color:var(--green)}
+.cc-h .chevron{width:16px;height:16px;transition:transform .15s}.cc-h.card-open .chevron{transform:rotate(90deg)}
+.cc-lines,.cc-top{border-top:1px solid var(--border);padding:6px 18px}.cc-top-t{font-size:12px;color:var(--text-3);padding:6px 0}
+.cc-line{display:grid;grid-template-columns:1fr auto 64px;gap:10px;align-items:baseline;padding:6px 0;font-size:13px;font-variant-numeric:tabular-nums}.cc-line b.bad{color:#B45309}.cc-line small{color:var(--text-3);font-size:11px;text-align:right}
+.pay-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:12px 18px;border-top:1px solid var(--border)}.pay-main{display:flex;flex-direction:column;gap:2px;min-width:0}.pay-main b{font-size:14px}.pay-main span{font-size:12px;color:var(--text-3)}.pay-main .bad{color:var(--red)}.pay-main .warn{color:#B45309}
+.pay-amt{font-weight:600;font-variant-numeric:tabular-nums;text-align:right}.pay-acts{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
+.goal-stage{font-size:10.5px;font-weight:600;color:#1E40AF;background:#EFF4FF;border:1px solid #C7D7FB;padding:1px 8px;border-radius:99px;margin-left:6px}
+.goal-queued-btn{width:100%;min-height:44px;border:1px dashed var(--border);border-radius:10px;background:transparent;font:inherit;font-size:13px;color:var(--text-2);margin:4px 0 12px;text-align:left;padding:0 14px}
+.br-row{display:grid;grid-template-columns:96px 1fr 1fr 32px;gap:6px;align-items:center;margin-bottom:6px}.br-row select,.br-row input{height:40px;min-width:0}
+.fi-card{padding:0;overflow:hidden}.fi-h{display:flex;align-items:center;gap:8px;padding:14px 18px;font-size:14px;cursor:pointer;list-style:none}.fi-h::-webkit-details-marker{display:none}
+.fi-now{display:flex;flex-direction:column;gap:6px;padding:0 18px 10px}.fi-cur{display:flex;justify-content:space-between;align-items:baseline;font-variant-numeric:tabular-nums}.fi-cur span{font-size:12px;color:var(--text-2)}.fi-cur b{font-size:18px}
+.cur{display:inline-block;min-width:2.6em;text-align:left;color:var(--text-2);font-weight:500}
+.fi-ms{padding:0 18px 14px}.fi-ms-t{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);margin-bottom:6px;font-variant-numeric:tabular-nums}
+.fi-bar{height:8px;border-radius:4px;background:var(--border);overflow:hidden}.fi-bar i{display:block;height:100%;background:#2563EB;border-radius:4px}
+.fi-ms-dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}.fi-ms-dots span{font-size:10px;padding:1px 6px;border-radius:99px;border:1px solid var(--border);color:var(--text-3)}.fi-ms-dots span.on{background:#EFF4FF;border-color:#C7D7FB;color:#1E40AF}
+.fi-more{border-top:1px solid var(--border)}.fi-more>summary{padding:12px 18px;font-size:13px;color:#2563EB;cursor:pointer;min-height:44px;box-sizing:border-box}
+.fi-sec{padding:6px 18px 12px}.fi-sec-h{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-2);padding:4px 0}
+.fi-line{display:grid;grid-template-columns:1fr auto 84px;gap:8px;padding:5px 0;font-size:13px;font-variant-numeric:tabular-nums}.fi-line small{text-align:right;color:var(--text-3);font-size:11px}.fi-empty{font-size:12px;color:var(--text-3);padding:4px 0 8px}
+.hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 18px}.hp-method{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 18px}
+.hp-method [role=radio]{height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);font:inherit;font-size:13px;color:var(--text)}.hp-method [aria-checked=true]{border:2px solid #2563EB;background:#F5F8FF;color:#1E40AF;font-weight:600}
+.hp-out{padding:0 18px 10px}.fi-card [data-hp-goal]{margin:0 18px 16px}
 .modal-check{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;margin:4px 0 8px}.modal-check input{width:20px;height:20px;accent-color:var(--accent,#2563EB)}
 .inv-row{margin-top:8px}
 .inv-tk input[data-iv="ticker"]{font-weight:700;font-size:16px}
@@ -2388,6 +2410,23 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
       <select id="bucketStoreAccount"></select>
       <div style="font-size:11px;color:var(--text-3);margin-top:4px" id="bucketStoreHelp">這筆錢實際放在哪個帳戶。指定後會檢查帳戶餘額夠不夠，發薪後的「分流轉帳」也會提醒把錢轉過去；不指定就只在 App 裡分帳，不檢查。</div>
     </div>
+    <div class="field-row">
+      <div class="modal-field">
+        <label>目標類型 <button type="button" class="ii" data-tip="階段目標：照順序一個一個存，前一個存好才開始存下一個（例如預備金 → 買車 → 房屋），還沒輪到的先收起來。獨立目標：跟其他目標同時存（例如旅行基金）。" aria-label="說明">i</button></label>
+        <select id="bucketGoalKind"><option value="independent">獨立目標</option><option value="stage">階段目標</option></select>
+      </div>
+      <div class="modal-field" id="bucketStageOrderField">
+        <label>第幾階段</label>
+        <input type="number" id="bucketStageOrder" inputmode="numeric" min="1" step="1" placeholder="1">
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>提醒</label>
+      <label class="modal-check" style="margin:0"><input type="checkbox" id="bucketRemindFull" checked> 存滿時通知我</label>
+      <div id="bucketRemindList"></div>
+      <button type="button" class="btn btn-ghost btn-sm" id="bucketRemindAdd">＋ 新增提醒</button>
+    </div>
+    <label class="modal-check"><input type="checkbox" id="bucketPaused"> 暫停（這段時間不存）</label>
     <div class="modal-field">
       <label>備註</label>
       <input type="text" id="bucketNote" placeholder="">
@@ -3392,7 +3431,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 </div>
 
 <script type="module">
-import { openDB, seedIfNeeded, seedCategoriesIfNeeded, getAll, getOne, putOne, putMany, getSetting, setSetting, DEFAULT_CATEGORIES, LEGACY_CATEGORY_LABELS, atomic, replaceAllStores, saveRestorePoint, loadRestorePoint } from './db.js';
+import { openDB, seedIfNeeded, seedCategoriesIfNeeded, getAll, getOne, putOne, putMany, getSetting, setSetting, DEFAULT_CATEGORIES, LEGACY_CATEGORY_LABELS, atomic, replaceAllStores, saveRestorePoint, loadRestorePoint, getByIndex } from './db.js';
 import { refreshPrices, refreshFxRates, refreshGoldPrice, getFxRates, setManualPrice, SUPPORTED_CURRENCIES } from './market.js';
 import {
   calcCashAssets, calcDepositAssets, calcInvestmentAssets,
@@ -3410,7 +3449,7 @@ import {
   calcMonthlyPlan, calcRecurringMonthlyEquivalent, calcBucketPlanContribution, calcOverspend, regularIncomeTxns, calcGoalProjection, calcEfStorage, calcIncomeStability, calcAvgLivingSpend, calcRunway, calcAnnualSpend, calcRecentSpend, calcPassiveIncome, passiveCategoryIds, DEFAULT_PASSIVE_CATEGORIES, calcBufferBase, calcStorageChecks, estimateTransferFees, calcLivingSpent, calcLivingSpentByCategory, calcSpendable,
   calcMonthlySavingsSeries, lastNMonths, calcGrowthBreakdown, findActiveTrip, calcProjectByCategory, calcFrequentExpenses, calcIdleMoneyAlerts,
   addMonthsISO, limitedIncomeSchedule, calcMonthDue, simulateRunway, isSpendJar, jarOfCategory, calcJarBudgets, isLivingExpense,
-  localISODate, TW_HOLIDAYS_FALLBACK, isBusinessDay, addBusinessDays, nextBusinessDay, settleDateFor, twFee, estimateShares, calcPositionFromTrades, ccPayYmOfDate, ccStatementOf, ccCurrentPeriods, ccCloseDateFor, ccPeriodOfTxn
+  localISODate, TW_HOLIDAYS_FALLBACK, isBusinessDay, addBusinessDays, nextBusinessDay, settleDateFor, twFee, estimateShares, calcPositionFromTrades, ccPayYmOfDate, ccStatementOf, ccCurrentPeriods, ccCloseDateFor, ccPeriodOfTxn, goalStages
 } from './calc.js';
 
 let db, state = {}, currentView = 'assets';
@@ -4292,6 +4331,7 @@ async function init() {
     await runAutoConfirm().catch(e => console.warn('[auto confirm]', e));
     await runDepositRollover().catch(e => console.warn('[deposit rollover]', e));
     await runCardAutoPay().catch(e => console.warn('[card autopay]', e));
+    await syncGoalStages().catch(e => console.warn('[goal stages]', e));
     const homeView = await getSetting(db, 'home_view', 'assets').catch(() => 'assets');
     _navHome = (homeView === 'calendar' || homeView === 'txnmanage') ? 'calendar' : 'assets';
     await navigate(_navHome);
@@ -4619,7 +4659,10 @@ async function loadData() {
   // 持有的市值/損益也是 null，畫面上會提示尚未取得金價，不會憑空算出數字。
   const goldPriceRec  = prices.find(p => p.ticker === 'XAU_USD') ?? null;
   const gold = calcGoldAssets(goldHoldings, goldPriceRec?.price ?? null, fxRates);
-  const netWorth   = calcNetWorth({ cashTWD:cash.totalTWD, depositTWD:depositRes.totalTWD, investmentTWD:inv.totalTWD, otherAssetsTWD:otherAssets.totalTWD, goldTWD:gold.totalTWD }) - ccDebt;
+  // v2.30.0 應付款（欠別人的錢）：從總資產扣掉
+  const payables   = (await getAll(db,'payables').catch(()=>[])).filter(p => p.status !== 'paid');
+  const payDebt    = payables.reduce((s, p) => s + (toTWD(Number(p.amount) || 0, p.currency || 'TWD', fxRates) || 0), 0);
+  const netWorth   = calcNetWorth({ cashTWD:cash.totalTWD, depositTWD:depositRes.totalTWD, investmentTWD:inv.totalTWD, otherAssetsTWD:otherAssets.totalTWD, goldTWD:gold.totalTWD }) - ccDebt - payDebt;
   // v2.4.0（使用者要求）：首頁「近期到期／即將繳款」只提醒 5 天內到期的
   // 項目；已經過期還沒處理的（天數為負）一律照樣列出。
   const reminders  = calcUpcomingReminders({ depositItems:depositRes.items, creditCards:cards, recurringExpenses, installments, recurringIncome }, { windowDays: 5 });
@@ -4644,7 +4687,7 @@ async function loadData() {
   // 本月預算時一樣是 null，畫面上不顯示。
   const todayAllowance = calcTodayAllowance(budgetInfo);
 
-  state = { banks, accounts, deposits, brokerages, holdings, prices, goldHoldings, receivables, fxRates, cash, depositRes, inv, recv, otherAssets, gold, goldPriceRec, netWorth, ccDebt, cards, recurringExpenses, installments, recurringIncome, reminders, budgetInfo, todayAllowance, expenseTxns, incomeTxns, thisMonth };
+  state = { payables, payDebt, banks, accounts, deposits, brokerages, holdings, prices, goldHoldings, receivables, fxRates, cash, depositRes, inv, recv, otherAssets, gold, goldPriceRec, netWorth, ccDebt, cards, recurringExpenses, installments, recurringIncome, reminders, budgetInfo, todayAllowance, expenseTxns, incomeTxns, thisMonth };
 }
 
 // 2026-09-22 修正：先前這裡直接在瀏覽器端呼叫 mis.twse.com.tw／
@@ -5899,7 +5942,6 @@ async function openCardRecon(cardId, payYm) {
   await draw();
 }
 function catLabel(id) { return catById(id)?.label || ''; }
-function infoTip(t) { return `<button type="button" class="ii" data-tip="${escHtml(t)}" aria-label="說明">i</button>`; }
 // 信用卡頁每張卡的「本期帳單／未出帳」
 function cardStatementHtml(card, expenses, statements) {
   const p = ccCurrentPeriods(card, expenses); if (!p) return '';
@@ -5913,6 +5955,292 @@ function cardStatementHtml(card, expenses, statements) {
     <div class="cc-stm-row"><span>未出帳<small>${md(open.close)} 結帳</small></span><b>NT$ ${fmt(open.total)}</b><span class="cc-stm-gap"></span></div>
     ${billed && nearNext ? `<div class="cc-stm-near">本期有 ${nearNext} 筆在結帳日前 7 天內刷的，可能算下期</div>` : ''}
   </div>`;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// v2.30.0 應付款：欠別人的錢（例如先代墊、之後要還）。從總資產和可自由運用扣掉；
+// 還錢時記成一筆從帳戶轉出的紀錄（不算支出——買的東西當時已經記過了）。
+// ════════════════════════════════════════════════════════════════════════════
+function buildPayablesCard() {
+  const card = el('div', 'card'); card.style.marginBottom = '16px';
+  const list = (state.payables || []).slice().sort((a, b) => (a.due_date || '9999').localeCompare(b.due_date || '9999'));
+  const today = isoDate(new Date());
+  card.innerHTML = `<div class="card-header-row" role="button"><div class="card-title">應付款</div>
+    <div style="display:flex;align-items:center;gap:10px"><button class="btn btn-ghost btn-sm" style="font-size:11px" data-add-pay>＋ 新增應付款</button>
+    <svg class="chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div></div>
+    <div class="card-body">${list.length ? list.map(p => {
+      const late = p.due_date && p.due_date < today, soon = p.due_date && !late && daysBetweenISO(today, p.due_date) <= 7;
+      return `<div class="pay-row"><div class="pay-main"><b>${escHtml(p.name)}</b><span class="${late ? 'bad' : soon ? 'warn' : ''}">${p.due_date ? `${late ? '已過期・' : ''}${fmtDate(p.due_date)} 前要還` : '沒有約定日期'}${p.to ? '・還給 ' + escHtml(p.to) : ''}</span></div>
+        <div class="pay-amt">${moneyCur(p.amount, p.currency)}</div>
+        <div class="pay-acts"><button class="btn btn-ghost btn-sm" data-paid="${p.id}">還清</button><button class="btn btn-ghost btn-sm" data-edit-pay="${p.id}">編輯</button></div></div>`;
+    }).join('') : '<div class="mp-empty" style="padding:16px 18px">沒有應付款。</div>'}</div>`;
+  card.querySelector('[data-add-pay]').addEventListener('click', e => { e.stopPropagation(); openPayableEdit(); });
+  card.querySelectorAll('[data-edit-pay]').forEach(b => b.addEventListener('click', () => openPayableEdit(list.find(p => p.id === b.dataset.editPay))));
+  card.querySelectorAll('[data-paid]').forEach(b => b.addEventListener('click', () => openPayablePay(list.find(p => p.id === b.dataset.paid))));
+  return card;
+}
+function daysBetweenISO(a, b) { return Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000); }
+function moneyCur(v, cur = 'TWD') { return `<span class="cur">${cur === 'TWD' ? 'NT$' : escHtml(cur)}</span> ${cur === 'TWD' ? fmt(v) : Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; }
+function openPayableEdit(p = null) {
+  const pnl = openPanel(p ? '編輯應付款' : '新增應付款');
+  pnl.body.innerHTML = `<label class="tf-field"><span>名稱</span><input data-f="name" value="${escHtml(p?.name || '')}" placeholder="例：先生代墊的機票"></label>
+    <div class="tf-pair"><label class="tf-field"><span>金額</span><input data-f="amount" type="number" inputmode="decimal" value="${p?.amount ?? ''}"></label>
+    <label class="tf-field"><span>幣別</span><select data-f="currency">${['TWD', 'USD', 'JPY'].map(c => `<option ${(p?.currency || 'TWD') === c ? 'selected' : ''}>${c}</option>`).join('')}</select></label></div>
+    <div class="tf-pair"><label class="tf-field"><span>還給誰</span><input data-f="to" value="${escHtml(p?.to || '')}"></label>
+    <label class="tf-field"><span>什麼時候前要還</span><input data-f="due_date" type="date" value="${p?.due_date || ''}"></label></div>
+    <label class="tf-field"><span>備註</span><input data-f="note" value="${escHtml(p?.note || '')}"></label>
+    <div class="rc-2">${p ? '<button type="button" class="btn btn-ghost" data-del style="color:var(--red)">刪除</button>' : '<span></span>'}<button type="button" class="btn btn-primary" data-save>儲存</button></div>`;
+  const f = k => pnl.body.querySelector(`[data-f="${k}"]`);
+  pnl.body.querySelector('[data-save]').addEventListener('click', async () => {
+    const name = f('name').value.trim(), amount = parseFloat(f('amount').value);
+    if (!name) { f('name').focus(); return; }
+    if (!(amount > 0)) { f('amount').focus(); return; }
+    await putOne(db, 'payables', { ...(p || { id: crypto.randomUUID(), created_at: new Date().toISOString(), status: 'open' }), name, amount, currency: f('currency').value,
+      to: f('to').value.trim(), due_date: f('due_date').value || null, note: f('note').value.trim(), updated_at: new Date().toISOString() });
+    pnl.close(); showToast(p ? '已更新' : '已新增應付款'); await loadData(); await renderSettings();
+  });
+  pnl.body.querySelector('[data-del]')?.addEventListener('click', () => { pnl.close(); openDeleteModal(`刪除應付款「${p.name}」？`, async () => { await atomic(db, ['payables'], tx => tx.del('payables', p.id)); await loadData(); await renderSettings(); }); });
+}
+function openPayablePay(p) {
+  const pnl = openPanel(`還清：${p.name}`);
+  const accs = (state.accounts || []).filter(a => (a.currency || 'TWD') === (p.currency || 'TWD'));
+  pnl.body.innerHTML = `<div class="rc-sum"><div><span>金額</span><b>${moneyCur(p.amount, p.currency)}</b></div></div>
+    <label class="tf-field"><span>從哪個帳戶還</span><select data-f="acc">${accs.map(a => `<option value="${a.id}">${escHtml(accLabel(a))}</option>`).join('')}<option value="">不扣帳戶（只標記已還）</option></select></label>
+    <label class="tf-field"><span>日期</span><input data-f="date" type="date" value="${isoDate(new Date())}" max="${isoDate(new Date())}"></label>
+    <button type="button" class="btn btn-primary rc-done" data-ok>已還清</button>`;
+  pnl.body.querySelector('[data-ok]').addEventListener('click', async () => {
+    const accId = pnl.body.querySelector('[data-f="acc"]').value || null, date = pnl.body.querySelector('[data-f="date"]').value;
+    if (!date || date > isoDate(new Date())) return;
+    try {
+      await atomic(db, ['payables', 'accounts', 'transfer_logs'], async tx => {
+        const now = new Date().toISOString(); let logId = null;
+        if (accId) {
+          const a = await tx.get('accounts', accId); if (!a) throw new Error('找不到帳戶');
+          await tx.put('accounts', { ...a, balance: +((a.balance || 0) - p.amount).toFixed(6), updated_at: now });
+          logId = crypto.randomUUID();
+          await tx.put('transfer_logs', { id: logId, date, created_at: now, updated_at: now, from_account_id: accId, from_account_name: a.name, from_currency: a.currency || 'TWD', from_amount: p.amount,
+            to_account_id: null, to_account_name: p.to || p.name, to_currency: p.currency || 'TWD', to_amount: p.amount, payable_id: p.id, note: p.name });
+        }
+        await tx.put('payables', { ...p, status: 'paid', paid_at: date, paid_log_id: logId, updated_at: now });
+      });
+      pnl.close(); showToast('✓ 已還清'); await loadData(); await renderSettings();
+    } catch (e) { showToast(e?.message || String(e), { error: true }); }
+  });
+}
+// 刪掉一筆還款紀錄：帳戶加回、應付款回到未還
+async function deletePayablePayment(logId) {
+  return atomic(db, ['payables', 'accounts', 'transfer_logs'], async tx => {
+    const log = await tx.get('transfer_logs', logId); if (!log) return;
+    const now = new Date().toISOString();
+    const a = log.from_account_id ? await tx.get('accounts', log.from_account_id) : null;
+    if (a) await tx.put('accounts', { ...a, balance: +((a.balance || 0) + (log.from_amount || 0)).toFixed(6), updated_at: now });
+    const p = log.payable_id ? await tx.get('payables', log.payable_id) : null;
+    if (p) await tx.put('payables', { ...p, status: 'open', paid_at: null, paid_log_id: null, updated_at: now });
+    await tx.del('transfer_logs', logId);
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// v2.30.0 存錢目標：階段目標、提醒、暫停、刪除時錢要去哪裡
+// ════════════════════════════════════════════════════════════════════════════
+let _bucketReminders = [];
+function drawBucketReminders() {
+  const box = document.getElementById('bucketRemindList'); if (!box) return;
+  box.innerHTML = _bucketReminders.map((r, i) => `<div class="br-row">
+    <select data-i="${i}" data-k="type"><option value="amount" ${r.type === 'amount' ? 'selected' : ''}>存到</option><option value="date" ${r.type === 'date' ? 'selected' : ''}>到了這天</option></select>
+    ${r.type === 'date' ? `<input type="date" data-i="${i}" data-k="date" value="${r.date || ''}">` : `<input type="number" inputmode="decimal" data-i="${i}" data-k="amount" value="${r.amount ?? ''}" placeholder="金額">`}
+    <input type="text" data-i="${i}" data-k="text" value="${escHtml(r.text || '')}" placeholder="提醒我…">
+    <button type="button" class="icon-act danger" data-del-r="${i}" aria-label="刪除這個提醒">✕</button></div>`).join('');
+  box.querySelectorAll('[data-k]').forEach(x => x.addEventListener('change', () => {
+    const r = _bucketReminders[+x.dataset.i]; const k = x.dataset.k;
+    r[k] = k === 'amount' ? (parseFloat(x.value) || null) : x.value;
+    if (k === 'type') drawBucketReminders();
+  }));
+  box.querySelectorAll('[data-del-r]').forEach(b => b.addEventListener('click', () => { _bucketReminders.splice(+b.dataset.delR, 1); drawBucketReminders(); }));
+}
+document.getElementById('bucketRemindAdd')?.addEventListener('click', () => { _bucketReminders.push({ id: crypto.randomUUID(), type: 'amount', amount: null, text: '' }); drawBucketReminders(); });
+
+async function bucketBalances() {
+  const [buckets, allocations, expenseTxns] = await Promise.all([getAll(db, 'buckets').catch(() => []), getAll(db, 'bucket_allocations').catch(() => []), getAll(db, 'expense_txns').catch(() => [])]);
+  const accounts = state.accounts || [], fx = state.fxRates || {};
+  const bal = b => calcBucketAllocated(allocations, b.id) - calcBucketSpent(expenseTxns, b.id, accounts, fx);
+  return { buckets, allocations, expenseTxns, bal };
+}
+// 把「還沒輪到」「這期只存一半」寫回每個目標，讓每月規劃、自動提撥都照著算。
+async function syncGoalStages() {
+  const { buckets, bal } = await bucketBalances();
+  const g = goalStages(buckets, bal);
+  const split = buckets.find(b => b.split_half_from_stage && b.status !== 'closed' && !b.paused && !(b.target_amount > 0 && bal(b) >= b.target_amount));
+  const writes = [];
+  for (const b of buckets) {
+    const queued = g.queued.has(b.id), stageSplit = !!(split && g.current && g.current.id === b.id);
+    let next = { ...b };
+    if (!!b.stage_queued !== queued) next.stage_queued = queued;
+    if (!!b.stage_split !== stageSplit) next.stage_split = stageSplit;
+    // 育兒基金：每月存「目前階段目標」的一半
+    if (split && b.id === split.id && g.current) {
+      const cur = g.current;
+      const want = cur.contribution_mode === 'percent' ? { contribution_mode: 'percent', income_percent: +((cur.income_percent || 0) / 2).toFixed(2), monthly_amount: null }
+        : { contribution_mode: 'fixed', monthly_amount: Math.round((cur.monthly_amount || 0) / 2), income_percent: null };
+      if (b.contribution_mode !== want.contribution_mode || b.income_percent != want.income_percent || b.monthly_amount != want.monthly_amount) next = { ...next, ...want };
+    }
+    if (JSON.stringify(next) !== JSON.stringify(b)) writes.push(next);
+  }
+  if (writes.length) await atomic(db, ['buckets'], async tx => { for (const w of writes) await tx.put('buckets', w); });
+  return g;
+}
+// 首頁「待處理」用：到了的提醒（存滿、存到某個金額、到了某天）
+async function dueGoalReminders() {
+  const { buckets, bal } = await bucketBalances();
+  const today = isoDate(new Date()), out = [];
+  for (const b of buckets.filter(x => x.status !== 'closed')) {
+    const rs = b.reminders || [{ type: 'full' }];
+    for (const r of rs) {
+      const key = r.type === 'full' ? 'full' : r.id || `${r.type}:${r.amount || r.date}`;
+      if ((b.reminders_done || []).includes(key)) continue;
+      const have = bal(b);
+      const hit = r.type === 'full' ? b.target_amount > 0 && have >= b.target_amount : r.type === 'amount' ? r.amount > 0 && have >= r.amount : r.date && r.date <= today;
+      if (!hit) continue;
+      out.push({ bucket: b, key, text: r.type === 'full' ? `「${b.name}」存滿了` : r.text || (r.type === 'amount' ? `「${b.name}」存到 NT$ ${fmt(r.amount)} 了` : `「${b.name}」的提醒`) });
+    }
+  }
+  return out;
+}
+async function dismissGoalReminder(bucketId, key) {
+  const b = await getOne(db, 'buckets', bucketId); if (!b) return;
+  await putOne(db, 'buckets', { ...b, reminders_done: [...new Set([...(b.reminders_done || []), key])] });
+}
+// 刪除或結束一個還有錢的目標：先問這筆錢要去哪裡
+function askGoalMoneyDest(bucket, amount, others) {
+  return new Promise(resolve => {
+    const ov = el('div'); ov.className = 'modal-overlay open'; ov.style.zIndex = 400;
+    ov.innerHTML = `<div class="modal" role="alertdialog" aria-labelledby="gmdQ"><h2 id="gmdQ">「${escHtml(bucket.name)}」還有 NT$ ${fmt(Math.round(amount))}</h2>
+      <p style="font-size:13px;color:var(--text-2);margin:0 0 12px;line-height:1.6">這筆錢要放到哪裡？</p>
+      <label class="tf-field"><span>移到</span><select data-dest><option value="">可自由運用（不放進任何目標）</option>${others.map(o => `<option value="${o.id}">${escHtml(o.name)}</option>`).join('')}</select></label>
+      <div class="modal-actions" style="justify-content:space-between;margin-top:14px"><button class="btn btn-ghost" data-v="cancel">取消</button><button class="btn btn-primary" data-v="ok">確定</button></div></div>`;
+    const done = v => { ov.remove(); resolve(v); };
+    ov.querySelector('[data-v=ok]').onclick = () => done({ dest: ov.querySelector('[data-dest]').value || null });
+    ov.querySelector('[data-v=cancel]').onclick = () => done(null);
+    ov.onclick = e => { if (e.target === ov) done(null); };
+    document.body.appendChild(ov);
+  });
+}
+async function moveGoalMoney(fromBucket, toBucketId, amount) {
+  if (!(amount > 0)) return;
+  const now = new Date().toISOString(), date = isoDate(new Date());
+  await atomic(db, ['bucket_allocations'], async tx => {
+    await tx.put('bucket_allocations', { id: crypto.randomUUID(), bucket_id: fromBucket.id, amount: -Math.round(amount), date, note: toBucketId ? '移到其他目標' : '回到可自由運用', created_at: now });
+    if (toBucketId) await tx.put('bucket_allocations', { id: crypto.randomUUID(), bucket_id: toBucketId, amount: Math.round(amount), date, note: `從「${fromBucket.name}」移過來`, created_at: now });
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// v2.30.0 財務自由進度：只看「目前的投資」（台股 NT$、美股 USD 分開）和 50 萬的
+// 里程碑；不顯示任何像「每月被動收入」的數字。情境、時間表收在展開裡。
+// ════════════════════════════════════════════════════════════════════════════
+const FI_STEP = 500000;
+async function buildFiCard() {
+  const inv = state.inv || { enriched: [] };
+  const tw = (inv.enriched || []).filter(h => (h.market || 'TW') === 'TW').reduce((s, h) => s + (h.marketValueTWD || 0), 0);
+  const usUsd = (inv.enriched || []).filter(h => h.market === 'US').reduce((s, h) => s + (Number(h.marketValueLocal) || 0), 0);
+  const fx = state.fxRates || {};
+  const totalTwd = (inv.totalTWD || 0);
+  const ctx = await loadPlanContext();
+  const spend = calcAnnualSpend(state.expenseTxns || [], state.accounts || [], fx);
+  const annual = spend?.annual ?? Math.round((ctx.plan.fixed.total + ctx.plan.living.total) * 12);
+  const monthlyInvest = Math.max(0, ctx.plan.invest.total || 0);
+  const hist = (await getSetting(db, 'fi_history', []).catch(() => [])) || [];
+  const nextStep = Math.max(1, Math.ceil((tw + 1) / FI_STEP)) * FI_STEP, prevStep = nextStep - FI_STEP;
+  const pctStep = Math.min(100, Math.round((tw - prevStep) / FI_STEP * 100));
+  const yearsTo = (target, r) => { if (!(target > 0)) return null; let v = totalTwd; for (let m = 0; m <= 600; m++) { if (v >= target) return m / 12; v = v * (1 + r / 12) + monthlyInvest; } return null; };
+  const yrs = y => y == null ? '50 年內到不了' : y === 0 ? '已經達到' : `約 ${Math.ceil(y)} 年`;
+  const scen = [4, 5, 6].map(wr => { const target = annual > 0 ? Math.round(annual / (wr / 100)) : 0; return { wr, target, y: yearsTo(target, 0.05) }; });
+  const card = el('div', 'card fi-card');
+  card.innerHTML = `<div class="fi-h"><b>財務自由進度</b>${infoTip('財務自由＝投資放著，就夠付一年的生活費。這裡只看你目前的投資有多少、離下一個 50 萬還差多少。')}</div>
+    <div class="fi-now">
+      <div class="fi-cur"><span>目前的投資・台股</span><b>${moneyCur(Math.round(tw), 'TWD')}</b></div>
+      ${usUsd > 0 ? `<div class="fi-cur"><span>目前的投資・美股</span><b>${moneyCur(usUsd, 'USD')}</b></div>` : ''}
+    </div>
+    <div class="fi-ms"><div class="fi-ms-t"><span>下一個里程碑 NT$ ${fmt(nextStep)}</span><span>還差 NT$ ${fmt(Math.max(0, Math.round(nextStep - tw)))}</span></div>
+      <div class="fi-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pctStep}"><i style="width:${pctStep}%"></i></div>
+      <div class="fi-ms-dots">${Array.from({ length: Math.min(10, nextStep / FI_STEP) }, (_, i) => `<span class="${(i + 1) * FI_STEP <= tw ? 'on' : ''}">${(i + 1) * 50}萬</span>`).join('')}</div></div>
+    <details class="fi-more"><summary>情境與時間表</summary>
+      <div class="fi-sec"><div class="fi-sec-h">需要多少才算財務自由 ${infoTip(`一年的生活費 ÷ 每年從投資拿出來花的比例。4% 最保守（投資要比較多），6% 最寬鬆。一年的生活費用${spend ? `近 ${spend.months} 個月的平均` : '每月計畫的開銷'}：NT$ ${fmt(annual)}。`)}</div>
+        ${scen.map(x => `<div class="fi-line"><span>每年拿 ${x.wr}%</span><b>NT$ ${fmt(x.target)}</b><small>${yrs(x.y)}</small></div>`).join('')}
+      </div>
+      <div class="fi-sec"><div class="fi-sec-h">假設 ${infoTip('時間表假設：每年投資報酬 5%、每月照現在的規劃繼續投資，美股換算成台幣一起算。報酬每年都不一樣，這只是方向。')}</div>
+        <div class="fi-line"><span>每月投資</span><b>NT$ ${fmt(monthlyInvest)}</b><small></small></div>
+        <div class="fi-line"><span>全部投資（換算台幣）</span><b>NT$ ${fmt(Math.round(totalTwd))}</b><small></small></div>
+      </div>
+      <div class="fi-sec"><div class="fi-sec-h">如果每月多投資</div>
+        ${[3000, 5000, 10000].map(add => { const t = scen[0].target; let v = totalTwd, m = 0; for (; m <= 600 && v < t; m++) v = v * (1 + 0.05 / 12) + monthlyInvest + add; const y = m > 600 ? null : m / 12; return `<div class="fi-line"><span>多 NT$ ${fmt(add)}</span><b>${yrs(y)}</b><small>每年拿 4%</small></div>`; }).join('')}
+      </div>
+      <div class="fi-sec"><div class="fi-sec-h">歷年預估</div>
+        ${hist.length ? hist.slice().reverse().map(h => `<div class="fi-line"><span>${h.year} 年</span><b>${h.years == null ? '—' : `還要約 ${h.years} 年`}</b><small>NT$ ${fmt(h.invest)}</small></div>`).join('') : '<div class="fi-empty">還沒有。每年年底存一筆，可以看自己有沒有越來越近。</div>'}
+        <button type="button" class="btn btn-ghost btn-sm" data-fi-save>存一筆今年的預估</button>
+      </div>
+    </details>`;
+  card.querySelector('[data-fi-save]').addEventListener('click', async () => {
+    const year = new Date().getFullYear();
+    const rec = { year, years: scen[0].y == null ? null : Math.ceil(scen[0].y), invest: Math.round(totalTwd), saved_at: isoDate(new Date()) };
+    await setSetting(db, 'fi_history', [...hist.filter(h => h.year !== year), rec].sort((a, b) => a.year - b.year));
+    showToast(`✓ 已存 ${year} 年的預估`); await navigate(currentView);
+  });
+  return card;
+}
+
+// ── 買房試算（v2.30.0）──────────────────────────────────────────────────────
+function mortgageCalc({ loan, ratePct, years, method }) {
+  const n = years * 12, r = ratePct / 100 / 12;
+  if (!(loan > 0) || !(n > 0)) return null;
+  if (method === 'principal') {
+    const p = loan / n;
+    return { first: Math.round(p + loan * r), last: Math.round(p + p * r), total: Math.round(loan + loan * r * (n + 1) / 2) };
+  }
+  const m = r === 0 ? loan / n : loan * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+  return { first: Math.round(m), last: Math.round(m), total: Math.round(m * n) };
+}
+async function buildHousePlanCard() {
+  const saved = (await getSetting(db, 'house_plan', null).catch(() => null)) || {};
+  const v = { price: saved.price ?? 10000000, down: saved.down ?? 15, fees: saved.fees ?? 250000, reno: saved.reno ?? 300000, rate: saved.rate ?? 2.5, years: saved.years ?? 30, method: saved.method ?? 'annuity' };
+  const card = el('div', 'card fi-card'); card.style.marginTop = '12px';
+  const draw = () => {
+    const downAmt = Math.round(v.price * v.down / 100), need = downAmt + v.fees + v.reno, loan = v.price - downAmt;
+    const mg = mortgageCalc({ loan, ratePct: v.rate, years: v.years, method: v.method });
+    card.innerHTML = `<details class="fi-more" ${isExpanded('house:open') ? 'open' : ''}><summary class="fi-h"><b>買房試算</b></summary>
+      <div class="hp-grid">
+        <label class="tf-field"><span>房子總價</span><input type="number" inputmode="decimal" data-hp="price" value="${v.price}"></label>
+        <label class="tf-field"><span>頭期款 % ${infoTip('先自己付的部分，其他向銀行貸款。首購通常 2～3 成。')}</span><input type="number" inputmode="decimal" data-hp="down" value="${v.down}"></label>
+        <label class="tf-field"><span>稅費、仲介、代書 ${infoTip('過戶的稅、仲介費、代書費、貸款手續費等，先抓 25 萬。')}</span><input type="number" inputmode="decimal" data-hp="fees" value="${v.fees}"></label>
+        <label class="tf-field"><span>裝潢、家具</span><input type="number" inputmode="decimal" data-hp="reno" value="${v.reno}"></label>
+        <label class="tf-field"><span>房貸利率 %</span><input type="number" inputmode="decimal" step="0.01" data-hp="rate" value="${v.rate}"></label>
+        <label class="tf-field"><span>貸款年數</span><input type="number" inputmode="numeric" data-hp="years" value="${v.years}"></label>
+      </div>
+      <div class="hp-method" role="radiogroup" aria-label="還款方式">
+        <button type="button" role="radio" data-m="annuity" aria-checked="${v.method === 'annuity'}">本息平均攤還</button>${infoTip('每個月繳一樣的金額，一開始大多是利息，後面慢慢變成本金。比較好規劃。')}
+        <button type="button" role="radio" data-m="principal" aria-checked="${v.method === 'principal'}">本金平均攤還</button>${infoTip('每個月還一樣多的本金，加上剩下欠款的利息。一開始繳比較多，之後越來越少，總利息比較少。')}
+      </div>
+      <div class="rc-sum hp-out">
+        <div><span>需要先準備</span><b>NT$ ${fmt(need)}</b></div>
+        <div><span>貸款</span><b>NT$ ${fmt(loan)}</b></div>
+        ${mg ? (v.method === 'principal' ? `<div><span>每月房貸</span><b>第一個月 NT$ ${fmt(mg.first)}，最後 NT$ ${fmt(mg.last)}</b></div>` : `<div><span>每月房貸</span><b>NT$ ${fmt(mg.first)}</b></div>`) : ''}
+        ${mg ? `<div><span>總共要還</span><b>NT$ ${fmt(mg.total)}</b></div>` : ''}
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" data-hp-goal>把「需要先準備」設成房屋目標</button>
+    </details>`;
+    card.querySelector('details').addEventListener('toggle', e => toggleExpanded('house:open', e.target.open));
+    card.querySelectorAll('[data-hp]').forEach(x => x.addEventListener('change', () => { v[x.dataset.hp] = parseFloat(x.value) || 0; setSetting(db, 'house_plan', { ...v }).catch(() => {}); draw(); }));
+    card.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => { v.method = b.dataset.m; setSetting(db, 'house_plan', { ...v }).catch(() => {}); draw(); }));
+    card.querySelector('[data-hp-goal]').addEventListener('click', async () => {
+      const bs = await getAll(db, 'buckets').catch(() => []);
+      const h = bs.find(b => b.house_plan && b.status !== 'closed') || bs.find(b => /房/.test(b.name) && b.status !== 'closed');
+      if (h) await putOne(db, 'buckets', { ...h, target_amount: need, house_plan: true });
+      else await putOne(db, 'buckets', { id: crypto.randomUUID(), name: '房屋', target_amount: need, house_plan: true, goal_kind: 'stage', stage_order: 3, contribution_mode: 'fixed', monthly_amount: null, status: 'active', reminders: [{ type: 'full' }], created_at: new Date().toISOString() });
+      await syncGoalStages(); showToast(`✓ 房屋目標設成 NT$ ${fmt(need)}`); await navigate(currentView);
+    });
+  };
+  draw();
+  return card;
 }
 
 let _qaKind = 'expense';
@@ -5935,9 +6263,9 @@ function syncQaFab() {
 }
 async function openQuickSheet(opts = {}) {
   closeQuickSheet();
-  const editTransfer = opts?.editTransfer || null, editTrade = opts?.editTrade || null;
+  const editTransfer = opts?.editTransfer || null, editTrade = opts?.editTrade || null, prefillTrade = opts?.prefillTrade || null;
   if (editTransfer) _qaKind = 'transfer';
-  if (editTrade) _qaKind = 'invest';
+  if (editTrade || prefillTrade) _qaKind = 'invest';
   // v2.26.1（使用者：補記過去的日期）：標題旁的日期可以點，直接改這一筆的日期
   let date = currentView === 'calendar' && _calendarSelectedDate ? _calendarSelectedDate : null;
   const bg = el('div'); bg.className = 'qa-sheet-bg'; bg.id = 'qaSheet';
@@ -5952,7 +6280,7 @@ async function openQuickSheet(opts = {}) {
     body.replaceChildren(
       _qaKind === 'income' ? await buildQuickIncome({ date, onDone: closeQuickSheet })
       : _qaKind === 'transfer' ? await buildQuickTransfer({ date, onDone: closeQuickSheet, edit: editTransfer })
-      : _qaKind === 'invest' ? await buildQuickInvest({ date, onDone: closeQuickSheet, edit: editTrade })
+      : _qaKind === 'invest' ? await buildQuickInvest({ date, onDone: closeQuickSheet, edit: editTrade, prefill: prefillTrade })
       : await buildQuickAdd({ date, onDone: closeQuickSheet }));
     panel.querySelectorAll('[data-qa-kind]').forEach(b => { const on = b.dataset.qaKind === _qaKind; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
     body.querySelector('.qa-amt input')?.focus({ preventScroll: true });
@@ -6005,7 +6333,8 @@ async function buildIdleMoneyCard() {
   const ctx = await loadPlanContext();
   const { accounts, fxRates, cards, deposits, receivables, expenseTxns } = state;
   const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses: ctx.recurringExpenses, installments: ctx.installments, dcaSchedules: ctx.dcaSchedules,
-    buckets: ctx.buckets, allocations: ctx.allocations, expenseTxns, essentials: ctx.essentials, emergencyMonths: Number(ctx.settings.emergency_months) || 6 });
+    buckets: ctx.buckets, allocations: ctx.allocations, expenseTxns, essentials: ctx.essentials, emergencyMonths: Number(ctx.settings.emergency_months) || 6,
+    pendingSettle: await pendingSettleTwd(), payablesDue: state.payDebt || 0 });
   const efStorage = calcEfStorage({ efBucket: ctx.buckets.find(b => b.is_emergency_fund && b.status !== 'closed'), allocations: ctx.allocations, expenseTxns, accounts, fxRates });
   const alerts = calcIdleMoneyAlerts({ plan: ctx.plan, spendable: sp, essentials: ctx.essentials, buckets: ctx.buckets, allocations: ctx.allocations,
     expenseTxns, accounts, fxRates, deposits: deposits || [], receivables: receivables || [], efStorage,
@@ -6114,7 +6443,7 @@ async function renderHome() {
     recurringExpenses, installments, dcaSchedules, buckets, livingBudget: resolveBudget(budgets, null, month), fxRates });
   const essentials = plan.fixed.total + plan.living.total;
   const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses, installments, dcaSchedules, buckets, allocations, expenseTxns,
-    essentials, emergencyMonths: Number(planSettings.emergency_months) || 6 });
+    essentials, emergencyMonths: Number(planSettings.emergency_months) || 6, pendingSettle: await pendingSettleTwd(), payablesDue: state.payDebt || 0 });
   const money = v => `NT$ ${fmt(Math.round(v))}`;
   const rwActual = calcRecentSpend(expenseTxns || [], accounts || [], fxRates || {});
   const rwPassive = calcPassiveIncome(incomeTxns, await getAll(db,'txn_categories').catch(()=>[])).monthly || 0;
@@ -6145,6 +6474,8 @@ async function renderHome() {
     ['現金與活存', sp.liquid, ''],
     ['信用卡待繳', -sp.cardsDue, ''],
     ['本月還要付', -sp.upcomingTotal, sp.upcoming.length ? '' : '本月都處理完了'],
+    ...(sp.pendingSettle ? [['股票待交割', -sp.pendingSettle, '交割日會扣款']] : []),
+    ...(sp.payablesDue ? [['應付款', -sp.payablesDue, '欠別人的錢']] : []),
     [`緊急預備金${sp.ef.gap > 0 ? '（含缺口）' : ''}`, -sp.ef.protect, sp.ef.target ? `目標 ${money(sp.ef.target)}` : '尚未設定'],
     ['其他存錢目標', -sp.goalsTotal, sp.goals.length ? `${sp.goals.length} 個` : ''],
   ];
@@ -7986,8 +8317,9 @@ async function renderSettings() {
   });
   content.appendChild(goldCard);
 
+  const payCard = buildPayablesCard(); content.appendChild(payCard);
   applyAccountManageLayout({ content, toolbar, banks, sections: {
-    cash: cashCard, bank: bankCard, recv: recvCard, dep: depCard, other: otherCard, gold: goldCard,
+    cash: cashCard, bank: bankCard, recv: recvCard, dep: depCard, other: otherCard, gold: goldCard, pay: payCard,
   } });
 }
 
@@ -8011,6 +8343,7 @@ const ACC_MANAGE_GROUPS = [
     { key:'gold',  icon:'🪙', label:'實體黃金' },
     { key:'other', icon:'🏠', label:'其他資產' },
     { key:'recv',  icon:'🤝', label:'應收款' },
+    { key:'pay',   icon:'🧾', label:'應付款' },
   ]},
 ];
 function accManageSummary(key) {
@@ -8025,6 +8358,7 @@ function accManageSummary(key) {
     case 'gold':  return { count: `${gold.enriched.length} 筆`, amount: gold.enriched.length ? money(gold.totalTWD) : '' };
     case 'other': return { count: `${otherAssets.enriched.length} 筆`, amount: otherAssets.enriched.length ? money(otherAssets.totalTWD) : '' };
     case 'recv':  return { count: `${recv.pending.length} 筆待收`, amount: recv.pending.length ? money(recv.totalTWD) : '' };
+    case 'pay':   return { count: `${(state.payables || []).length} 筆未還`, amount: (state.payables || []).length ? money(state.payDebt) : '' };
   }
   return { count: '', amount: '' };
 }
@@ -8450,6 +8784,56 @@ async function rerenderHoldingsKeepScroll() {
   window.scrollTo(0, y);
 }
 
+// ── 投資比例檢查（v2.30.0）──────────────────────────────────────────────────
+// 把 ETF 裡面的公司也算進去（成分股比例取最近公布、四捨五入到 0.5%），看「持有最多的
+// 單一公司」佔全部投資多少（≤ 30%），以及個股合計佔多少（≤ 50%）。
+const ETF_LOOK_THROUGH = {
+  asOf: '2026-06',
+  '0050': { '台積電': 0.57, '鴻海': 0.05, '聯發科': 0.045, '台達電': 0.02, '廣達': 0.015 },
+  '006208': { '台積電': 0.57, '鴻海': 0.05, '聯發科': 0.045, '台達電': 0.02, '廣達': 0.015 },
+  'VOO': { 'NVIDIA': 0.075, 'Microsoft': 0.065, 'Apple': 0.06, 'Amazon': 0.04, 'Meta': 0.03, 'Alphabet': 0.04, 'Broadcom': 0.025 },
+  'IVV': { 'NVIDIA': 0.075, 'Microsoft': 0.065, 'Apple': 0.06, 'Amazon': 0.04, 'Meta': 0.03, 'Alphabet': 0.04, 'Broadcom': 0.025 },
+  'SPY': { 'NVIDIA': 0.075, 'Microsoft': 0.065, 'Apple': 0.06, 'Amazon': 0.04, 'Meta': 0.03, 'Alphabet': 0.04, 'Broadcom': 0.025 },
+  'VTI': { 'NVIDIA': 0.065, 'Microsoft': 0.06, 'Apple': 0.055, 'Amazon': 0.035, 'Meta': 0.025, 'Alphabet': 0.035 },
+  'VT': { 'NVIDIA': 0.045, 'Microsoft': 0.04, 'Apple': 0.037, 'Amazon': 0.023, 'Alphabet': 0.023, '台積電': 0.01 },
+  'QQQ': { 'NVIDIA': 0.09, 'Microsoft': 0.085, 'Apple': 0.075, 'Amazon': 0.055, 'Broadcom': 0.05, 'Meta': 0.035, 'Alphabet': 0.05 },
+};
+const COMPANY_ALIAS = { '2330': '台積電', 'TSM': '台積電', '2317': '鴻海', '2454': '聯發科', '2308': '台達電', '2382': '廣達',
+  'NVDA': 'NVIDIA', 'MSFT': 'Microsoft', 'AAPL': 'Apple', 'AMZN': 'Amazon', 'META': 'Meta', 'GOOGL': 'Alphabet', 'GOOG': 'Alphabet', 'AVGO': 'Broadcom' };
+function calcConcentration(inv) {
+  const hs = (inv?.enriched || []).filter(h => h.marketValueTWD > 0);
+  const total = hs.reduce((s, h) => s + h.marketValueTWD, 0);
+  if (!(total > 0)) return null;
+  const co = {};
+  let stock = 0;
+  for (const h of hs) {
+    const tk = String(h.ticker || '').toUpperCase();
+    const lt = ETF_LOOK_THROUGH[tk];
+    if (lt) { for (const [n, w] of Object.entries(lt)) co[n] = (co[n] || 0) + h.marketValueTWD * w; }
+    else if (h.asset_type === 'stock' || !h.asset_type) { const n = COMPANY_ALIAS[tk] || h.name || tk; co[n] = (co[n] || 0) + h.marketValueTWD; }
+    if (h.asset_type === 'stock') stock += h.marketValueTWD;
+  }
+  const top = Object.entries(co).map(([name, v]) => ({ name, pct: v / total })).sort((a, b) => b.pct - a.pct);
+  return { total, top, stockPct: stock / total };
+}
+function buildConcentrationCard(inv) {
+  const c = calcConcentration(inv); if (!c) return null;
+  const pct = v => `${Math.round(v * 100)}%`;
+  const t1 = c.top[0];
+  const lines = [
+    t1 ? { k: '持有最多的單一公司', v: `${escHtml(t1.name)} ${pct(t1.pct)}`, goal: '≤ 30%', bad: t1.pct > 0.30 } : null,
+    { k: '個股合計', v: pct(c.stockPct), goal: '≤ 50%', bad: c.stockPct > 0.50 },
+  ].filter(Boolean);
+  const card = el('div', 'card'); card.style.marginBottom = '16px';
+  card.innerHTML = `<div class="cc-h" role="button" tabindex="0" aria-expanded="false"><b>投資比例檢查</b>${infoTip(`ETF 裡面的公司也算進去（例如 0050 約一半以上是台積電），比例用 ${ETF_LOOK_THROUGH.asOf} 公布的成分股。一家公司太多，它出事時整體會跌很多；個股比 ETF 起伏大。`)}<span class="cc-h-st ${lines.some(l => l.bad) ? 'bad' : 'ok'}">${lines.some(l => l.bad) ? '有超過的' : '都在範圍內'}</span><svg class="chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+    <div class="cc-lines">${lines.map(l => `<div class="cc-line"><span>${l.k}</span><b class="${l.bad ? 'bad' : ''}">${l.v}</b><small>目標 ${l.goal}</small></div>`).join('')}</div>
+    <div class="cc-top" hidden><div class="cc-top-t">比例最高的 5 家公司（含 ETF 裡的）</div>${c.top.slice(0, 5).map(x => `<div class="cc-line"><span>${escHtml(x.name)}</span><b>${pct(x.pct)}</b><small></small></div>`).join('')}</div>`;
+  const h = card.querySelector('.cc-h'), top = card.querySelector('.cc-top');
+  const tog = () => { const open = top.hidden; top.hidden = !open; h.setAttribute('aria-expanded', open); h.classList.toggle('card-open', open); };
+  h.addEventListener('click', e => { if (e.target.closest('.ii')) return; tog(); });
+  h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tog(); } });
+  return card;
+}
 function buildHoldingsPctCard(inv) {
   const allEntries = inv.enriched
     .filter(h => h.marketValueTWD != null && h.marketValueTWD > 0)
@@ -8634,6 +9018,8 @@ async function renderHoldings() {
   const brokMap  = Object.fromEntries(brokerages.map(b=>[b.id,b]));
   const enrichedById = Object.fromEntries((inv?.enriched ?? []).map(h=>[h.id,h]));
   await loadHoldingClassCache();
+  const _trs = await getAll(db, 'stock_trades').catch(() => []);
+  const holdTag = id => _trs.some(t => t.holding_id === id && t.estimated) ? '待確認股數' : _trs.some(t => t.holding_id === id && t.pending_settle) ? '待交割' : '';
 
   // Load saved market colors
   const twColor = await getSetting(db,'market_tw_bg').catch(()=>null) || '#F0FFF4';
@@ -8699,6 +9085,8 @@ async function renderHoldings() {
   // 2026-09-24（使用者要求）：持股佔比小工具從首頁搬到這裡，放在市場／券商
   // 清單上方——沒有任何持倉有市值時 buildHoldingsPctCard() 回傳 null，直接
   // 不顯示，不會空出一張沒有內容的卡片。
+  const conc = buildConcentrationCard(inv);
+  if (conc) content.appendChild(conc);
   const pctCard = buildHoldingsPctCard(inv);
   if (pctCard) content.appendChild(pctCard);
 
@@ -8817,20 +9205,23 @@ async function renderHoldings() {
               const hRow = el('div','hold-row');
               hRow.style.setProperty('--type-c', color);
               hRow.innerHTML = `
-                <div class="hold-id"><b>${escHtml(h.ticker)}</b><span>${escHtml(h.name)}</span></div>
+                <div class="hold-id"><b>${escHtml(h.ticker)}${holdTag(h.id) ? `<span class="hold-pend">${holdTag(h.id)}</span>` : ''}</b><span>${escHtml(h.name)}</span></div>
                 <div class="hold-num"><b>${Number(h.shares||0).toLocaleString('en-US',{maximumFractionDigits:isUS?4:0})}<small> 股</small></b><span class="${eh.marketValueTWD==null?'is-missing':''}">${valTxt}</span></div>
                 <div class="hold-acts">
+                  <button class="btn btn-ghost btn-sm" style="font-size:11px" data-buy-hold="${h.id}">買進</button>
                   ${(h.shares || 0) > 0 ? `<button class="btn btn-ghost btn-sm" style="font-size:11px" data-sell-hold="${h.id}">賣出</button>` : ''}
                   <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-hold="${h.id}">編輯</button>
                   <button class="btn btn-ghost btn-sm" style="font-size:11px;color:var(--red)" data-del-hold="${h.id}">刪除</button>
                 </div>`;
               hRow.querySelector(`[data-edit-hold]`).addEventListener('click', () => openHoldingModal(h, brokerages, banks));
-              hRow.querySelector(`[data-sell-hold]`)?.addEventListener('click', () => openSellModal(h));
+              hRow.querySelector(`[data-sell-hold]`)?.addEventListener('click', () => openQuickSheet({ prefillTrade: { kind: 'sell', holdingId: h.id } }));
+              hRow.querySelector(`[data-buy-hold]`)?.addEventListener('click', () => openQuickSheet({ prefillTrade: { kind: 'buy', holdingId: h.id } }));
               hRow.querySelector(`[data-del-hold]`).addEventListener('click', () => {
-                openDeleteModal(`確定要刪除持倉「${h.ticker} ${h.name}」嗎？`, async () => {
-                  const t = db.transaction(['holdings'],'readwrite');
-                  t.objectStore('holdings').delete(h.id);
-                  await new Promise((res,rej)=>{t.oncomplete=res;t.onerror=()=>rej(t.error)});
+                openDeleteModal(`確定要刪除持倉「${h.ticker} ${h.name}」嗎？${_trs.some(t => t.holding_id === h.id && t.kind !== 'opening') ? '\n這支的買賣紀錄會留著（帳戶餘額不會變）。' : ''}`, async () => {
+                  await atomic(db, ['holdings', 'stock_trades'], async tx => {
+                    await tx.del('holdings', h.id);
+                    for (const t of _trs.filter(t => t.holding_id === h.id && t.kind === 'opening')) await tx.del('stock_trades', t.id);
+                  });
                   showToast('持倉已刪除'); await renderHoldings();
                 });
               });
@@ -9924,6 +10315,15 @@ function openHoldingModal(h=null, brokerages=[], banks=[], defaultBrokId=null) {
   document.getElementById('holdingShares').value = h?.shares??'';
   document.getElementById('holdingManualPrice').value = h?.manual_price??'';
   document.getElementById('holdingCostBasis').value = h?.cost_basis??'';
+  // v2.30.0：有買賣紀錄就不能直接改股數和成本
+  (async () => {
+    const trs = h ? await getByIndex(db, 'stock_trades', 'holding_key', h.id).catch(() => []) : [];
+    const lock = trs.some(t => t.kind !== 'opening');
+    ['holdingShares', 'holdingCostBasis'].forEach(id => { const x = document.getElementById(id); x.readOnly = lock; x.classList.toggle('is-calc', lock); });
+    let hint = document.getElementById('holdingLockHint');
+    if (!hint) { hint = el('div'); hint.id = 'holdingLockHint'; hint.style.cssText = 'font-size:11px;color:var(--text-3);margin:-4px 0 8px'; document.getElementById('holdingCostBasis').closest('.field-row, .modal-field')?.after(hint); }
+    hint.textContent = lock ? '股數和成本由買賣紀錄算出來；要改請到「紀錄」編輯那筆交易。' : '';
+  })();
   // v2.7.1：預設「自動判定」，選單只在資料來源查不到或不同意判定時手動覆寫。
   const indSel = document.getElementById('holdingIndustry');
   if (indSel.options.length <= 1) {
@@ -10080,16 +10480,24 @@ document.getElementById('holdingModalSave').addEventListener('click',async()=>{
   if (!ticker){document.getElementById('holdingTicker').style.borderColor='var(--red)';return;}
   if (!name){document.getElementById('holdingName').style.borderColor='var(--red)';return;}
 
-  await putOne(db,'holdings',{
-    id: editId||crypto.randomUUID(),
-    brokerage_id: brokId,
-    ticker, name,
-    market, asset_type: assetType,
-    currency, shares,
-    manual_price: manualPrice,
-    cost_basis: costBasis,
-    industry_manual: industryManual, style_manual: styleManual,
-    ...(prevHolding.created_at ? { created_at: prevHolding.created_at } : {}),
+  // v2.30.0：股數和成本由交易紀錄算出來。只有期初（還沒有任何買賣）可以直接改，
+  // 改的是那筆「期初」交易；有買賣紀錄之後股數和成本鎖住，要改就改交易。
+  const hid = editId || crypto.randomUUID();
+  const hTrades = editId ? await getByIndex(db, 'stock_trades', 'holding_key', editId).catch(() => []) : [];
+  const realTrades = hTrades.filter(t => t.kind !== 'opening');
+  const lockQty = realTrades.length > 0;
+  await atomic(db, ['holdings', 'stock_trades'], async tx => {
+    const base = { ...prevHolding, id: hid, brokerage_id: brokId, ticker, name, market, asset_type: assetType, currency,
+      manual_price: manualPrice, industry_manual: industryManual, style_manual: styleManual };
+    if (lockQty) { await tx.put('holdings', { ...base, shares: prevHolding.shares, cost_basis: prevHolding.cost_basis }); return; }
+    await tx.put('holdings', { ...base, shares, cost_basis: costBasis });
+    const op = hTrades.find(t => t.kind === 'opening');
+    const now = new Date().toISOString();
+    if (shares > 0) await tx.put('stock_trades', { ...(op || { id: crypto.randomUUID(), kind: 'opening', created_at: now, date: isoDate(new Date()), note: '期初' }),
+      holding_id: hid, holding_key: hid, brokerage_id: brokId, ticker, name, market, currency, settle_date: op?.settle_date || isoDate(new Date()),
+      shares, total_cost: costBasis != null ? +(costBasis * shares).toFixed(6) : null, price: costBasis, fee: 0, tax: 0,
+      account_id: null, balance_applied: false, pending_settle: false, updated_at: now });
+    else if (op) await tx.del('stock_trades', op.id);
   });
 
   document.getElementById('holdingModal').classList.remove('open');
@@ -11111,6 +11519,7 @@ async function syncIncomeBuffer() {
 // v2.27.0（使用者決定：「真實發生的事自動記，分配的決定要確認」）：不再依收入
 // 百分比自動撥入存錢目標，改在「每月規劃」確認時決定。函式保留給舊程式呼叫。
 async function syncAutoBucketContributions() {
+  await syncGoalStages().catch(e => console.warn('[goal stages]', e));
   return;
   const [buckets, incomeTxns, allocations, planSettings] = await Promise.all([
     getAll(db,'buckets').catch(()=>[]),
@@ -12470,7 +12879,14 @@ async function renderBuckets() {
   }
 
   // Active buckets first, closed ones pushed to the bottom.
-  const sorted = [...buckets].sort((a,b)=>(a.status==='closed'?1:0)-(b.status==='closed'?1:0));
+  // v2.30.0：階段目標照順序排在最前面；還沒輪到的先收起來（點「之後的目標」才看得到）
+  const stageOrd = b => b.goal_kind === 'stage' ? (b.stage_order ?? 99) : 1000;
+  const sorted = [...buckets].sort((a,b)=>(a.status==='closed'?1:0)-(b.status==='closed'?1:0) || stageOrd(a) - stageOrd(b));
+  const queuedList = sorted.filter(b => b.stage_queued && b.status !== 'closed');
+  let queuedHost = null;
+  if (queuedList.length) {
+    queuedHost = el('div'); queuedHost.hidden = !isExpanded('goals:queued');
+  }
 
   for (const bucket of sorted) {
     const allocated = calcBucketAllocated(allocations, bucket.id);
@@ -12487,6 +12903,7 @@ async function renderBuckets() {
     const isPercentMode = bucket.contribution_mode === 'percent';
 
     const card = el('div','card'); card.style.marginBottom='12px';
+    const stageTag = bucket.goal_kind === 'stage' && !closed ? `<span class="goal-stage">${bucket.stage_queued ? '之後' : achieved ? '已存好' : bucket.paused ? '暫停中' : '現在存這個'}・第 ${bucket.stage_order ?? '?'} 階段</span>` : bucket.paused && !closed ? '<span class="goal-stage">暫停中</span>' : '';
 
     const header = el('div');
     header.style.cssText = 'padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer';
@@ -12494,7 +12911,7 @@ async function renderBuckets() {
       <span style="width:32px;height:32px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🧳</span>
       <div style="flex:1;min-width:0">
         <div style="font-size:14px;font-weight:600;display:flex;align-items:center;flex-wrap:wrap;gap:4px">
-          ${bucket.name}
+          ${escHtml(bucket.name)}${stageTag}
           ${bucket.is_emergency_fund?`<span style="font-size:10.5px;font-weight:700;color:#B91C1C;background:#FEF2F2;border:1px solid #FECACA;padding:1px 8px;border-radius:99px">🚨 緊急預備金</span>`:''}
           ${closed?`<span style="font-size:10px;padding:1px 7px;border-radius:99px;background:#F1F5F9;color:var(--text-3);font-weight:600">已結束</span>`:''}
           ${achieved?`<span style="font-size:10.5px;font-weight:700;color:#B45309;background:#FFFBEB;border:1px solid #FDE68A;padding:1px 8px;border-radius:99px">🎉 已達標</span>`:''}
@@ -12530,6 +12947,11 @@ async function renderBuckets() {
     editBtn.addEventListener('click', () => openBucketModal(bucket));
     const toggleBtn = el('button','btn btn-ghost btn-sm'); toggleBtn.textContent = closed?'重新啟用':'結束';
     toggleBtn.addEventListener('click', async () => {
+      if (!closed && remaining > 0) {
+        const r = await askGoalMoneyDest(bucket, remaining, buckets.filter(b => b.id !== bucket.id && b.status !== 'closed'));
+        if (!r) return;
+        await moveGoalMoney(bucket, r.dest, remaining);
+      }
       await putOne(db,'buckets',{...bucket, status: closed?'active':'closed'});
       showToast(closed?'已重新啟用':'已標示為結束');
       await syncAutoBucketContributions();
@@ -12644,13 +13066,21 @@ async function renderBuckets() {
       header.querySelector('.chevron').style.transform = isOpen ? '' : 'rotate(90deg)';
     });
 
-    content.appendChild(card);
+    (bucket.stage_queued && !closed && queuedHost ? queuedHost : content).appendChild(card);
   }
-  // v2.25.0（使用者決定）：規劃類的「存到目標要多久／財務自由目標」放在存錢目標最下面
+  if (queuedHost) {
+    const tg = el('button', 'goal-queued-btn'); tg.type = 'button';
+    const lab = () => `${queuedHost.hidden ? '▸' : '▾'} 之後的目標（${queuedList.length} 個，前一個存好才開始存）`;
+    tg.textContent = lab(); tg.setAttribute('aria-expanded', !queuedHost.hidden);
+    tg.addEventListener('click', () => { queuedHost.hidden = !toggleExpanded('goals:queued', queuedHost.hidden); tg.textContent = lab(); tg.setAttribute('aria-expanded', !queuedHost.hidden); });
+    content.appendChild(tg); content.appendChild(queuedHost);
+  }
+  // v2.25.0（使用者決定）：規劃類放在存錢目標最下面；v2.30.0 改成「財務自由進度」與「買房試算」
   if (currentView === 'plan') {
     await loadData();
-    const pj = await buildProjectionCard(state.netWorth ?? 0); pj.style.marginTop = '20px';
-    content.appendChild(pj);
+    const fi = await buildFiCard(); fi.style.marginTop = '20px';
+    content.appendChild(fi);
+    const hp = await buildHousePlanCard(); content.appendChild(hp);
   }
 }
 
@@ -12718,6 +13148,14 @@ async function openBucketModal(bucket=null) {
       : '這筆錢實際放在哪個帳戶。指定後會檢查帳戶餘額夠不夠，發薪後的「分流轉帳」也會提醒把錢轉過去；不指定就只在 App 裡分帳，不檢查。'; };
     cb.onchange = sync; sync();
   }
+  document.getElementById('bucketGoalKind').value = bucket?.goal_kind === 'stage' ? 'stage' : 'independent';
+  document.getElementById('bucketStageOrder').value = bucket?.stage_order ?? '';
+  const syncKind = () => { document.getElementById('bucketStageOrderField').style.visibility = document.getElementById('bucketGoalKind').value === 'stage' ? 'visible' : 'hidden'; };
+  document.getElementById('bucketGoalKind').onchange = syncKind; syncKind();
+  document.getElementById('bucketPaused').checked = !!bucket?.paused;
+  document.getElementById('bucketRemindFull').checked = !(bucket?.reminders) || bucket.reminders.some(r => r.type === 'full');
+  _bucketReminders = (bucket?.reminders || []).filter(r => r.type !== 'full').map(r => ({ ...r }));
+  drawBucketReminders();
   document.getElementById('bucketModalDelete').style.display = bucket?'inline-flex':'none';
   document.getElementById('bucketModal').classList.add('open');
   document.getElementById('bucketName').focus();
@@ -12729,7 +13167,12 @@ document.getElementById('bucketModal').addEventListener('click',e=>{if(e.target=
 document.getElementById('bucketModalDelete')?.addEventListener('click',async()=>{
   const editId=document.getElementById('bucketEditId').value; if(!editId)return;
   document.getElementById('bucketModal').classList.remove('open');
+  const { buckets: _bs, bal: _bal } = await bucketBalances();
+  const _me = _bs.find(b => b.id === editId), _have = _me ? _bal(_me) : 0;
+  let _dest = null;
+  if (_have > 0) { const r = await askGoalMoneyDest(_me, _have, _bs.filter(b => b.id !== editId && b.status !== 'closed')); if (!r) return; _dest = r.dest; }
   openDeleteModal('確定要刪除這個存錢目標嗎？底下的專案跟提撥紀錄會一併刪除；已經記錄過的花費本身不會被刪除，只是不再顯示歸屬。',async()=>{
+    if (_dest) await moveGoalMoney(_me, _dest, _have);
     const [allocs, projs] = await Promise.all([
       getAll(db,'bucket_allocations').catch(()=>[]),
       getAll(db,'projects').catch(()=>[]),
@@ -12783,7 +13226,13 @@ document.getElementById('bucketModalSave').addEventListener('click',async()=>{
     note:document.getElementById('bucketNote').value.trim(),
     is_emergency_fund: isEmergencyFund,
     store_account_id: document.getElementById('bucketStoreAccount').value || null,
+    goal_kind: document.getElementById('bucketGoalKind').value,
+    stage_order: parseInt(document.getElementById('bucketStageOrder').value) || null,
+    paused: document.getElementById('bucketPaused').checked,
+    reminders: [...(document.getElementById('bucketRemindFull').checked ? [{ type: 'full' }] : []), ..._bucketReminders.filter(r => r.type === 'amount' ? r.amount > 0 : !!r.date)],
+    reminders_done: existing?.reminders_done ?? [],
     ...(existing?.is_income_buffer ? { is_income_buffer: true } : {}),
+    ...(existing ? Object.fromEntries(['split_half_from_stage', 'is_annual_reserve', 'house_plan', 'created_at'].filter(k => existing[k] != null).map(k => [k, existing[k]])) : {}),
     status: existing?.status ?? 'active',
     created_at: existing?.created_at ?? new Date().toISOString(),
   });
@@ -15754,8 +16203,8 @@ function buildNeutralTxnRow(t, scope, accountMap) {
   let title, sub, amt;
   if (t._kind === 'transfer') {
     const fa = accountMap[t.from_account_id], ta = accountMap[t.to_account_id];
-    const cardName = t.card_payment_card_id ? (state.cards?.find?.(c => c.id === t.card_payment_card_id)?.name || '信用卡') : null;
-    title = cardName ? `繳卡費・${escHtml(cardName)}` : '轉帳';
+    const cardName = t.card_payment_card_id ? (state.cards?.find?.(c => c.id === t.card_payment_card_id)?.name || '信用卡') : t.payable_id ? (t.to_account_name || '') : null;
+    title = t.payable_id ? `還款・${escHtml(t.note || '')}` : cardName ? `繳卡費・${escHtml(cardName)}` : '轉帳';
     sub = `${escHtml(accLabel(fa) || t.from_account_name || '')} → ${escHtml(cardName || accLabel(ta) || t.to_account_name || '')}${t.fee ? `・手續費 ${fmt(t.fee)}` : ''}${t.note ? '・' + escHtml(t.note) : ''}`;
     amt = (t.from_currency || 'TWD') === 'TWD' ? 'NT$ ' + fmt(t.from_amount) : fmtCurrency(t.from_amount, t.from_currency);
     if ((t.to_currency || 'TWD') !== (t.from_currency || 'TWD')) amt += `<div class="txn-neutral-sub">→ ${(t.to_currency || 'TWD') === 'TWD' ? 'NT$ ' + fmt(t.to_amount) : fmtCurrency(t.to_amount, t.to_currency)}</div>`;
@@ -15778,12 +16227,13 @@ function buildNeutralTxnRow(t, scope, accountMap) {
   row.querySelector('[data-edit]').addEventListener('click', () => {
     if (t._kind === 'trade') openQuickSheet({ editTrade: t });
     else if (t.card_payment_card_id) openCardPaymentEdit(t);
+    else if (t.payable_id) showToast('還款紀錄不能編輯；刪掉後再按一次「還清」');
     else openQuickSheet({ editTransfer: t });
   });
   row.querySelector('[data-del]').addEventListener('click', () => {
     openDeleteModal(`確定要刪除這筆${t._kind === 'trade' ? '投資交易' : (t.card_payment_card_id ? '繳卡費' : '轉帳')}紀錄嗎？帳戶餘額會一起改回去。`, async () => {
       try {
-        if (t._kind === 'trade') await deleteStockTrade(t.id); else if (t.card_payment_card_id) await deleteCardPayment(t.card_payment_card_id, t.id); else await deleteTransfer(t.id);
+        if (t._kind === 'trade') await deleteStockTrade(t.id); else if (t.card_payment_card_id) await deleteCardPayment(t.card_payment_card_id, t.id); else if (t.payable_id) await deletePayablePayment(t.id); else await deleteTransfer(t.id);
         showToast('已刪除'); await loadData(); await renderCalendar();
       } catch (e) { showToast(e?.message || String(e), { error: true }); }
     });
@@ -15813,7 +16263,7 @@ async function renderTxnMergedList(content, scope = {}) {
   const tLogs = (await getAll(db, 'transfer_logs').catch(() => [])).map(l => ({ ...l, date: transferDate(l), _kind: 'transfer' })).filter(inScope);
   const trades = (await getAll(db, 'stock_trades').catch(() => [])).filter(t => t.kind !== 'opening').map(t => ({ ...t, _kind: 'trade' })).filter(inScope);
   const merged = [
-    ...(state.incomeTxns || []).filter(inScope).filter(t => !(t.dca_schedule_id && t.migrated_to_trade)).map(t => ({...t, _kind:'income'})),
+    ...(state.incomeTxns || []).filter(inScope).filter(t => !(t.dca_schedule_id && t.migrated_to_trade) && !t.trade_id && !t.div_holding_id).map(t => ({...t, _kind:'income'})),
     ...(state.expenseTxns || []).filter(inScope).map(t => ({...t, _kind:'expense'})),
     ...tLogs, ...trades,
   ].sort((a,b)=> b.date.localeCompare(a.date) || String(b.created_at??'').localeCompare(String(a.created_at??'')));
