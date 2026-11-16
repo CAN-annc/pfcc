@@ -12619,7 +12619,7 @@ async function buildPlanDraft(ym = currentMonthStr()) {
   ].map(x => ({ ...x, on: saved?.fixed?.off ? !saved.fixed.off.includes(x.key) : true }));
   // 投資：定期定額依名稱合併（例如同一檔每月 5、22 日各扣一次），加上換成外幣的定期轉帳
   const groups = new Map();
-  dcaSchedules.filter(d => !d.is_expired).forEach(d => {
+  dcaSchedules.filter(d => !d.is_expired && d.pay_with !== 'points').forEach(d => {
     const g = groups.get(d.name) || { key: `dca:${d.name}`, kind: 'dca', name: d.name, ids: [], base: 0, days: [] };
     g.ids.push(d.id); g.base += calcRecurringMonthlyEquivalent(d, fxRates); if (d.billing_day) g.days.push(d.billing_day);
     groups.set(d.name, g);

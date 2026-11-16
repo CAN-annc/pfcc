@@ -1547,7 +1547,7 @@ export function calcMonthlyPlan({ income = 0, baseFixed = 0, recurringExpenses =
     return { id: b.id, name: b.name, isEmergency: !!b.is_emergency_fund, mode: b.contribution_mode === 'percent' ? 'percent' : 'fixed',
       percent: b.income_percent ?? null, amount: Math.round(c.amount || 0), fromEf: c.fromEf };
   }).sort((a, b) => (b.isEmergency - a.isEmergency) || (b.amount - a.amount));
-  const investItems = dcaSchedules.filter(d => !d.is_expired).map(d => ({ id: d.id, name: d.name, amount: calcRecurringMonthlyEquivalent(d, fxRates) })).filter(x => x.amount > 0);
+  const investItems = dcaSchedules.filter(d => !d.is_expired && d.pay_with !== 'points').map(d => ({ id: d.id, name: d.name, amount: calcRecurringMonthlyEquivalent(d, fxRates) })).filter(x => x.amount > 0);
   const sum = xs => xs.reduce((s, x) => s + x.amount, 0);
   const fixed = Math.round(sum(fixedItems)), save = Math.round(sum(saveItems)), invest = Math.round(sum(investItems));
   const living = livingBudget ?? 0;
@@ -1596,7 +1596,7 @@ export function calcMonthDue({ recurringExpenses = [], installments = [], dcaSch
     if (d) push('installment', i.id, d, `${i.name} 分期`, i.per_amount ?? Math.round(i.total_amount / i.total_periods));
   }
   for (const s of dcaSchedules) {
-    if (s.is_expired) continue;
+    if (s.is_expired || s.pay_with === 'points') continue; // 點數扣款不用現金
     let d = null;
     if (s.freq === 'monthly') d = monthlyDateInMonth(s.billing_day, y, m);
     else if (s.freq === 'custom') d = customDateInMonth(s.next_date, s.custom_months, y, m);
