@@ -1596,7 +1596,7 @@ export function calcMonthDue({ recurringExpenses = [], installments = [], dcaSch
     if (d) push('installment', i.id, d, `${i.name} 分期`, i.per_amount ?? Math.round(i.total_amount / i.total_periods));
   }
   for (const s of dcaSchedules) {
-    if (s.is_expired || s.pay_with === 'points') continue; // 點數扣款不用現金
+    if (s.is_expired || s.pay_with === 'points' || (s.currency || 'TWD') !== 'TWD') continue; // 點數扣款不用現金；美金扣的不算在台幣裡
     let d = null;
     if (s.freq === 'monthly') d = monthlyDateInMonth(s.billing_day, y, m);
     else if (s.freq === 'custom') d = customDateInMonth(s.next_date, s.custom_months, y, m);
@@ -1608,7 +1608,8 @@ export function calcMonthDue({ recurringExpenses = [], installments = [], dcaSch
 
 export function calcSpendable({ accounts = [], fxRates = {}, cards = [], recurringExpenses = [], installments = [],
   dcaSchedules = [], buckets = [], allocations = [], expenseTxns = [], essentials = 0, emergencyMonths = 6, today = new Date(), pendingSettle = 0, payablesDue = 0 }) {
-  const liquidAccounts = accounts.filter(a => a.include_in_total !== false);
+  // v2.30.0（使用者第 10 項：各幣別分開算）：可自由運用只算台幣現金與活存；美金、日幣另外顯示
+  const liquidAccounts = accounts.filter(a => a.include_in_total !== false && (a.currency || 'TWD') === 'TWD' && a.account_type !== 'transit_card');
   const liquid = liquidAccounts.reduce((s, a) => s + (toTWD(a.balance || 0, a.currency || 'TWD', fxRates) || 0), 0);
   const cardsDue = cards.reduce((s, c) => s + Math.max(0, c.current_balance || 0), 0);
   const upcoming = calcMonthDue({ recurringExpenses, installments, dcaSchedules, fxRates }, today);

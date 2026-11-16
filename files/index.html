@@ -6743,7 +6743,7 @@ async function renderHome() {
     ? `<div class="sp-warn"><b>緊急預備金還差 ${money(sp.ef.gap)}</b></div>`
     : '';
   const rows = [
-    ['現金與活存', sp.liquid, ''],
+    ['台幣現金與活存', sp.liquid, ''],
     ['信用卡待繳', -sp.cardsDue, ''],
     ['本月還要付', -sp.upcomingTotal, sp.upcoming.length ? '' : '本月都處理完了'],
     ...(sp.pendingSettle ? [['股票待交割', -sp.pendingSettle, '交割日會扣款']] : []),
@@ -6754,7 +6754,7 @@ async function renderHome() {
   hero.innerHTML = `
     <div class="networth-label">可自由運用</div>
     <div class="networth-amount"><span class="networth-currency">NT$</span>${fmt(sp.free)}</div>
-    ${sp.shortfall > 0 ? `<div class="home-hero-sub">必付與保留的錢比手上多 ${money(sp.shortfall)}</div>` : ''}
+    ${sp.ef.have < sp.ef.target && sp.beforeReserve > sp.free ? `<div class="home-hero-sub">還沒存的預備金先不算：付完該付的，還有 ${money(Math.max(0, sp.beforeReserve))}</div>` : sp.shortfall > 0 ? `<div class="home-hero-sub">必付與保留的錢比手上多 ${money(sp.shortfall)}</div>` : ''}
     <button type="button" class="sp-toggle" aria-expanded="${_homeSpendOpen}">${_homeSpendOpen ? '收起' : '怎麼算的'}</button>
     <div class="sp-rows" ${_homeSpendOpen ? '' : 'hidden'}>
       ${rows.map(([l, v, n], i) => `<div class="sp-row"><span>${l}${n ? `<small>${n}</small>` : ''}</span><b>${v < 0 ? '−' : ''}${money(Math.abs(v))}</b></div>`
