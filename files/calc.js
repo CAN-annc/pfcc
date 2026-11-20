@@ -512,7 +512,7 @@ export function calcInsuranceMonthlyEquivalent(recurringExpenses = [], installme
     .filter(i => i.category === 'insurance' && !i.is_expired)
     .reduce((sum, i) => sum + calcRecurringMonthlyEquivalent(i, fxRates), 0);
   const fromInstallments = installments
-    .filter(i => i.is_insurance && (i.paid_periods || 0) < i.total_periods)
+    .filter(i => i.is_insurance && (i.paid_periods || 0) < i.total_periods && !(i.start_date && currentMonthStr() < i.start_date.slice(0, 7)))
     .reduce((sum, i) => sum + (i.per_amount ?? Math.round(i.total_amount / i.total_periods)), 0);
   return fromRecurring + fromInstallments;
 }
@@ -1532,7 +1532,7 @@ export function calcLivingSpentByCategory(expenseTxns, monthStr, accounts = [], 
  * 會整個變成 0）。
  */
 export function calcMonthlyPlan({ income = 0, baseFixed = 0, recurringExpenses = [], installments = [],
-  dcaSchedules = [], buckets = [], livingBudget = null, fxRates = {} }) {
+  dcaSchedules = [], buckets = [], livingBudget = null, fxRates = {}, ym = currentMonthStr() }) {
   // v2.21.0：有「年度支出預存」存錢目標時，年繳項目改由它每月預存（列在存下來），
   // 不再 ÷12 算進固定支出，避免重複。
   const annualReserve = buckets.some(b => b.is_annual_reserve && b.status !== 'closed');
@@ -1540,7 +1540,8 @@ export function calcMonthlyPlan({ income = 0, baseFixed = 0, recurringExpenses =
   const baseSource = income > 0 ? 'income' : (baseFixed > 0 ? 'fixed' : 'none');
   const fixedItems = [
     ...recurringExpenses.filter(r => !r.is_expired && !(annualReserve && isAnnualItem(r))).map(r => ({ id: r.id, kind: 'recurring', name: r.name, category: r.category ?? 'general', amount: calcRecurringMonthlyEquivalent(r, fxRates) })),
-    ...installments.filter(i => (i.paid_periods || 0) < i.total_periods).map(i => ({ id: i.id, kind: 'installment', name: i.name, category: i.is_insurance ? 'insurance' : 'installment', amount: i.per_amount ?? Math.round(i.total_amount / i.total_periods) })),
+    // v2.31.0：還沒開始的分期（例如明年度的保費）不算進這個月
+    ...installments.filter(i => (i.paid_periods || 0) < i.total_periods && !(i.start_date && ym < i.start_date.slice(0, 7))).map(i => ({ id: i.id, kind: 'installment', name: i.name, category: i.is_insurance ? 'insurance' : 'installment', amount: i.per_amount ?? Math.round(i.total_amount / i.total_periods) })),
   ].filter(x => x.amount > 0).sort((a, b) => b.amount - a.amount);
   const saveItems = buckets.filter(b => b.status !== 'closed' && !b.is_income_buffer).map(b => {
     const c = calcBucketPlanContribution(b, income, baseFixed);
@@ -1828,7 +1829,10 @@ export function calcIncomeStability(incomeTxns = [], today = new Date()) {
 // 「先記錄真實花費 → 再分析 → 再做預算」：最近 n 個完整月份（不含本月）的
 // 生活支出平均（只算 isLivingExpense，跟生活預算比較的口徑一致），以及各類別
 // 的平均。只計入有支出紀錄的月份；一個月都沒有時回傳 null。四捨五入到百位。
-export function calcAvgLivingSpend(expenseTxns = [], accounts = [], fxRates = {}, n = 3, today = new Date()) {
+// v2.31.0：excludeMain＝已經是固定支出的主分類（例如有保險分期時的 cat_insurance），
+// 歷史紀錄裡這些類別的花費不算進生活費平均，免得跟固定支出重複。
+export function calcAvgLivingSpend(expenseTxns = [], accounts = [], fxRates = {}, n = 3, today = new Date(), excludeMain = []) {
+  if (excludeMain.length) expenseTxns = expenseTxns.filter(t => !excludeMain.includes(mainCategoryOf(t.category)));
   const months = [];
   for (let i = n; i >= 1; i--) {
     const d = new Date(today.getFullYear(), today.getMonth() - i, 1);

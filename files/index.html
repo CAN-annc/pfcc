@@ -202,6 +202,15 @@ body{display:flex;min-height:100dvh;overscroll-behavior-y:none}
 .hold-row{grid-column:2;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;
   padding:8px 12px 8px 12px;border-top:1px solid var(--border);font-size:12px;background:color-mix(in srgb,var(--type-c) 6%,var(--card))}
 .hold-id{display:flex;flex-direction:column;min-width:0;gap:1px}
+.hold-id.has-top5{cursor:pointer}
+.hold-top5-chev{margin-left:4px;vertical-align:middle;color:var(--text-3);transition:transform .15s}
+.hold-id.is-open .hold-top5-chev{transform:rotate(180deg)}
+.hold-top5{grid-column:1 / -1;padding:6px 10px 8px;border-radius:10px;background:var(--surface-2)}
+.hold-top5-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;counter-reset:t5}
+.hold-top5-list li{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--text-1);counter-increment:t5}
+.hold-top5-list li span::before{content:counter(t5) '. ';color:var(--text-3)}
+.hold-top5-list li b{font-weight:600;font-variant-numeric:tabular-nums}
+.hold-top5 small{display:block;margin-top:5px;font-size:10px;color:var(--text-3)}
 .hold-id b{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px}
 .hold-pend{display:inline-block;margin-left:6px;font-size:10px;font-weight:600;color:#B45309;background:#FFFBEB;border:1px solid #FCD34D;border-radius:4px;padding:0 4px;vertical-align:1px}
 .hold-id span{color:var(--text-3);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -378,6 +387,23 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .qa-amt input.is-err{color:var(--red)}
 .qa-desc{flex:1;min-width:0;border:1px solid var(--border-2);border-radius:10px;padding:0 10px;font-size:16px;background:var(--card);color:var(--text-1)}
 .qa-label{font-size:10.5px;font-weight:600;color:var(--text-3);margin:12px 0 6px;letter-spacing:.03em}
+.qa-label-row{display:flex;align-items:center;justify-content:space-between}
+.qa-full-link{font:inherit;font-size:12px;font-weight:600;color:var(--blue);background:none;border:none;padding:4px 0 4px 8px;cursor:pointer;letter-spacing:0}
+/* v2.31.0：付款方式＝三顆主按鈕，點了才展開那一類 */
+.qa-pay-types{display:grid;gap:6px}
+.qa-pay-type{font:inherit;display:flex;align-items:center;gap:7px;min-height:48px;padding:7px 9px;border-radius:12px;border:1px solid var(--border-2);background:var(--card);color:var(--text-1);cursor:pointer;min-width:0;text-align:left;transition:background .15s,border-color .15s,transform .1s}
+.qa-pay-type:active{transform:scale(.96)}
+.qa-pay-type .qp-ico{font-size:17px;line-height:1;flex-shrink:0}
+.qa-pay-type .qp-txt{display:flex;flex-direction:column;min-width:0}
+.qa-pay-type b{font-size:13px;font-weight:600;line-height:1.2}
+.qa-pay-type small{font-size:10.5px;color:var(--text-2);line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow-wrap:anywhere}
+.qa-pay-type.is-on{background:color-mix(in srgb,var(--blue) 12%,var(--card));border-color:var(--blue)}
+.qa-pay-type.is-on small{color:var(--blue)}
+.qa-pay-type.is-open{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue) inset}
+.qa-pay-items{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding:8px;border-radius:12px;background:var(--surface-2)}
+.qa-pay-item{font:inherit;font-size:12.5px;padding:8px 12px;border-radius:999px;border:1px solid var(--border-2);background:var(--card);color:var(--text-1);cursor:pointer;min-height:36px}
+.qa-pay-item.is-sel{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.qa-pay-type:focus-visible,.qa-pay-item:focus-visible,.qa-full-link:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .qa-chips{display:flex;flex-wrap:wrap;gap:6px}
 /* v2.23.0：類別改成一排四格、左右對齊；最常用 7 個＋「更多」 */
 .qa-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
@@ -461,7 +487,7 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .mp-ref2-bar{grid-column:1/-1;position:relative;height:10px}.mp-ref2-bar i,.mp-ref2-bar b{position:absolute;left:0;height:4px;border-radius:2px}.mp-ref2-bar i{top:0;background:var(--border-strong,#C8CDD8)}.mp-ref2-bar b{top:6px;background:#2563EB}
 .mp-ref2-sum{font-size:12px;color:var(--text-2);margin:4px 0 10px}
 .tm-band{display:flex;align-items:baseline;gap:8px;padding:4px 2px 2px;border-left:4px solid #2563EB;padding-left:10px;margin:4px 0}.tm-band b{font-size:16px}.tm-band span{font-size:12px;color:var(--text-3)}
-.tm-band.is-second{border-left-color:#0E7A52;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.tm-band.is-second{border-left-color:#0E7A52;margin-top:6px;padding-top:10px;border-top:1px solid var(--border)}
 .modal-check{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;margin:4px 0 8px}.modal-check input{width:20px;height:20px;accent-color:var(--accent,#2563EB)}
 .inv-row{margin-top:8px}
 .inv-tk input[data-iv="ticker"]{font-weight:700;font-size:16px}
@@ -1195,16 +1221,19 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 .rpt-bal-split b{font-size:15px;font-variant-numeric:tabular-nums}
 @media(max-width:420px){.rpt-seg button{padding:7px 14px}.rpt-txn{padding-left:16px}.rpt-custom input{max-width:128px}}
 /* ── v2.3.0 記帳管理方格：3 欄、分三組，一屏看完 11 個區塊 ── */
-.tm-wrap{display:flex;flex-direction:column;gap:14px}
-.tm-sec-title{font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.06em;margin:0 0 7px 2px}
-.tm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.tm-tile{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 6px 10px;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font:inherit;text-align:center;transition:transform .12s ease,box-shadow .15s ease,border-color .15s ease;-webkit-tap-highlight-color:transparent}
+.tm-wrap{display:flex;flex-direction:column;gap:10px}
+/* v2.31.0（使用者：帳戶與記帳不要上下滑）：方格改成小卡——第一行圖示＋名稱、第二行金額，
+   13 格在 iPhone 一個畫面放得下。有金額時不再另外寫筆數。 */
+.tm-sec-title{font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.06em;margin:0 0 5px 2px}
+.tm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.tm-tile{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 9px;min-height:54px;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:5px;row-gap:3px;align-items:center;align-content:center;cursor:pointer;font:inherit;text-align:left;transition:transform .12s ease,box-shadow .15s ease,border-color .15s ease;-webkit-tap-highlight-color:transparent}
 .tm-tile:hover{border-color:var(--accent-tint-strong);box-shadow:0 3px 10px rgba(17,24,39,.07)}
 .tm-tile:active{transform:scale(.96)}
-.tm-ico{font-size:24px;line-height:1.1}
-.tm-label{font-size:12.5px;font-weight:600;color:var(--text-1);line-height:1.25}
-.tm-sum{font-size:10.5px;color:var(--blue);font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+.tm-ico{font-size:15px;line-height:1}
+.tm-label{font-size:12.5px;font-weight:600;color:var(--text-1);line-height:1.2;overflow-wrap:anywhere}
+.tm-sum{grid-column:1 / -1;font-size:11.5px;color:var(--blue);font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2;white-space:nowrap}
 .tm-sum.muted{color:var(--text-3);font-weight:500}
+.tm-tile .tm-sub{display:none}
 @media(min-width:769px){.tm-grid{grid-template-columns:repeat(4,1fr)}}
 @keyframes flashTarget{0%,100%{box-shadow:0 0 0 0 transparent;background:transparent}20%,60%{box-shadow:0 0 0 3px var(--accent-tint-strong);background:var(--accent-tint)}}
 .flash-target{animation:flashTarget 2s ease;border-radius:8px}
@@ -1376,6 +1405,9 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 .mpl-seg button[data-mode=pause].on{color:var(--amber)}
 .mpl-hint{font-size:12px;color:var(--text-2);margin-top:10px;line-height:1.6;padding:10px 12px;background:var(--surface);border-radius:10px}
 .mpl-living{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.mpl-avgs{display:flex;flex-wrap:wrap;gap:6px}
+.mpl-avgs .mpl-chip{display:inline-flex;align-items:baseline;gap:6px}
+.mpl-avgs .mpl-chip b{font-variant-numeric:tabular-nums}
 .mpl-big{display:flex;align-items:baseline;gap:8px;width:100%;border-bottom:2px solid var(--blue);padding-bottom:4px}
 .mpl-big span{font-size:14px;color:var(--text-3)}
 .mpl-big input{font:inherit;font-size:30px;font-weight:700;border:none;outline:none;background:transparent;color:var(--text-1);width:100%;font-variant-numeric:tabular-nums;padding:0}
@@ -3790,28 +3822,20 @@ const THEME_CSS_VAR_NAMES = ['--surface','--surface-2','--card','--bar','--borde
 // 已交付次數，見專案文件《Batch C 補充－四十二》的版本號說明）。往後：一次
 // 份量較大、多項功能一起到齊的整批交付，次版號＋1、修訂號歸零；單一小修正
 // 只把修訂號＋1。「最後更新日期」徽章維持保留，兩個並列顯示。
-const APP_VERSION = 'v2.30.0';
-const CHANGELOG_LAST_UPDATED = '2026-11-16';
+const APP_VERSION = 'v2.31.0';
+const CHANGELOG_LAST_UPDATED = '2026-11-20';
 // 「手元」名稱由來——更新日誌標題下方的固定副標，不是更新項目。
 const APP_NAME_SUBTITLE = '手元 — 源自日文的「手元金（可自由支配的現金）」';
 // v2.3.0（使用者要求）：更新日誌只列「這一次」更新的內容——不保留前幾版的
 // 清單，也不再列「接下來要做什麼」。每次交付直接整份換掉這個陣列即可。
 const CHANGELOG_DONE = [
-  '匯入備份改成真正覆蓋，匯入前自動留一份，有問題可以在設定頁還原',
-  '日期一律用台灣時間，早上記帳不會跑到前一天',
-  '＋記帳多了「轉帳」和「投資」：轉帳可以算手續費；換匯只能在同一家銀行',
-  '投資：買進、賣出、股利、配股、分割；台股自動算交割日（跳過假日），交割前顯示「待交割」',
-  '定期定額先記大約的股數，首頁提醒你對一下實際股數；可以設定最後一期、用點數扣款',
-  '信用卡：本期帳單和未出帳分開，結帳前 7 天內刷的可以改到下期；填帳單金額就能對帳；可以設定自動扣繳全額、刷卡分期',
-  '定存到期自動續存，利息記成收入，首頁提醒你對一下實際利息',
-  '應付款（欠別人的錢）：從總資產和可自由運用扣掉',
-  '存錢目標可以設成階段目標（一個存好才存下一個）、自訂提醒、暫停；刪除時會問錢要放到哪裡',
-  '計畫頁：財務自由進度（台股、美股分開）、買房試算',
-  '投資比例檢查：持有最多的單一公司、個股合計',
-  '首頁「待處理」與檢查清單（每月、每年、事件）',
-  '類別整理：日用品、美容美髮保養、刷卡回饋等',
-  '每月規劃的確認步驟：收入扣掉固定支出、投資、生活費之後，還沒有去處的錢可以直接放進存錢目標（有目標的可以一鍵補滿），確認規劃時才記進去',
-  '月底回顧顯示那個月實際還有多少錢沒有去處，可以直接放進存錢目標，放錯了可以復原；本月進度顯示規劃時留下的',
+  '每月規劃的生活費可以選用上個月、近 3、近 6、近 12 個月的平均，會記住你選的',
+  '保險已經是固定支出時，以前記成一般支出的保費不再算進生活費平均，也不另設生活費上限',
+  '分期付款看開始日期：明年度的保費不會提早顯示「本月到期」，也不算進這個月的規劃',
+  '帳戶與記帳：方格改小，一個畫面看完不用滑',
+  '記一筆的付款方式改成「現金｜信用卡｜帳戶」三顆按鈕，點了才展開；收入的「存入」也一樣',
+  '定存的到期匯入帳戶、扣款帳戶只列同一家銀行、同一個幣別的帳戶',
+  '持倉點 ETF 代號可以看前 5 大持股；投資比例檢查加入 00770，0050 更新到 11 月的成分股',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -5007,26 +5031,38 @@ function sheetMoreSummary(kind) {
   const el2 = document.getElementById(`${p}MoreSum`); if (el2) el2.textContent = out.join('・');
 }
 
-// v2.23.0（使用者：信用卡一直預設 A 卡，但比較常用 B 卡）：付款方式改成一排兩格，
-// 左邊選種類（現金／銀行帳戶／信用卡），右邊選是哪一個。預設值看最近 90 天
-// 用得最多的；換種類時，右邊也預設成這個種類裡最常用的。
-const PAY_TYPE_LABEL = { cash: '現金', account: '銀行帳戶', cc: '信用卡' };
+// v2.23.0（使用者：信用卡一直預設 A 卡，但比較常用 B 卡）：預設值看最近 90 天用得最多的。
+// v2.31.0（使用者：不要下拉選單，要像類別那樣）：一排三顆「現金｜信用卡｜帳戶」，點了才
+// 在下面展開那一類的選項（常用的排前面）；選完收起來，主按鈕寫著選了哪一個。那一類只有
+// 一個選項時直接選好、不展開。對外介面不變：{ node, get() }。
+const PAY_TYPE_LABEL = { cash: '現金', account: '帳戶', cc: '信用卡' };
+const PAY_TYPE_ICON = { cash: '💵', account: '🏦', cc: '💳' };
 function buildPayPair(options, useCount, fallbackV, ariaPrefix = '付款') {
-  const wrap = el('div'); wrap.className = 'qa-paypair';
-  const types = ['cash', 'account', 'cc'].filter(t => options.some(o => o.payType === t));
+  const wrap = el('div'); wrap.className = 'qa-paypick';
+  const types = ['cash', 'cc', 'account'].filter(t => options.some(o => o.payType === t));
   const byUse = list => [...list].sort((a, b) => (useCount[b.v] || 0) - (useCount[a.v] || 0));
   const top = byUse(options)[0];
-  let cur = (top && useCount[top.v]) ? top : (options.find(o => o.v === fallbackV) || options[0]);
-  wrap.innerHTML = `<select class="qa-pay" data-pay-type aria-label="${ariaPrefix}種類">${types.map(t => `<option value="${t}">${PAY_TYPE_LABEL[t]}</option>`).join('')}</select><select class="qa-pay" data-pay-item aria-label="${ariaPrefix}帳戶"></select>`;
-  const typeSel = wrap.querySelector('[data-pay-type]'), itemSel = wrap.querySelector('[data-pay-item]');
-  const fillItems = (t, keepV) => {
-    const list = byUse(options.filter(o => o.payType === t));
-    itemSel.innerHTML = list.map(o => `<option value="${o.v}">${escHtml(o.label)}</option>`).join('');
-    itemSel.value = keepV && list.some(o => o.v === keepV) ? keepV : (list[0]?.v ?? '');
+  let cur = (top && useCount[top.v]) ? top : (options.find(o => o.v === fallbackV) || options[0] || null);
+  let open = null;
+  const render = () => {
+    const list = open ? byUse(options.filter(o => o.payType === open)) : [];
+    wrap.innerHTML = `<div class="qa-pay-types" role="group" aria-label="${ariaPrefix}方式" style="grid-template-columns:repeat(${types.length},minmax(0,1fr))">${types.map(t => {
+        const on = cur?.payType === t;
+        return `<button type="button" class="qa-pay-type${on ? ' is-on' : ''}${open === t ? ' is-open' : ''}" data-pt="${t}" aria-pressed="${on}" aria-expanded="${open === t}"><span class="qp-ico" aria-hidden="true">${PAY_TYPE_ICON[t]}</span><span class="qp-txt"><b>${PAY_TYPE_LABEL[t]}</b>${on ? `<small>${escHtml(cur.label)}</small>` : ''}</span></button>`;
+      }).join('')}</div>
+      ${open ? `<div class="qa-pay-items" role="group" aria-label="${PAY_TYPE_LABEL[open]}">${list.map(o => `<button type="button" class="qa-pay-item${cur?.v === o.v ? ' is-sel' : ''}" data-pv="${escHtml(o.v)}" aria-pressed="${cur?.v === o.v}">${escHtml(o.label)}</button>`).join('')}</div>` : ''}`;
+    wrap.querySelectorAll('[data-pt]').forEach(b => b.addEventListener('click', () => {
+      const t = b.dataset.pt, items = options.filter(o => o.payType === t);
+      if (items.length === 1) { cur = items[0]; open = null; }
+      else open = open === t ? null : t;
+      render();
+    }));
+    wrap.querySelectorAll('[data-pv]').forEach(b => b.addEventListener('click', () => {
+      cur = options.find(o => o.v === b.dataset.pv) || cur; open = null; render();
+    }));
   };
-  if (cur) { typeSel.value = cur.payType; fillItems(cur.payType, cur.v); }
-  typeSel.addEventListener('change', () => fillItems(typeSel.value));
-  return { node: wrap, get: () => options.find(o => o.v === itemSel.value) || null };
+  render();
+  return { node: wrap, get: () => cur };
 }
 
 async function buildQuickAdd({ date = null, onDone = null } = {}) {
@@ -5060,11 +5096,8 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
       <label class="qa-amt"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="1" placeholder="金額" aria-label="金額"></label>
       <input class="qa-desc" type="text" placeholder="說明" aria-label="說明">
     </div>
-    <div class="qa-label">付款方式</div>
-    <div class="qa-foot is-pay">
-      <div data-paypair></div>
-      <button type="button" class="btn btn-ghost btn-sm" data-qa-full>完整表單</button>
-    </div>
+    <div class="qa-label qa-label-row"><span>付款方式</span><button type="button" class="qa-full-link" data-qa-full>完整表單</button></div>
+    <div data-paypair></div>
     <div class="qa-label">類別</div>
     <div data-catpick></div>
     ${trip ? `<button type="button" class="qa-trip" role="switch" aria-checked="true" data-qa-trip><span class="qa-trip-box" aria-hidden="true"></span><span>算進旅行「${escHtml(trip.name)}」</span></button>` : ''}
@@ -5176,11 +5209,8 @@ async function buildQuickIncome({ date = null, onDone = null } = {}) {
       <label class="qa-amt"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="1" placeholder="金額" aria-label="金額"></label>
       <input class="qa-desc" type="text" placeholder="說明" aria-label="說明">
     </div>
-    <div class="qa-label">存入</div>
-    <div class="qa-foot is-pay">
-      <div data-paypair></div>
-      <button type="button" class="btn btn-ghost btn-sm" data-qi-full>完整表單</button>
-    </div>
+    <div class="qa-label qa-label-row"><span>存入</span><button type="button" class="qa-full-link" data-qi-full>完整表單</button></div>
+    <div data-paypair></div>
     <div class="qa-label">類別</div>
     <div class="qa-reuse-host"></div>
     <div data-catpick></div>`;
@@ -6712,7 +6742,7 @@ async function renderHome() {
   const planSettings = (await getSetting(db, 'monthly_plan', null)) || {};
   const month = currentMonthStr();
   const plan = calcMonthlyPlan({ income: planIncomeOf(incomeTxns, planSettings, month).income, baseFixed: Number(planSettings.base_fixed) || 0,
-    recurringExpenses, installments, dcaSchedules, buckets, livingBudget: resolveBudget(budgets, null, month), fxRates });
+    recurringExpenses, installments, dcaSchedules, buckets, livingBudget: resolveBudget(budgets, null, month), fxRates, ym: month });
   const essentials = plan.fixed.total + plan.living.total;
   const sp = calcSpendable({ accounts, fxRates, cards, recurringExpenses, installments, dcaSchedules, buckets, allocations, expenseTxns,
     essentials, emergencyMonths: Number(planSettings.emergency_months) || 6, pendingSettle: await pendingSettleTwd(), payablesDue: state.payDebt || 0 });
@@ -9067,9 +9097,11 @@ async function rerenderHoldingsKeepScroll() {
 // 把 ETF 裡面的公司也算進去（成分股比例取最近公布、四捨五入到 0.5%），看「持有最多的
 // 單一公司」佔全部投資多少（≤ 30%），以及個股合計佔多少（≤ 50%）。
 const ETF_LOOK_THROUGH = {
-  asOf: '2026-06',
-  '0050': { '台積電': 0.57, '鴻海': 0.05, '聯發科': 0.045, '台達電': 0.02, '廣達': 0.015 },
-  '006208': { '台積電': 0.57, '鴻海': 0.05, '聯發科': 0.045, '台達電': 0.02, '廣達': 0.015 },
+  // v2.31.0：0050／006208／00770 更新到 2026-11 公布的前 5 大（00770 新增）；同一家公司的
+  // A、C 股合併（Alphabet）。每檔的資料日期在 ETF_LT_ASOF，持倉點開 ETF 看得到。
+  '0050': { '台積電': 0.587, '聯發科': 0.0588, '鴻海': 0.0296, '台達電': 0.0251, '日月光投控': 0.0205 },
+  '006208': { '台積電': 0.587, '聯發科': 0.0588, '鴻海': 0.0296, '台達電': 0.0251, '日月光投控': 0.0205 },
+  '00770': { 'Apple': 0.1025, 'Microsoft': 0.1006, 'Alphabet': 0.0806, 'Broadcom': 0.0764, 'NVIDIA': 0.0701, 'Meta': 0.0482, 'AMD': 0.0429, 'Micron': 0.0347 },
   'VOO': { 'NVIDIA': 0.075, 'Microsoft': 0.065, 'Apple': 0.06, 'Amazon': 0.04, 'Meta': 0.03, 'Alphabet': 0.04, 'Broadcom': 0.025 },
   'IVV': { 'NVIDIA': 0.075, 'Microsoft': 0.065, 'Apple': 0.06, 'Amazon': 0.04, 'Meta': 0.03, 'Alphabet': 0.04, 'Broadcom': 0.025 },
   'SPY': { 'NVIDIA': 0.075, 'Microsoft': 0.065, 'Apple': 0.06, 'Amazon': 0.04, 'Meta': 0.03, 'Alphabet': 0.04, 'Broadcom': 0.025 },
@@ -9077,8 +9109,17 @@ const ETF_LOOK_THROUGH = {
   'VT': { 'NVIDIA': 0.045, 'Microsoft': 0.04, 'Apple': 0.037, 'Amazon': 0.023, 'Alphabet': 0.023, '台積電': 0.01 },
   'QQQ': { 'NVIDIA': 0.09, 'Microsoft': 0.085, 'Apple': 0.075, 'Amazon': 0.055, 'Broadcom': 0.05, 'Meta': 0.035, 'Alphabet': 0.05 },
 };
-const COMPANY_ALIAS = { '2330': '台積電', 'TSM': '台積電', '2317': '鴻海', '2454': '聯發科', '2308': '台達電', '2382': '廣達',
-  'NVDA': 'NVIDIA', 'MSFT': 'Microsoft', 'AAPL': 'Apple', 'AMZN': 'Amazon', 'META': 'Meta', 'GOOGL': 'Alphabet', 'GOOG': 'Alphabet', 'AVGO': 'Broadcom' };
+const ETF_LT_ASOF = { '0050': '2026-11-11', '006208': '2026-11-11', '00770': '2026-11-10', _default: '2026-06' };
+const etfLtAsOf = tk => ETF_LT_ASOF[tk] || ETF_LT_ASOF._default;
+const COMPANY_ALIAS = { '2330': '台積電', 'TSM': '台積電', '2317': '鴻海', '2454': '聯發科', '2308': '台達電', '2382': '廣達', '3711': '日月光投控',
+  'NVDA': 'NVIDIA', 'MSFT': 'Microsoft', 'AAPL': 'Apple', 'AMZN': 'Amazon', 'META': 'Meta', 'GOOGL': 'Alphabet', 'GOOG': 'Alphabet', 'AVGO': 'Broadcom', 'AMD': 'AMD', 'MU': 'Micron' };
+// v2.31.0（使用者：像「一眼看穿 ETF 真實持股」那樣）：持倉點開 ETF 顯示前 5 大持股
+function etfTop5Html(ticker) {
+  const tk = String(ticker || '').toUpperCase(), lt = ETF_LOOK_THROUGH[tk];
+  if (!lt) return '';
+  const rows = Object.entries(lt).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  return `<ol class="hold-top5-list">${rows.map(([n, w]) => `<li><span>${escHtml(n)}</span><b>${(w * 100).toFixed(1)}%</b></li>`).join('')}</ol><small>前 5 大持股・${etfLtAsOf(tk).replace(/-/g, '/')} 公布</small>`;
+}
 function calcConcentration(inv) {
   const hs = (inv?.enriched || []).filter(h => h.marketValueTWD > 0);
   const total = hs.reduce((s, h) => s + h.marketValueTWD, 0);
@@ -9104,7 +9145,7 @@ function buildConcentrationCard(inv) {
     { k: '個股合計', v: pct(c.stockPct), goal: '≤ 50%', bad: c.stockPct > 0.50 },
   ].filter(Boolean);
   const card = el('div', 'card'); card.style.marginBottom = '16px';
-  card.innerHTML = `<div class="cc-h" role="button" tabindex="0" aria-expanded="false"><b>投資比例檢查</b>${infoTip(`ETF 裡面的公司也算進去（例如 0050 約一半以上是台積電），比例用 ${ETF_LOOK_THROUGH.asOf} 公布的成分股。一家公司太多，它出事時整體會跌很多；個股比 ETF 起伏大。`)}<span class="cc-h-st ${lines.some(l => l.bad) ? 'bad' : 'ok'}">${lines.some(l => l.bad) ? '有超過的' : '都在範圍內'}</span><svg class="chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+  card.innerHTML = `<div class="cc-h" role="button" tabindex="0" aria-expanded="false"><b>投資比例檢查</b>${infoTip(`ETF 裡面的公司也算進去（例如 0050 約一半以上是台積電），每檔的成分股日期在持倉點開 ETF 看得到。一家公司太多，它出事時整體會跌很多；個股比 ETF 起伏大。`)}<span class="cc-h-st ${lines.some(l => l.bad) ? 'bad' : 'ok'}">${lines.some(l => l.bad) ? '有超過的' : '都在範圍內'}</span><svg class="chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
     <div class="cc-lines">${lines.map(l => `<div class="cc-line"><span>${l.k}</span><b class="${l.bad ? 'bad' : ''}">${l.v}</b><small>目標 ${l.goal}</small></div>`).join('')}</div>
     <div class="cc-top" hidden><div class="cc-top-t">比例最高的 5 家公司（含 ETF 裡的）</div>${c.top.slice(0, 5).map(x => `<div class="cc-line"><span>${escHtml(x.name)}</span><b>${pct(x.pct)}</b><small></small></div>`).join('')}</div>`;
   const h = card.querySelector('.cc-h'), top = card.querySelector('.cc-top');
@@ -9483,13 +9524,20 @@ async function renderHoldings() {
               const valTxt = eh.marketValueTWD != null ? `NT$ ${fmt(eh.marketValueTWD)}` : '尚無報價';
               const hRow = el('div','hold-row');
               hRow.style.setProperty('--type-c', color);
+              const top5 = etfTop5Html(h.ticker);
               hRow.innerHTML = `
-                <div class="hold-id"><b>${escHtml(h.ticker)}${holdTag(h.id) ? `<span class="hold-pend">${holdTag(h.id)}</span>` : ''}</b><span>${escHtml(h.name)}</span></div>
+                <div class="hold-id${top5 ? ' has-top5' : ''}"${top5 ? ' role="button" tabindex="0" aria-expanded="false"' : ''}><b>${escHtml(h.ticker)}${top5 ? '<svg class="hold-top5-chev" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' : ''}${holdTag(h.id) ? `<span class="hold-pend">${holdTag(h.id)}</span>` : ''}</b><span>${escHtml(h.name)}</span></div>
                 <div class="hold-num"><b>${Number(h.shares||0).toLocaleString('en-US',{maximumFractionDigits:isUS?4:0})}<small> 股</small></b><span class="${eh.marketValueTWD==null?'is-missing':''}">${valTxt}</span></div>
                 <div class="hold-acts">
                   <button class="btn btn-ghost btn-sm" style="font-size:11px" data-buy-hold="${h.id}">買賣</button>
                   <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-hold="${h.id}">編輯</button>
-                </div>`;
+                </div>${top5 ? `<div class="hold-top5" hidden>${top5}</div>` : ''}`;
+              if (top5) {
+                const idEl = hRow.querySelector('.hold-id'), box = hRow.querySelector('.hold-top5');
+                const tog = () => { box.hidden = !box.hidden; idEl.setAttribute('aria-expanded', String(!box.hidden)); idEl.classList.toggle('is-open', !box.hidden); };
+                idEl.addEventListener('click', tog);
+                idEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tog(); } });
+              }
               hRow.querySelector(`[data-edit-hold]`).addEventListener('click', () => openHoldingModal(h, brokerages, banks));
               hRow.querySelector(`[data-buy-hold]`)?.addEventListener('click', () => openQuickSheet({ prefillTrade: { kind: 'buy', holdingId: h.id } }));
               bBody.appendChild(hRow);
@@ -12166,6 +12214,27 @@ function planMethodShares(jars) {
   });
   return out;
 }
+// v2.31.0：已經是固定支出的主分類（有保險分期或保險固定支出時＝保險），歷史紀錄裡
+// 這些類別的花費不算進生活費平均。
+function fixedCoveredMains(installments = [], recurringExpenses = []) {
+  const ins = installments.some(i => (i.paid_periods || 0) < i.total_periods && (i.is_insurance || mainCategoryOf(i.spend_category) === 'cat_insurance'))
+    || recurringExpenses.some(r => !r.is_expired && (r.category === 'insurance' || mainCategoryOf(r.spend_category) === 'cat_insurance'));
+  return ins ? ['cat_insurance'] : [];
+}
+// v2.31.0（使用者：能自由選幾個月的平均）：上個月／近 3／近 6／近 12 個月。實際有紀錄
+// 的月份數一樣的選項只留一個；記住上次選的（settings.living_avg_months）。
+function livingAvgOptions(expenseTxns, accounts, fxRates, excl) {
+  const out = []; let prev = 0;
+  for (const n of [1, 3, 6, 12]) {
+    const a = calcAvgLivingSpend(expenseTxns, accounts, fxRates, n, new Date(), excl);
+    if (a && a.total > 0 && a.months > prev) { out.push({ ...a, n, label: n === 1 ? '上個月' : `近 ${a.months} 個月` }); prev = a.months; }
+  }
+  return out;
+}
+function pickLivingAvg(opts, n) {
+  if (!opts.length) return null;
+  return opts.find(o => o.n === n) || [...opts].reverse().find(o => o.n <= n) || opts[0];
+}
 async function renderMonthlyPlan() {
   const content = _activeContentContainer;
   const [budgets, expenseTxns, cats, buckets, incomeTxns, accounts, recurringExpenses, installments, dcaSchedules, allocations] = await Promise.all([
@@ -12183,7 +12252,7 @@ async function renderMonthlyPlan() {
   const income = pInc.income;
   const irregularIncome = calcMonthlyIncomeTotal(incomeTxns.filter(t => t.irregular), month, INCOME_PERCENT_EXCLUDED_CATEGORIES);
   const livingBudget = resolveBudget(budgets, null, month);
-  const plan = calcMonthlyPlan({ income, baseFixed, recurringExpenses, installments, dcaSchedules, buckets, livingBudget, fxRates });
+  const plan = calcMonthlyPlan({ income, baseFixed, recurringExpenses, installments, dcaSchedules, buckets, livingBudget, fxRates, ym: month });
   // v2.21.0：預算只設在主分類（子分類的花費彙總上來）；「存下來的」不是消費，不列。
   setCategoryTree(cats); _cats = cats;
   const expenseCats = buildCategoryTree(cats, 'expense', { includeInactive: false }).map(x => x.main).filter(m => m.group !== 'save');
@@ -12386,8 +12455,9 @@ async function renderMonthlyPlan() {
 
   // 4 生活預算（＝本月總預算，今天還能花從這裡算）
   const lb = section('living', '🧺', '生活預算', plan.living.total, '');
-  // v2.14.0：依實際花費建議（近 3 個完整月份的平均）
-  const avgSpend = calcAvgLivingSpend(expenseTxns, accounts, fxRates, 3);
+  // v2.14.0：依實際花費建議（v2.31.0：月數照每月規劃選的，保險等固定支出類別不算）
+  const coveredMains = fixedCoveredMains(installments, recurringExpenses);
+  const avgSpend = pickLivingAvg(livingAvgOptions(expenseTxns, accounts, fxRates, coveredMains), Number(await getSetting(db, 'living_avg_months', 3).catch(() => 3)) || 3);
   const lv = el('div'); lv.className = 'mp-living';
   const usedPct = plan.living.total > 0 ? Math.min(100, Math.round(livingSpent / plan.living.total * 100)) : 0;
   lv.innerHTML = `
@@ -12423,8 +12493,10 @@ async function renderMonthlyPlan() {
     const over = cur != null && spent > cur;
     const r = el('div'); r.className = 'mp-row mp-edit';
     const avgC = avgSpend?.byCat?.[c.id] || 0;
+    // v2.31.0：已經是固定支出的類別（保險）不另設生活費上限，避免重複
+    const coveredOnly = coveredMains.includes(c.id) && cur == null;
     r.innerHTML = `<div class="mp-row-l">${c.icon ?? '·'} ${escHtml(c.label)}<small class="${over ? 'is-over' : ''}">本月 ${money(spent)}${cur != null ? (over ? `・超出 ${money(spent - cur)}` : `・剩 ${money(cur - spent)}`) : ''}${avgC > 0 ? `・平均 ${money(avgC)}` : ''}</small></div>
-      <div class="mp-row-r">${avgC > 0 && cur !== avgC ? `<button type="button" class="btn btn-ghost btn-sm mp-avg-btn" data-cat-avg title="用近 ${avgSpend.months} 個月平均 ${money(avgC)}">用平均</button>` : ''}<input type="number" inputmode="decimal" min="0" step="100" value="${cur ?? ''}" placeholder="${avgC > 0 ? fmt(avgC) : '上限'}" aria-label="${escHtml(c.label)} 每月上限"></div>`;
+      <div class="mp-row-r"${coveredOnly ? ' hidden' : ''}>${avgC > 0 && cur !== avgC ? `<button type="button" class="btn btn-ghost btn-sm mp-avg-btn" data-cat-avg title="用近 ${avgSpend.months} 個月平均 ${money(avgC)}">用平均</button>` : ''}<input type="number" inputmode="decimal" min="0" step="100" value="${cur ?? ''}" placeholder="${avgC > 0 ? fmt(avgC) : '上限'}" aria-label="${escHtml(c.label)} 每月上限"></div>`;
     if (fixedByMain[c.id]) r.insertAdjacentHTML('beforeend', `<div class="mp-fixed-in">${fixedByMain[c.id].map(f => `<div><span>🔁 ${escHtml(f.name)}<small>固定支出${f.manual ? '・手動扣款' : ''}</small></span><b>${money(f.amount)}</b></div>`).join('')}</div>`);
     r.querySelector('[data-cat-avg]')?.addEventListener('click', async () => {
       await saveBudgetRecord(c.id, { amount: avgC, percent: null, allocation_mode: 'fixed' });
@@ -12635,14 +12707,16 @@ async function buildPlanDraft(ym = currentMonthStr()) {
     const sv = saved?.invest?.[g.key];
     return { ...g, base: Math.round(g.base), mode: sv?.mode || 'keep', custom: sv?.custom ?? null };
   });
-  const avg = calcAvgLivingSpend(expenseTxns, accounts, fxRates, 3);
+  const avgOpts = livingAvgOptions(expenseTxns, accounts, fxRates, fixedCoveredMains(installments, recurringExpenses));
+  const avgN = Number(await getSetting(db, 'living_avg_months', 3).catch(() => 3)) || 3;
+  const avg = pickLivingAvg(avgOpts, avgN);
   const livingBudget = resolveBudget(budgets, null, ym);
   const living = saved?.living ?? avg?.total ?? livingBudget ?? 0;
   const method = saved ? (saved.method ?? null) : (ctx.settings.jar_method ?? null);
   // v2.30.0：沒有去處的錢要放進哪些存錢目標（確認時寫入）。已結束或刪掉的目標不帶回來
   const goalList = goalDestList({ buckets, allocations: ctx.allocations || [], expenseTxns, accounts, fxRates, excludePlanMonth: ym });
   const goals = Object.fromEntries(Object.entries(saved?.goals || {}).filter(([id, v]) => v > 0 && goalList.some(g => g.id === id)));
-  return { ym, saved, ctx, accounts, cards, expenseTxns, income, other, fixed, invest, living, avg, method, srcs, goalList, goals };
+  return { ym, saved, ctx, accounts, cards, expenseTxns, income, other, fixed, invest, living, avg, avgOpts, method, srcs, goalList, goals };
 }
 const investAmt = g => g.mode === 'pause' ? 0 : g.mode === 'half' ? Math.round(g.base / 2) : g.mode === 'custom' ? Math.max(0, Math.round(g.custom ?? g.base)) : g.base;
 function planTotals(d) {
@@ -12978,11 +13052,17 @@ async function openMonthPlan(ym = currentMonthStr(), step = 0) {
       if (d.invest.length) { const h = el('div'); h.className = 'mpl-hint'; h.dataset.livePause = ''; h.textContent = pauseHint(); box.appendChild(h); }
     } else if (_mplStep === 3) {
       box.innerHTML = `<div class="mpl-title">生活費 ${infoTip('吃飯、交通、購物這些每天的花費（不含固定支出）。預設用近幾個月的實際平均。')}</div>`;
+      // 金額一樣的選項只亮選中的那一個
+      const avgOn = o => !!o && Math.round(d.living) === o.total && (d.avg?.total !== o.total || d.avg?.n === o.n);
       const f = el('div'); f.className = 'mpl-living';
       f.innerHTML = `<label class="mpl-big"><span>NT$</span><input type="number" inputmode="decimal" min="0" step="500" value="${Math.round(d.living) || ''}" aria-label="這個月生活費"></label>
-        ${d.avg?.total ? `<button type="button" class="mpl-chip${Math.round(d.living) === d.avg.total ? ' on' : ''}" data-avg>近 ${d.avg.months} 個月平均 ${money(d.avg.total)}</button>` : ''}`;
-      f.querySelector('input').addEventListener('input', e => { d.living = parseFloat(e.target.value) || 0; f.querySelector('[data-avg]')?.classList.toggle('on', Math.round(d.living) === d.avg?.total); live(); });
-      f.querySelector('[data-avg]')?.addEventListener('click', () => { d.living = d.avg.total; render(); });
+        ${d.avgOpts?.length ? `<div class="mpl-avgs" role="group" aria-label="用實際平均">${d.avgOpts.map(o => `<button type="button" class="mpl-chip${avgOn(o) ? ' on' : ''}" data-avg="${o.n}"><span>${o.label}平均</span><b>${money(o.total)}</b></button>`).join('')}</div>` : ''}`;
+      const syncAvgOn = () => f.querySelectorAll('[data-avg]').forEach(b => b.classList.toggle('on', avgOn(d.avgOpts.find(o => o.n === Number(b.dataset.avg)))));
+      f.querySelector('input').addEventListener('input', e => { d.living = parseFloat(e.target.value) || 0; syncAvgOn(); live(); });
+      f.querySelectorAll('[data-avg]').forEach(b => b.addEventListener('click', () => {
+        const o = d.avgOpts.find(x => x.n === Number(b.dataset.avg)); if (!o) return;
+        d.living = o.total; d.avg = o; setSetting(db, 'living_avg_months', o.n).catch(() => {}); render();
+      }));
       box.appendChild(f);
       const mt = el('div'); mt.className = 'mpl-title is-sub mpl-title-row';
       mt.innerHTML = `<span>本月規劃方式 ${infoTip('選一個理財方法，固定支出＋生活費依它的比例分到各罐；記帳時每一筆會從它的類別對應的罐子扣，首頁看得到每罐還剩多少。')}</span>${quizOpen ? '' : `<button type="button" class="mpl-link2" data-quiz-open>${quizResult ? '重新選' : '幫我選'}</button>`}`;
@@ -13910,13 +13990,14 @@ async function renderInstallment() {
 
   const active   = items.filter(i=>i.paid_periods < i.total_periods);
   const finished = items.filter(i=>i.paid_periods >= i.total_periods);
-  const monthlyTotal = active.reduce((s,i)=>s+(i.per_amount||Math.round(i.total_amount/i.total_periods)),0);
-
   // Check for due payments (not yet confirmed this month)
   const today = new Date();
   const thisYM = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+  // v2.31.0：還沒開始的分期（明年度保費）不算「每月約」、不提醒到期
+  const notStarted = i => !!(i.start_date && thisYM < i.start_date.slice(0, 7));
+  const monthlyTotal = active.filter(i => !notStarted(i)).reduce((s,i)=>s+(i.per_amount||Math.round(i.total_amount/i.total_periods)),0);
   const due = active.filter(i => {
-    if (!i.due_day) return false;
+    if (!i.due_day || notStarted(i)) return false;
     const dueDate = new Date(today.getFullYear(), today.getMonth(), i.due_day);
     return today >= dueDate && i.last_paid_ym !== thisYM;
   });
@@ -14914,8 +14995,10 @@ function instNextLabel(item) {
   const ym = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
   let y = t.getFullYear(), m = t.getMonth() + 1;
   if (item.last_paid_ym && item.last_paid_ym >= ym) { m += 1; if (m > 12) { m = 1; y += 1; } }
+  // v2.31.0：還沒開始的分期，下一期＝開始月份（跨年時寫出年份）
+  if (item.start_date && `${y}-${String(m).padStart(2,'0')}` < item.start_date.slice(0, 7)) { y = Number(item.start_date.slice(0, 4)); m = Number(item.start_date.slice(5, 7)); }
   const d = Math.min(item.due_day, new Date(y, m, 0).getDate());
-  return `下一期 ${m}/${d}`;
+  return `下一期 ${y !== t.getFullYear() ? `${y}/` : ''}${m}/${d}`;
 }
 async function openInstallmentModal(item=null) {
   await loadData();
@@ -15286,7 +15369,7 @@ async function renderRecurring() {
   // 補一個區塊列出來，編輯直接跳去開既有的分期付款編輯視窗，不重做一套。
   if (mode === 'insurance' && insuranceInstallments.length > 0) {
     const instMonthlyTotal = insuranceInstallments
-      .filter(i => (i.paid_periods||0) < i.total_periods)
+      .filter(i => (i.paid_periods||0) < i.total_periods && !(i.start_date && currentMonthStr() < i.start_date.slice(0, 7)))
       .reduce((s,i) => s + (i.per_amount ?? Math.round(i.total_amount/i.total_periods)), 0);
     const combinedTotal = monthlyTotal + instMonthlyTotal;
 
@@ -17738,21 +17821,26 @@ async function openDepositModal(dep=null) {
     const selectedBankId = bankSel.value;
     const matAcc = document.getElementById('depositMaturityAccount');
     const srcAcc = document.getElementById('depositSourceAccount');
-    const filtered = selectedBankId
-      ? accounts.filter(a=>a.bank_id===selectedBankId)
-      : accounts;
+    // v2.31.0（使用者：美金定存怎麼能選日幣、台幣帳戶）：只列同一家銀行、同一個幣別的
+    // 帳戶，不列交割戶與悠遊卡；只有一個符合時直接選好。
+    const cur = document.getElementById('depositCurrency').value || 'TWD';
+    const filtered = accounts.filter(a => (!selectedBankId || a.bank_id === selectedBankId) && (a.currency || 'TWD') === cur
+      && !a.brokerage_id && !/交割/.test(a.name || '') && a.account_type !== 'transit_card' && a.account_type !== 'cash');
     const optionsHtml = filtered.map(a => {
       const bank = banks.find(b=>b.id===a.bank_id);
       return `<option value="${a.id}">${bank?bank.name+' · ':''}${a.name} (${a.currency})</option>`;
     }).join('');
+    const prevMat = matAcc.value || dep?.maturity_account_id || '';
     matAcc.innerHTML = `<option value="">── 不指定 ──</option>` + optionsHtml;
-    matAcc.value = dep?.maturity_account_id ?? '';
+    matAcc.value = filtered.some(a => a.id === prevMat) ? prevMat : (filtered.length === 1 ? filtered[0].id : '');
     if (srcAcc) {
+      const prevSrc = srcAcc.value;
       srcAcc.innerHTML = `<option value="">── 不指定（不異動任何帳戶）──</option>` + optionsHtml;
-      srcAcc.value = '';
+      srcAcc.value = filtered.some(a => a.id === prevSrc) ? prevSrc : '';
     }
   }
   bankSel.onchange = updateMaturityAccounts;
+  document.getElementById('depositCurrency').onchange = updateMaturityAccounts;
   updateMaturityAccounts();
 
   // Live-updating "系統估算" hint under 預期利息: recalculated from
@@ -19078,7 +19166,7 @@ async function loadPlanContext() {
   const settings = (await getSetting(db, 'monthly_plan', null)) || {};
   const month = currentMonthStr();
   const plan = calcMonthlyPlan({ income: planIncomeOf(incomeTxns, settings, month).income, baseFixed: Number(settings.base_fixed) || 0,
-    recurringExpenses, installments, dcaSchedules, buckets, livingBudget: resolveBudget(budgets, null, month), fxRates });
+    recurringExpenses, installments, dcaSchedules, buckets, livingBudget: resolveBudget(budgets, null, month), fxRates, ym: month });
   return { plan, settings, essentials: plan.fixed.total + plan.living.total, buckets, allocations, dcaSchedules, incomeTxns, recurringExpenses, installments, fxRates };
 }
 

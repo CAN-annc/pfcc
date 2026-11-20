@@ -101,3 +101,18 @@ test('分期：開始月份之前、已付過的月份都不出現', () => {
   assert.deepEqual(items(2026, 12), ['o']);
   assert.deepEqual(items(2027, 1), ['n', 'o']);
 });
+
+import { calcMonthlyPlan, calcAvgLivingSpend, setCategoryTree } from '../files/calc.js';
+test('v2.31.0 每月計畫：還沒開始的分期不算進這個月', () => {
+  const inst = [{ id: 'old', name: '今年保費', total_periods: 12, paid_periods: 9, per_amount: 1401, start_date: '2026-02-21' },
+                { id: 'new', name: '明年保費', total_periods: 12, paid_periods: 0, per_amount: 1426, start_date: '2027-02-21' }];
+  assert.deepEqual(calcMonthlyPlan({ installments: inst, ym: '2026-11' }).fixed.items.map(x => x.id), ['old']);
+  assert.equal(calcMonthlyPlan({ installments: inst, ym: '2027-02' }).fixed.total, 1401 + 1426);
+});
+test('v2.31.0 生活費平均：已是固定支出的主分類不算', () => {
+  setCategoryTree([{ id: 'cat_insurance', type: 'expense' }, { id: 'cat_life_ins', parent_id: 'cat_insurance', type: 'expense' }, { id: 'cat_food', type: 'expense' }]);
+  const tx = [{ date: '2026-10-05', category: 'cat_food', amount: 1000 }, { date: '2026-10-12', category: 'cat_life_ins', amount: 3400 }];
+  const today = new Date(2026, 10, 20);
+  assert.equal(calcAvgLivingSpend(tx, [], {}, 1, today).total, 4400);
+  assert.equal(calcAvgLivingSpend(tx, [], {}, 1, today, ['cat_insurance']).total, 1000);
+});
