@@ -1070,7 +1070,7 @@ export function calcMonthCalendarItems(
     else if (r.freq === 'weekly') { dates = weeklyDatesInMonth(r.billing_weekday, year, month); }
     else if (r.freq === 'custom') { const dt = customDateInMonth(r.next_date, r.custom_months, year, month); if (dt) dates = [dt]; }
     // v2.30.0：「最後一期」之後不再出現
-    dates.filter(date => date !== r.last_confirmed_date && !(r.end_date && date > r.end_date)).forEach(date => items.push({ date, type: 'recurring', id: r.id, refId: r.id, label: r.name,
+    dates.filter(date => !periodSettledOrNotStarted(r, date) && !(r.end_date && date > r.end_date)).forEach(date => items.push({ date, type: 'recurring', id: r.id, refId: r.id, label: r.name,
       amountLabel: r.amount != null ? fmtCurrency(r.amount, r.currency || 'TWD') : null }));
   }
 
@@ -1107,7 +1107,7 @@ export function calcMonthCalendarItems(
     let date = null;
     if (t.freq === 'monthly') date = monthlyDateInMonth(t.billing_day, year, month);
     else if (t.freq === 'custom') date = customDateInMonth(t.next_date, t.custom_months, year, month);
-    if (!date || date === t.last_confirmed_date || (t.end_date && date > t.end_date)) continue;
+    if (!date || periodSettledOrNotStarted(t, date) || (t.end_date && date > t.end_date)) continue;
     items.push({ date, type: 'transfer', id: t.id, refId: t.id, label: t.name,
       amountLabel: t.amount != null ? fmtCurrency(t.amount, t.currency || 'TWD') : null });
   }
@@ -1118,13 +1118,22 @@ export function calcMonthCalendarItems(
     let date = null;
     if (s.freq === 'monthly') date = monthlyDateInMonth(s.billing_day, year, month);
     else if (s.freq === 'custom') date = customDateInMonth(s.next_date, s.custom_months, year, month);
-    if (!date || date === s.last_confirmed_date || (s.end_date && date > s.end_date)) continue;
+    if (!date || periodSettledOrNotStarted(s, date) || (s.end_date && date > s.end_date)) continue;
     items.push({ date, type: 'dca', id: s.id, refId: s.id, label: `${s.name} 定期定額`,
       amountLabel: s.amount != null ? fmtCurrency(s.amount, s.currency || 'TWD') : null });
   }
 
   items.sort((a, b) => a.date.localeCompare(b.date));
   return items;
+}
+
+// v2.31.0（使用者：資料從 2026/9 開始，8 月的頁面就不要問我要不要確認定期定額，我還沒開始）：
+// 定期項目在「開始日期」之前、或已經確認過的那一期（含更早的期數）都不再出現。沒填開始
+// 日期的舊排程，以最近確認的那一期當界線（確認過 9 月，8 月以前就不會再跑出來）。
+export function periodSettledOrNotStarted(item, date) {
+  if (item.start_date && date < item.start_date) return true;
+  if (item.last_confirmed_date && date <= item.last_confirmed_date) return true;
+  return false;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -1601,7 +1610,7 @@ export function calcMonthDue({ recurringExpenses = [], installments = [], dcaSch
     let d = null;
     if (s.freq === 'monthly') d = monthlyDateInMonth(s.billing_day, y, m);
     else if (s.freq === 'custom') d = customDateInMonth(s.next_date, s.custom_months, y, m);
-    if (!d || d <= (s.last_confirmed_date || '')) continue;
+    if (!d || periodSettledOrNotStarted(s, d)) continue;
     push('dca', s.id, d, `${s.name} 定期定額`, toTWD(s.amount || 0, s.currency || 'TWD', fxRates) || 0);
   }
   return out.sort((a, b) => a.date.localeCompare(b.date));

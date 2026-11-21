@@ -92,7 +92,6 @@ test('階段目標：前一個存滿才輪到下一個', () => {
   assert.equal(calcBucketPlanContribution({ monthly_amount: 1000, stage_split: true }, 0).amount, 500);
 });
 
-import { calcMonthCalendarItems } from '../files/calc.js';
 test('分期：開始月份之前、已付過的月份都不出現', () => {
   const inst = [{ id: 'n', name: '明年保費', due_day: 12, total_periods: 12, paid_periods: 0, start_date: '2027-01-12' },
                 { id: 'o', name: '今年保費', due_day: 12, total_periods: 12, paid_periods: 11, last_paid_ym: '2026-11' }];
@@ -102,6 +101,7 @@ test('分期：開始月份之前、已付過的月份都不出現', () => {
   assert.deepEqual(items(2027, 1), ['n', 'o']);
 });
 
+import { calcMonthCalendarItems } from '../files/calc.js';
 import { calcMonthlyPlan, calcAvgLivingSpend, setCategoryTree } from '../files/calc.js';
 test('v2.31.0 每月計畫：還沒開始的分期不算進這個月', () => {
   const inst = [{ id: 'old', name: '今年保費', total_periods: 12, paid_periods: 9, per_amount: 1401, start_date: '2026-02-21' },
@@ -129,4 +129,13 @@ test('v2.31.0 金額算式', () => {
   assert.equal(evalAmountExpr('65+'), null);
   assert.equal(evalAmountExpr('5/0'), null);
   assert.equal(evalAmountExpr('alert(1)'), null);
+});
+
+test('v2.31.0 定期定額：開始前、已確認那期之前的月份不出現', () => {
+  const s = { id: 'd1', name: '0050', freq: 'monthly', billing_day: 5, amount: 5000 };
+  const cal = (o, m) => calcMonthCalendarItems({ dcaSchedules: [{ ...s, ...o }] }, 2026, m).filter(x => x.type === 'dca').length;
+  assert.equal(cal({ last_confirmed_date: '2026-09-05' }, 8), 0);
+  assert.equal(cal({ last_confirmed_date: '2026-09-05' }, 10), 1);
+  assert.equal(cal({ start_date: '2026-09-01' }, 8), 0);
+  assert.equal(cal({ start_date: '2026-09-01' }, 9), 1);
 });

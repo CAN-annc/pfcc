@@ -3034,6 +3034,10 @@ button.bk-acc:active{background:var(--surface-2)}
     <details class="mod-more" id="dcaScheduleMore">
       <summary>更多設定</summary>
       <div class="modal-field">
+        <label for="dcaScheduleStart">從哪天開始扣</label>
+        <input type="date" id="dcaScheduleStart">
+      </div>
+      <div class="modal-field">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0">
           <input type="checkbox" id="dcaScheduleEndEnabled" style="margin:0;cursor:pointer">
           設定最後一期
@@ -3872,6 +3876,8 @@ const CHANGELOG_DONE = [
   '持倉點 ETF 代號可以看前 5 大持股；投資比例檢查加入 00770，0050 更新到 11 月的成分股',
   '銀行帳戶頁：按銀行分組、每個帳戶一行直接顯示原幣餘額，點那一行看明細；新增帳戶、編輯銀行、排序收進銀行旁的 ⋯',
   '記一筆的金額可以打算式（例如 65+45、380÷2），旁邊顯示結果，存的是算好的金額；按「＋−」叫出加減乘除',
+  '定期定額、定期轉帳、固定支出：開始日期之前、已經確認過的那一期之前的月份，不會再跳出「確認本期」；定期定額可以設「從哪天開始扣」',
+  '首頁拿掉「還沒存的預備金先不算…」那一行；計畫的提示改成「存下來，或者投資，或是好好生活，讓每一塊錢都有用途。」',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -6870,7 +6876,7 @@ async function renderHome() {
   hero.innerHTML = `
     <div class="networth-label">可自由運用</div>
     <div class="networth-amount"><span class="networth-currency">NT$</span>${fmt(sp.free)}</div>
-    ${sp.ef.have < sp.ef.target && sp.beforeReserve > sp.free ? `<div class="home-hero-sub">還沒存的預備金先不算：付完該付的，還有 ${money(Math.max(0, sp.beforeReserve))}</div>` : sp.shortfall > 0 ? `<div class="home-hero-sub">必付與保留的錢比手上多 ${money(sp.shortfall)}</div>` : ''}
+    ${sp.shortfall > 0 && !(sp.ef.have < sp.ef.target && sp.beforeReserve > sp.free) ? `<div class="home-hero-sub">必付與保留的錢比手上多 ${money(sp.shortfall)}</div>` : ''}
     <button type="button" class="sp-toggle" aria-expanded="${_homeSpendOpen}">${_homeSpendOpen ? '收起' : '怎麼算的'}</button>
     <div class="sp-rows" ${_homeSpendOpen ? '' : 'hidden'}>
       ${rows.map(([l, v, n], i) => `<div class="sp-row"><span>${l}${n ? `<small>${n}</small>` : ''}</span><b>${v < 0 ? '−' : ''}${money(Math.abs(v))}</b></div>`
@@ -12386,7 +12392,7 @@ async function renderMonthlyPlan() {
       }).join('')}
     </div>
     <div class="mp-rest ${plan.unassigned < 0 ? 'is-over' : plan.unassigned > 0 ? 'is-free' : 'is-zero'}">
-      ${plan.unassigned > 0 ? `<strong>還有 ${money(plan.unassigned)} 沒有安排用途</strong><span>放進存下來、投資或生活預算，讓每一塊錢都有用途。</span>`
+      ${plan.unassigned > 0 ? `<strong>還有 ${money(plan.unassigned)} 沒有安排用途</strong><span>存下來，或者投資，或是好好生活，讓每一塊錢都有用途。</span>`
         : plan.unassigned < 0 ? `<strong>計畫超出 ${money(-plan.unassigned)}</strong>`
         : `<strong>每一塊錢都有用途了</strong><span>收入剛好分配完。</span>`}
     </div>`;
@@ -16272,6 +16278,8 @@ async function openDcaScheduleModal(item=null) {
   document.getElementById('dcaScheduleDay').value = item?.billing_day??'';
   document.getElementById('dcaScheduleCustomMonths').value = item?.custom_months??'';
   document.getElementById('dcaScheduleNote').value = item?.note??'';
+  // v2.31.0：開始日期之前的月份不會跳出「確認本期」；新增時預設今天
+  document.getElementById('dcaScheduleStart').value = item ? (item.start_date || '') : isoDate(new Date());
 
   const brokSel = document.getElementById('dcaScheduleBrok');
   brokSel.innerHTML = brokerages.sort((a,b)=>(a.sort_order??99)-(b.sort_order??99)).map(b => {
@@ -16415,6 +16423,7 @@ document.getElementById('dcaScheduleModalSave').addEventListener('click',async()
     billing_day:!isCustom?(parseInt(document.getElementById('dcaScheduleDay').value)||null):null,
     custom_months:isCustom?(parseInt(document.getElementById('dcaScheduleCustomMonths').value)||null):null,
     next_date:nextDate, end_date:endDate, is_expired:isExpired,
+    start_date: document.getElementById('dcaScheduleStart').value || null,
     note:document.getElementById('dcaScheduleNote').value.trim(),
   });
   document.getElementById('dcaScheduleModal').classList.remove('open');
