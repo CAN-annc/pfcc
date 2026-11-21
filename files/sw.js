@@ -36,7 +36,7 @@
  * 伺服器要最新版本。
  */
 
-const CACHE_NAME  = 'pfcc-shell-v60'; // 2026-11-20：v2.31.0（生活費平均月數、分期開始日、付款方式按鈕、帳戶頁、定存帳戶、ETF 前 5 大），index.html／calc.js 異動。
+const CACHE_NAME  = 'pfcc-shell-v61'; // 2026-11-21：v2.32.0（分期負債、退款、代墊、含股利、資產曲線、必要花費、本期免繳、遮蔽金額、搜尋、全年），index.html／calc.js 異動。
 // （上一版 v59，2026-11-16：可自由運用只算台幣、顯示不算預備金時還剩多少。）
 // （上一版 v15，2026-10-02：「新增收入」轉入帳戶／「應收款入帳」選擇帳戶新增「顯示外幣帳戶」勾選（預設只顯示台幣）＋「新增現金帳戶」快速新增捷徑，index.html 異動，版本號照約定往上跳一碼。）
 const SHELL_URLS  = ['/', '/index.html', '/db.js', '/market.js', '/calc.js', '/sample.js', '/manifest.json'];

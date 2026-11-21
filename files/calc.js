@@ -390,6 +390,8 @@ export function resolveIncomeAmountTwd(txn) {
  * time — and use that instead, same as income.
  */
 export function resolveExpenseAmountTwd(txn, accounts = [], fxRates = {}) {
+  // v2.32.0：代墊（幫別人付）不是自己的花費——信用卡照扣，但所有花費加總都算 0
+  if (txn.fronted_recv_id) return 0;
   if (txn.fx_rate_twd != null) return (txn.amount || 0) * txn.fx_rate_twd;
   const acc = txn.account_id ? accounts.find(a => a.id === txn.account_id) : null;
   if (acc && acc.currency !== 'TWD') return toTWD(txn.amount || 0, acc.currency, fxRates);
@@ -823,6 +825,68 @@ export function calcIncomeAllocationCascade(income, bucketContributions = [], ca
 export function calcNetWorth({ cashTWD, depositTWD, investmentTWD, otherAssetsTWD = 0, goldTWD = 0 }) {
   const n = v => Number.isFinite(v) ? v : 0;
   return n(cashTWD) + n(depositTWD) + n(investmentTWD) + n(otherAssetsTWD) + n(goldTWD);
+}
+
+// v2.32.0（使用者決定）：分期還沒記的期數也是欠銀行的錢，淨資產要扣。
+// 已記的期數已經在信用卡待繳（或帳戶餘額）裡，這裡只算還沒到的期數；
+// 還沒開始的分期（開始日在 asOf 之後）不算。第一期是「總額 − 每期 × (n−1)」，
+// 所以已記 k 期後剩下 = 每期 × (n − k)。
+export function calcInstallmentRemaining(installments = [], asOf = new Date()) {
+  const today = localISODate(asOf);
+  const items = [];
+  for (const i of installments) {
+    const n = Number(i.total_periods) || 0, k = Number(i.paid_periods) || 0;
+    if (n <= 0 || k >= n) continue;
+    if (i.start_date && i.start_date > today) continue;
+    const per = Number(i.per_amount) || Math.round((Number(i.total_amount) || 0) / n);
+    const left = per * (n - k);
+    if (left > 0) items.push({ id: i.id, name: i.name, periodsLeft: n - k, amount: left });
+  }
+  return { total: items.reduce((s, x) => s + x.amount, 0), items };
+}
+
+// v2.32.0：持倉的「含股利」總報酬＝未實現損益＋這檔已領的股利（台幣）。
+// 百分比以成本（市值 − 未實現）為分母；沒有成本就回傳 null。
+export function calcTotalReturn({ marketValueTWD, unrealizedTWD, dividendsTWD = 0 }) {
+  if (!Number.isFinite(marketValueTWD) || !Number.isFinite(unrealizedTWD)) return null;
+  const cost = marketValueTWD - unrealizedTWD;
+  const total = unrealizedTWD + (Number(dividendsTWD) || 0);
+  return { total, dividends: Number(dividendsTWD) || 0, pct: cost > 0 ? total / cost * 100 : null };
+}
+
+// v2.32.0（使用者決定）：必要／非必要設在類別上，單筆有需要才改（txn.essential）。
+// 類別自己有設（essential: true/false）就照設定；沒設就看預設；子分類沒設再看主分類。
+const ESSENTIAL_DEFAULT = {
+  cat_food: true, cat_housing: true, cat_transport: true, cat_daily: true, cat_medical: true, cat_insurance: true, cat_tax: true,
+  cat_shopping: false, cat_beauty: false, cat_digital: false, cat_entertain: false, cat_edu: false, cat_social: false, cat_other_out: false,
+  cat_food_supper: false, cat_food_snack: false, cat_food_drink: false, cat_food_party: false,
+  cat_tr_taxi: false, cat_dig_phone: true, cat_edu_gym: false,
+};
+export function categoryEssentialDefault(id) { return ESSENTIAL_DEFAULT[id]; }
+export function isEssentialCategory(catId, cats = []) {
+  const byId = cats.length ? Object.fromEntries(cats.map(c => [c.id, c])) : {};
+  const own = byId[catId];
+  if (typeof own?.essential === 'boolean') return own.essential;
+  if (typeof ESSENTIAL_DEFAULT[catId] === 'boolean') return ESSENTIAL_DEFAULT[catId];
+  const parent = own?.parent_id ?? _catParent[catId];
+  if (parent) {
+    if (typeof byId[parent]?.essential === 'boolean') return byId[parent].essential;
+    if (typeof ESSENTIAL_DEFAULT[parent] === 'boolean') return ESSENTIAL_DEFAULT[parent];
+  }
+  return false;
+}
+export function isEssentialTxn(t, cats = []) { return typeof t.essential === 'boolean' ? t.essential : isEssentialCategory(t.category, cats); }
+// 最近 N 個完整月份的生活支出裡，必要的佔多少（沒有紀錄時回傳 1，保守）。
+export function calcEssentialShare(expenseTxns = [], cats = [], { months = 3, today = new Date(), accounts = [], fxRates = {} } = {}) {
+  const end = new Date(today.getFullYear(), today.getMonth(), 1);
+  const start = new Date(end.getFullYear(), end.getMonth() - months, 1);
+  const s = `${start.getFullYear()}-${pad2(start.getMonth() + 1)}-01`, e = `${end.getFullYear()}-${pad2(end.getMonth() + 1)}-01`;
+  let all = 0, ess = 0;
+  expenseTxns.filter(t => t.date >= s && t.date < e && isLivingExpense(t)).forEach(t => {
+    const v = resolveExpenseAmountTwd(t, accounts, fxRates);
+    all += v; if (isEssentialTxn(t, cats)) ess += v;
+  });
+  return all > 0 ? Math.max(0, Math.min(1, ess / all)) : 1;
 }
 
 // ─── Upcoming Reminders ────────────────────────────────────────────────────
@@ -1707,7 +1771,7 @@ export function calcFrequentExpenses(expenseTxns, limit = 4, today = new Date())
   const since = new Date(today); since.setDate(since.getDate() - 90);
   const s = `${since.getFullYear()}-${pad2(since.getMonth() + 1)}-${pad2(since.getDate())}`;
   const groups = {};
-  expenseTxns.filter(t => t.date >= s && t.description && !t.rec_id && !t.inst_id).forEach(t => {
+  expenseTxns.filter(t => t.date >= s && t.description && !t.rec_id && !t.inst_id && !t.refund_of && !t.fronted_recv_id).forEach(t => {
     const k = `${t.description.trim()}|${t.category}`;
     (groups[k] ??= { description: t.description.trim(), category: t.category, n: 0, amounts: {} });
     groups[k].n++; groups[k].amounts[t.amount] = (groups[k].amounts[t.amount] || 0) + 1;

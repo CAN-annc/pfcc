@@ -139,3 +139,43 @@ test('v2.31.0 定期定額：開始前、已確認那期之前的月份不出現
   assert.equal(cal({ start_date: '2026-09-01' }, 8), 0);
   assert.equal(cal({ start_date: '2026-09-01' }, 9), 1);
 });
+
+test('分期未繳餘額：只算還沒記的期數、未開始的不算', () => {
+  const r = C.calcInstallmentRemaining([
+    { id: 'a', name: '保險', total_amount: 40887, total_periods: 12, per_amount: 3407, paid_periods: 4, start_date: '2026-08-01' },
+    { id: 'b', name: '已繳完', total_amount: 3000, total_periods: 3, paid_periods: 3 },
+    { id: 'c', name: '還沒開始', total_amount: 6000, total_periods: 6, paid_periods: 0, start_date: '2027-01-01' },
+  ], new Date(2026, 10, 21));
+  assert.equal(r.total, 3407 * 8);
+  assert.deepEqual(r.items.map(i => i.id), ['a']);
+});
+
+test('退款扣掉、代墊不算花費', () => {
+  const tx = [
+    { id: 'a', date: '2026-11-03', category: 'cat_shop', amount: 1000, fx_rate_twd: 1 },
+    { id: 'r', date: '2026-11-10', category: 'cat_shop', amount: -300, fx_rate_twd: 1, refund_of: 'a' },
+    { id: 'f', date: '2026-11-05', category: 'cat_shop', amount: 500, fx_rate_twd: 1, fronted_recv_id: 'x' },
+  ];
+  assert.equal(C.calcMonthlyExpenseTotal(tx, '2026-11'), 700);
+  assert.equal(C.resolveExpenseAmountTwd(tx[2]), 0);
+});
+
+test('含股利總報酬', () => {
+  const r = C.calcTotalReturn({ marketValueTWD: 90000, unrealizedTWD: -10000, dividendsTWD: 4000 });
+  assert.equal(r.total, -6000);
+  assert.equal(Math.round(r.pct * 10) / 10, -6);
+  assert.equal(C.calcTotalReturn({ marketValueTWD: NaN, unrealizedTWD: 0 }), null);
+});
+
+test('必要性：類別預設、子分類、類別設定、單筆覆寫', () => {
+  C.setCategoryTree([{ id: 'cat_food' }, { id: 'cat_food_drink', parent_id: 'cat_food' }, { id: 'cat_food_lunch', parent_id: 'cat_food' }, { id: 'cat_shopping' }]);
+  assert.equal(C.isEssentialCategory('cat_food_lunch'), true);
+  assert.equal(C.isEssentialCategory('cat_food_drink'), false);
+  assert.equal(C.isEssentialCategory('cat_shopping', [{ id: 'cat_shopping', essential: true }]), true);
+  assert.equal(C.isEssentialTxn({ category: 'cat_shopping', essential: true }), true);
+  const tx = [
+    { date: '2026-10-05', category: 'cat_food_lunch', amount: 600, fx_rate_twd: 1 },
+    { date: '2026-10-06', category: 'cat_food_drink', amount: 400, fx_rate_twd: 1 },
+  ];
+  assert.equal(C.calcEssentialShare(tx, [], { months: 3, today: new Date(2026, 10, 21) }), 0.6);
+});
