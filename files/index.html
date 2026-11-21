@@ -385,6 +385,16 @@ body:has(.modal-overlay.open) .qa-fab,body:has(#qaSheet) .qa-fab{display:none}
 .qa-amt span{font-size:12px;color:var(--text-3)}
 .qa-amt input{border:none;outline:none;background:transparent;font-size:20px;font-weight:700;width:100%;min-width:0;padding:8px 0;font-variant-numeric:tabular-nums;color:var(--text-1)}
 .qa-amt input.is-err{color:var(--red)}
+.qa-amt:has(.qa-amt-opbtn){position:relative}
+.qa-amt-res{position:absolute;right:46px;bottom:3px;font-size:10.5px;font-weight:700;color:var(--blue);white-space:nowrap;font-variant-numeric:tabular-nums;pointer-events:none}
+.qa-amt input.is-expr{font-size:16px;padding:6px 0 12px}
+.qa-amt-res.is-bad{color:var(--text-3)}
+.qa-amt-opbtn{flex-shrink:0;width:32px;height:30px;margin-right:-4px;border-radius:8px;border:1px solid var(--border-2);background:var(--surface-2);color:var(--text-2);font:inherit;font-size:12px;font-weight:700;letter-spacing:-1px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.qa-amt-opbtn.is-on{background:var(--blue);border-color:var(--blue);color:#fff}
+.qa-ops{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.qa-ops[hidden]{display:none}
+.qa-ops button{font:inherit;font-size:20px;font-weight:600;height:42px;border-radius:10px;border:1px solid var(--border-2);background:var(--card);color:var(--text-1);cursor:pointer}
+.qa-ops button:active{background:var(--surface-2)}
 .qa-desc{flex:1;min-width:0;border:1px solid var(--border-2);border-radius:10px;padding:0 10px;font-size:16px;background:var(--card);color:var(--text-1)}
 .qa-label{font-size:10.5px;font-weight:600;color:var(--text-3);margin:12px 0 6px;letter-spacing:.03em}
 .qa-label-row{display:flex;align-items:center;justify-content:space-between}
@@ -1234,6 +1244,30 @@ input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-an
 .tm-sum{grid-column:1 / -1;font-size:11.5px;color:var(--blue);font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2;white-space:nowrap}
 .tm-sum.muted{color:var(--text-3);font-weight:500}
 .tm-tile .tm-sub{display:none}
+/* v2.31.0：銀行帳戶頁——按銀行分組、每個帳戶一行原幣餘額 */
+.bk-group{border-top:1px solid var(--border);padding:4px 0 6px}
+.bk-head{display:flex;align-items:center;gap:10px;padding:10px 10px 6px 16px}
+.bk-name{flex:1;font-size:14px;font-weight:600;color:var(--text-1)}
+.bk-menu-btn{width:40px;height:36px;border-radius:10px;border:none;background:none;color:var(--text-2);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.bk-menu-btn:hover,.bk-menu-btn:focus-visible{background:var(--surface-2)}
+.bk-done{font:inherit;font-size:13px;font-weight:600;color:var(--blue);background:none;border:none;padding:6px 8px;cursor:pointer}
+.bk-acc{font:inherit;width:100%;display:grid;grid-template-columns:minmax(0,1fr) 34px auto 18px;align-items:center;gap:4px;padding:11px 12px 11px 16px;margin:0;border:none;border-top:1px solid var(--border);background:none;text-align:left;color:var(--text-1);cursor:pointer;min-height:48px}
+.bk-head + .bk-acc{border-top:none}
+button.bk-acc:active{background:var(--surface-2)}
+.bk-acc-name{font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.bk-tag{font-size:10px;color:var(--text-3);background:var(--surface-2);padding:1px 5px;border-radius:4px;font-weight:400;flex-shrink:0}
+.bk-cur{font-size:11px;color:var(--text-3);text-align:left;letter-spacing:.02em}
+.bk-amt{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.bk-amt.no-dec{padding-right:3ch}
+.bk-chev{color:var(--text-3)}
+.bk-move{display:flex;gap:4px;grid-column:4;justify-self:end}
+.bk-acc:has(.bk-move){grid-template-columns:minmax(0,1fr) 34px auto auto;cursor:default}
+.bk-move button{width:36px;height:32px;border-radius:8px;border:1px solid var(--border-2);background:var(--card);color:var(--text-1);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.bk-move button:disabled{opacity:.3;cursor:default}
+.bk-empty{padding:4px 16px 10px;font-size:12px;color:var(--text-3)}
+.row-menu{position:fixed;z-index:1200;min-width:168px;padding:6px;border-radius:14px;background:var(--card);border:1px solid var(--border);box-shadow:0 10px 30px rgba(17,24,39,.18);display:flex;flex-direction:column}
+.row-menu button{font:inherit;font-size:14px;text-align:left;padding:11px 12px;border:none;background:none;border-radius:9px;color:var(--text-1);cursor:pointer}
+.row-menu button:hover,.row-menu button:focus-visible{background:var(--surface-2);outline:none}
 @media(min-width:769px){.tm-grid{grid-template-columns:repeat(4,1fr)}}
 @keyframes flashTarget{0%,100%{box-shadow:0 0 0 0 transparent;background:transparent}20%,60%{box-shadow:0 0 0 3px var(--accent-tint-strong);background:var(--accent-tint)}}
 .flash-target{animation:flashTarget 2s ease;border-radius:8px}
@@ -3510,7 +3544,7 @@ import {
   calcCashAssets, calcDepositAssets, calcInvestmentAssets,
   calcReceivables, calcNetWorth, calcUpcomingReminders,
   fmt, fmtCurrency, fmtDate, fmtDateTime, fmtDaysLabel, daysUntil, toTWD,
-  resolveBudget, currentMonthStr, calcMonthlyExpenseTotal, calcMonthlyExpenseByCategory, calcAllocatedBudget,
+  resolveBudget, currentMonthStr, evalAmountExpr, isAmountExpr, calcMonthlyExpenseTotal, calcMonthlyExpenseByCategory, calcAllocatedBudget,
   calcBucketAllocated, calcBucketSpent, calcProjectSpent, calcExpectedInterest,
   calcMonthlyIncomeTotal, calcBucketMonthlyContribution, calcMonthsToTarget, calcTotalIncomePercent,
   resolveBudgetRecord, resolveIncomeAmountTwd, resolveExpenseAmountTwd,
@@ -3836,6 +3870,8 @@ const CHANGELOG_DONE = [
   '記一筆的付款方式改成「現金｜信用卡｜帳戶」三顆按鈕，點了才展開；收入的「存入」也一樣',
   '定存的到期匯入帳戶、扣款帳戶只列同一家銀行、同一個幣別的帳戶',
   '持倉點 ETF 代號可以看前 5 大持股；投資比例檢查加入 00770，0050 更新到 11 月的成分股',
+  '銀行帳戶頁：按銀行分組、每個帳戶一行直接顯示原幣餘額，點那一行看明細；新增帳戶、編輯銀行、排序收進銀行旁的 ⋯',
+  '記一筆的金額可以打算式（例如 65+45、380÷2），旁邊顯示結果，存的是算好的金額；按「＋−」叫出加減乘除',
 ];
 // Sets (or clears, for `themeId` falsy/unknown) the inline :root overrides
 // that make the chosen theme take effect everywhere immediately — inline
@@ -5065,6 +5101,54 @@ function buildPayPair(options, useCount, fallbackV, ariaPrefix = '付款') {
   return { node: wrap, get: () => cur };
 }
 
+// v2.31.0（使用者：金額欄可以打 65+45、380/2）：金額欄改成文字欄（iPhone 一樣跳數字鍵盤），
+// 打算式時旁邊小字顯示「＝110」，離開欄位或存檔時換成結果。數字鍵盤打不出 + 號，所以
+// 金額欄右邊有一顆「＋−」，點了才在下面出現 ＋ − × ÷。回傳 value()：算好的數字（不合法＝NaN）。
+function wireAmountExpr(label) {
+  const input = label.querySelector('input');
+  input.type = 'text'; input.setAttribute('inputmode', 'decimal'); input.autocomplete = 'off';
+  input.removeAttribute('min'); input.removeAttribute('step');
+  const res = el('span', 'qa-amt-res'); res.hidden = true; res.setAttribute('aria-live', 'polite');
+  const opBtn = el('button', 'qa-amt-opbtn'); opBtn.type = 'button';
+  opBtn.setAttribute('aria-label', '加減乘除'); opBtn.setAttribute('aria-expanded', 'false');
+  opBtn.innerHTML = '<span aria-hidden="true">＋−</span>';
+  label.append(res, opBtn);
+  const bar = el('div', 'qa-ops'); bar.hidden = true; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', '加減乘除');
+  [['+', '＋', '加'], ['-', '−', '減'], ['×', '×', '乘'], ['÷', '÷', '除']].forEach(([ins, txt, lab]) => {
+    const b = el('button'); b.type = 'button'; b.textContent = txt; b.setAttribute('aria-label', lab);
+    b.addEventListener('pointerdown', e => e.preventDefault());
+    b.addEventListener('click', () => {
+      const st = input.selectionStart ?? input.value.length, en = input.selectionEnd ?? st;
+      input.value = input.value.slice(0, st) + ins + input.value.slice(en);
+      input.focus(); input.setSelectionRange(st + 1, st + 1); update();
+    });
+    bar.appendChild(b);
+  });
+  (label.closest('.qa-row') || label).after(bar);
+  const value = () => { const v = input.value.trim(); return v ? (evalAmountExpr(v) ?? NaN) : NaN; };
+  function update() {
+    input.classList.remove('is-err');
+    const ex = isAmountExpr(input.value); input.classList.toggle('is-expr', ex);
+    if (!ex) { res.hidden = true; return; }
+    const r = evalAmountExpr(input.value);
+    res.hidden = false; res.textContent = r != null ? `＝${r.toLocaleString('en-US', { maximumFractionDigits: 2 })}` : '＝？';
+    res.classList.toggle('is-bad', r == null);
+  }
+  opBtn.addEventListener('pointerdown', e => e.preventDefault());
+  opBtn.addEventListener('click', e => {
+    e.preventDefault();
+    bar.hidden = !bar.hidden; opBtn.setAttribute('aria-expanded', String(!bar.hidden)); opBtn.classList.toggle('is-on', !bar.hidden);
+    input.focus();
+  });
+  input.addEventListener('input', update);
+  input.addEventListener('blur', () => {
+    if (!isAmountExpr(input.value)) return;
+    const r = evalAmountExpr(input.value);
+    if (r != null && r > 0) { input.value = String(r); update(); }
+  });
+  return { value };
+}
+
 async function buildQuickAdd({ date = null, onDone = null } = {}) {
   const [cats, expenseTxns, cards, projects] = await Promise.all([getAll(db,'txn_categories').catch(()=>[]), getAll(db,'expense_txns').catch(()=>[]), getAll(db,'credit_cards').catch(()=>[]), getAll(db,'projects').catch(()=>[])]);
   const accounts = state.accounts || [];
@@ -5105,9 +5189,10 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
     ${cards.length ? `<div class="qa-inst"><button type="button" class="qa-trip" role="switch" aria-checked="false" data-qa-inst><span class="qa-trip-box" aria-hidden="true"></span><span>刷卡分期</span></button><label class="qa-inst-n" hidden>分 <input type="number" inputmode="numeric" min="2" max="60" step="1" value="6" aria-label="期數"> 期<small></small></label></div>` : ''}`;
 
   const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc');
+  const amtExpr = wireAmountExpr(box.querySelector('.qa-amt')), amtVal = () => amtExpr.value();
   let instOn = false;
   const instBox = box.querySelector('.qa-inst-n'), instIn = instBox?.querySelector('input');
-  const instHint = () => { if (!instBox) return; const a = parseFloat(amtIn.value), n = parseInt(instIn.value); instBox.querySelector('small').textContent = a > 0 && n >= 2 ? `・每期約 NT$ ${fmt(Math.ceil(a / n))}` : ''; };
+  const instHint = () => { if (!instBox) return; const a = amtVal(), n = parseInt(instIn.value); instBox.querySelector('small').textContent = a > 0 && n >= 2 ? `・每期約 NT$ ${fmt(Math.ceil(a / n))}` : ''; };
   box.querySelector('[data-qa-inst]')?.addEventListener('click', e => { instOn = !instOn; e.currentTarget.setAttribute('aria-checked', instOn); instBox.hidden = !instOn; instHint(); });
   amtIn.addEventListener('input', instHint); instIn?.addEventListener('input', instHint);
   const pay = buildPayPair(payOptions, payUse, payV, '付款');
@@ -5145,8 +5230,8 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
     onDone?.();
     await renderAssets();
   }
-  box.querySelector('[data-catpick]').replaceWith(buildCatPicker('expense', expenseTxns, ['cat_bad_debt_writeoff'], id => quickSave(id, parseFloat(amtIn.value), descIn.value.trim()), () => {
-    const ok = parseFloat(amtIn.value) > 0; if (!ok) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); } return ok; }));
+  box.querySelector('[data-catpick]').replaceWith(buildCatPicker('expense', expenseTxns, ['cat_bad_debt_writeoff'], id => quickSave(id, amtVal(), descIn.value.trim()), () => {
+    const ok = amtVal() > 0; if (!ok) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); } return ok; }));
   box.querySelector('[data-qa-trip]')?.addEventListener('click', e => {
     tripOn = !tripOn; e.currentTarget.setAttribute('aria-checked', tripOn);
     if (tripOn && tempOn) { tempOn = false; box.querySelector('[data-qa-temp]')?.setAttribute('aria-checked', false); }
@@ -5158,7 +5243,7 @@ async function buildQuickAdd({ date = null, onDone = null } = {}) {
   box.querySelector('[data-qa-full]').addEventListener('click', () => {
     const o = pay.get();
     onDone?.();
-    openExpenseModal(null, { date: today, amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), pay_type: o?.payType, account_id: o?.accId, cc_id: o?.ccId, no_trip: trip && !tripOn });
+    openExpenseModal(null, { date: today, amount: amtVal() || '', description: descIn.value.trim(), pay_type: o?.payType, account_id: o?.accId, cc_id: o?.ccId, no_trip: trip && !tripOn });
   });
   return box;
 }
@@ -5215,11 +5300,12 @@ async function buildQuickIncome({ date = null, onDone = null } = {}) {
     <div class="qa-reuse-host"></div>
     <div data-catpick></div>`;
   const amtIn = box.querySelector('.qa-amt input'), descIn = box.querySelector('.qa-desc');
+  const amtExpr = wireAmountExpr(box.querySelector('.qa-amt')), amtVal = () => amtExpr.value();
   const dep = buildPayPair(inOpts, accUse, accV, '存入');
   box.querySelector('[data-paypair]').replaceWith(dep.node);
   const accSel = { get value() { return dep.get()?.v || ''; } };
   const saveWith = async (catId, irrDefault) => {
-    const amount = parseFloat(amtIn.value);
+    const amount = amtVal();
     let irregular = !!irrDefault;
     if (irregular) { const yes = await askIrregular(); if (yes == null) return; irregular = yes; }
     const res = await saveIncomeRecord({ date: day, category: catId, description: descIn.value.trim(), amount, accId: accSel.value || null, affects: true, irregular });
@@ -5228,7 +5314,7 @@ async function buildQuickIncome({ date = null, onDone = null } = {}) {
     onDone?.();
     await renderAssets();
   };
-  const amtGuard = () => { const ok = parseFloat(amtIn.value) > 0; if (!ok) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); } return ok; };
+  const amtGuard = () => { const ok = amtVal() > 0; if (!ok) { amtIn.focus(); amtIn.classList.add('is-err'); showToast('先輸入金額'); } return ok; };
   box.querySelector('[data-catpick]').replaceWith(buildCatPicker('income', incomeTxns, ['cat_receivable','cat_dca','cat_realized'], catId => saveWith(catId, catById(catId)?.irregular_default), amtGuard));
   const reuseHost = box.querySelector('.qa-reuse-host');
   descIn.addEventListener('input', () => {
@@ -5238,7 +5324,7 @@ async function buildQuickIncome({ date = null, onDone = null } = {}) {
   });
   box.querySelector('[data-qi-full]').addEventListener('click', () => {
     onDone?.();
-    openIncomeModal(null, null, null, { date: day, amount: parseFloat(amtIn.value) || '', description: descIn.value.trim(), account_id: accSel.value || null });
+    openIncomeModal(null, null, null, { date: day, amount: amtVal() || '', description: descIn.value.trim(), account_id: accSel.value || null });
   });
   return box;
 }
@@ -7963,6 +8049,26 @@ function clearExpandedPrefix(prefix) {
   for (const id of _expandedRegistry) if (id.startsWith(prefix)) _expandedRegistry.delete(id);
 }
 
+// v2.31.0：小型選單（銀行名稱旁的 ⋯）。點外面、捲動、按 Esc 都會關。
+function openRowMenu(anchor, items) {
+  document.querySelector('.row-menu')?.remove();
+  const m = el('div','row-menu'); m.setAttribute('role','menu');
+  items.forEach(it => {
+    const b = el('button'); b.type = 'button'; b.setAttribute('role','menuitem'); b.textContent = it.label;
+    b.addEventListener('click', () => { close(); it.onClick(); });
+    m.appendChild(b);
+  });
+  document.body.appendChild(m);
+  const r = anchor.getBoundingClientRect();
+  const w = m.offsetWidth, h = m.offsetHeight;
+  m.style.left = `${Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8))}px`;
+  m.style.top = `${r.bottom + 4 + h > window.innerHeight - 8 ? r.top - h - 4 : r.bottom + 4}px`;
+  m.querySelector('button')?.focus({ preventScroll: true });
+  const onDoc = e => { if (!m.contains(e.target)) close(); };
+  const onKey = e => { if (e.key === 'Escape') { close(); anchor.focus(); } };
+  function close() { m.remove(); document.removeEventListener('pointerdown', onDoc, true); document.removeEventListener('keydown', onKey); window.removeEventListener('scroll', close, true); }
+  setTimeout(() => { document.addEventListener('pointerdown', onDoc, true); document.addEventListener('keydown', onKey); window.addEventListener('scroll', close, true); }, 0);
+}
 async function renderSettings() {
   await loadData();
   const { banks, accounts } = state;
@@ -8012,109 +8118,59 @@ async function renderSettings() {
     // 「▲／▼上移下移」按鈕，放在這個「帳戶管理」頁（原本 sort_order 欄位
     // 已經存在，不需要改資料庫結構）。sortedBanks 先固定成陣列，銀行、
     // 帳戶的按鈕都要知道自己在陣列中的位置（是不是第一個／最後一個）。
+    // v2.31.0（使用者：像別人的記帳軟體那樣一眼看到每個帳戶的餘額）：按銀行分組、
+    // 每個帳戶一行直接顯示原幣餘額（美金寫 USD，不換台幣），點那一行進帳戶明細（改
+    // 餘額、看紀錄、編輯都在裡面）。「新增帳戶／編輯銀行／排序」收進銀行名稱旁的 ⋯
+    // 選單；「調整帳戶順序」打開後每列才出現上移／下移。
     const sortedBanks = banks.sort((a,b)=>(a.sort_order??99)-(b.sort_order??99));
     sortedBanks.forEach((bank, bankIdx) => {
       const bankAccs = accounts.filter(a=>a.bank_id===bank.id).sort((a,b)=>(a.sort_order??999)-(b.sort_order??999));
-
-      // Bank row (layer 2)
-      const bRow = el('div','bank-row'); bRow.style.borderTop='1px solid var(--border)';
-      bRow.innerHTML = `
-        <div class="bank-row-left">
-          ${bankLogoHTML(bank)}
-          <div>
-            <div style="font-size:13px;font-weight:500">${bank.name}</div>
-            <div style="font-size:11px;color:var(--text-3);margin-top:2px">${bankAccs.length} 個帳戶</div>
-          </div>
-        </div>
-        <div class="bank-row-right">
-          <button class="btn btn-ghost btn-sm" style="font-size:11px" data-add-acc-bank="${bank.id}">＋ 新增帳戶</button>
-          <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-bank="${bank.id}">編輯</button>
-          <svg class="chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-        </div>`;
-
-      const bankReorderBtns = buildReorderButtons(bankIdx===0, bankIdx===sortedBanks.length-1, dir => {
-        moveSortOrder('banks', sortedBanks, bank.id, dir).then(() => renderSettings());
-      });
-      bRow.querySelector('.bank-row-right').insertBefore(bankReorderBtns, bRow.querySelector('[data-add-acc-bank]'));
-
-      bRow.querySelector(`[data-add-acc-bank]`).addEventListener('click', e => {
+      const reordering = isExpanded(`bankReorder:${bank.id}`);
+      const grp = el('div','bk-group');
+      const head = el('div','bk-head');
+      head.innerHTML = `${bankLogoHTML(bank)}<span class="bk-name">${escHtml(bank.name)}</span>
+        ${reordering ? '<button type="button" class="bk-done">完成</button>' : ''}
+        <button type="button" class="bk-menu-btn" aria-label="${escHtml(bank.name)} 的選項" aria-haspopup="menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>`;
+      head.querySelector('.bk-done')?.addEventListener('click', () => { toggleExpanded(`bankReorder:${bank.id}`, false); renderSettings(); });
+      head.querySelector('.bk-menu-btn').addEventListener('click', e => {
         e.stopPropagation();
-        openAccountModal(null, banks, bank.id);
+        openRowMenu(e.currentTarget, [
+          { label: '＋ 新增帳戶', onClick: () => openAccountModal(null, banks, bank.id) },
+          { label: '編輯銀行', onClick: () => openBankModal(bank) },
+          bankAccs.length > 1 ? { label: '調整帳戶順序', onClick: () => { toggleExpanded(`bankReorder:${bank.id}`, true); renderSettings(); } } : null,
+          bankIdx > 0 ? { label: '銀行往上移', onClick: () => moveSortOrder('banks', sortedBanks, bank.id, -1).then(() => renderSettings()) } : null,
+          bankIdx < sortedBanks.length - 1 ? { label: '銀行往下移', onClick: () => moveSortOrder('banks', sortedBanks, bank.id, 1).then(() => renderSettings()) } : null,
+        ].filter(Boolean));
       });
-      bRow.querySelector(`[data-edit-bank]`).addEventListener('click', e => {
-        e.stopPropagation();
-        openBankModal(bank);
-      });
-
-      // Account list grouped by currency (layer 3)
-      // §卅六（2026-09-29，使用者要求）：原本這裡是「每個幣別一個可收合的子
-      // 標題＋子清單」，跟「資產總覽」新做的「合併儲存格」是兩套不同的配置／
-      // 配色。改成套用同一套：groupAccountsByCurrency() 把相鄰同幣別的帳戶
-      // 分組，最左邊一個橫跨多列的合併標籤（較深）＋整列底色（較淺），跟
-      // renderAssets() 的 bankGroups.forEach 是同一種做法、同一組 CSS 自訂
-      // 屬性（--curr-*-badge-bg／--curr-*-row-bg），使用者在「設定」頁改幣別
-      // 顏色時這裡也會一起變。原本「每個幣別可以單獨收合」的互動拿掉了——
-      // 合併儲存格本身已經清楚標出分組，銀行本身還是可以整個收合（bRow 的
-      // 點擊事件不變）。
-      const accBody = el('div','acc-currency-grid'); accBody.style.display='none';
+      grp.appendChild(head);
       if (bankAccs.length === 0) {
-        const e = el('div');
-        e.style.cssText='padding:12px 18px 12px 12px;font-size:12px;color:var(--text-3);border-top:1px solid var(--border);grid-column:1/-1';
-        e.textContent='尚無帳戶，點右方「＋ 新增帳戶」。';
-        accBody.appendChild(e);
-      } else {
-        const currGroups = groupAccountsByCurrency(bankAccs);
-        currGroups.forEach(g => {
-          const mergeCell = el('div','acc-merge-cell');
-          mergeCell.style.cssText = `grid-row:span ${g.items.length};background:var(--curr-${g.currency}-badge-bg);color:var(--curr-${g.currency}-badge-fg)`;
-          mergeCell.textContent = g.currency;
-          accBody.appendChild(mergeCell);
-          g.items.forEach(acc => {
-            const currSymbol = accCurrSymbol(acc.currency);
-            // §卅七：帳戶的上移／下移是在「同一家銀行底下的所有帳戶」（bankAccs）
-            // 這個範圍內排序，不是只在同幣別的小組內排——這樣使用者才能把
-            // 不同幣別的帳戶調整到自己想要的相對順序（例如同一家銀行想把
-            // 美元帳戶整組移到台幣帳戶前面），merge-cell 的分組會依照新的
-            // sort_order 自動重新分組、不用另外處理。
-            const accIdx = bankAccs.indexOf(acc);
-            const aRow = el('div');
-            aRow.style.cssText = `grid-column:2;display:grid;grid-template-columns:1fr 28px 80px auto;align-items:center;gap:2px;padding:9px 16px 9px 12px;border-top:1px solid var(--border);font-size:12px;background:var(--curr-${acc.currency}-row-bg)`;
-            aRow.innerHTML = `
-              <span style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${acc.name}${acc.include_in_total===false?' <span style="font-size:10px;color:var(--text-3);background:var(--surface-2);padding:1px 5px;border-radius:4px">不計入</span>':''}${acc.show_on_home===false?' <span style="font-size:10px;color:var(--text-3);background:var(--surface-2);padding:1px 5px;border-radius:4px">首頁隱藏</span>':''}</span>
-              <span style="color:var(--text-3);text-align:right;font-size:10px;padding-right:1px">${currSymbol}</span>
-              <span style="color:var(--text-2);text-align:right;font-variant-numeric:tabular-nums">${fmt(acc.balance,{currency:acc.currency})}</span>
-              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px">
-                <button class="btn btn-ghost btn-sm" style="font-size:11px" data-detail-acc="${acc.id}">明細</button>
-                <button class="btn btn-ghost btn-sm" style="font-size:11px" data-edit-acc="${acc.id}">編輯</button>
-              </div>`;
-            // §卅九：新增「明細」按鈕，開啟帳戶明細（含變動記錄）——見
-            // openAccountDetailModal 的說明。
-            aRow.querySelector(`[data-detail-acc]`).addEventListener('click', () => openAccountDetailModal(acc.id));
-            aRow.querySelector(`[data-edit-acc]`).addEventListener('click', () => openAccountModal(acc, banks));
-            const accReorderBtns = buildReorderButtons(accIdx===0, accIdx===bankAccs.length-1, dir => {
-              moveSortOrder('accounts', bankAccs, acc.id, dir).then(() => renderSettings());
-            });
-            aRow.lastElementChild.insertBefore(accReorderBtns, aRow.querySelector('[data-edit-acc]'));
-            accBody.appendChild(aRow);
+        const e = el('div','bk-empty'); e.textContent = '還沒有帳戶'; grp.appendChild(e);
+      }
+      bankAccs.forEach((acc, accIdx) => {
+        const cur = acc.currency || 'TWD';
+        const noDec = cur === 'TWD' || cur === 'JPY';
+        const tags = `${acc.include_in_total===false?'<span class="bk-tag">不計入</span>':''}${acc.show_on_home===false?'<span class="bk-tag">首頁隱藏</span>':''}`;
+        const row = el(reordering ? 'div' : 'button', 'bk-acc');
+        if (!reordering) { row.type = 'button'; row.setAttribute('aria-label', `${acc.name} ${cur} ${fmt(acc.balance,{currency:cur})}，看明細`); }
+        row.innerHTML = `<span class="bk-acc-name">${escHtml(acc.name)}${tags}</span>
+          <span class="bk-cur">${cur}</span>
+          <span class="bk-amt${noDec ? ' no-dec' : ''}">${fmt(acc.balance,{currency:cur})}</span>
+          ${reordering ? '' : '<svg class="bk-chev" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'}`;
+        if (reordering) {
+          const mv = el('div','bk-move');
+          [[-1, accIdx === 0, '上移'], [1, accIdx === bankAccs.length - 1, '下移']].forEach(([dir, dis, lab]) => {
+            const btn = el('button'); btn.type = 'button'; btn.disabled = dis; btn.setAttribute('aria-label', `${acc.name} ${lab}`);
+            btn.innerHTML = `<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="${dir < 0 ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6'}"/></svg>`;
+            btn.addEventListener('click', () => moveSortOrder('accounts', bankAccs, acc.id, dir).then(() => renderSettings()));
+            mv.appendChild(btn);
           });
-        });
-      }
-
-      // §四十八：重繪時如果這家銀行原本是展開的（記在共用登記表），直接
-      // 套用回展開狀態，不用使用者重新點一次。
-      if (isExpanded(`bank:${bank.id}`)) {
-        accBody.style.display = 'grid';
-        bRow.classList.add('card-open');
-      }
-      bRow.addEventListener('click', () => {
-        const isOpen = accBody.style.display !== 'none';
-        const next = toggleExpanded(`bank:${bank.id}`, !isOpen);
-        accBody.style.display = next ? 'grid' : 'none';
-        bRow.classList.toggle('card-open', next);
+          row.appendChild(mv);
+        } else {
+          row.addEventListener('click', () => openAccountDetailModal(acc.id));
+        }
+        grp.appendChild(row);
       });
-
-      bankCardBody.appendChild(bRow);
-      bankCardBody.appendChild(accBody);
+      bankCardBody.appendChild(grp);
     });
   }
 
@@ -8722,8 +8778,11 @@ async function applyAccountManageLayout({ content, toolbar, banks, sections }) {
   }
   const right = header?.lastElementChild;
   if (active === 'bank') {
+    // v2.31.0：新增帳戶移到每家銀行的 ⋯ 選單，標題列只留「＋ 新增銀行」，不另外寫幾家銀行
     toolbar.style.cssText = 'display:flex;gap:6px';
-    toolbar.querySelectorAll('button').forEach(b => { b.classList.add('btn-sm'); b.style.fontSize = '11px'; });
+    toolbar.querySelectorAll('button').forEach(b => { b.classList.add('btn-sm'); b.style.fontSize = '12px'; b.style.whiteSpace = 'nowrap'; });
+    toolbar.querySelector('.btn-primary')?.remove();
+    right?.querySelector('span')?.remove();
     right?.prepend(toolbar);
   } else {
     toolbar.remove();

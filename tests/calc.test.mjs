@@ -116,3 +116,17 @@ test('v2.31.0 生活費平均：已是固定支出的主分類不算', () => {
   assert.equal(calcAvgLivingSpend(tx, [], {}, 1, today).total, 4400);
   assert.equal(calcAvgLivingSpend(tx, [], {}, 1, today, ['cat_insurance']).total, 1000);
 });
+
+import { evalAmountExpr } from '../files/calc.js';
+test('v2.31.0 金額算式', () => {
+  assert.equal(evalAmountExpr('65+45'), 110);
+  assert.equal(evalAmountExpr('380/2'), 190);
+  assert.equal(evalAmountExpr('380÷2'), 190);
+  assert.equal(evalAmountExpr('120×3-10'), 350);
+  assert.equal(evalAmountExpr('(100+50)*2'), 300);
+  assert.equal(evalAmountExpr('1,200'), 1200);
+  assert.equal(evalAmountExpr('100/3'), 33.33);
+  assert.equal(evalAmountExpr('65+'), null);
+  assert.equal(evalAmountExpr('5/0'), null);
+  assert.equal(evalAmountExpr('alert(1)'), null);
+});

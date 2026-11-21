@@ -2183,3 +2183,27 @@ export function goalStages(buckets, balOf) {
   }
   return { current, queued, filled, ordered: st };
 }
+
+// v2.31.0（使用者：金額欄可以打 65+45、380/2）：只算 + − × ÷ 和括號，不用 eval。
+// 接受全形符號、×÷、千分位逗號；算不出來或結果不是正數回傳 null。
+export function evalAmountExpr(str) {
+  const src = String(str ?? '').replace(/[,，\s]/g, '').replace(/[＋]/g, '+').replace(/[－−–]/g, '-')
+    .replace(/[×xX＊*]/g, '*').replace(/[÷／/]/g, '/').replace(/（/g, '(').replace(/）/g, ')').replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/．/g, '.');
+  if (!src || !/^[0-9.+\-*/()]+$/.test(src)) return null;
+  let i = 0;
+  const num = () => { const m = /^\d*\.?\d+|^\d+\./.exec(src.slice(i)); if (!m) throw 0; i += m[0].length; return parseFloat(m[0]); };
+  const factor = () => {
+    if (src[i] === '-') { i++; return -factor(); }
+    if (src[i] === '+') { i++; return factor(); }
+    if (src[i] === '(') { i++; const v = expr(); if (src[i] !== ')') throw 0; i++; return v; }
+    return num();
+  };
+  const term = () => { let v = factor(); while (src[i] === '*' || src[i] === '/') { const op = src[i++]; const r = factor(); if (op === '/' && r === 0) throw 0; v = op === '*' ? v * r : v / r; } return v; };
+  const expr = () => { let v = term(); while (src[i] === '+' || src[i] === '-') { const op = src[i++]; const r = term(); v = op === '+' ? v + r : v - r; } return v; };
+  try {
+    const v = expr();
+    if (i !== src.length || !Number.isFinite(v)) return null;
+    return Math.round(v * 100) / 100;
+  } catch { return null; }
+}
+export const isAmountExpr = s => /[+\-*/×÷＋－（(]/.test(String(s ?? '').replace(/^\s*-/, ''));
